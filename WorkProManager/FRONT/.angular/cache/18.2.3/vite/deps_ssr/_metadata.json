@@ -1,55 +1,40 @@
 {
-  "hash": "f76fab18",
-  "configHash": "96c11697",
-  "lockfileHash": "1fe13595",
-  "browserHash": "94bad8aa",
+  "hash": "a23e8963",
+  "configHash": "39a40cf7",
+  "lockfileHash": "a3f82c95",
+  "browserHash": "7271ab94",
   "optimized": {
     "@angular/core": {
       "src": "../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "4a5f4a97",
+      "fileHash": "2f29e1df",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "0ae439d5",
-      "needsInterop": false
-    },
-    "@angular/platform-browser/animations/async": {
-      "src": "../../../../../node_modules/@angular/platform-browser/fesm2022/animations/async.mjs",
-      "file": "@angular_platform-browser_animations_async.js",
-      "fileHash": "c651bbf8",
+      "fileHash": "22ebb7d7",
       "needsInterop": false
     },
     "@angular/platform-server": {
       "src": "../../../../../node_modules/@angular/platform-server/fesm2022/platform-server.mjs",
       "file": "@angular_platform-server.js",
-      "fileHash": "9ad1a963",
+      "fileHash": "c91760ff",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-      "fileHash": "6af2fbde",
+      "fileHash": "fdc1cd56",
       "needsInterop": false
     }
   },
   "chunks": {
-    "chunk-KRS6RSML": {
-      "file": "chunk-KRS6RSML.js"
+    "chunk-AKJLSFH3": {
+      "file": "chunk-AKJLSFH3.js"
     },
-    "browser-YDAZJVRE": {
-      "file": "browser-YDAZJVRE.js"
-    },
-    "chunk-UBCEDS5M": {
-      "file": "chunk-UBCEDS5M.js"
-    },
-    "chunk-4DRDPSMA": {
-      "file": "chunk-4DRDPSMA.js"
-    },
-    "chunk-GPPHCCFQ": {
-      "file": "chunk-GPPHCCFQ.js"
+    "chunk-UMDITOHG": {
+      "file": "chunk-UMDITOHG.js"
     },
     "xhr2-AQ42KH57": {
       "file": "xhr2-AQ42KH57.js"
