@@ -1,5 +1,7 @@
-<div class="p-6">
+<div class="flex justify-center px-72 py-6">
+  <div class="main">
     <form class="space-y-6">
+      <p class="text-2xl">Crear una Orden de trabajo</p>
       <!-- Nº OT -->
       <div class="flex items-center space-x-4">
         <label for="ot-number" class="font-bold text-xl">Nº OT</label>
@@ -11,14 +13,18 @@
           readonly
         />
       </div>
-  
+
       <!-- Detalle Cliente -->
       <fieldset class="border border-gray-200 p-4 rounded-lg">
         <legend class="text-lg font-semibold">Detalle Cliente</legend>
-  
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label for="client-name" class="block text-sm font-medium text-gray-700">Nombre Cliente</label>
+            <label
+              for="client-name"
+              class="block text-sm font-medium text-gray-700"
+              >Nombre Cliente</label
+            >
             <input
               type="text"
               id="client-name"
@@ -26,7 +32,11 @@
             />
           </div>
           <div>
-            <label for="client-run" class="block text-sm font-medium text-gray-700">Run</label>
+            <label
+              for="client-run"
+              class="block text-sm font-medium text-gray-700"
+              >Run</label
+            >
             <input
               type="text"
               id="client-run"
@@ -34,7 +44,11 @@
             />
           </div>
           <div>
-            <label for="client-email" class="block text-sm font-medium text-gray-700">Correo</label>
+            <label
+              for="client-email"
+              class="block text-sm font-medium text-gray-700"
+              >Correo</label
+            >
             <input
               type="email"
               id="client-email"
@@ -42,7 +56,11 @@
             />
           </div>
           <div>
-            <label for="client-phone" class="block text-sm font-medium text-gray-700">Teléfono</label>
+            <label
+              for="client-phone"
+              class="block text-sm font-medium text-gray-700"
+              >Teléfono</label
+            >
             <input
               type="tel"
               id="client-phone"
@@ -51,14 +69,18 @@
           </div>
         </div>
       </fieldset>
-  
+
       <!-- Detalle Equipo -->
       <fieldset class="border border-gray-200 p-4 rounded-lg">
         <legend class="text-lg font-semibold">Detalle Equipo</legend>
-  
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label for="device-type" class="block text-sm font-medium text-gray-700">Tipo de equipo</label>
+            <label
+              for="device-type"
+              class="block text-sm font-medium text-gray-700"
+              >Tipo de equipo</label
+            >
             <select
               id="device-type"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
@@ -67,7 +89,11 @@
             </select>
           </div>
           <div>
-            <label for="device-model" class="block text-sm font-medium text-gray-700">Modelo</label>
+            <label
+              for="device-model"
+              class="block text-sm font-medium text-gray-700"
+              >Modelo</label
+            >
             <input
               type="text"
               id="device-model"
@@ -75,7 +101,11 @@
             />
           </div>
           <div>
-            <label for="device-brand" class="block text-sm font-medium text-gray-700">Marca</label>
+            <label
+              for="device-brand"
+              class="block text-sm font-medium text-gray-700"
+              >Marca</label
+            >
             <input
               type="text"
               id="device-brand"
@@ -83,7 +113,11 @@
             />
           </div>
           <div>
-            <label for="device-serial" class="block text-sm font-medium text-gray-700">S/N</label>
+            <label
+              for="device-serial"
+              class="block text-sm font-medium text-gray-700"
+              >S/N</label
+            >
             <input
               type="text"
               id="device-serial"
@@ -92,11 +126,11 @@
           </div>
         </div>
       </fieldset>
-  
+
       <!-- Procedimiento a realizar -->
       <fieldset class="border border-gray-200 p-4 rounded-lg">
         <legend class="text-lg font-semibold">Procedimiento a realizar</legend>
-  
+
         <textarea
           id="procedure-description"
           class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
@@ -104,22 +138,22 @@
           placeholder="Descripción del procedimiento"
         ></textarea>
       </fieldset>
-  
+
       <!-- Insumos a usar -->
       <fieldset class="border border-gray-200 p-4 rounded-lg">
         <legend class="text-lg font-semibold">Insumos a usar</legend>
-  
+
         <div class="grid grid-cols-4 gap-4">
           <div class="font-bold">#</div>
           <div class="font-bold">NOMBRE</div>
           <div class="font-bold">CANTIDAD</div>
           <div class="font-bold">DESCRIPCIÓN</div>
-  
+
           <div>111-22-11</div>
           <div>Ketchup</div>
           <div>3</div>
           <div>Descripción del ketchup</div>
-  
+
           <div>333-22-45</div>
           <div>Frozen Dinner</div>
           <div>12</div>
@@ -128,4 +162,4 @@
       </fieldset>
     </form>
   </div>
-  
+</div>
