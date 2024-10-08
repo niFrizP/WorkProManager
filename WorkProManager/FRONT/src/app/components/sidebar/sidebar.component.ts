@@ -19,9 +19,9 @@ export interface Section {
 })
 export class SidebarComponent {
   resources = [
-    { name: 'login', link: './login' },
-    { name: 'home', link: './home' },
-    { name: 'orders', link: './orders' },
-    { name: 'profile', link: './profile' },
+    { name: 'Inicio', link: './home' },
+    { name: 'Ordenes', link: './orders' },
+    { name: 'Perfil', link: './profile' },
   ];
+
 }
