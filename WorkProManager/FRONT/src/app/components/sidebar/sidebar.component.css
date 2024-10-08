@@ -1,3 +1,13 @@
-.mat-mdc-list-item-icon {
-  color: rgba(0, 0, 0, 0.54);
+/* Estilos para el sidebar */
+.sidebar {
+  width: 16rem; /* 64px */
+  height: 100vh;
+  background-color: #1D4ED8; /* azul oscuro */
+  color: #FCD34D; /* amarillo */
+}
+
+/* Ajuste de contenido para que no quede detrás del sidebar */
+.main-content {
+  margin-left: 16rem; /* Ajustar el margen de acuerdo con el ancho del sidebar */
+  padding: 1rem;
 }

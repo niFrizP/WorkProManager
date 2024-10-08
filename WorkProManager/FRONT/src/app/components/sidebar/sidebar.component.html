@@ -1,19 +1,46 @@
-<mat-list>
-  <div mat-subheader>Folders</div>
-  @for (folder of folders; track folder) {
-  <mat-list-item>
-    <mat-icon matListItemIcon>folder</mat-icon>
-    <div matListItemTitle>{{ folder.name }}</div>
-    <div matListItemLine>{{ folder.updated | date }}</div>
-  </mat-list-item>
-  }
-  <mat-divider></mat-divider>
-  <div mat-subheader>Notes</div>
-  @for (note of notes; track note) {
-  <mat-list-item>
-    <mat-icon matListItemIcon>note</mat-icon>
-    <div matListItemTitle>{{ note.name }}</div>
-    <div matListItemLine>{{ note.updated | date }}</div>
-  </mat-list-item>
-  }
-</mat-list>
+<aside
+  class="fixed inset-y-0 flex flex-col items-center justify-between w-full p-4 my-4 overflow-y-auto bg-blue-800 shadow-xl dark:bg-slate-850 max-w-64 xl:ml-6 rounded-2xl xl:left-0 transition-transform duration-200 ease-in-out transform -translate-x-full xl:translate-x-0 z-50"
+  aria-expanded="false"
+>
+  <!-- Cerrar ícono para móviles -->
+  <div class="flex justify-end w-full xl:hidden">
+    <i
+      class="fas fa-times cursor-pointer text-yellow-500 opacity-50 p-4"
+      sidenav-close
+    ></i>
+  </div>
+
+  <!-- Logo -->
+  <div class="mb-4">
+    <a class="flex items-center space-x-2 text-yellow-500">
+      <img
+        src="./assets/img/logo-ct-dark.png"
+        class="max-h-8 dark:hidden"
+        alt="main_logo"
+      />
+      <img
+        src="./assets/img/logo-ct.png"
+        class="hidden max-h-8 dark:block"
+        alt="main_logo"
+      />
+    </a>
+  </div>
+
+  <!-- Separador -->
+  <hr class="w-full border-t border-yellow-500 my-4" />
+
+  <!-- Rutas de navegación -->
+  <div class="flex-grow w-full">
+    <nav class="space-y-4">
+      <a
+        *ngFor="let item of resources"
+        class="block p-2 text-center font-medium text-yellow-500 rounded-lg hover:bg-yellow-400 hover:text-black dark:text-white dark:hover:bg-yellow-400 dark:hover:text-black"
+        [href]="item.link"
+        target="_blank"
+        rel="noopener"
+      >
+        {{ item.name }}
+      </a>
+    </nav>
+  </div>
+</aside>
