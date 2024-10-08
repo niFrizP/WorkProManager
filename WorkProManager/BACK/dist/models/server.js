@@ -16,6 +16,13 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const order_1 = __importDefault(require("../routes/order"));
 const cliente_1 = __importDefault(require("../routes/cliente"));
+const usuario_1 = __importDefault(require("../routes/usuario"));
+const servicio_1 = __importDefault(require("../routes/servicio"));
+const estado_ot_1 = __importDefault(require("../routes/estado_ot"));
+const equipo_1 = __importDefault(require("../routes/equipo"));
+const rol_1 = __importDefault(require("../routes/rol"));
+const log_1 = __importDefault(require("../routes/log"));
+const pago_1 = __importDefault(require("../routes/pago"));
 const connection_1 = __importDefault(require("../db/connection"));
 class Server {
     constructor() {
@@ -37,8 +44,68 @@ class Server {
                 msg: 'API Working'
             });
         });
-        this.app.use('/api/clientes', cliente_1.default); // Acceso a los clientes
-        this.app.use('/api/orders', order_1.default); // Acceso a las órdenes
+        this.app.use('/api/clientes', (req, res, next) => {
+            // Lógica específica para clientes
+            if (req.method === 'GET') {
+                console.log('Acceso a clientes');
+            }
+            next();
+        }, cliente_1.default); // Acceso a los clientes
+        this.app.use('/api/orders', (req, res, next) => {
+            // Lógica específica para órdenes
+            if (req.method === 'GET') {
+                console.log('Acceso a órdenes');
+            }
+            next();
+        }, order_1.default); // Acceso a las órdenes
+        this.app.use('/api/usuario', (req, res, next) => {
+            // Lógica específica para usuarios
+            if (req.method === 'GET') {
+                console.log('Acceso a usuarios');
+            }
+            next();
+        }, usuario_1.default); // Acceso a los usuarios
+        this.app.use('/api/servicio', (req, res, next) => {
+            // Lógica específica para servicios
+            if (req.method === 'GET') {
+                console.log('Acceso a servicios');
+            }
+            next();
+        }, servicio_1.default); // Acceso a los servicios
+        this.app.use('/api/estado_ot', (req, res, next) => {
+            // Lógica específica para estado de órdenes de trabajo
+            if (req.method === 'GET') {
+                console.log('Acceso a estado de órdenes de trabajo');
+            }
+            next();
+        }, estado_ot_1.default); // Acceso a los estados de órdenes de trabajo
+        this.app.use('/api/equipo', (req, res, next) => {
+            // Lógica específica para equipos
+            if (req.method === 'GET') {
+                console.log('Acceso a equipos');
+            }
+            next();
+        }, equipo_1.default); // Acceso a los equipos
+        this.app.use('/api/rol', (req, res, next) => {
+            // Lógica específica para roles
+            if (req.method === 'GET') {
+                console.log('Acceso a roles');
+            }
+            next();
+        }, rol_1.default); // Acceso a los roles
+        this.app.use('/api/log', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a logs');
+            }
+            next();
+        }, log_1.default); // Acceso a los logs
+        this.app.use('/api/pago', (req, res, next) => {
+            // Lógica específica para pagos
+            if (req.method === 'GET') {
+                console.log('Acceso a pagos');
+            }
+            next();
+        }, pago_1.default); // Acceso a los pagos
     }
     middlewares() {
         this.app.use(express_1.default.json());
