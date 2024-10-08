@@ -31,204 +31,200 @@
     </div>
   </nav>
 
-  <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <form class="space-y-6">
-      <p class="text-2xl font-semibold text-gray-700">
-        Crear una Orden de trabajo
-      </p>
+  <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
+    <p class="text-2xl font-semibold text-gray-700">
+      {{ operacion }} una Orden de Trabajo
+    </p>
+    <!-- Nº OT -->
+    <div class="flex items-center space-x-4">
+      <label for="ot-number" class="font-bold text-xl">Nº OT</label>
+      <input
+        type="text"
+        id="ot-number"
+        class="w-40 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500"
+        placeholder="OT-XXXXX"
+        readonly
+      />
+    </div>
 
-      <!-- Nº OT -->
-      <div class="flex items-center space-x-4">
-        <label for="ot-number" class="font-bold text-xl">Nº OT</label>
-        <input
-          type="text"
-          id="ot-number"
-          class="w-40 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500"
-          placeholder="OT-XXXXX"
-          readonly
-        />
-      </div>
-
-      <!-- Detalle Cliente -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
-        <legend class="text-lg font-semibold">Detalle Cliente</legend>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label
-              for="client-name"
-              class="block text-sm font-medium text-gray-700"
-              >Nombre Cliente</label
-            >
-            <input
-              type="text"
-              id="client-name"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label
-              for="client-run"
-              class="block text-sm font-medium text-gray-700"
-              >Run</label
-            >
-            <input
-              type="text"
-              id="client-run"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label
-              for="client-email"
-              class="block text-sm font-medium text-gray-700"
-              >Correo</label
-            >
-            <input
-              type="email"
-              id="client-email"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label
-              for="client-phone"
-              class="block text-sm font-medium text-gray-700"
-              >Teléfono</label
-            >
-            <input
-              type="tel"
-              id="client-phone"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-            />
-          </div>
-        </div>
-      </fieldset>
-
-      <!-- Detalle Equipo -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
-        <legend class="text-lg font-semibold">Detalle Equipo</legend>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label
-              for="device-type"
-              class="block text-sm font-medium text-gray-700"
-              >Tipo de equipo</label
-            >
-            <select
-              id="device-type"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-            >
-              <option>Seleccione uno</option>
-            </select>
-          </div>
-          <div>
-            <label
-              for="device-model"
-              class="block text-sm font-medium text-gray-700"
-              >Modelo</label
-            >
-            <input
-              type="text"
-              id="device-model"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label
-              for="device-brand"
-              class="block text-sm font-medium text-gray-700"
-              >Marca</label
-            >
-            <input
-              type="text"
-              id="device-brand"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label
-              for="device-serial"
-              class="block text-sm font-medium text-gray-700"
-              >S/N</label
-            >
-            <input
-              type="text"
-              id="device-serial"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-            />
-          </div>
-        </div>
-      </fieldset>
-
-      <!-- Procedimiento a realizar -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
-        <legend class="text-lg font-semibold">Procedimiento a realizar</legend>
-
-        <textarea
-          id="procedure-description"
-          class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-          rows="4"
-          placeholder="Descripción del procedimiento"
-        ></textarea>
-      </fieldset>
-
-      <!-- Insumos a usar -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
-        <legend class="text-lg font-semibold">Insumos a usar</legend>
-
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="font-bold">#</div>
-          <div class="font-bold">NOMBRE</div>
-          <div class="font-bold">CANTIDAD</div>
-          <div class="font-bold">DESCRIPCIÓN</div>
-
-          <div>111-22-11</div>
-          <div>Pantalla Samsung A33 5G</div>
-          <div>1</div>
-          <div>Descripción de la pantalla</div>
-
-          <div>333-22-45</div>
-          <div>Pegamento de pantalla 150ml</div>
-          <div>1</div>
-          <div>Descripción del Pegamento</div>
-        </div>
-      </fieldset>
-
-      <!-- Fecha de entrega -->
-      <div class="flex items-center space-x-4">
-        <label for="delivery-date" class="font-bold text-xl"
-          >Fecha de entrega</label
-        >
-        <br /><br />
-        <section>
+    <!-- Detalle Cliente -->
+    <fieldset class="border border-gray-200 p-4 rounded-lg">
+      <legend class="text-lg font-semibold">Detalle Cliente</legend>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label
+            for="client-name"
+            class="block text-sm font-medium text-gray-700"
+            >Nombre Cliente</label
+          >
           <input
-            type="date"
-            id="delivery-date"
-            class="w-40 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500"
+            type="text"
+            id="client-name"
+            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
           />
-        </section>
+        </div>
+        <div>
+          <label
+            for="client-run"
+            class="block text-sm font-medium text-gray-700"
+            >Run</label
+          >
+          <input
+            type="text"
+            id="client-run"
+            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label
+            for="client-email"
+            class="block text-sm font-medium text-gray-700"
+            >Correo</label
+          >
+          <input
+            type="email"
+            id="client-email"
+            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label
+            for="client-phone"
+            class="block text-sm font-medium text-gray-700"
+            >Teléfono</label
+          >
+          <input
+            type="tel"
+            id="client-phone"
+            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+          />
+        </div>
+      </div>
+    </fieldset>
 
-        <label for="delivery-time" class="font-bold text-xl"
-          >Hora de entrega</label
-        >
+    <!-- Detalle Equipo -->
+    <fieldset class="border border-gray-200 p-4 rounded-lg">
+      <legend class="text-lg font-semibold">Detalle Equipo</legend>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label
+            for="device-type"
+            class="block text-sm font-medium text-gray-700"
+            >Tipo de equipo</label
+          >
+          <select
+            id="device-type"
+            formControlName="equipo"
+            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+          >
+            <option value="">Seleccione uno</option>
+          </select>
+        </div>
+        <div>
+          <label
+            for="device-model"
+            class="block text-sm font-medium text-gray-700"
+            >Modelo</label
+          >
+          <input
+            type="text"
+            id="device-model"
+            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label
+            for="device-brand"
+            class="block text-sm font-medium text-gray-700"
+            >Marca</label
+          >
+          <input
+            type="text"
+            id="device-brand"
+            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label
+            for="device-serial"
+            class="block text-sm font-medium text-gray-700"
+            >S/N</label
+          >
+          <input
+            type="text"
+            id="device-serial"
+            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+          />
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Procedimiento a realizar -->
+    <fieldset class="border border-gray-200 p-4 rounded-lg">
+      <legend class="text-lg font-semibold">Procedimiento a realizar</legend>
+
+      <textarea
+        id="procedure-description"
+        class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+        rows="4"
+        placeholder="Descripción del procedimiento"
+      ></textarea>
+    </fieldset>
+
+    <!-- Insumos a usar -->
+    <fieldset class="border border-gray-200 p-4 rounded-lg">
+      <legend class="text-lg font-semibold">Insumos a usar</legend>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="font-bold">#</div>
+        <div class="font-bold">NOMBRE</div>
+        <div class="font-bold">CANTIDAD</div>
+        <div class="font-bold">DESCRIPCIÓN</div>
+
+        <div>111-22-11</div>
+        <div>Pantalla Samsung A33 5G</div>
+        <div>1</div>
+        <div>Descripción de la pantalla</div>
+
+        <div>333-22-45</div>
+        <div>Pegamento de pantalla 150ml</div>
+        <div>1</div>
+        <div>Descripción del Pegamento</div>
+      </div>
+    </fieldset>
+
+    <!-- Fecha de entrega -->
+    <div class="flex items-center space-x-4">
+      <label for="delivery-date" class="font-bold text-xl"
+        >Fecha de entrega</label
+      >
+      <br /><br />
+      <section>
         <input
-          type="time"
-          id="delivery-time"
+          type="date"
+          id="delivery-date"
           class="w-40 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500"
         />
-      </div>
+      </section>
 
-      <!-- Botones -->
-      <div class="flex justify-end">
-        <button
-          type="submit"
-          class="px-6 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none"
-        >
-          Crear OT
-        </button>
-      </div>
-    </form>
-  </div>
+      <label for="delivery-time" class="font-bold text-xl"
+        >Hora de entrega</label
+      >
+      <input
+        type="time"
+        id="delivery-time"
+        class="w-40 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500"
+      />
+    </div>
+
+    <!-- Botones -->
+    <div class="flex justify-end">
+      <button
+        type="submit"
+        class="px-6 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none"
+      >
+        Crear OT
+      </button>
+    </div>
+  </form>
 </div>
