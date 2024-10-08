@@ -1,11 +1,24 @@
 .sidebar {
-  width: 16rem;
+  width: 12rem;
   height: 100vh;
-  background-color: #2221B8;
+  background-color: #2221b8;
   color: #ffe217;
 }
 
 .main-content {
   margin-left: 16rem;
   padding: 1rem;
+}
+
+.active {
+  background-color: #ffeb3b;
+  color: black;
+}
+
+.cerrado {
+  width: 12rem;
+}
+
+.abierto {
+  width: 8rem;
 }

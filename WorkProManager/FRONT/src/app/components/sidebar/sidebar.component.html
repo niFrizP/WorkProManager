@@ -1,26 +1,24 @@
 <aside
-  class="fixed inset-y-0 flex flex-col items-center justify-between w-full p-4 my-4 overflow-y-auto bg-blue-800 shadow-xl dark:bg-slate-850 max-w-64 xl:ml-6 rounded-2xl xl:left-0 transition-transform duration-200 ease-in-out transform -translate-x-full xl:translate-x-0 z-50"
-  aria-expanded="false"
+  [ngClass]="{ 'cerrado': !isCollapsed, 'abierto': isCollapsed }"
+  class="fixed inset-y-0  flex-col items-center justify-between w-full p-4 my-4 overflow-y-auto bg-blue-800 shadow-xl dark:bg-slate-850 max-w-64 xl:ml-6 rounded-2xl xl:left-0 transition-transform duration-200 ease-in-out transform -translate-x-full xl:translate-x-0 z-50"
 >
-  <!-- Cerrar ícono para móviles -->
+  <!-- Botón para colapsar el sidebar -->
   <div class="flex justify-end w-full">
-    <i
-      class="fas fa-times cursor-pointer text-yellow-500 opacity-50 p-4"
-      sidenav-close
-    ></i>
+    <button (click)="toggleSidebar()" title="Toggle Sidebar" class="focus:outline-none">
+      <i class="fas fa-chevron-left cursor-pointer text-yellow-500 opacity-50 p-4" *ngIf="!isCollapsed"></i>
+      <i class="fas fa-chevron-right cursor-pointer text-yellow-500 opacity-50 p-4" *ngIf="isCollapsed"></i>
+    </button>
   </div>
 
   <!-- Logo -->
   <div class="mb-4">
-    <a
-      class="block px-8 py-6 m-0 text-sm whitespace-nowrap dark:text-white text-yellow-500"
-    >
-      <img src="assets/images/WPM_POSITIVE.png" alt="logo" />
+    <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap text-yellow-500">
+      <img src="assets/images/WPM_YELLOW.png" alt="logo" class="w-32 h-auto" />
     </a>
   </div>
 
   <!-- Separador -->
-  <hr class="w-full border-t border-yellow-500 my-4" />
+  <hr *ngIf="!isCollapsed" class="w-full border-t border-yellow-500 my-4" />
 
   <!-- Rutas de navegación -->
   <div class="flex-grow w-full">
@@ -28,11 +26,11 @@
       <a
         *ngFor="let item of resources"
         class="block p-2 text-center font-medium text-yellow-500 rounded-lg hover:bg-yellow-400 hover:text-black dark:text-white dark:hover:bg-yellow-400 dark:hover:text-black"
+        [ngClass]="{ 'p-2': isCollapsed, 'p-4': !isCollapsed }"
         [href]="item.link"
-        target="_blank"
-        rel="noopener"
       >
-        {{ item.name }}
+        <i class="{{ item.icon }} mr-0" [ngClass]="{ 'mr-3': !isCollapsed }"></i>
+        <span *ngIf="!isCollapsed">{{ item.name }}</span>
       </a>
     </nav>
   </div>

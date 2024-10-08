@@ -10,19 +10,23 @@ export interface Section {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterOutlet,
-  ],
+  imports: [CommonModule, RouterOutlet],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.css',
+  styleUrls: ['./sidebar.component.css'],
 })
 export class SidebarComponent {
   resources = [
-    { name: 'Inicio', link: './home' },
-    { name: 'Ordenes', link: './orders' },
-    { name: 'Perfil', link: './profile' },
-    { name: 'Nueva OT', link: './new-ot' },
+    { name: 'Inicio', link: './home', icon: 'fas fa-home' },
+    { name: 'Ordenes', link: './orders', icon: 'fas fa-box' },
+    { name: 'Perfil', link: './profile', icon: 'fas fa-user' },
+    { name: 'Nueva OT', link: './new-ot', icon: 'fas fa-plus' },
   ];
 
+  // Propiedad para controlar el estado de colapsado
+  isCollapsed = false;
+
+  // Método para alternar entre colapsado/expandido
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
+  }
 }
