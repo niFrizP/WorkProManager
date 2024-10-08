@@ -15,19 +15,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const order_1 = __importDefault(require("../routes/order"));
+const cliente_1 = __importDefault(require("../routes/cliente"));
 const connection_1 = __importDefault(require("../db/connection"));
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || '3001';
-        this.listen();
-        this.midlewares();
+        this.middlewares();
         this.routes();
         this.dbConnect();
+        this.listen();
     }
     listen() {
         this.app.listen(this.port, () => {
-            console.log(`Aplicacion corriendo en el puerto ${this.port}`);
+            console.log(`Aplicación corriendo en el puerto ${this.port}`);
         });
     }
     routes() {
@@ -36,12 +37,11 @@ class Server {
                 msg: 'API Working'
             });
         });
-        this.app.use('/api/orders', order_1.default);
+        this.app.use('/api/clientes', cliente_1.default); // Acceso a los clientes
+        this.app.use('/api/orders', order_1.default); // Acceso a las órdenes
     }
-    midlewares() {
-        // Parseamos el body
+    middlewares() {
         this.app.use(express_1.default.json());
-        // Cors
         this.app.use((0, cors_1.default)());
     }
     dbConnect() {
@@ -51,8 +51,7 @@ class Server {
                 console.log('Base de datos conectada');
             }
             catch (error) {
-                console.log(error);
-                console.log('Error al conectarse a la base de datos');
+                console.log('Error al conectarse a la base de datos:', error);
             }
         });
     }

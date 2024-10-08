@@ -57,18 +57,24 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.deleteOrder = deleteOrder;
 const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
+    const { fecha, equipo, estado, costo } = req.body; // Extrae los datos relevantes
     try {
-        // Create the order without needing to specify an ID
-        const newOrder = yield orders_1.default.create(body);
+        // Crear la nueva orden sin especificar `id_ot`
+        const newOrder = yield orders_1.default.create({
+            fecha,
+            equipo,
+            estado,
+            costo
+        });
         res.json({
-            msg: `El producto fue agregado con éxito!`,
+            msg: 'La orden fue agregada con éxito!',
+            order: newOrder // Devuelve la nueva orden, incluyendo el id_ot generado
         });
     }
     catch (error) {
         console.log(error);
-        res.json({
-            msg: `Upps, ocurrió un error, comuníquese con soporte`
+        res.status(500).json({
+            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
         });
     }
 });
