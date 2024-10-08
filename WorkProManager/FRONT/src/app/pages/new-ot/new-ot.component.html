@@ -1,9 +1,7 @@
-<div class="flex-1 ml-64 p-6">
-  <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <form class="space-y-6">
-      <p class="text-2xl font-semibold text-gray-700">
-        Crear una Orden de trabajo
-      </p>
+<div class="flex-1 justify-center px-72 py-6">
+  <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
+      <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
 
       <!-- Nº OT -->
       <div class="flex items-center space-x-4">
@@ -20,14 +18,9 @@
       <!-- Detalle Cliente -->
       <fieldset class="border border-gray-200 p-4 rounded-lg">
         <legend class="text-lg font-semibold">Detalle Cliente</legend>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label
-              for="client-name"
-              class="block text-sm font-medium text-gray-700"
-              >Nombre Cliente</label
-            >
+            <label for="client-name" class="block text-sm font-medium text-gray-700">Nombre Cliente</label>
             <input
               type="text"
               id="client-name"
@@ -35,11 +28,7 @@
             />
           </div>
           <div>
-            <label
-              for="client-run"
-              class="block text-sm font-medium text-gray-700"
-              >Run</label
-            >
+            <label for="client-run" class="block text-sm font-medium text-gray-700">Run</label>
             <input
               type="text"
               id="client-run"
@@ -47,11 +36,7 @@
             />
           </div>
           <div>
-            <label
-              for="client-email"
-              class="block text-sm font-medium text-gray-700"
-              >Correo</label
-            >
+            <label for="client-email" class="block text-sm font-medium text-gray-700">Correo</label>
             <input
               type="email"
               id="client-email"
@@ -59,11 +44,7 @@
             />
           </div>
           <div>
-            <label
-              for="client-phone"
-              class="block text-sm font-medium text-gray-700"
-              >Teléfono</label
-            >
+            <label for="client-phone" class="block text-sm font-medium text-gray-700">Teléfono</label>
             <input
               type="tel"
               id="client-phone"
@@ -76,19 +57,11 @@
       <!-- Detalle Equipo -->
       <fieldset class="border border-gray-200 p-4 rounded-lg">
         <legend class="text-lg font-semibold">Detalle Equipo</legend>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label
-              for="device-type"
-              class="block text-sm font-medium text-gray-700"
-              >Tipo de equipo</label
-            >
-            <select
-              id="device-type"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-            >
-              <option>Seleccione uno</option>
+            <label for="device-type" class="block text-sm font-medium text-gray-700">Tipo de equipo</label>
+            <select id="device-type" formControlName="equipo" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
+              <option value="">Seleccione uno</option>
             </select>
           </div>
           <div>
