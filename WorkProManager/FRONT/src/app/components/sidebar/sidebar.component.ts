@@ -22,6 +22,7 @@ export class SidebarComponent {
     { name: 'Inicio', link: './home' },
     { name: 'Ordenes', link: './orders' },
     { name: 'Perfil', link: './profile' },
+    { name: 'Nueva OT', link: './new-ot' },
   ];
 
 }
