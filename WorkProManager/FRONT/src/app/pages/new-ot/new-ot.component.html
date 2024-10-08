@@ -1,7 +1,7 @@
-<div class="flex justify-center px-72 py-6">
-  <div class="main">
+<div class="flex-1 justify-center px-72 py-6">
+  <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
     <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
-      <p class="text-2xl">{{ operacion }} una Orden de Trabajo</p>
+      <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
 
       <!-- Nº OT -->
       <div class="flex items-center space-x-4">
@@ -60,9 +60,82 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label for="device-type" class="block text-sm font-medium text-gray-700">Tipo de equipo</label>
-            <select
-              id="device-type"
-              formControlName="equipo"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+            <select id="device-type" formControlName="equipo" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
+              <option value="">Seleccione uno</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="device-model"
+              class="block text-sm font-medium text-gray-700"
+              >Modelo</label
             >
-              <option value="">Seleccione uno
+            <input
+              type="text"
+              id="device-model"
+              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label
+              for="device-brand"
+              class="block text-sm font-medium text-gray-700"
+              >Marca</label
+            >
+            <input
+              type="text"
+              id="device-brand"
+              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label
+              for="device-serial"
+              class="block text-sm font-medium text-gray-700"
+              >S/N</label
+            >
+            <input
+              type="text"
+              id="device-serial"
+              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+            />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Procedimiento a realizar -->
+      <fieldset class="border border-gray-200 p-4 rounded-lg">
+        <legend class="text-lg font-semibold">Procedimiento a realizar</legend>
+
+        <textarea
+          id="procedure-description"
+          class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+          rows="4"
+          placeholder="Descripción del procedimiento"
+        ></textarea>
+      </fieldset>
+
+      <!-- Insumos a usar -->
+      <fieldset class="border border-gray-200 p-4 rounded-lg">
+        <legend class="text-lg font-semibold">Insumos a usar</legend>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="font-bold">#</div>
+          <div class="font-bold">NOMBRE</div>
+          <div class="font-bold">CANTIDAD</div>
+          <div class="font-bold">DESCRIPCIÓN</div>
+
+          <div>111-22-11</div>
+          <div>Ketchup</div>
+          <div>3</div>
+          <div>Descripción del ketchup</div>
+
+          <div>333-22-45</div>
+          <div>Frozen Dinner</div>
+          <div>12</div>
+          <div>Descripción del frozen dinner</div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
