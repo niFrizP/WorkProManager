@@ -1,5 +1,37 @@
-<div class="flex-1 ml-64 p-6">
-  <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+<div class="flex-3 ml-64 p-8">
+  <nav
+    class="relative flex items-center justify-between px-6 py-2 shadow-none bg-custom-gradient rounded-2xl"
+  >
+    <div class="flex items-center justify-between w-full">
+      <div>
+        <ol class="flex space-x-2 text-white opacity-50">
+          <li><a href="#">Ordenes de trabajo</a></li>
+          <li>/</li>
+          <li class="font-semibold">Crear OT</li>
+        </ol>
+        <h6 class="font-bold text-white">Crear una OT</h6>
+      </div>
+
+      <!-- Barra de búsqueda y acciones -->
+      <div class="flex items-center space-x-4">
+        <a href="#" class="text-sm font-semibold texto-azul flex items-center">
+          <i class="fa fa-user mr-1"></i> Admin
+        </a>
+
+        <!-- Iconos responsive -->
+        <a href="#" class="texto-azul xl:hidden" title="Menu">
+          <i class="fa fa-bars"></i>
+        </a>
+
+        <!-- Configuración -->
+        <a href="#" class="texto-azul" title="Ajustes">
+          <i class="fa fa-cog"></i>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
     <form class="space-y-6">
       <p class="text-2xl font-semibold text-gray-700">
         Crear una Orden de trabajo
@@ -153,16 +185,50 @@
           <div class="font-bold">DESCRIPCIÓN</div>
 
           <div>111-22-11</div>
-          <div>Ketchup</div>
-          <div>3</div>
-          <div>Descripción del ketchup</div>
+          <div>Pantalla Samsung A33 5G</div>
+          <div>1</div>
+          <div>Descripción de la pantalla</div>
 
           <div>333-22-45</div>
-          <div>Frozen Dinner</div>
-          <div>12</div>
-          <div>Descripción del frozen dinner</div>
+          <div>Pegamento de pantalla 150ml</div>
+          <div>1</div>
+          <div>Descripción del Pegamento</div>
         </div>
       </fieldset>
+
+      <!-- Fecha de entrega -->
+      <div class="flex items-center space-x-4">
+        <label for="delivery-date" class="font-bold text-xl"
+          >Fecha de entrega</label
+        >
+        <br /><br />
+        <section>
+          <input
+            type="date"
+            id="delivery-date"
+            class="w-40 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500"
+          />
+        </section>
+
+        <label for="delivery-time" class="font-bold text-xl"
+          >Hora de entrega</label
+        >
+        <input
+          type="time"
+          id="delivery-time"
+          class="w-40 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500"
+        />
+      </div>
+
+      <!-- Botones -->
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="px-6 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none"
+        >
+          Crear OT
+        </button>
+      </div>
     </form>
   </div>
 </div>

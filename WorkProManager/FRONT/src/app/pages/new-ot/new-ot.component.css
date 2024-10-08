@@ -1,0 +1,14 @@
+.bg-custom-gradient {
+  background: linear-gradient(to right, #0046ad, #ffe600);
+}
+.texto-amarillo {
+  color: #ffe217;
+}
+
+.texto-azul {
+  color: #2221b8;
+}
+
+.texto-negro {
+  color: black;
+}
