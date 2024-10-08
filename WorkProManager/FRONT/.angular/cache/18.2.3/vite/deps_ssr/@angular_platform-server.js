@@ -7,7 +7,7 @@ import {
   EventManagerPlugin,
   HTTP_ROOT_INTERCEPTOR_FNS,
   HttpClientModule
-} from "./chunk-PGGZPDAW.js";
+} from "./chunk-R3XOVA7I.js";
 import {
   DOCUMENT,
   NullViewportScroller,

@@ -1,8 +1,5 @@
 import { Component } from '@angular/core';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { MatListModule } from '@angular/material/list';
 import { RouterOutlet } from '@angular/router';
 
 export interface Section {
@@ -14,9 +11,6 @@ export interface Section {
   selector: 'app-sidebar',
   standalone: true,
   imports: [
-    MatListModule,
-    MatIconModule,
-    MatDividerModule,
     CommonModule,
     RouterOutlet,
   ],
