@@ -1,36 +1,4 @@
 <div class="flex-3 ml-64 p-8">
-  <nav
-    class="relative flex items-center justify-between px-6 py-2 shadow-none bg-custom-gradient rounded-2xl"
-  >
-    <div class="flex items-center justify-between w-full">
-      <div>
-        <ol class="flex space-x-2 text-white opacity-50">
-          <li><a href="#">Ordenes de trabajo</a></li>
-          <li>/</li>
-          <li class="font-semibold">Crear OT</li>
-        </ol>
-        <h6 class="font-bold text-white">Crear una OT</h6>
-      </div>
-
-      <!-- Barra de búsqueda y acciones -->
-      <div class="flex items-center space-x-4">
-        <a href="#" class="text-sm font-semibold texto-azul flex items-center">
-          <i class="fa fa-user mr-1"></i> Admin
-        </a>
-
-        <!-- Iconos responsive -->
-        <a href="#" class="texto-azul xl:hidden" title="Menu">
-          <i class="fa fa-bars"></i>
-        </a>
-
-        <!-- Configuración -->
-        <a href="#" class="texto-azul" title="Ajustes">
-          <i class="fa fa-cog"></i>
-        </a>
-      </div>
-    </div>
-  </nav>
-
   <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
     <p class="text-2xl font-semibold text-gray-700">
       {{ operacion }} una Orden de Trabajo

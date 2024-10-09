@@ -22,11 +22,4 @@ export class SidebarComponent {
     { name: 'Nueva OT', link: './new-ot', icon: 'fas fa-plus' },
   ];
 
-  // Propiedad para controlar el estado de colapsado
-  isCollapsed = false;
-
-  // Método para alternar entre colapsado/expandido
-  toggleSidebar() {
-    this.isCollapsed = !this.isCollapsed;
-  }
 }

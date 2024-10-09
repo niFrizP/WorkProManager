@@ -1,7 +1,40 @@
-<mat-toolbar>
-    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <span>WPM</span>
-  </mat-toolbar>
-  
+<div class="flex-3 ml-64 p-8">
+  <nav
+    class="relative flex items-center justify-between px-6 py-2 shadow-none bg-custom-gradient rounded-2xl"
+  >
+    <div class="flex items-center justify-between w-full">
+      <div>
+        <ol class="flex space-x-2 text-white opacity-50">
+          <li><a href="#">Inicio</a></li>
+          <li>/</li>
+          <li class="font-semibold">Dashboard</li>
+        </ol>
+        <h6 class="font-bold text-white">Dashboard</h6>
+      </div>
+
+      <!-- Barra de búsqueda y acciones -->
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <i class="fas fa-search absolute left-3 top-2.5 text-gray-500"></i>
+          <input
+            type="text"
+            class="pl-9 py-2 rounded-lg bg-white text-sm text-gray-700 border border-gray-300 focus:border-blue-500 focus:outline-none"
+            placeholder="Busca acá..."
+          />
+        </div>
+
+        <a href="#" class="text-sm font-semibold texto-azul flex items-center">
+          <i class="fa fa-user mr-1"></i> Admin
+        </a>
+
+        <a href="#" class="texto-azul xl:hidden" title="Menu">
+          <i class="fa fa-bars"></i>
+        </a>
+
+        <a href="#" class="texto-azul" title="Ajustes">
+          <i class="fa fa-cog"></i>
+        </a>
+      </div>
+    </div>
+  </nav>
+</div>
