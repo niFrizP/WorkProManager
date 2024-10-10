@@ -19,7 +19,5 @@ export class SidebarComponent {
     { name: 'Inicio', link: './home', icon: 'fas fa-home' },
     { name: 'Ordenes', link: './orders', icon: 'fas fa-box' },
     { name: 'Perfil', link: './profile', icon: 'fas fa-user' },
-    { name: 'Nueva OT', link: './new-ot', icon: 'fas fa-plus' },
   ];
-
 }

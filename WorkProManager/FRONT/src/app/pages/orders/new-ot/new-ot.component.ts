@@ -1,18 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { Order } from '../../interfaces/order'; 
-import { OrderService } from '../../services/order.service';
-import { HttpClientModule } from '@angular/common/http';
+import { Order } from '../../../interfaces/order';
+import { OrderService } from '../../../services/order.service';
 import { CommonModule } from '@angular/common';
-import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { SidebarComponent } from '../../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-new-ot',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, ReactiveFormsModule,HttpClientModule,CommonModule,SidebarComponent], // Asegúrate de agregar ReactiveFormsModule aquí
+  imports: [
+    RouterLink,
+    RouterOutlet,
+    ReactiveFormsModule,
+    CommonModule,
+    SidebarComponent,
+  ], // Asegúrate de agregar ReactiveFormsModule aquí
   templateUrl: './new-ot.component.html',
-  styleUrls: ['./new-ot.component.css']
+  styleUrls: ['./new-ot.component.css'],
 })
 export class NewOtComponent implements OnInit {
   form: FormGroup;
@@ -30,16 +35,13 @@ export class NewOtComponent implements OnInit {
       equipo: ['', Validators.required],
       estado: ['', Validators.required],
       costo: [null, Validators.required],
-      fecha: [null, Validators.required]
+      fecha: [null, Validators.required],
     });
-    
+
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
   }
 
   ngOnInit(): void {
-
-    
-
     if (this.id_ot !== 0) {
       this.operacion = 'Editar ';
       this.getOrder(this.id_ot);
@@ -54,7 +56,7 @@ export class NewOtComponent implements OnInit {
         equipo: data.equipo,
         estado: data.estado,
         costo: data.costo,
-        fecha: data.fecha
+        fecha: data.fecha,
       });
     });
   }
@@ -64,7 +66,7 @@ export class NewOtComponent implements OnInit {
       equipo: this.form.value.equipo,
       estado: this.form.value.estado,
       costo: this.form.value.costo,
-      fecha: this.form.value.fecha
+      fecha: this.form.value.fecha,
     };
 
     this.loading = true;
