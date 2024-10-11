@@ -23,6 +23,7 @@ const equipo_1 = __importDefault(require("../routes/equipo"));
 const rol_1 = __importDefault(require("../routes/rol"));
 const log_1 = __importDefault(require("../routes/log"));
 const pago_1 = __importDefault(require("../routes/pago"));
+const marca_1 = __importDefault(require("../routes/marca"));
 const connection_1 = __importDefault(require("../db/connection"));
 class Server {
     constructor() {
@@ -106,6 +107,13 @@ class Server {
             }
             next();
         }, pago_1.default); // Acceso a los pagos
+        this.app.use('/api/marca', (req, res, next) => {
+            // Lógica específica para servicios
+            if (req.method === 'GET') {
+                console.log('Acceso a servicios');
+            }
+            next();
+        }, marca_1.default); // Acceso a los servicios
     }
     middlewares() {
         this.app.use(express_1.default.json());

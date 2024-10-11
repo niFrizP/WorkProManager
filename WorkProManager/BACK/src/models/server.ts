@@ -9,6 +9,7 @@ import routesEquipo from '../routes/equipo'
 import routesRol from '../routes/rol'
 import logRoutes from '../routes/log'
 import routesPago from '../routes/pago' 
+import routesMarca from '../routes/marca'
 import db from '../db/connection';
 
 
@@ -108,6 +109,14 @@ class Server {
             }
             next();
         }, routesPago); // Acceso a los pagos
+
+        this.app.use('/api/marca', (req: Request, res: Response, next: Function) => {
+            // Lógica específica para servicios
+            if (req.method === 'GET') {
+                console.log('Acceso a servicios');
+            }
+            next();
+        }, routesMarca); // Acceso a los servicios
         
 
     }

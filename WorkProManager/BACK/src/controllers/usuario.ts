@@ -43,7 +43,7 @@ export const deleteUsuario = async (req: Request, res: Response) => {
 };
 
 export const postUsuario = async (req: Request, res: Response) => {
-    const { rut_usu, d_verificador_usu, nom_usu, correo } = req.body; // Extrae los datos relevantes
+    const { rut_usu, d_verificador_usu, nom_usu,ap_usu,  correo } = req.body; // Extrae los datos relevantes
 
     try {
         // Crear el nuevo usuario sin especificar `id_usuario`
@@ -51,6 +51,7 @@ export const postUsuario = async (req: Request, res: Response) => {
             rut_usu,
             d_verificador_usu,
             nom_usu,
+            ap_usu, 
             correo // El correo es opcional
         });
 

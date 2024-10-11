@@ -57,18 +57,21 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.deleteOrder = deleteOrder;
 const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { fecha, equipo, estado, costo } = req.body; // Extrae los datos relevantes
+    const { fecha, costo, descripcion, rut_cliente, id_usuario, id_serv, num_equipo, id_estado } = req.body;
     try {
-        // Crear la nueva orden sin especificar `id_ot`
         const newOrder = yield orders_1.default.create({
             fecha,
-            equipo,
-            estado,
-            costo
+            costo,
+            descripcion,
+            rut_cliente, // Incluye id_cliente en la creación
+            id_usuario, // Incluye id_usuario
+            id_serv, // Incluye id_serv
+            num_equipo, // Incluye num_equipo
+            id_estado
         });
         res.json({
             msg: 'La orden fue agregada con éxito!',
-            order: newOrder // Devuelve la nueva orden, incluyendo el id_ot generado
+            order: newOrder
         });
     }
     catch (error) {
@@ -85,9 +88,9 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const order = yield orders_1.default.findByPk(id);
         if (order) {
-            yield order.update(body);
+            yield order.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
             res.json({
-                msg: 'La orden fue actualziado con exito'
+                msg: 'La orden fue actualizada con éxito'
             });
         }
         else {
@@ -98,8 +101,8 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
     catch (error) {
         console.log(error);
-        res.json({
-            msg: `Upps ocurrio un error, comuniquese con soporte`
+        res.status(500).json({
+            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
         });
     }
 });

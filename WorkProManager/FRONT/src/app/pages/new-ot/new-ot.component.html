@@ -1,18 +1,30 @@
 <div class="flex-1 justify-center px-72 py-6">
   <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <!-- Leyenda de descripción -->
+    <p class="text-md text-gray-600 mb-4">
+      Completa el siguiente formulario para crear una nueva Orden de Trabajo. Asegúrate de proporcionar todos los detalles requeridos.
+    </p>
+    
     <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
+
+      <div class="mt-4">
+        <label for="fecha">Fecha de Entrega:</label>
+        <input type="date" id="fecha" formControlName="fecha" class="border border-gray-300 p-2 rounded" />
+      </div>
+
       <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
 
-      <!-- Nº OT -->
-      <div class="flex items-center space-x-4">
-        <label for="ot-number" class="font-bold text-xl">Nº OT</label>
-        <input
-          type="text"
-          id="ot-number"
-          class="w-40 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500"
-          placeholder="OT-XXXXX"
-          readonly
-        />
+      
+      <!-- Descripción de la OT -->
+      <div>
+        <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+        <textarea
+          id="descripcion"
+          formControlName="descripcion"
+          rows="4"
+          class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+          placeholder="Añade una descripción detallada de la Orden de Trabajo..."
+        ></textarea>
       </div>
 
       <!-- Detalle Cliente -->
@@ -20,34 +32,59 @@
         <legend class="text-lg font-semibold">Detalle Cliente</legend>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label for="client-name" class="block text-sm font-medium text-gray-700">Nombre Cliente</label>
+            <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
             <input
               type="text"
-              id="client-name"
+              id="nombre"
+              formControlName="nombre" 
+
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
           </div>
           <div>
-            <label for="client-run" class="block text-sm font-medium text-gray-700">Run</label>
+            <label for="client-lastname" class="block text-sm font-medium text-gray-700">Apellido</label>
             <input
               type="text"
-              id="client-run"
+              id="apellido"
+              formControlName="apellido"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
           </div>
           <div>
-            <label for="client-email" class="block text-sm font-medium text-gray-700">Correo</label>
+            <label for="rut_cliente" class="block text-sm font-medium text-gray-700">Run</label>
+            <input
+              type="text"
+              id="rut_cliente"
+              formControlName="rut_cliente"
+              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+            />
+          </div>
+          <div class="w-16">
+            <label for="dv_cliente" class="block text-sm font-medium text-gray-700">DV</label>
+            <input
+              type="text"
+              id="d_verificador_cliente"
+              formControlName="d_verificador_cliente"
+              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+              maxlength="1"
+              placeholder="K"
+            />
+          </div>
+          <div>
+            <label for="correo" class="block text-sm font-medium text-gray-700">Correo</label>
             <input
               type="email"
-              id="client-email"
+              id="correo"
+              formControlName="correo" 
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
           </div>
           <div>
-            <label for="client-phone" class="block text-sm font-medium text-gray-700">Teléfono</label>
+            <label for="celular" class="block text-sm font-medium text-gray-700">Teléfono</label>
             <input
               type="tel"
-              id="client-phone"
+              id="celular"
+              formControlName="celular"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
           </div>
@@ -59,83 +96,102 @@
         <legend class="text-lg font-semibold">Detalle Equipo</legend>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label for="device-type" class="block text-sm font-medium text-gray-700">Tipo de equipo</label>
-            <select id="device-type" formControlName="equipo" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
+            <label for="tipo_equipo" class="block text-sm font-medium text-gray-700">Tipo de equipo</label>
+            <select id="tipo_equipo" formControlName="tipo_equipo" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
               <option value="">Seleccione uno</option>
+              <option value="computador">Computador</option>
+              <option value="celular">Celular</option>
             </select>
           </div>
           <div>
-            <label
-              for="device-model"
-              class="block text-sm font-medium text-gray-700"
-              >Modelo</label
-            >
+            <label for="mod_equipo" class="block text-sm font-medium text-gray-700">Modelo</label>
             <input
               type="text"
-              id="device-model"
+              id="mod_equipo"
+              formControlName="mod_equipo"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
           </div>
           <div>
-            <label
-              for="device-brand"
-              class="block text-sm font-medium text-gray-700"
-              >Marca</label
-            >
+            <label for="marcas">Selecciona una marca:</label>
+            <select id="id_marca" formControlName="id_marca" (change)="onMarcaChange($event)">
+              <option value="id_marca">Seleccione una marca</option>
+              <option *ngFor="let marca of marcas" [value]="marca.id_marca">
+                {{ marca.nombre_marca }}
+              </option>
+            </select>
+          </div>
+          
+          <div>
+            <label for="num_equipo" class="block text-sm font-medium text-gray-700">S/N</label>
             <input
               type="text"
-              id="device-brand"
+              id="num_equipo"
+              formControlName="num_equipo"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
           </div>
           <div>
-            <label
-              for="device-serial"
-              class="block text-sm font-medium text-gray-700"
-              >S/N</label
-            >
+            <label for="device-manufacture-date" class="block text-sm font-medium text-gray-700">Fecha de fabricación</label>
             <input
-              type="text"
-              id="device-serial"
+              type="date"
+              id="fec_fabric"
+              formControlName="fec_fabric"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
           </div>
         </div>
       </fieldset>
 
-      <!-- Procedimiento a realizar -->
+      <!-- Servicio -->
       <fieldset class="border border-gray-200 p-4 rounded-lg">
-        <legend class="text-lg font-semibold">Procedimiento a realizar</legend>
-
-        <textarea
-          id="procedure-description"
-          class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-          rows="4"
-          placeholder="Descripción del procedimiento"
-        ></textarea>
-      </fieldset>
-
-      <!-- Insumos a usar -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
-        <legend class="text-lg font-semibold">Insumos a usar</legend>
-
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="font-bold">#</div>
-          <div class="font-bold">NOMBRE</div>
-          <div class="font-bold">CANTIDAD</div>
-          <div class="font-bold">DESCRIPCIÓN</div>
-
-          <div>111-22-11</div>
-          <div>Ketchup</div>
-          <div>3</div>
-          <div>Descripción del ketchup</div>
-
-          <div>333-22-45</div>
-          <div>Frozen Dinner</div>
-          <div>12</div>
-          <div>Descripción del frozen dinner</div>
+        <legend class="text-lg font-semibold">Servicio</legend>
+        
+        <div>
+          <label for="servicios">Selecciona un Servicio:</label>
+          <select id="servicios" (change)="onServiceChange($event)" formControlName="id_serv">
+            <option value="">Seleccione un servicio</option>
+            <option *ngFor="let servicio of servicios" [value]="servicio.id_serv"> 
+              {{ servicio.nom_serv }}
+            </option>
+          </select>
         </div>
+        
+        <div *ngIf="selectedServicePrecio !== null">
+          <p>Precio del servicio seleccionado: <strong>${{ selectedServicePrecio }}</strong></p>
+        </div>
+          
       </fieldset>
-    </form>
-  </div>
-</div>
+
+    <!-- Usuario -->
+
+      <fieldset class="border border-gray-200 p-4 rounded-lg">
+        <legend class="text-lg font-semibold">Usuario</legend>
+        
+        <div>
+          <label for="usuarios">Selecciona un Usuario:</label>
+          <select id="usuarios" formControlName="id_usuario" (change)="onUserChange($event)">
+            <option value="">Seleccione un usuario</option>
+            <option *ngFor="let usuario of usuarios" [value]="usuario.id_usuario" formControlName="usuario.id_usuario">
+              {{ usuario.nom_usu }} {{usuario.ap_usu}}
+            </option>
+          </select>
+        </div>
+        
+        <div *ngIf="selectedUsuarioName !== null">
+          <p>Precio del usuario seleccionado: <strong>{{ selectedUsuarioName }} {{ selectedUsuarioSurname }}</strong></p>
+        </div>
+          
+      </fieldset>
+      
+
+      <!-- Botón para enviar el formulario -->
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
+          (click)="addProduct()"
+        >
+          Guardar Orden de Trabajo
+        </button>
+      </div>

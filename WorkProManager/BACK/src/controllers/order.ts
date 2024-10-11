@@ -46,20 +46,23 @@ export const deleteOrder = async (req: Request, res: Response) => {
 }
 
 export const postOrder = async (req: Request, res: Response) => {
-    const { fecha, equipo, estado, costo } = req.body; // Extrae los datos relevantes
+    const { fecha, costo, descripcion, rut_cliente, id_usuario, id_serv, num_equipo,id_estado } = req.body;
 
     try {
-        // Crear la nueva orden sin especificar `id_ot`
         const newOrder = await Order.create({
             fecha,
-            equipo,
-            estado,
-            costo
+            costo, 
+            descripcion,
+            rut_cliente, // Incluye id_cliente en la creación
+            id_usuario, // Incluye id_usuario
+            id_serv,    // Incluye id_serv
+            num_equipo,  // Incluye num_equipo
+            id_estado
         });
 
         res.json({
             msg: 'La orden fue agregada con éxito!',
-            order: newOrder // Devuelve la nueva orden, incluyendo el id_ot generado
+            order: newOrder
         });
     } catch (error) {
         console.log(error);
@@ -76,27 +79,22 @@ export const updateOrder = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-
         const order = await Order.findByPk(id);
 
-    if(order) {
-        await order.update(body);
-        res.json({
-            msg: 'La orden fue actualziado con exito'
-        })
-
-    } else {
-        res.status(404).json({
-            msg: `No existe una orden con el id ${id}`
-        })
-    }
-        
+        if(order) {
+            await order.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
+            res.json({
+                msg: 'La orden fue actualizada con éxito'
+            });
+        } else {
+            res.status(404).json({
+                msg: `No existe una orden con el id ${id}`
+            });
+        }
     } catch (error) {
         console.log(error);
-        res.json({
-            msg: `Upps ocurrio un error, comuniquese con soporte`
-        })
+        res.status(500).json({
+            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
+        });
     }
-
-    
-}
+};
