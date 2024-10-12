@@ -1,1 +1,52 @@
-<p>orders works!</p>
+<div class="container">
+    <h1 class="title">Órdenes de Trabajo</h1>
+  
+    <div class="header">
+      <div>
+        <label for="filter" class="label">Todas las OT</label>
+        <select id="filter" class="select">
+          <option value="todas">Todas</option>
+          <option value="cerrado">Cerrado</option>
+          <option value="finalizado">Finalizado</option>
+          <option value="en_proceso">En proceso</option>
+        </select>
+      </div>
+      <button [routerLink]="['/orders/new-ot']" class="button new-ot-butt">
+        + Nueva
+      </button>
+    </div>
+  
+    <table class="order-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>OT ID</th>
+            <th>Equipo</th>
+            <th>Estado</th>
+            <th>Costo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let order of filteredOrders | paginate : { itemsPerPage: itemsPerPage, currentPage: page }"
+          >
+            <td>{{ order.fecha }}</td>
+            <td>{{ order.otId }}</td>
+            <td>{{ order.equipo }}</td>
+            <td>{{ order.estado }}</td>
+            <td>{{ order.costo | currency }}</td>
+            <td>
+              <!-- Botón para editar la OT -->
+              <button [routerLink]="['/orders/edit', order.otId]">✏️</button>
+              <!-- Botón para eliminar la OT -->
+              <button (click)="deleteOrder(order.otId)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  
+    <div class="pagination">
+      <pagination-controls (pageChange)="page = $event"></pagination-controls>
+    </div>
+</div>

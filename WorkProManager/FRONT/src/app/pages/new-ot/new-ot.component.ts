@@ -1,27 +1,33 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { Order } from '../../interfaces/order'; 
-import { Servicio } from '../../interfaces/servicio';
-import { Usuario} from '../../interfaces/usuario';
-import { OrderService } from '../../services/order.service';
-import { ServicioService } from '../../services/servicio.service';
-import { UsuarioService} from '../../services/usuario.service';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { firstValueFrom } from 'rxjs';
+
+// Interfaces
+import { Order } from '../../interfaces/order';
+import { Servicio } from '../../interfaces/servicio';
+import { Usuario } from '../../interfaces/usuario';
 import { Marca } from '../../interfaces/marca';
-import { MarcaService } from '../../services/marca.service';
 import { Equipo } from '../../interfaces/equipo';
 import { Cliente } from '../../interfaces/cliente';
+
+// Services
+import { OrderService } from '../../services/order.service';
+import { ServicioService } from '../../services/servicio.service';
+import { UsuarioService } from '../../services/usuario.service';
+import { MarcaService } from '../../services/marca.service';
 import { ClienteService } from '../../services/cliente.service';
 import { EquipoService } from '../../services/equipo.service';
-import { firstValueFrom } from 'rxjs';
+
+// Components
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-new-ot',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, ReactiveFormsModule,HttpClientModule,CommonModule,SidebarComponent], // Asegúrate de agregar ReactiveFormsModule aquí
+  imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent],
   templateUrl: './new-ot.component.html',
   styleUrls: ['./new-ot.component.css']
 })
