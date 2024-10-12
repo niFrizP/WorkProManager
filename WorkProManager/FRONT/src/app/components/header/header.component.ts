@@ -5,9 +5,11 @@ import { CommonModule, TitleCasePipe } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { Location } from '@angular/common';
 
+
 @Component({
   selector: 'app-header',
   standalone: true,
+  template: '<app-header></app-header>',
   imports: [CommonModule, RouterOutlet],
   providers: [TitleCasePipe],
   templateUrl: './header.component.html',
