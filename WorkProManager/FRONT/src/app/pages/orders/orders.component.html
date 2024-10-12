@@ -1,0 +1,57 @@
+<div class="flex-3 ml-64 p-8">
+    <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
+  
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <label for="filter" class="mr-2 font-medium">Todas las OT</label>
+        <select id="filter" class="p-2 border rounded">
+          <option value="todas">Todas</option>
+          <option value="cerrado">Cerrado</option>
+          <option value="finalizado">Finalizado</option>
+          <option value="en_proceso">En proceso</option>
+        </select>
+      </div>
+      <button [routerLink]="['/orders/new-ot']" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 new-ot-butt" [routerLink]="['/orders/new-ot']">
+        + Nueva
+      </button>
+    </div>
+  
+
+    <table class="w-full border-collapse">
+        <thead>
+          <tr class="col-start-auto">
+            <th class="border p-2">Fecha</th>
+            <th class="border p-2">OT ID</th>
+            <th class="border p-2">Equipo</th>
+            <th class="border p-2">Estado</th>
+            <th class="border p-2">Costo</th>
+            <th class="border p-2">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="
+              let order of filteredOrders
+                | paginate : { itemsPerPage: itemsPerPage, currentPage: page }
+            "
+          >
+            <td>{{ order.fecha }}</td>
+            <td>{{ order.otId }}</td>
+            <td>{{ order.equipo }}</td>
+            <td>{{ order.estado }}</td>
+            <td>{{ order.costo | currency }}</td>
+            <td>
+              <!-- Botón para editar la OT -->
+              <button [routerLink]="['/orders/edit', order.otId]">✏️</button>
+              <!-- Botón para eliminar la OT -->
+              <button (click)="deleteOrder(order.otId)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  
+    <div class="flex justify-center mt-4">
+      <pagination-controls (pageChange)="page = $event"></pagination-controls>
+    </div>
+  </div>
+  

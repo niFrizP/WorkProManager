@@ -1,3 +1,20 @@
-.mat-mdc-list-item-icon {
-  color: rgba(0, 0, 0, 0.54);
+.sidebar {
+  width: 12rem;
+  height: 100vh;
+  background-color: #2221b8;
+  color: #ffe217;
+}
+
+.main-content {
+  margin-left: 16rem;
+  padding: 1rem;
+}
+
+.active {
+  background-color: #ffeb3b;
+  color: black;
+}
+
+.cerrado {
+  width: 14rem;
 }

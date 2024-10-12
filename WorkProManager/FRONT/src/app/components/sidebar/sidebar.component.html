@@ -1,19 +1,27 @@
-<mat-list>
-  <div mat-subheader>Folders</div>
-  @for (folder of folders; track folder) {
-  <mat-list-item>
-    <mat-icon matListItemIcon>folder</mat-icon>
-    <div matListItemTitle>{{ folder.name }}</div>
-    <div matListItemLine>{{ folder.updated | date }}</div>
-  </mat-list-item>
-  }
-  <mat-divider></mat-divider>
-  <div mat-subheader>Notes</div>
-  @for (note of notes; track note) {
-  <mat-list-item>
-    <mat-icon matListItemIcon>note</mat-icon>
-    <div matListItemTitle>{{ note.name }}</div>
-    <div matListItemLine>{{ note.updated | date }}</div>
-  </mat-list-item>
-  }
-</mat-list>
+<aside
+  class="cerrado fixed inset-y-0 flex-col items-center justify-between w-full p-4 my-4 overflow-y-auto bg-blue-800 shadow-xl dark:bg-slate-850 max-w-64 xl:ml-6 rounded-2xl xl:left-0 transform"
+>
+  <!-- Logo -->
+  <div class="mb-4">
+    <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap text-yellow-500">
+      <img
+        src="https://i.imgur.com/kTQg9EM.png"
+        alt="wpm-logo"
+        class="h-auto transition-all duration-700"
+      />
+    </a>
+  </div>
+  <!-- Rutas de navegación -->
+  <div class="flex-grow w-full">
+    <nav class="space-y-4">
+      <a
+        *ngFor="let item of resources"
+        class="block p-4 text-center font-medium text-yellow-500 rounded-lg hover:bg-yellow-400 hover:text-black dark:text-white dark:hover:bg-yellow-400 dark:hover:text-black"
+        [href]="item.link"
+      >
+        <i class="{{ item.icon }} mr-3"></i>
+        <span>{{ item.name }}</span>
+      </a>
+    </nav>
+  </div>
+</aside>
