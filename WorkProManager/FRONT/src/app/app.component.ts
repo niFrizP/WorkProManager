@@ -14,7 +14,8 @@ import { HttpClientModule } from '@angular/common/http';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, OrdersModule, SidebarComponent, NgxPaginationModule ,ReactiveFormsModule, FormsModule, HttpClientModule, ToastrModule],
+  imports: [RouterOutlet, CommonModule, OrdersModule, SidebarComponent, NgxPaginationModule ,ReactiveFormsModule, FormsModule, HttpClientModule, ToastrModule, BrowserAnimationsModule, HeaderComponent],
+  providers: [ClienteService],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
