@@ -29,7 +29,7 @@ import { SidebarComponent } from '../../components/sidebar/sidebar.component';
   standalone: true,
   imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent],
   templateUrl: './new-ot.component.html',
-  styleUrls: ['./new-ot.component.css']
+  // styleUrls: ['./new-ot.component.css']
 })
 export class NewOtComponent implements OnInit {
   servicios: Servicio[] = []; // Inicialización como array vacío
@@ -118,7 +118,9 @@ export class NewOtComponent implements OnInit {
         id_estado: this.form.value.id_estado,
         rut_cliente: this.form.get('rut_cliente')?.value,
         id_serv: this.form.get('id_serv')?.value,
-        id_usuario: this.form.get('id_usuario')?.value
+        id_usuario: this.form.get('id_usuario')?.value,
+        equipo: equipo, // Assuming equipo is the result from createOrUpdateEquipo
+        estado: this.form.get('id_estado')?.value // Assuming estado is the same as id_estado
       };
 
       // Log the JSON representation of the order

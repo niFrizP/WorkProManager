@@ -1,32 +1,15 @@
 import { NgModule } from '@angular/core';
-<<<<<<< HEAD
-import { CommonModule } from '@angular/common';
-import { NgxPaginationModule } from 'ngx-pagination';
-import { FormsModule } from '@angular/forms';
-import { OrdersComponent } from './orders.component';
-=======
 import { CommonModule } from '@angular/common'; // Para usar directivas *ngFor y *ngIf
 import { NgxPaginationModule } from 'ngx-pagination'; // Para la paginación
-import { FormsModule } from '@angular/forms'; // Para el filtro si lo usas con formularios
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // Para el filtro si lo usas con formularios
 import { OrdersComponent } from './orders.component'; // Asegúrate de que la ruta sea correcta
->>>>>>> c59ed2432fa62960f41854a4b1d314023022219c
+import { RouterModule } from '@angular/router'; // Para la navegación
 
 @NgModule({
   declarations: [
   ],
   imports: [
-<<<<<<< HEAD
-    CommonModule,
-    NgxPaginationModule,
-    FormsModule,
-     
-  ],
-  exports: [
-    
-  ],
-})
-export class OrdersModule { }
-=======
+    RouterModule, // Necesario para la navegacion
     CommonModule, // Necesario para las directivas como *ngFor y *ngIf
     NgxPaginationModule, // Módulo para manejar la paginación
     FormsModule, // Importa si vas a utilizar formularios
@@ -37,4 +20,3 @@ export class OrdersModule { }
   ],
 })
 export class OrdersModule {}
->>>>>>> c59ed2432fa62960f41854a4b1d314023022219c

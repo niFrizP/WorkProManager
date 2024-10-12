@@ -1,4 +1,6 @@
 export interface Order {
+    equipo: any;
+    estado: any;
     id_ot?: number;
     num_equipo: number;
     costo: number;
