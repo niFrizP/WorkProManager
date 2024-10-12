@@ -25,6 +25,10 @@
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "ngx-pagination": "^6.0.3",
+<<<<<<< HEAD
+    "ngx-toastr": "^19.0.0",
+=======
+>>>>>>> c59ed2432fa62960f41854a4b1d314023022219c
     "rxjs": "~7.8.0",
     "tailwindcss-filters": "^3.0.0",
     "tslib": "^2.3.0",

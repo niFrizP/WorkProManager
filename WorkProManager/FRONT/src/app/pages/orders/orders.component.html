@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+<div class="container">
+    <h1 class="title">Órdenes de Trabajo</h1>
+  
+    <div class="header">
+      <div>
+        <label for="filter" class="label">Todas las OT</label>
+        <select id="filter" class="select">
+=======
 <div class="flex-3 ml-64 p-8">
     <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
   
@@ -5,17 +14,33 @@
       <div>
         <label for="filter" class="mr-2 font-medium">Todas las OT</label>
         <select id="filter" class="p-2 border rounded">
+>>>>>>> c59ed2432fa62960f41854a4b1d314023022219c
           <option value="todas">Todas</option>
           <option value="cerrado">Cerrado</option>
           <option value="finalizado">Finalizado</option>
           <option value="en_proceso">En proceso</option>
         </select>
       </div>
+<<<<<<< HEAD
+      <button [routerLink]="['/orders/new-ot']" class="button new-ot-butt">
+=======
       <button [routerLink]="['/orders/new-ot']" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 new-ot-butt" [routerLink]="['/orders/new-ot']">
+>>>>>>> c59ed2432fa62960f41854a4b1d314023022219c
         + Nueva
       </button>
     </div>
   
+<<<<<<< HEAD
+    <table class="order-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>OT ID</th>
+            <th>Equipo</th>
+            <th>Estado</th>
+            <th>Costo</th>
+            <th>Acciones</th>
+=======
 
     <table class="w-full border-collapse">
         <thead>
@@ -26,14 +51,19 @@
             <th class="border p-2">Estado</th>
             <th class="border p-2">Costo</th>
             <th class="border p-2">Acciones</th>
+>>>>>>> c59ed2432fa62960f41854a4b1d314023022219c
           </tr>
         </thead>
         <tbody>
           <tr
+<<<<<<< HEAD
+            *ngFor="let order of filteredOrders | paginate : { itemsPerPage: itemsPerPage, currentPage: page }"
+=======
             *ngFor="
               let order of filteredOrders
                 | paginate : { itemsPerPage: itemsPerPage, currentPage: page }
             "
+>>>>>>> c59ed2432fa62960f41854a4b1d314023022219c
           >
             <td>{{ order.fecha }}</td>
             <td>{{ order.otId }}</td>
@@ -50,8 +80,15 @@
         </tbody>
       </table>
   
+<<<<<<< HEAD
+    <div class="pagination">
+      <pagination-controls (pageChange)="page = $event"></pagination-controls>
+    </div>
+</div>
+=======
     <div class="flex justify-center mt-4">
       <pagination-controls (pageChange)="page = $event"></pagination-controls>
     </div>
   </div>
   
+>>>>>>> c59ed2432fa62960f41854a4b1d314023022219c
