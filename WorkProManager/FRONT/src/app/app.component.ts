@@ -19,7 +19,7 @@ import { ClienteService } from './services/cliente.service';
     FormsModule,
     HeaderComponent,
     BrowserAnimationsModule,
-    ToastrModule.forRoot()],
+    ToastrModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
