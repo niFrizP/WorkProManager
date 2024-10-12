@@ -19,14 +19,5 @@ export class SidebarComponent {
     { name: 'Inicio', link: './home', icon: 'fas fa-home' },
     { name: 'Ordenes', link: './orders', icon: 'fas fa-box' },
     { name: 'Perfil', link: './profile', icon: 'fas fa-user' },
-    { name: 'Nueva OT', link: './new-ot', icon: 'fas fa-plus' },
   ];
-
-  // Propiedad para controlar el estado de colapsado
-  isCollapsed = false;
-
-  // Método para alternar entre colapsado/expandido
-  toggleSidebar() {
-    this.isCollapsed = !this.isCollapsed;
-  }
 }

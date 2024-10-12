@@ -37,8 +37,9 @@
               type="text"
               id="nombre"
               formControlName="nombre" 
-
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+              title="Nombre del cliente"
+              placeholder="Ingrese el nombre del cliente"
             />
           </div>
           <div>
@@ -48,6 +49,8 @@
               id="apellido"
               formControlName="apellido"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+              title="Apellido del cliente"
+              placeholder="Ingrese el apellido del cliente"
             />
           </div>
           <div>
@@ -114,7 +117,7 @@
           </div>
           <div>
             <label for="marcas">Selecciona una marca:</label>
-            <select id="id_marca" formControlName="id_marca" (change)="onMarcaChange($event)">
+            <select id="id_marca" formControlName="id_marca" (change)="onMarcaChange($event)" title="Seleccione una marca">
               <option value="id_marca">Seleccione una marca</option>
               <option *ngFor="let marca of marcas" [value]="marca.id_marca">
                 {{ marca.nombre_marca }}
@@ -129,6 +132,8 @@
               id="num_equipo"
               formControlName="num_equipo"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+              title="Número de serie del equipo"
+              placeholder="Ingrese el número de serie del equipo"
             />
           </div>
           <div>
@@ -138,6 +143,8 @@
               id="fec_fabric"
               formControlName="fec_fabric"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+              title="Fecha de fabricación del equipo"
+              placeholder="Ingrese la fecha de fabricación"
             />
           </div>
         </div>
