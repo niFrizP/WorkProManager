@@ -12,7 +12,7 @@ const Servicio = connection_1.default.define('Servicio', {
         primaryKey: true, // Define que id_servicio es la clave primaria
         autoIncrement: true // Indica que se incrementa automáticamente
     },
-    tipo_serv: {
+    nom_serv: {
         type: sequelize_1.DataTypes.STRING // Define el tipo de servicio como una cadena de caracteres
     },
     precio: {

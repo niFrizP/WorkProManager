@@ -57,11 +57,11 @@ const deleteEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.deleteEquipo = deleteEquipo;
 const postEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { tipo_equipo, mod_equipo, marca, fec_fabric } = req.body; // Extrae los datos relevantes
+    const { num_equipo, tipo_equipo, mod_equipo, fec_fabric, id_marca } = req.body; // Extrae los datos relevantes
     try {
         // Crear el nuevo equipo sin especificar `id_equipo`
         const newEquipo = yield equipo_1.default.create({
-            tipo_equipo, mod_equipo, marca, fec_fabric
+            num_equipo, tipo_equipo, mod_equipo, id_marca, fec_fabric
         });
         res.json({
             msg: 'El equipo fue agregado con éxito!',

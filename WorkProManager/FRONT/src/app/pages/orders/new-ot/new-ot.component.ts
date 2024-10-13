@@ -67,6 +67,12 @@ export class NewOtComponent implements OnInit {
       estado: this.form.value.estado,
       costo: this.form.value.costo,
       fecha: this.form.value.fecha,
+      num_equipo: 0,
+      descripcion: '',
+      id_usuario: 0,
+      id_serv: 0,
+      id_estado: 0,
+      rut_cliente: 0
     };
 
     this.loading = true;

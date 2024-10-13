@@ -57,13 +57,14 @@ const deleteUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.deleteUsuario = deleteUsuario;
 const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { rut_usu, d_verificador_usu, nom_usu, correo } = req.body; // Extrae los datos relevantes
+    const { rut_usu, d_verificador_usu, nom_usu, ap_usu, correo } = req.body; // Extrae los datos relevantes
     try {
         // Crear el nuevo usuario sin especificar `id_usuario`
         const newUsuario = yield usuario_1.default.create({
             rut_usu,
             d_verificador_usu,
             nom_usu,
+            ap_usu,
             correo // El correo es opcional
         });
         res.json({
