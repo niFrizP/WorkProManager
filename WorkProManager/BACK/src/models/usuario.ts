@@ -20,6 +20,10 @@ const Usuario = db.define('Usuario', {
         type: DataTypes.STRING, // Define el nombre del usuario como una cadena de caracteres
         allowNull: false // Nombre no puede ser nulo
     },
+    ap_usu: {
+        type: DataTypes.STRING, // Define el nombre del usuario como una cadena de caracteres
+        allowNull: false // Nombre no puede ser nulo
+    },
     correo: {
         type: DataTypes.STRING, // Define el correo del usuario como una cadena de caracteres
         allowNull: true // Correo es opcional

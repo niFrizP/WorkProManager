@@ -44,12 +44,12 @@ export const deleteEquipo = async (req: Request, res: Response) => {
 };
 
 export const postEquipo = async (req: Request, res: Response) => {
-    const { tipo_equipo, mod_equipo, marca, fec_fabric } = req.body; // Extrae los datos relevantes
+    const { num_equipo, tipo_equipo, mod_equipo, fec_fabric,id_marca } = req.body; // Extrae los datos relevantes
 
     try {
         // Crear el nuevo equipo sin especificar `id_equipo`
         const newEquipo = await Equipo.create({
-            tipo_equipo, mod_equipo, marca, fec_fabric
+            num_equipo, tipo_equipo, mod_equipo, id_marca, fec_fabric
         });
 
         res.json({

@@ -2,12 +2,12 @@ import { DataTypes } from 'sequelize';
 import db from '../db/connection';
 
 const Cliente = db.define('Cliente', {
-    id_cliente: {
+    rut_cliente: {
         type: DataTypes.INTEGER,
         primaryKey: true, // Define que id_ot es la clave primaria
-        autoIncrement: true // Si es autoincremental, añade esto
+       // Si es autoincremental, añade esto
     },
-    rut: {
+    d_verificador_cliente: {
         type: DataTypes.STRING
     },
     nombre: {

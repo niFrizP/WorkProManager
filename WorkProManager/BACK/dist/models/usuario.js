@@ -24,6 +24,10 @@ const Usuario = connection_1.default.define('Usuario', {
         type: sequelize_1.DataTypes.STRING, // Define el nombre del usuario como una cadena de caracteres
         allowNull: false // Nombre no puede ser nulo
     },
+    ap_usu: {
+        type: sequelize_1.DataTypes.STRING, // Define el nombre del usuario como una cadena de caracteres
+        allowNull: false // Nombre no puede ser nulo
+    },
     correo: {
         type: sequelize_1.DataTypes.STRING, // Define el correo del usuario como una cadena de caracteres
         allowNull: true // Correo es opcional

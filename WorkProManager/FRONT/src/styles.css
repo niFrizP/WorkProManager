@@ -8,11 +8,15 @@
 
 body {
   background: rgb(255, 255, 255);
-
 }
 
+<<<<<<< HEAD
 
+
+
+=======
 /* You can add global styles to this file, and also import other style files */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+>>>>>>> 57596914302ab3001954b2b793ae248ca76c1d8c
