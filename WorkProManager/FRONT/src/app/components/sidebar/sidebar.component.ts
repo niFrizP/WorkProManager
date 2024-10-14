@@ -15,9 +15,14 @@ export interface Section {
   styleUrls: ['./sidebar.component.css'],
 })
 export class SidebarComponent {
+  sidebarOpen = false;
+
   resources = [
     { name: 'Inicio', link: './home', icon: 'fas fa-home' },
     { name: 'Ordenes', link: './orders', icon: 'fas fa-box' },
     { name: 'Perfil', link: './profile', icon: 'fas fa-user' },
   ];
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
 }
