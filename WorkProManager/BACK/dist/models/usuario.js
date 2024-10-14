@@ -37,4 +37,5 @@ const Usuario = connection_1.default.define('Usuario', {
     createdAt: false, // Desactiva el timestamp de creación
     updatedAt: false // Desactiva el timestamp de actualización
 });
+Usuario.hasMany(Usuario, { foreignKey: 'id_usuario' });
 exports.default = Usuario;

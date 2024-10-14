@@ -5,13 +5,14 @@ import Servicio from './servicio'; // Importa el modelo Servicio
 import Equipo from './equipo'; // Importa el modelo Equipo
 import EstadoOT from './estado_ot'; // Importa el modelo EstadoOT
 import db from '../db/connection';
+import Order from './orders';
 
 
-class Order extends Model {}
+class OrderEliminada extends Model {}
 
 
 // Definir el modelo de 'Order'
-Order.init({
+OrderEliminada.init({
     id_ot: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -71,10 +72,10 @@ Order.init({
 });
 
 // Definir las relaciones
-Order.belongsTo(Cliente, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
-Order.belongsTo(Usuario, { foreignKey: 'id_usuario', targetKey: 'id_usuario' });
-Order.belongsTo(Servicio, { foreignKey: 'id_serv', targetKey: 'id_serv' });
-Order.belongsTo(Equipo, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
-Order.belongsTo(EstadoOT, { foreignKey: 'id_estado', targetKey: 'id_estado' });
+OrderEliminada.belongsTo(Cliente, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
+OrderEliminada.belongsTo(Usuario, { foreignKey: 'id_usuario', targetKey: 'id_usuario' });
+OrderEliminada.belongsTo(Servicio, { foreignKey: 'id_serv', targetKey: 'id_serv' });
+OrderEliminada.belongsTo(Equipo, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
+OrderEliminada.belongsTo(EstadoOT, { foreignKey: 'id_estado', targetKey: 'id_estado' });
 
-export default Order;
+export default OrderEliminada;

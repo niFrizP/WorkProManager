@@ -12,6 +12,7 @@ import { Usuario } from '../../interfaces/usuario';
 import { Marca } from '../../interfaces/marca';
 import { Equipo } from '../../interfaces/equipo';
 import { Cliente } from '../../interfaces/cliente';
+import { newOrder } from '../../interfaces/newOrder';
 
 // Services
 import { OrderService } from '../../services/order.service';
@@ -25,16 +26,17 @@ import { EquipoService } from '../../services/equipo.service';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 
 @Component({
-  selector: 'app-new-ot',
+  selector: 'app-edit-order',
   standalone: true,
   imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent],
-  templateUrl: './new-ot.component.html',
+  templateUrl: './edit-order.component.html',
   // styleUrls: ['./new-ot.component.css']
 })
-export class NewOtComponent implements OnInit {
+export class EditOrderComponent implements OnInit {
   servicios: Servicio[] = []; // Inicialización como array vacío
   usuarios: Usuario[] = [];
   marcas: Marca[] = [];
+  newOrders: newOrder[] = [];
   selectedUsuarioName: string | null = null;
   selectedUsuarioSurname: string | null = null;
   selectedServicePrecio: number | null = null;
@@ -43,9 +45,13 @@ export class NewOtComponent implements OnInit {
   selectedUsuarioID: number | null = null;  // Add this line
   form: FormGroup;
   loading: boolean = false;
-  id_ot: number = 0;
+  id_ot: number ;
   operacion: string = 'Agregar ';
   isSubmitting: boolean = false;
+  orderId: number | undefined;
+  orderDetails: newOrder | null = null;
+
+
 
 
   constructor(
@@ -81,15 +87,15 @@ export class NewOtComponent implements OnInit {
       
     });
     
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
   }
 
   ngOnInit(): void {
-
+    this.loadOrders();
     this.cargarServicios();
     this.cargarUsuarios();
     this.cargarMarcas();
-
+    this.loadOrder(this.id_ot);
 
     
 
@@ -98,8 +104,48 @@ export class NewOtComponent implements OnInit {
       
     }
   }
+  
+  private log(){
+    console.log(this.id_ot);
+  }
 
-  async addProduct(): Promise<void> {
+  loadOrder(id: number): void {
+    this._orderService.getNewOrder(id).subscribe(
+      (data: newOrder) => {
+        // Asumiendo que 'data' tiene la estructura necesaria
+        this.form.patchValue({
+          id_ot: data.id_ot,
+          fecha: data.fecha,
+          descripcion: data.descripcion,
+          apellido: data.cliente.apellido,
+          tipo_equipo: data.Equipo.tipo_equipo,
+          celular: data.cliente.celular,
+          correo: data.cliente.correo,
+          d_verificador_cliente: data.cliente.d_verificador_cliente,
+          ap_usu: data.Usuario.ap_usu,
+          nom_usu: data.Usuario.nom_usu, // Cambia esto si el nombre no está directamente en 'Usuario'
+          rut_cliente: data.rut_cliente,
+          costo: data.costo,
+          nombre: data.cliente.nombre,
+          mod_equipo: data.Equipo.mod_equipo, // Asegúrate de que esta propiedad exista
+          num_equipo: data.num_equipo,
+          id_serv: data.id_serv, // Asegúrate de que esta propiedad exista
+          precio: data.Servicio.precio,
+          fec_fabric: data.Equipo.fec_fabric,
+          id_marca: data.Equipo.id_marca,
+          id_usuario: data.id_usuario,// Cambia esto si el ID de usuario no está directamente en 'Usuario'
+          precioReal: data.Servicio.precio,
+        });
+        console.log("Datos cargados desde la API:");
+        console.log(data); // Para verificar los datos cargados
+      },
+      (error) => {
+        console.error('Error fetching order', error);
+      }
+    );
+  }
+  
+  async editProduct(): Promise<void> {
     this.loading = true;
 
     if (this.isSubmitting) return; // Si ya se está enviando, no hacer nada
@@ -131,7 +177,10 @@ export class NewOtComponent implements OnInit {
       // Log the JSON representation of the order
       console.log('Order JSON:', JSON.stringify(order, null, 2));
 
-      await this._orderService.saveOrder(order).toPromise();
+      const id = this.form.get('id_ot')?.value; // Asegúrate de obtener el ID de la orden de trabajo (ot)
+
+      // Utiliza updateOrder en lugar de saveOrder
+      await this._orderService.updateOrder(this.id_ot, order).toPromise();
 
       this.loading = false;
       this.router.navigate(['/']);
@@ -353,6 +402,26 @@ export class NewOtComponent implements OnInit {
 
 
     }
+  }
+
+  loadOrders(): void {
+    this._orderService.getlistnewOrders().subscribe(
+      (data: newOrder[]) => {
+        this.newOrders = data;
+        console.log(this.newOrders.map(newOrder => ({
+          id: newOrder.id_ot,      // Asegúrate de que 'id' esté disponible en newOrder
+          Equipo: newOrder.Equipo
+        })));
+      },
+      (error) => {
+        console.error('Error fetching orders', error);
+      }
+    );
+  }
+  
+  getOrderIdFromUrl(): number {
+    const urlSegments = window.location.pathname.split('/');
+    return Number(urlSegments[urlSegments.length - 1]); // Asegúrate de que este índice sea correcto
   }
 
 }

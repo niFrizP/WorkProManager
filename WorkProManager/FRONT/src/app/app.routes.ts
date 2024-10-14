@@ -6,6 +6,8 @@ import { HeaderComponent } from './components/header/header.component';
 import { NewOtComponent } from './pages/orders/new-ot/new-ot.component';
 import { LoginComponent } from './pages/login/login.component';
 import { OrdersComponent } from './pages/orders/orders.component';
+import { UsuariosComponent } from './pages/usuarios/usuarios.component';
+import { EditOrderComponent } from './pages/edit-order/edit-order.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' }, // Redirige a 'home' al inicio
@@ -16,4 +18,6 @@ export const routes: Routes = [
   { path: 'orders/new-ot', component: NewOtComponent }, // Ruta a 'new-ot'
   { path: 'header', component: HeaderComponent }, // Ruta a 'header'
   { path: 'profile', component: ProfileComponent }, // Ruta a 'profile'
+  { path: 'newOrders/edit/:id', component: EditOrderComponent },
+  { path: 'usuarios', component: UsuariosComponent }, // Ruta a 'usuarios'
 ];

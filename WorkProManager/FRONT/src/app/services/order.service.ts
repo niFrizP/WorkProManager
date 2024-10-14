@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment'; 
 import { Order } from '../interfaces/order'; 
+import { newOrder } from '../interfaces/newOrder';
 
 
 @Injectable({
@@ -17,9 +18,15 @@ export class OrderService {
     this.myApiUrl = 'api/orders/'
   }
 
+ 
+
   getListOrders(): Observable<Order[]> {
    return this.http.get<Order[]>(`${this.myAppUrl}${this.myApiUrl}`);
   }
+
+  getlistnewOrders(): Observable<newOrder[]> {
+    return this.http.get<newOrder[]>(`${this.myAppUrl}${this.myApiUrl}`);
+  } 
 
   deleteOrders(id_ot: number): Observable<void> {
     return this.http.delete<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}`)
@@ -31,6 +38,10 @@ export class OrderService {
 
   getOrder(id_ot: number): Observable<Order> {
     return this.http.get<Order>(`${this.myAppUrl}${this.myApiUrl}${id_ot}`)
+  }
+
+  getNewOrder(id_ot: number): Observable<newOrder> {
+    return this.http.get<newOrder>(`${this.myAppUrl}${this.myApiUrl}${id_ot}`)
   }
 
   updateOrder(id_ot: number, order: Order): Observable<void> {

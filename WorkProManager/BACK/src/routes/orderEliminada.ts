@@ -1,6 +1,6 @@
 // WorkProManager/BACK/src/routes/order.ts
 import { Router } from 'express';
-import {  getOrder, getOrders, postOrder, updateOrder, deleteOrder } from '../controllers/order';
+import {  getOrder, getOrders, postOrder, updateOrder, deleteOrder} from '../controllers/order_eliminada';
 
 const router = Router();
 

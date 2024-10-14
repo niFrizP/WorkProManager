@@ -24,7 +24,8 @@ const rol_1 = __importDefault(require("../routes/rol"));
 const log_1 = __importDefault(require("../routes/log"));
 const pago_1 = __importDefault(require("../routes/pago"));
 const marca_1 = __importDefault(require("../routes/marca"));
-const connection_1 = __importDefault(require("../db/connection"));
+const orderEliminada_1 = __importDefault(require("../routes/orderEliminada"));
+const connection_1 = __importDefault(require("../db/connection")); // Asegúrate de que aquí importas initModels
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
@@ -46,84 +47,82 @@ class Server {
             });
         });
         this.app.use('/api/clientes', (req, res, next) => {
-            // Lógica específica para clientes
             if (req.method === 'GET') {
                 console.log('Acceso a clientes');
             }
             next();
-        }, cliente_1.default); // Acceso a los clientes
+        }, cliente_1.default);
         this.app.use('/api/orders', (req, res, next) => {
-            // Lógica específica para órdenes
             if (req.method === 'GET') {
                 console.log('Acceso a órdenes');
             }
             next();
-        }, order_1.default); // Acceso a las órdenes
+        }, order_1.default);
         this.app.use('/api/usuario', (req, res, next) => {
-            // Lógica específica para usuarios
             if (req.method === 'GET') {
                 console.log('Acceso a usuarios');
             }
             next();
-        }, usuario_1.default); // Acceso a los usuarios
+        }, usuario_1.default);
         this.app.use('/api/servicio', (req, res, next) => {
-            // Lógica específica para servicios
             if (req.method === 'GET') {
                 console.log('Acceso a servicios');
             }
             next();
-        }, servicio_1.default); // Acceso a los servicios
+        }, servicio_1.default);
         this.app.use('/api/estado_ot', (req, res, next) => {
-            // Lógica específica para estado de órdenes de trabajo
             if (req.method === 'GET') {
                 console.log('Acceso a estado de órdenes de trabajo');
             }
             next();
-        }, estado_ot_1.default); // Acceso a los estados de órdenes de trabajo
+        }, estado_ot_1.default);
         this.app.use('/api/equipo', (req, res, next) => {
-            // Lógica específica para equipos
             if (req.method === 'GET') {
                 console.log('Acceso a equipos');
             }
             next();
-        }, equipo_1.default); // Acceso a los equipos
+        }, equipo_1.default);
         this.app.use('/api/rol', (req, res, next) => {
-            // Lógica específica para roles
             if (req.method === 'GET') {
                 console.log('Acceso a roles');
             }
             next();
-        }, rol_1.default); // Acceso a los roles
+        }, rol_1.default);
         this.app.use('/api/log', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a logs');
             }
             next();
-        }, log_1.default); // Acceso a los logs
+        }, log_1.default);
         this.app.use('/api/pago', (req, res, next) => {
-            // Lógica específica para pagos
             if (req.method === 'GET') {
                 console.log('Acceso a pagos');
             }
             next();
-        }, pago_1.default); // Acceso a los pagos
+        }, pago_1.default);
         this.app.use('/api/marca', (req, res, next) => {
-            // Lógica específica para servicios
             if (req.method === 'GET') {
-                console.log('Acceso a servicios');
+                console.log('Acceso a marcas');
             }
             next();
-        }, marca_1.default); // Acceso a los servicios
+        }, marca_1.default);
+        this.app.use('/api/orderEliminada', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a órdenes eliminadas');
+            }
+            next();
+        }, orderEliminada_1.default);
     }
     middlewares() {
-        this.app.use(express_1.default.json());
         this.app.use((0, cors_1.default)());
+        this.app.use(express_1.default.json());
     }
     dbConnect() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield connection_1.default.authenticate();
                 console.log('Base de datos conectada');
+                // Inicializar los modelos después de conectar a la base de datos
             }
             catch (error) {
                 console.log('Error al conectarse a la base de datos:', error);

@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
-import Order from '../models/orders';
 import Equipo from '../models/equipo';
 import Cliente from '../models/cliente';
 import Usuario from '../models/usuario';
 import Servicio from '../models/servicio';
 import EstadoOT from '../models/estado_ot';
+import OrderEliminada from '../models/order_eliminada';
 
 
 export const getOrders = async (req: Request, res: Response) => {
     try {
-        const listOrders = await Order.findAll({
+        const listOrders = await OrderEliminada.findAll({
             include: [
                 {
                     model: Cliente,
@@ -54,7 +54,7 @@ export const getOrders = async (req: Request, res: Response) => {
 export const getOrder = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const order = await Order.findByPk(id, {
+        const orderEliminada = await OrderEliminada.findByPk(id, {
             include: [
                 { model: Equipo },
                 { model: Cliente },
@@ -64,8 +64,8 @@ export const getOrder = async (req: Request, res: Response) => {
             ]
         });
 
-        if (order) {
-            res.json(order);
+        if (orderEliminada) {
+            res.json(orderEliminada);
         } else {
             res.status(404).json({
                 msg: `No existe una orden con el id ${id}`
@@ -81,14 +81,14 @@ export const getOrder = async (req: Request, res: Response) => {
 
 export const deleteOrder = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const order = await Order.findByPk(id);
+    const orderEliminada = await OrderEliminada.findByPk(id);
 
-    if (!order) {
+    if (!orderEliminada) {
         res.status(404).json({
             msg: `No existe una orden con el id ${id}`
         })
     } else {
-        await order.destroy();
+        await orderEliminada.destroy();
         res.json({
             msg: 'La orden fue eliminado con exito!'
         })
@@ -100,7 +100,7 @@ export const postOrder = async (req: Request, res: Response) => {
     const { fecha, costo, descripcion, rut_cliente, id_usuario, id_serv, num_equipo,id_estado } = req.body;
 
     try {
-        const newOrder = await Order.create({
+        const newOrder = await OrderEliminada.create({
             fecha,
             costo, 
             descripcion,
@@ -113,7 +113,7 @@ export const postOrder = async (req: Request, res: Response) => {
 
         res.json({
             msg: 'La orden fue agregada con éxito!',
-            order: newOrder
+            OrderEliminada: newOrder
         });
     } catch (error) {
         console.log(error);
@@ -130,10 +130,10 @@ export const updateOrder = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const order = await Order.findByPk(id);
+        const orderEliminada = await OrderEliminada.findByPk(id);
 
-        if(order) {
-            await order.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
+        if(orderEliminada) {
+            await orderEliminada.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
             res.json({
                 msg: 'La orden fue actualizada con éxito'
             });

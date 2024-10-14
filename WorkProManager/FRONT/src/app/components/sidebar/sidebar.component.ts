@@ -18,6 +18,7 @@ export class SidebarComponent {
   resources = [
     { name: 'Inicio', link: './home', icon: 'fas fa-home' },
     { name: 'Ordenes', link: './orders', icon: 'fas fa-box' },
+    { name: 'Usuarios', link: './usuarios', icon: 'fas fa-plus' },
     { name: 'Perfil', link: './profile', icon: 'fas fa-user' },
   ];
 }

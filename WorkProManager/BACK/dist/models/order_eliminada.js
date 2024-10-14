@@ -10,10 +10,10 @@ const servicio_1 = __importDefault(require("./servicio")); // Importa el modelo 
 const equipo_1 = __importDefault(require("./equipo")); // Importa el modelo Equipo
 const estado_ot_1 = __importDefault(require("./estado_ot")); // Importa el modelo EstadoOT
 const connection_1 = __importDefault(require("../db/connection"));
-class Order extends sequelize_1.Model {
+class OrderEliminada extends sequelize_1.Model {
 }
 // Definir el modelo de 'Order'
-Order.init({
+OrderEliminada.init({
     id_ot: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
@@ -72,9 +72,9 @@ Order.init({
     updatedAt: false
 });
 // Definir las relaciones
-Order.belongsTo(cliente_1.default, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
-Order.belongsTo(usuario_1.default, { foreignKey: 'id_usuario', targetKey: 'id_usuario' });
-Order.belongsTo(servicio_1.default, { foreignKey: 'id_serv', targetKey: 'id_serv' });
-Order.belongsTo(equipo_1.default, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
-Order.belongsTo(estado_ot_1.default, { foreignKey: 'id_estado', targetKey: 'id_estado' });
-exports.default = Order;
+OrderEliminada.belongsTo(cliente_1.default, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
+OrderEliminada.belongsTo(usuario_1.default, { foreignKey: 'id_usuario', targetKey: 'id_usuario' });
+OrderEliminada.belongsTo(servicio_1.default, { foreignKey: 'id_serv', targetKey: 'id_serv' });
+OrderEliminada.belongsTo(equipo_1.default, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
+OrderEliminada.belongsTo(estado_ot_1.default, { foreignKey: 'id_estado', targetKey: 'id_estado' });
+exports.default = OrderEliminada;

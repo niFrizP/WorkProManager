@@ -13,16 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateCliente = exports.postCliente = exports.deleteCliente = exports.getCliente = exports.getClientes = void 0;
-const clientes_1 = __importDefault(require("../models/clientes"));
+const cliente_1 = __importDefault(require("../models/cliente"));
 const getClientes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const listClientes = yield clientes_1.default.findAll();
+    const listClientes = yield cliente_1.default.findAll();
     res.json(listClientes);
 });
 exports.getClientes = getClientes;
 const getCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const cliente = yield clientes_1.default.findByPk(id);
+        const cliente = yield cliente_1.default.findByPk(id);
         if (cliente) {
             res.json(cliente);
         }
@@ -42,7 +42,7 @@ const getCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.getCliente = getCliente;
 const deleteCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const cliente = yield clientes_1.default.findByPk(id);
+    const cliente = yield cliente_1.default.findByPk(id);
     if (!cliente) {
         res.status(404).json({
             msg: `No existe un cliente con el id ${id}`
@@ -60,7 +60,7 @@ const postCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const { rut_cliente, nombre, apellido, correo, celular, d_verificador_cliente } = req.body; // Extrae los datos relevantes
     try {
         // Crear el nuevo cliente sin especificar `id_cliente`
-        const newCliente = yield clientes_1.default.create({
+        const newCliente = yield cliente_1.default.create({
             rut_cliente,
             nombre,
             apellido,
@@ -85,7 +85,7 @@ const updateCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const { body } = req;
     const { id } = req.params;
     try {
-        const cliente = yield clientes_1.default.findByPk(id);
+        const cliente = yield cliente_1.default.findByPk(id);
         if (cliente) {
             yield cliente.update(body);
             res.json({

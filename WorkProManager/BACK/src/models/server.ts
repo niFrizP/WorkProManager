@@ -2,18 +2,19 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import routesOrder from '../routes/order';
 import routesClient from '../routes/cliente';
-import routesUsuario from '../routes/usuario'
-import routesServicio from '../routes/servicio'
-import routesEstadoOt from '../routes/estado_ot'
-import routesEquipo from '../routes/equipo'
-import routesRol from '../routes/rol'
-import logRoutes from '../routes/log'
-import routesPago from '../routes/pago' 
-import routesMarca from '../routes/marca'
-import db from '../db/connection';
-
+import routesUsuario from '../routes/usuario';
+import routesServicio from '../routes/servicio';
+import routesEstadoOt from '../routes/estado_ot';
+import routesEquipo from '../routes/equipo';
+import routesRol from '../routes/rol';
+import logRoutes from '../routes/log';
+import routesPago from '../routes/pago'; 
+import routesMarca from '../routes/marca';
+import routesOrderEliminada from '../routes/orderEliminada';
+import db from '../db/connection'; // Asegúrate de que aquí importas initModels
 
 class Server {
+    
     private app: Application;
     private port: string;
 
@@ -38,102 +39,97 @@ class Server {
                 msg: 'API Working'
             });
         });
-    
+
         this.app.use('/api/clientes', (req: Request, res: Response, next: Function) => {
-            // Lógica específica para clientes
             if (req.method === 'GET') {
                 console.log('Acceso a clientes');
             }
             next();
-        }, routesClient); // Acceso a los clientes
+        }, routesClient);
     
         this.app.use('/api/orders', (req: Request, res: Response, next: Function) => {
-            // Lógica específica para órdenes
             if (req.method === 'GET') {
                 console.log('Acceso a órdenes');
             }
             next();
-        }, routesOrder); // Acceso a las órdenes
+        }, routesOrder);
     
         this.app.use('/api/usuario', (req: Request, res: Response, next: Function) => {
-            // Lógica específica para usuarios
             if (req.method === 'GET') {
                 console.log('Acceso a usuarios');
             }
             next();
-        }, routesUsuario); // Acceso a los usuarios
+        }, routesUsuario);
     
         this.app.use('/api/servicio', (req: Request, res: Response, next: Function) => {
-            // Lógica específica para servicios
             if (req.method === 'GET') {
                 console.log('Acceso a servicios');
             }
             next();
-        }, routesServicio); // Acceso a los servicios
+        }, routesServicio);
     
         this.app.use('/api/estado_ot', (req: Request, res: Response, next: Function) => {
-            // Lógica específica para estado de órdenes de trabajo
             if (req.method === 'GET') {
                 console.log('Acceso a estado de órdenes de trabajo');
             }
             next();
-        }, routesEstadoOt); // Acceso a los estados de órdenes de trabajo
+        }, routesEstadoOt);
     
         this.app.use('/api/equipo', (req: Request, res: Response, next: Function) => {
-            // Lógica específica para equipos
             if (req.method === 'GET') {
                 console.log('Acceso a equipos');
             }
             next();
-        }, routesEquipo); // Acceso a los equipos
+        }, routesEquipo);
 
         this.app.use('/api/rol', (req: Request, res: Response, next: Function) => {
-            // Lógica específica para roles
             if (req.method === 'GET') {
                 console.log('Acceso a roles');
             }
             next();
-        }, routesRol); // Acceso a los roles
+        }, routesRol);
 
         this.app.use('/api/log', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a logs');
             }
             next();
-        }, logRoutes); // Acceso a los logs
+        }, logRoutes);
 
         this.app.use('/api/pago', (req: Request, res: Response, next: Function) => {
-            // Lógica específica para pagos
             if (req.method === 'GET') {
                 console.log('Acceso a pagos');
             }
             next();
-        }, routesPago); // Acceso a los pagos
+        }, routesPago);
 
         this.app.use('/api/marca', (req: Request, res: Response, next: Function) => {
-            // Lógica específica para servicios
             if (req.method === 'GET') {
-                console.log('Acceso a servicios');
+                console.log('Acceso a marcas');
             }
             next();
-        }, routesMarca); // Acceso a los servicios
-        
+        }, routesMarca);  
 
+        this.app.use('/api/orderEliminada', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a órdenes eliminadas');
+            }
+            next();
+        }, routesOrderEliminada);
     }
 
-    
-    
-
-
     middlewares() {
-        this.app.use(express.json());
         this.app.use(cors());
+        this.app.use(express.json());
     }
 
     async dbConnect() {
         try {
             await db.authenticate();
             console.log('Base de datos conectada');
+
+            // Inicializar los modelos después de conectar a la base de datos
+
         } catch (error) {
             console.log('Error al conectarse a la base de datos:', error);
         }

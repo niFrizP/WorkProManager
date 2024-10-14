@@ -23,4 +23,5 @@ const Servicio = connection_1.default.define('Servicio', {
     createdAt: false, // Desactiva el timestamp de creación
     updatedAt: false // Desactiva el timestamp de actualización
 });
+Servicio.hasMany(Servicio, { foreignKey: 'id_serv' });
 exports.default = Servicio;

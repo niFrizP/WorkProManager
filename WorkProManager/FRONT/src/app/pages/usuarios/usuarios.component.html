@@ -1,0 +1,51 @@
+<div class="flex-3 ml-64 p-8">
+    <h1 class="text-2xl font-bold text-center mb-4">Usuarios</h1>
+  
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <label for="filter" class="mr-2 font-medium">Todas las OT</label>
+        <select id="filter" class="p-2 border rounded">
+          <option value="todas">Todas</option>
+          <option value="cerrado">Cerrado</option>
+          <option value="finalizado">Finalizado</option>
+          <option value="en_proceso">En proceso</option>
+        </select>
+      </div>
+      <button [routerLink]="['/orders/new-ot']" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 new-ot-butt" [routerLink]="['/orders/new-ot']">
+        + Nueva
+      </button>
+    </div>
+  
+
+    <table class="w-full border-collapse">
+      <thead>
+          <tr class="col-start-auto">
+              <th class="border p-2">Rut</th>
+              <th class="border p-2">Nombre</th>
+              <th class="border p-2">Correo</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr
+              *ngFor="
+                  let usuario of usuarios
+                  | paginate : { itemsPerPage: itemsPerPage, currentPage: page }
+              "
+          >
+              <td>{{ usuario.rut_us }} {{ usuario.d_verificador_usu }} </td>
+              <td>{{ usuario.nom_usu }} {{ usuario.ap_usu }}</td>
+              <td>{{ usuario.correo }}</td> <!-- Asegúrate de que esta línea esté presente -->
+              
+              <td>
+                  <!-- Botón para editar la OT -->
+
+              </td>
+          </tr>
+      </tbody>
+  </table>
+  
+    <div class="flex justify-center mt-4">
+      <pagination-controls (pageChange)="page = $event"></pagination-controls>
+    </div>
+  </div>
+  

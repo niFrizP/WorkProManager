@@ -13,15 +13,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrders = void 0;
-const orders_1 = __importDefault(require("../models/orders"));
 const equipo_1 = __importDefault(require("../models/equipo"));
 const cliente_1 = __importDefault(require("../models/cliente"));
 const usuario_1 = __importDefault(require("../models/usuario"));
 const servicio_1 = __importDefault(require("../models/servicio"));
 const estado_ot_1 = __importDefault(require("../models/estado_ot"));
+const order_eliminada_1 = __importDefault(require("../models/order_eliminada"));
 const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const listOrders = yield orders_1.default.findAll({
+        const listOrders = yield order_eliminada_1.default.findAll({
             include: [
                 {
                     model: cliente_1.default,
@@ -64,7 +64,7 @@ exports.getOrders = getOrders;
 const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const order = yield orders_1.default.findByPk(id, {
+        const orderEliminada = yield order_eliminada_1.default.findByPk(id, {
             include: [
                 { model: equipo_1.default },
                 { model: cliente_1.default },
@@ -73,8 +73,8 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 { model: estado_ot_1.default }
             ]
         });
-        if (order) {
-            res.json(order);
+        if (orderEliminada) {
+            res.json(orderEliminada);
         }
         else {
             res.status(404).json({
@@ -92,14 +92,14 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getOrder = getOrder;
 const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const order = yield orders_1.default.findByPk(id);
-    if (!order) {
+    const orderEliminada = yield order_eliminada_1.default.findByPk(id);
+    if (!orderEliminada) {
         res.status(404).json({
             msg: `No existe una orden con el id ${id}`
         });
     }
     else {
-        yield order.destroy();
+        yield orderEliminada.destroy();
         res.json({
             msg: 'La orden fue eliminado con exito!'
         });
@@ -109,7 +109,7 @@ exports.deleteOrder = deleteOrder;
 const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { fecha, costo, descripcion, rut_cliente, id_usuario, id_serv, num_equipo, id_estado } = req.body;
     try {
-        const newOrder = yield orders_1.default.create({
+        const newOrder = yield order_eliminada_1.default.create({
             fecha,
             costo,
             descripcion,
@@ -121,7 +121,7 @@ const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
         res.json({
             msg: 'La orden fue agregada con éxito!',
-            order: newOrder
+            OrderEliminada: newOrder
         });
     }
     catch (error) {
@@ -136,9 +136,9 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const { body } = req;
     const { id } = req.params;
     try {
-        const order = yield orders_1.default.findByPk(id);
-        if (order) {
-            yield order.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
+        const orderEliminada = yield order_eliminada_1.default.findByPk(id);
+        if (orderEliminada) {
+            yield orderEliminada.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
             res.json({
                 msg: 'La orden fue actualizada con éxito'
             });

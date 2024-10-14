@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
+import Order from './orders';
 
 const Equipo = db.define('Equipo', {
     
@@ -25,5 +26,8 @@ const Equipo = db.define('Equipo', {
     createdAt: false,
     updatedAt: false
 });
+
+Equipo.hasMany(Equipo, { foreignKey: 'num_equipo' });
+
 
 export default Equipo;

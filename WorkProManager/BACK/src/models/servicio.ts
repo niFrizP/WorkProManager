@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
+import Order from './orders';
 
 // Definición del modelo Servicio en lugar de EstadoOT
 const Servicio = db.define('Servicio', {
@@ -19,5 +20,7 @@ const Servicio = db.define('Servicio', {
     createdAt: false, // Desactiva el timestamp de creación
     updatedAt: false // Desactiva el timestamp de actualización
 });
+
+Servicio.hasMany(Servicio, { foreignKey: 'id_serv' });
 
 export default Servicio;
