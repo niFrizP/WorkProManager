@@ -1,5 +1,18 @@
+<!-- Icono de burger que aparece solo en pantallas pequeñas -->
+<div class="lg:hidden fixed top-4 left-4 z-50">
+  <button
+    class="bg-blue-800 text-yellow-500 p-2 rounded-full focus:outline-none"
+    (click)="toggleSidebar()"
+    title="Toggle Sidebar"
+  >
+    <!-- Ícono burger -->
+    <i class="fas fa-bars text-2xl"></i>
+  </button>
+</div>
+
+<!-- Sidebar para pantallas grandes -->
 <aside
-  class="cerrado fixed inset-y-0 flex-col items-center justify-between w-full p-4 my-4 overflow-y-auto bg-blue-800 shadow-xl dark:bg-slate-850 max-w-64 xl:ml-6 rounded-2xl xl:left-0 transform"
+  class="fixed inset-y-0 flex-col items-center justify-between w-full p-4 my-4 overflow-y-auto bg-blue-800 shadow-xl dark:bg-slate-850 max-w-64 xl:ml-6 rounded-2xl xl:left-0 transform hidden lg:flex"
 >
   <!-- Logo -->
   <div class="mb-4">
@@ -13,6 +26,46 @@
   </div>
   <!-- Rutas de navegación -->
   <div class="flex-grow w-full">
+    <nav class="space-y-4">
+      <a
+        *ngFor="let item of resources"
+        class="block p-4 text-center font-medium text-yellow-500 rounded-lg hover:bg-yellow-400 hover:text-black dark:text-white dark:hover:bg-yellow-400 dark:hover:text-black"
+        [href]="item.link"
+      >
+        <i class="{{ item.icon }} mr-3"></i>
+        <span>{{ item.name }}</span>
+      </a>
+    </nav>
+  </div>
+</aside>
+
+<!-- Sidebar para pantallas pequeñas -->
+<aside
+  [class.hidden]="!sidebarOpen"
+  class="fixed inset-y-0 left-0 w-64 bg-blue-800 p-4 z-50 lg:hidden transform transition-transform duration-300"
+>
+  <!-- Cerrar sidebar -->
+  <button
+    class="absolute top-4 right-4 text-yellow-500"
+    (click)="toggleSidebar()"
+    title="Close Sidebar"
+  >
+    <i class="fas fa-times text-2xl"></i>
+  </button>
+
+  <!-- Logo -->
+  <div class="mb-4">
+    <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap text-yellow-500">
+      <img
+        src="https://i.imgur.com/kTQg9EM.png"
+        alt="wpm-logo"
+        class="h-auto transition-all duration-700"
+      />
+    </a>
+  </div>
+
+  <!-- Rutas de navegación -->
+  <div class="flex-grow w-full mt-8">
     <nav class="space-y-4">
       <a
         *ngFor="let item of resources"
