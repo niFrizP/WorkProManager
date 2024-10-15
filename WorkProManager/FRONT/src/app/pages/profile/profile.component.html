@@ -1,1 +1,67 @@
-<p>profile works!</p>
+<div class="ml-64 p-6 md:px-10 lg:px-36 xl:px-72">
+    <div class="main max-w-full lg:max-w-7xl mx-auto wpm-custom-gradient p-6 rounded-lg shadow-md">
+        <div class="container mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+            <!-- Profile Picture and Name -->
+            <div class="flex items-center space-x-6">
+              <img
+                src="#"
+                alt="Profile Image"
+                class="w-24 h-24 rounded-full"
+              />
+              <div>
+                <h1 class="text-2xl font-bold text-gray-800">Nombre de usuario</h1>
+                <p class="text-gray-600">id usuario</p>
+              </div>
+            </div>
+          
+            <!-- Information Sections -->
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Basic Information -->
+              <div class="bg-blue-100 p-4 rounded-lg shadow-md">
+                <h2 class="text-lg font-semibold text-blue-700 mb-3">Información básica</h2>
+                <div class="space-y-2">
+                  <div>
+                    <p class="text-sm font-bold text-gray-600">Nombre completo:</p>
+                    <p class="text-gray-700">USUARIO USUARIO</p>
+                  </div>
+                  <div>
+                    <p class="text-sm font-bold text-gray-600">Correo electrónico:</p>
+                    <p class="text-gray-700">CORREO USUARIO</p>
+                  </div>
+                  <div>
+                    <p class="text-sm font-bold text-gray-600">ID de Usuario:</p>
+                    <p class="text-gray-700">342451</p>
+                  </div>
+                </div>
+              </div>
+          
+              <!-- System Configuration -->
+              <div class="bg-blue-100 p-4 rounded-lg shadow-md">
+                <h2 class="text-lg font-semibold text-blue-700 mb-3">Informacion de contacto</h2>
+                <div class="space-y-2">
+                  <div>
+                    <p class="text-sm font-bold text-gray-600">Numero de telefono</p>
+                    <p class="text-gray-700">+56 9 1234 5678</p>
+                  </div>
+                </div>
+              </div>
+          
+              <div class="bg-blue-100 p-4 rounded-lg shadow-md">
+                <h2 class="text-lg font-semibold text-blue-700 mb-3">Ajustes del perfil</h2>
+                <div class="space-y-2">
+                    <div>
+                        <p class="text-blue-600"><a href="#">Cambiar contraseña</a></p>
+                        <p class="text-blue-600"><a href="#">Cambiar información de contacto</a></p>
+                        <p class="text-blue-600"><a href="#">Olvide mi contraseña</a></p>
+                    </div>
+                </div>
+              </div>
+                <div class="space-y-2">
+                  <div>
+                    <button [routerLink]="['/profile/edit-pf']" type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none"> Editar Perfil</button>
+                  </div>
+                </div>
+            </div>
+          </div>          
+    </div>
+</div>

@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "clean": "rm -rf .angular/cache",
+    "start": "npm run clean && ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -26,6 +27,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "ngx-pagination": "^6.0.3",
+    "rollup": "^4.24.0",
     "ngx-toastr": "^19.0.0",
     "rxjs": "~7.8.0",
     "tailwindcss-filters": "^3.0.0",

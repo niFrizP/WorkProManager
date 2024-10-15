@@ -15,6 +15,8 @@ export interface Section {
   styleUrls: ['./sidebar.component.css'],
 })
 export class SidebarComponent {
+  sidebarOpen = false;
+
   resources = [
     { name: 'Inicio', link: './home', icon: 'fas fa-home' },
     { name: 'Ordenes', link: './orders', icon: 'fas fa-box' },
@@ -23,4 +25,7 @@ export class SidebarComponent {
     { name: 'Reportes', link: './reportes', icon: 'fas fa-chart-line' },
     { name: 'Aprobaciones', link: './aprobaciones', icon: 'fas fa-plus' },
   ];
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
 }
