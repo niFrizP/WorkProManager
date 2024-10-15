@@ -9,8 +9,13 @@ import routesEquipo from '../routes/equipo';
 import routesRol from '../routes/rol';
 import logRoutes from '../routes/log';
 import routesPago from '../routes/pago'; 
+import routesReporte from '../routes/reporte';
 import routesMarca from '../routes/marca';
 import routesOrderEliminada from '../routes/orderEliminada';
+import routesUsuarioEliminado from '../routes/usuario_eliminado';
+import ordersCountByService from '../routes/order';
+import queryRoutes from '../routes/query';
+import routesQueryReport from '../routes/queryReport';
 import db from '../db/connection'; // Asegúrate de que aquí importas initModels
 
 class Server {
@@ -40,6 +45,13 @@ class Server {
             });
         });
 
+        this.app.use('/api/query', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a consultas');
+            }
+            next();
+        }, queryRoutes);
+
         this.app.use('/api/clientes', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a clientes');
@@ -53,6 +65,13 @@ class Server {
             }
             next();
         }, routesOrder);
+
+        this.app.use('/api/ordersCountByService', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a órdenes');
+            }
+            next();
+        }, ordersCountByService);
     
         this.app.use('/api/usuario', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
@@ -74,6 +93,13 @@ class Server {
             }
             next();
         }, routesEstadoOt);
+
+        this.app.use('/api/reporte', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a reportes');
+            }
+            next();
+        }, routesReporte);
     
         this.app.use('/api/equipo', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
@@ -116,6 +142,20 @@ class Server {
             }
             next();
         }, routesOrderEliminada);
+
+        this.app.use('/api/usuarioEliminado', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a usuarios eliminados');
+            }
+            next();
+        }, routesUsuarioEliminado);
+
+        this.app.use('/api/queryReport', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a reportes');
+            }
+            next();
+        }, routesQueryReport);
     }
 
     middlewares() {

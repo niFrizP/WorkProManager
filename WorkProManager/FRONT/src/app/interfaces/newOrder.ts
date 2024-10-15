@@ -8,6 +8,9 @@ export interface newOrder {
     id_serv: number;
     id_estado: number;
     rut_cliente: number;
+    año: number;
+    total: number; 
+    dia: number;
     cliente: {
       nombre: string;
       apellido: string;

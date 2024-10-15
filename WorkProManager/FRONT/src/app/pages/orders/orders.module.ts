@@ -4,6 +4,9 @@ import { NgxPaginationModule } from 'ngx-pagination'; // Para la paginación
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // Para el filtro si lo usas con formularios
 import { OrdersComponent } from './orders.component'; // Asegúrate de que la ruta sea correcta
 import { RouterModule } from '@angular/router'; // Para la navegación
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -14,6 +17,9 @@ import { RouterModule } from '@angular/router'; // Para la navegación
     NgxPaginationModule, // Módulo para manejar la paginación
     FormsModule, // Importa si vas a utilizar formularios
     OrdersComponent, // Importa el componente standalone
+    MatDatepickerModule,
+    MatInputModule,
+    MatNativeDateModule,
   ],
   exports: [
     OrdersComponent, // Exporta el componente si quieres usarlo en otros módulos

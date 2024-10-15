@@ -1,0 +1,62 @@
+.flex-3 {
+    background-color: #f9f9f9; /* Fondo claro para el contenedor */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  }
+  
+  label {
+    font-weight: bold;
+    color: #333; /* Color del texto más oscuro */
+  }
+  
+  select {
+    margin-right: 10px; /* Espaciado entre selects */
+    padding: 8px; /* Espaciado interno */
+    border: 1px solid #ccc; /* Borde sutil */
+    border-radius: 4px; /* Bordes redondeados */
+    background-color: #fff; /* Fondo blanco */
+  }
+  
+  .search-input {
+    padding: 8px; /* Espaciado interno */
+    border: 1px solid #ccc; /* Borde sutil */
+    border-radius: 4px; /* Bordes redondeados */
+    margin-right: 10px; /* Espaciado entre el input y el botón */
+  }
+  
+  .search-btn {
+    padding: 8px 16px; /* Espaciado interno */
+    background-color: #007bff; /* Color de fondo azul */
+    color: white; /* Color de texto blanco */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambiar cursor al pasar */
+  }
+  
+  .search-btn:hover {
+    background-color: #0056b3; /* Color más oscuro al pasar el mouse */
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse; /* Sin espacios entre celdas */
+  }
+  
+  th {
+    background-color: #343a40; /* Fondo oscuro para encabezados */
+    color: white; /* Texto blanco */
+    padding: 10px; /* Espaciado interno */
+  }
+  
+  td {
+    padding: 10px; /* Espaciado interno */
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #f2f2f2; /* Alternar colores para filas */
+  }
+  
+  tbody tr:hover {
+    background-color: #e6f7ff; /* Color al pasar el mouse */
+  }
+  

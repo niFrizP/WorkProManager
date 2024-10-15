@@ -1,11 +1,13 @@
 import { Request, Response } from 'express';
 import Equipo from '../models/equipo'; // Asegúrate de tener el modelo de Equipo importado
+import sequelize from '../db/connection';
 
 export const getEquipos = async (req: Request, res: Response) => {
     const listEquipos = await Equipo.findAll();
 
     res.json(listEquipos);
 };
+
 
 export const getEquipo = async (req: Request, res: Response) => {
     const { id } = req.params;

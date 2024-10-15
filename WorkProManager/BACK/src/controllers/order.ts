@@ -124,16 +124,24 @@ export const postOrder = async (req: Request, res: Response) => {
 };
 
 
-
 export const updateOrder = async (req: Request, res: Response) => {
-    const { body } = req;
     const { id } = req.params;
+    const { id_estado, ...rest } = req.body; // Extraer id_estado y el resto del cuerpo
 
     try {
         const order = await Order.findByPk(id);
 
-        if(order) {
-            await order.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
+        if (order) {
+            // Si se proporciona id_estado, solo actualizar ese campo
+            if (id_estado !== undefined) {
+                await order.update({ id_estado }); // Actualiza solo id_estado
+                return res.json({
+                    msg: 'El estado de la orden fue actualizado con éxito'
+                });
+            }
+
+            // Si no se proporciona id_estado, actualizar todos los campos
+            await order.update(rest); // Actualiza todos los demás campos
             res.json({
                 msg: 'La orden fue actualizada con éxito'
             });
@@ -149,5 +157,6 @@ export const updateOrder = async (req: Request, res: Response) => {
         });
     }
 };
+
 
 

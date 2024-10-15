@@ -16,7 +16,6 @@ OrderEliminada.init({
     id_ot: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
     },
     fecha: {
         type: DataTypes.DATE
@@ -65,8 +64,8 @@ OrderEliminada.init({
 }, {
     // Update the type to ModelOptions<Model<any, any>>
     sequelize: db,
-    modelName: 'orden_trabajo',
-    tableName: 'orden_trabajo',
+    modelName: 'orden_trabajo_eliminada',
+    tableName: 'orden_trabajo_eliminada',
     createdAt: false,
     updatedAt: false
 });

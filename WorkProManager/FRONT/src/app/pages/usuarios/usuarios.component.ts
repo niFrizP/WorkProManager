@@ -9,6 +9,8 @@ import { ClienteService } from '../../services/cliente.service';
 import { Usuario } from '../../interfaces/usuario';
 import { ServicioService } from '../../services/servicio.service';
 import { newOrder } from '../../interfaces/newOrder';
+import { UsuarioEliminadoService } from '../../services/usuarioeliminado';
+
 @Component({
   selector: 'app-usuarios',
   standalone: true,
@@ -21,9 +23,7 @@ export class UsuariosComponent {
   onFilterChange($event: Event) {
     throw new Error('Method not implemented.');
     }
-    deleteOrder(arg0: number | undefined) {
-    throw new Error('Method not implemented.');
-    }
+  
       usuarios: Usuario[] = [];
     
       
@@ -34,7 +34,7 @@ export class UsuariosComponent {
       page = 1;
       itemsPerPage = 10;
     
-      constructor(private usuarioservice: UsuarioService ,private usuarioService: UsuarioService, private equipoService: EquipoService, private clienteService: ClienteService, private servicioService: ServicioService) {}
+      constructor(private usuarioEliminadoService:UsuarioEliminadoService,private usuarioservice: UsuarioService ,private usuarioService: UsuarioService, private equipoService: EquipoService, private clienteService: ClienteService, private servicioService: ServicioService) {}
     
       ngOnInit(): void {
         this.loadusuarios();
@@ -64,6 +64,38 @@ export class UsuariosComponent {
     
       onPageChange(page: number): void {
         this.page = page;
+      }
+
+      deleteUsuario(id_usuario: number): void {
+        if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+          this.usuarioService.getUsuario(id_usuario).subscribe(
+            (usuario: Usuario) => {
+              this.usuarioEliminadoService.saveUsuario(usuario).subscribe(
+                () => {
+                  console.log('Orden registrada como eliminada', usuario);
+                  this.usuarioservice.deleteUsuarios(id_usuario).subscribe(
+                    () => {
+                      console.log('Orden eliminada');
+                      this.loadusuarios(); // Actualizar la lista de órdenes
+                    },
+                    (error) => {
+                      console.error('Error eliminando la orden', error);
+                      alert('Hubo un error al intentar eliminar la orden.');
+                    }
+                  );
+                },
+                (error) => {
+                  console.error('Error registrando la orden eliminada', error);
+                  alert('Hubo un error al registrar la orden eliminada.');
+                }
+              );
+            },
+            (error) => {
+              console.error('Error obteniendo la orden', error);
+              alert('No se pudo obtener la orden para eliminar.');
+            }
+          );
+        }
       }
     }
     

@@ -20,5 +20,7 @@ export class SidebarComponent {
     { name: 'Ordenes', link: './orders', icon: 'fas fa-box' },
     { name: 'Usuarios', link: './usuarios', icon: 'fas fa-plus' },
     { name: 'Perfil', link: './profile', icon: 'fas fa-user' },
+    { name: 'Reportes', link: './reportes', icon: 'fas fa-chart-line' },
+    { name: 'Aprobaciones', link: './aprobaciones', icon: 'fas fa-plus' },
   ];
 }

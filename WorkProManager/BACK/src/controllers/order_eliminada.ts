@@ -97,10 +97,11 @@ export const deleteOrder = async (req: Request, res: Response) => {
 }
 
 export const postOrder = async (req: Request, res: Response) => {
-    const { fecha, costo, descripcion, rut_cliente, id_usuario, id_serv, num_equipo,id_estado } = req.body;
+    const { id_ot ,fecha, costo, descripcion, rut_cliente, id_usuario, id_serv, num_equipo,id_estado } = req.body;
 
     try {
         const newOrder = await OrderEliminada.create({
+            id_ot,
             fecha,
             costo, 
             descripcion,

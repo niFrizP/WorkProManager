@@ -47,4 +47,9 @@ export class OrderService {
   updateOrder(id_ot: number, order: Order): Observable<void> {
     return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}`, order);
   }
+
+  // Nuevo método para actualizar solo el id_estado
+  updateOrderState(id_ot: number, id_estado: number): Observable<void> {
+    return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}`, { id_estado });
+  }
 }

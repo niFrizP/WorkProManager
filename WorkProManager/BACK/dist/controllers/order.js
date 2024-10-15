@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -133,12 +144,20 @@ const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.postOrder = postOrder;
 const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
     const { id } = req.params;
+    const _a = req.body, { id_estado } = _a, rest = __rest(_a, ["id_estado"]); // Extraer id_estado y el resto del cuerpo
     try {
         const order = yield orders_1.default.findByPk(id);
         if (order) {
-            yield order.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
+            // Si se proporciona id_estado, solo actualizar ese campo
+            if (id_estado !== undefined) {
+                yield order.update({ id_estado }); // Actualiza solo id_estado
+                return res.json({
+                    msg: 'El estado de la orden fue actualizado con éxito'
+                });
+            }
+            // Si no se proporciona id_estado, actualizar todos los campos
+            yield order.update(rest); // Actualiza todos los demás campos
             res.json({
                 msg: 'La orden fue actualizada con éxito'
             });

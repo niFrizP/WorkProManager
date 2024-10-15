@@ -1,14 +1,22 @@
-.bg-custom-gradient {
-  background: linear-gradient(to right, #0046ad, #ffe600);
-}
-.texto-amarillo {
-  color: #ffe217;
+.styled-div {
+  background-color: #f0f8ff; /* Color de fondo suave */
+  border: 2px solid #8a2be2; /* Borde de color púrpura */
+  border-radius: 15px; /* Bordes redondeados */
+  padding: 20px; /* Espaciado interno */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
+  max-width: 600px; /* Ancho máximo */
+  margin: 20px auto; /* Centrar el div horizontalmente */
+  font-family: 'Arial', sans-serif; /* Fuente legible */
+  color: #333; /* Color del texto */
 }
 
-.texto-azul {
-  color: #2221b8;
+.styled-div h1 {
+  font-size: 24px; /* Tamaño de fuente del título */
+  color: #4b0082; /* Color del título */
+  margin-bottom: 10px; /* Espaciado debajo del título */
 }
 
-.texto-negro {
-  color: black;
+.styled-div p {
+  font-size: 16px; /* Tamaño de fuente del párrafo */
+  line-height: 1.5; /* Altura de línea para mejorar la legibilidad */
 }

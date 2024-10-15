@@ -61,21 +61,21 @@ export class NewOtComponent implements OnInit {
     this.form = this.fb.group({
       num_equipo: [null, Validators.required],
       id_estado: [1, Validators.required],
-      costo: [null, Validators.required],
+      costo: [null, [Validators.required, Validators.min(0)]],  // Ensure costo is positive
       fecha: [null, Validators.required],
-      descripcion: ['', Validators.required],
+      descripcion: ['', [Validators.required, Validators.minLength(10)]],  // Descripción must have at least 10 chars
       rut_cliente: [null, Validators.required],
       id_serv: [null, Validators.required],
       id_usuario: [null, Validators.required],
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
-      celular: [null, Validators.required],
-      correo: ['', Validators.required],
+      celular: [null, [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],  // 9-digit phone number
+      correo: [null, [Validators.required, Validators.email]],  // Ensure valid email format
       tipo_equipo: ['', Validators.required],
       mod_equipo: ['', Validators.required],
       fec_fabric: ['', Validators.required],
       id_marca: [null, Validators.required],
-      d_verificador_cliente: ['', Validators.required]
+      d_verificador_cliente: ['', Validators.required],
       
     });
     

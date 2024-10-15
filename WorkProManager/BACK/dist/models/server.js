@@ -23,8 +23,13 @@ const equipo_1 = __importDefault(require("../routes/equipo"));
 const rol_1 = __importDefault(require("../routes/rol"));
 const log_1 = __importDefault(require("../routes/log"));
 const pago_1 = __importDefault(require("../routes/pago"));
+const reporte_1 = __importDefault(require("../routes/reporte"));
 const marca_1 = __importDefault(require("../routes/marca"));
 const orderEliminada_1 = __importDefault(require("../routes/orderEliminada"));
+const usuario_eliminado_1 = __importDefault(require("../routes/usuario_eliminado"));
+const order_2 = __importDefault(require("../routes/order"));
+const query_1 = __importDefault(require("../routes/query"));
+const queryReport_1 = __importDefault(require("../routes/queryReport"));
 const connection_1 = __importDefault(require("../db/connection")); // Asegúrate de que aquí importas initModels
 class Server {
     constructor() {
@@ -46,6 +51,12 @@ class Server {
                 msg: 'API Working'
             });
         });
+        this.app.use('/api/query', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a consultas');
+            }
+            next();
+        }, query_1.default);
         this.app.use('/api/clientes', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a clientes');
@@ -58,6 +69,12 @@ class Server {
             }
             next();
         }, order_1.default);
+        this.app.use('/api/ordersCountByService', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a órdenes');
+            }
+            next();
+        }, order_2.default);
         this.app.use('/api/usuario', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a usuarios');
@@ -76,6 +93,12 @@ class Server {
             }
             next();
         }, estado_ot_1.default);
+        this.app.use('/api/reporte', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a reportes');
+            }
+            next();
+        }, reporte_1.default);
         this.app.use('/api/equipo', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a equipos');
@@ -112,6 +135,18 @@ class Server {
             }
             next();
         }, orderEliminada_1.default);
+        this.app.use('/api/usuarioEliminado', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a usuarios eliminados');
+            }
+            next();
+        }, usuario_eliminado_1.default);
+        this.app.use('/api/queryReport', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a reportes');
+            }
+            next();
+        }, queryReport_1.default);
     }
     middlewares() {
         this.app.use((0, cors_1.default)());
