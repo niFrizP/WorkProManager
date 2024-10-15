@@ -3,13 +3,7 @@
   
     <div class="flex justify-between items-center mb-4">
       <div>
-        <label for="filter" class="mr-2 font-medium">Todas las OT</label>
-        <select #filterSelect class="p-2 border rounded" (change)="filterOrdersByStatus(filterSelect.value)">
-          <option value="todas">Todas</option>
-          <option value="en solicitud">En solicitud</option>
-          <option value="pendiente">Pendiente</option>
-          <option value="finalizado">Finalizado</option>
-        </select>
+        
   
         <div>
           <label for="filter" class="mr-2 font-medium">Todos los usuarios</label>
@@ -96,7 +90,7 @@
           <td>{{ newOrder.EstadoOT.tipo_est }}</td>
           <td>{{ newOrder.Usuario.nom_usu }}</td>
           <td>
-            <button [routerLink]="['/aprobaciones', newOrder.id_ot]">✅</button>
+            <button (click)="aprobarOT(newOrder.id_ot)" class="bg-green-500 text-white px-2 py-1 rounded-md">✅</button>
           </td>
         </tr>
       </tbody>

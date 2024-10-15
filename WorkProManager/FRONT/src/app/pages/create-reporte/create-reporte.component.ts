@@ -69,6 +69,7 @@ export class CreateReportComponente implements OnInit {
 
   // Método para crear el reporte
   createReport(): void {
+    this.updateOrderStateAndCreateReport();
     if (this.reportForm.valid) {
       const newReport: Reporte = this.reportForm.getRawValue(); // Obtener valores del formulario incluso los deshabilitados
       console.log(newReport); // Verificar los datos a enviar

@@ -12,14 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersBy = exports.getOrdersByMonthAndYear = exports.getOrdersFromLast7DaysExcludingWeekends = exports.getOrdersByYear = exports.getOrdersByFecha = exports.getOrdersEstadoSum = exports.getOrdersCosto = exports.getOrdersByUsuario = exports.getOrdersOfTheDay = exports.getOrdersByEstado = void 0;
+exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersBy = exports.getOrdersByMonthAndYear = exports.getOrdersFromLast7DaysExcludingWeekends = exports.getOrdersByYear = exports.getOrdersByFecha = exports.getOrdersEstadoSum = exports.getOrdersCosto = exports.getOrdersByUsuario = exports.countOrdersByDate = exports.getOrdersByEstado = void 0;
 const orders_1 = __importDefault(require("../models/orders"));
 const equipo_1 = __importDefault(require("../models/equipo"));
 const cliente_1 = __importDefault(require("../models/cliente"));
 const usuario_1 = __importDefault(require("../models/usuario"));
 const servicio_1 = __importDefault(require("../models/servicio"));
 const estado_ot_1 = __importDefault(require("../models/estado_ot"));
-const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
 const getOrdersByEstado = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -35,27 +34,20 @@ const getOrdersByEstado = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.getOrdersByEstado = getOrdersByEstado;
-const getOrdersOfTheDay = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const countOrdersByDate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const today = new Date();
-        const startOfDay = new Date(today.setHours(0, 0, 0, 0)); // Inicio del día
-        const endOfDay = new Date(today.setHours(23, 59, 59, 999)); // Fin del día
-        const ordersCount = yield orders_1.default.findAll({
-            where: {
-                fecha: {
-                    [sequelize_1.Op.between]: [startOfDay, endOfDay], // Filtrar por la fecha actual
-                },
-            },
-            attributes: ['id_ot', 'fecha', 'id_estado', 'costo', 'descripcion'], // Incluye los campos que necesites
+        const count = yield orders_1.default.findAll({
+            attributes: ['fecha', [connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número de órdenes por estado
+            group: ['fecha'], // Agrupar por el campo 'estado'
         });
-        res.json(ordersCount); // Devuelve las órdenes del día
+        res.json(count);
     }
     catch (error) {
         console.error(error);
-        res.status(500).send('Error al obtener las órdenes del día');
+        res.status(500).send('Error al obtener los datos');
     }
 });
-exports.getOrdersOfTheDay = getOrdersOfTheDay;
+exports.countOrdersByDate = countOrdersByDate;
 const getOrdersByUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ordersCount = yield orders_1.default.findAll({

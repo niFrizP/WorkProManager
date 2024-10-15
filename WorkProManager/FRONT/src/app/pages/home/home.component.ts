@@ -34,7 +34,6 @@ export class HomeComponent implements OnInit {
           const { año, total } = this.ordersByYear[0];
           // Asignar a las variables
           this.totalOrdersByYear = total; // Asignar total a la variable existente
-          console.log('Año:', año, 'Total:', total); // Mostrar en consola
         }
       },
       (error) => {
@@ -53,10 +52,14 @@ export class HomeComponent implements OnInit {
     });
 
     if(this.ordersByDay.length > 0){
-      const { dia, total } = this.ordersByDay[0];
+      const { fecha, total } = this.ordersByDay[0];
       this.ordersOfTheDay = total;
+      console.log(this.ordersOfTheDay);
+      
     }
-  }
+
+    }
+  
 
   loadOrdersByEstadoSum(): void {
     this.queryService.getOrdersByEstadoSum().subscribe({

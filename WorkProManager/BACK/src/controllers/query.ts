@@ -25,27 +25,19 @@ export const getOrdersByEstado = async (req: Request, res: Response) => {
       }
 }  
 
-export const getOrdersOfTheDay = async (req: Request, res: Response) => {
+export const countOrdersByDate = async (req: Request, res: Response) => {
   try {
-    const today = new Date();
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0)); // Inicio del día
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999)); // Fin del día
-
-    const ordersCount = await Order.findAll({
-      where: {
-        fecha: {
-          [Op.between]: [startOfDay, endOfDay], // Filtrar por la fecha actual
-        },
-      },
-      attributes: ['id_ot', 'fecha', 'id_estado', 'costo', 'descripcion'], // Incluye los campos que necesites
-    });
-
-    res.json(ordersCount); // Devuelve las órdenes del día
+      const count = await Order.findAll({
+        attributes: ['fecha', [sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número de órdenes por estado
+        group: ['fecha'],  // Agrupar por el campo 'estado'
+      });
+      res.json(count);
   } catch (error) {
     console.error(error);
-    res.status(500).send('Error al obtener las órdenes del día');
+    res.status(500).send('Error al obtener los datos');
   }
 };
+
 
 export const getOrdersByUsuario = async (req: Request, res: Response) => {
     try {

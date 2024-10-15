@@ -1,6 +1,6 @@
 // WorkProManager/BACK/src/routes/order.ts
 import { Router } from 'express';
-import {  getOrder,getOrdersCosto, getOrdersEstadoSum, getOrdersOfTheDay, getOrdersByEstado, getOrdersByYear ,getOrdersFromLast7DaysExcludingWeekends ,getOrdersByMonthAndYear ,getOrdersByUsuario, postOrder, updateOrder, deleteOrder, getOrdersByFecha } from '../controllers/query';
+import {  getOrder,getOrdersCosto, getOrdersEstadoSum, countOrdersByDate, getOrdersByEstado, getOrdersByYear ,getOrdersFromLast7DaysExcludingWeekends ,getOrdersByMonthAndYear ,getOrdersByUsuario, postOrder, updateOrder, deleteOrder, getOrdersByFecha } from '../controllers/query';
 import { Sequelize } from 'sequelize';
 import sequelize from '../db/connection';
 import db from '../db/connection';
@@ -12,7 +12,7 @@ router.get('/', getOrdersByEstado); // Ruta para obtener las órdenes con joins
 router.get('/estadoot', getOrdersEstadoSum); // Ruta para obtener las órdenes con joins
 router.get('/usuario', getOrdersByUsuario); // Ruta para obtener las órdenes con joins
 router.get('/costo', getOrdersEstadoSum); // Ruta para obtener las órdenes con joins
-router.get('/dia', getOrdersOfTheDay); // Ruta para obtener las órdenes con joins
+router.get('/dia', countOrdersByDate); // Ruta para obtener las órdenes con joins
 router.get('/fecha', getOrdersByFecha); // Ruta para obtener las órdenes con joins
 router.get('/mesanio', getOrdersByMonthAndYear); // Ruta para obtener las órdenes con joins
 router.get('/ultimos7dias', getOrdersFromLast7DaysExcludingWeekends); // Ruta para obtener las órdenes con joins

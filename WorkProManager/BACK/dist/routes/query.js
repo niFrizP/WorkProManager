@@ -8,7 +8,7 @@ router.get('/', query_1.getOrdersByEstado); // Ruta para obtener las órdenes co
 router.get('/estadoot', query_1.getOrdersEstadoSum); // Ruta para obtener las órdenes con joins
 router.get('/usuario', query_1.getOrdersByUsuario); // Ruta para obtener las órdenes con joins
 router.get('/costo', query_1.getOrdersEstadoSum); // Ruta para obtener las órdenes con joins
-router.get('/dia', query_1.getOrdersOfTheDay); // Ruta para obtener las órdenes con joins
+router.get('/dia', query_1.countOrdersByDate); // Ruta para obtener las órdenes con joins
 router.get('/fecha', query_1.getOrdersByFecha); // Ruta para obtener las órdenes con joins
 router.get('/mesanio', query_1.getOrdersByMonthAndYear); // Ruta para obtener las órdenes con joins
 router.get('/ultimos7dias', query_1.getOrdersFromLast7DaysExcludingWeekends); // Ruta para obtener las órdenes con joins

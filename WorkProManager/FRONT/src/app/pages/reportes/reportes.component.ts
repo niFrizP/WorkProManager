@@ -141,7 +141,7 @@ export class ReportesComponent {
   loadOrders(): void {
     this.orderService.getlistnewOrders().subscribe(
       (data: newOrder[]) => {
-        this.newOrders = data;
+        this.newOrders = data.filter(newOrder => newOrder.id_estado === 1); // Filtrar solo órdenes con id_estado == 2
         this.filteredOrders = this.newOrders; // Inicializar filteredOrders
         console.log(this.newOrders.map(newOrder => newOrder.EstadoOT.tipo_est));
       },
@@ -152,16 +152,18 @@ export class ReportesComponent {
   }
 
   filterOrders() {
-    this.filteredOrders = this.newOrders
-      .filter(newOrder => this.selectedStatus === 'todas' || newOrder.EstadoOT.tipo_est.toLowerCase() === this.selectedStatus)
-      .filter(newOrder => this.selectedMonth === 0 || new Date(newOrder.fecha).getMonth() + 1 === this.selectedMonth)
-      .filter(newOrder => this.selectedYear === 0 || new Date(newOrder.fecha).getFullYear() === this.selectedYear)
-      .filter(newOrder => !this.searchRutCliente || newOrder.rut_cliente.toString().toLowerCase().includes(this.searchRutCliente.toLowerCase()))
-      .filter(newOrder => !this.selectedDate || new Date(newOrder.fecha).toDateString() === this.selectedDate?.toDateString())
-      .filter(newOrder => !this.searchEquipo || newOrder.Equipo.mod_equipo.toString().toLowerCase().includes(this.searchEquipo.toString().toLowerCase()))
-      .filter(newOrder => this.selectedUsuario === 'todos' || newOrder.Usuario.nom_usu.toLowerCase() === this.selectedUsuario.toLowerCase())// Filtro de usuario
-      .filter(newOrder => this.selectedServicio === 'todos' || newOrder.Servicio.nom_serv.toLowerCase() === this.selectedServicio.toLowerCase()); // Filtro de servicio
-  }
+  this.filteredOrders = this.newOrders
+  .filter(newOrder => newOrder.id_estado === 2) // Filtrar   solo órdenes con id_estado == 2
+    .filter(newOrder => this.selectedStatus === 'todas' || newOrder.EstadoOT.tipo_est.toLowerCase() === this.selectedStatus)
+    .filter(newOrder => this.selectedMonth === 0 || new Date(newOrder.fecha).getMonth() + 1 === this.selectedMonth)
+    .filter(newOrder => this.selectedYear === 0 || new Date(newOrder.fecha).getFullYear() === this.selectedYear)
+    .filter(newOrder => !this.searchRutCliente || newOrder.rut_cliente.toString().toLowerCase().includes(this.searchRutCliente.toLowerCase()))
+    .filter(newOrder => !this.selectedDate || new Date(newOrder.fecha).toDateString() === this.selectedDate?.toDateString())
+    .filter(newOrder => !this.searchEquipo || newOrder.Equipo.mod_equipo.toString().toLowerCase().includes(this.searchEquipo.toString().toLowerCase()))
+    .filter(newOrder => this.selectedUsuario === 'todos' || newOrder.Usuario.nom_usu.toLowerCase() === this.selectedUsuario.toLowerCase()) // Filtro de usuario
+    .filter(newOrder => this.selectedServicio === 'todos' || newOrder.Servicio.nom_serv.toLowerCase() === this.selectedServicio.toLowerCase()); // Filtro de servicio
+}
+
 
   filterUsers() {
     this.filteredUsers = this.usuarios

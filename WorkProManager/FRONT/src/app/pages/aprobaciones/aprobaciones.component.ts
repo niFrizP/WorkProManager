@@ -139,7 +139,7 @@ export class AprobacionesComponent {
   loadOrders(): void {
     this.orderService.getlistnewOrders().subscribe(
       (data: newOrder[]) => {
-        this.newOrders = data;
+        this.newOrders = data.filter(newOrder => newOrder.id_estado === 2); // Filtrar solo órdenes con id_estado == 2
         this.filteredOrders = this.newOrders; // Inicializar filteredOrders
         console.log(this.newOrders.map(newOrder => newOrder.EstadoOT.tipo_est));
       },
@@ -204,6 +204,24 @@ export class AprobacionesComponent {
   }
 
   
+  aprobarOT(id_ot: number | undefined): void {
+    window.alert(`Estás a punto de aprobar la orden con ID: ${id_ot}`);
+
+    const orderId = id_ot ?? 0; // O cualquier otro valor predeterminado que consideres apropiado
+
+  
+    console.log(orderId);
+    this.orderService.updateOrderState(orderId, 3).subscribe(
+      () => {
+        console.log('Orden aprobada');
+        this.loadOrders(); // Actualizar la lista de órdenes
+
+      },
+      (error) => {
+        console.error('Error aprobando la orden', error);
+      }
+    );
+  }
   
 
   
