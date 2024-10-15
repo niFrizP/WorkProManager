@@ -4,7 +4,9 @@ import { getEquipo, getEquipos, updateEquipo, deleteEquipo, postEquipo } from '.
 const router = Router();
 
 router.get('/', getEquipos);
+
 router.get('/:id', getEquipo);
+
 router.delete('/:id', deleteEquipo);
 router.post('/', postEquipo);
 router.put('/:id', updateEquipo);
