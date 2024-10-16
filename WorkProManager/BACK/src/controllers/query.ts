@@ -74,9 +74,12 @@ export const getOrdersEstadoSum = async (req: Request, res: Response) => {
       const ordersCount = await Order.findAll({
         attributes: [
           'id_estado',
-          [sequelize.fn('SUM', sequelize.col('costo')), 'total_estado'] // Sumar el valor de id_estado por usuario
+          [sequelize.fn('COUNT', sequelize.col('costo')), 'total_estado'] // Sumar el valor de id_estado por usuario
         ],
         group: ['id_estado'], // Agrupar por usuario
+        where: {
+          id_estado: 3
+        }
       });
   
       res.json(ordersCount);

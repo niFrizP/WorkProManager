@@ -20,6 +20,8 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOrdersByYear();
+    this.loadOrdersOfTheDay();
+    this.loadOrdersByEstadoSum();
   }
 
   // Cargar las órdenes por año y calcular el total
@@ -65,12 +67,16 @@ export class HomeComponent implements OnInit {
     this.queryService.getOrdersByEstadoSum().subscribe({
       next: (data: newOrder[]) => {
         this.ordersByEstadoSum = data;
+        console.log("ORDENES POR ESTADO SUM");
+        console.log(this.ordersByEstadoSum);
+
       },
       // ... handle error and complete if needed
     });
 
     if(this.ordersByEstadoSum.length > 0){
       const { id_estado, total } = this.ordersByEstadoSum[0];
+      console.log(total);
       this.ordersByofEstadoSum = total;
     }
   }

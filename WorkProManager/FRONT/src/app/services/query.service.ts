@@ -24,7 +24,7 @@ export class QueryService {
     return this.http.get<newOrder[]>(`${this.myAppUrl}${this.myApiUrl}dia`);
   }
   getOrdersByEstadoSum(): Observable<newOrder[]> {
-    return this.http.get<newOrder[]>(`${this.myAppUrl}${this.myApiUrl}estadoot`);
+    return this.http.get<newOrder[]>(`${this.myAppUrl}${this.myApiUrl}costo`);
   }
 
   getOrdersByUsuario(): Observable<newOrder[]> {
@@ -33,10 +33,7 @@ export class QueryService {
 
 
 
-  getOrdersCosto(): Observable<newOrder[]> {
-    return this.http.get<newOrder[]>(`${this.myAppUrl}${this.myApiUrl}costo`);
-  }
-
+  
   getOrdersEstadoSum(): Observable<newOrder[]> {
     return this.http.get<newOrder[]>(`${this.myAppUrl}${this.myApiUrl}estado-sum`);
   }

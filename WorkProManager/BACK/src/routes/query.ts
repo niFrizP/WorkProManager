@@ -9,7 +9,6 @@ import Order from '../models/orders';
 const router = Router();
 
 router.get('/', getOrdersByEstado); // Ruta para obtener las órdenes con joins
-router.get('/estadoot', getOrdersEstadoSum); // Ruta para obtener las órdenes con joins
 router.get('/usuario', getOrdersByUsuario); // Ruta para obtener las órdenes con joins
 router.get('/costo', getOrdersEstadoSum); // Ruta para obtener las órdenes con joins
 router.get('/dia', countOrdersByDate); // Ruta para obtener las órdenes con joins

@@ -5,7 +5,6 @@ const express_1 = require("express");
 const query_1 = require("../controllers/query");
 const router = (0, express_1.Router)();
 router.get('/', query_1.getOrdersByEstado); // Ruta para obtener las órdenes con joins
-router.get('/estadoot', query_1.getOrdersEstadoSum); // Ruta para obtener las órdenes con joins
 router.get('/usuario', query_1.getOrdersByUsuario); // Ruta para obtener las órdenes con joins
 router.get('/costo', query_1.getOrdersEstadoSum); // Ruta para obtener las órdenes con joins
 router.get('/dia', query_1.countOrdersByDate); // Ruta para obtener las órdenes con joins

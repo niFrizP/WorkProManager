@@ -81,9 +81,12 @@ const getOrdersEstadoSum = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const ordersCount = yield orders_1.default.findAll({
             attributes: [
                 'id_estado',
-                [connection_1.default.fn('SUM', connection_1.default.col('costo')), 'total_estado'] // Sumar el valor de id_estado por usuario
+                [connection_1.default.fn('COUNT', connection_1.default.col('costo')), 'total_estado'] // Sumar el valor de id_estado por usuario
             ],
             group: ['id_estado'], // Agrupar por usuario
+            where: {
+                id_estado: 3
+            }
         });
         res.json(ordersCount);
     }
