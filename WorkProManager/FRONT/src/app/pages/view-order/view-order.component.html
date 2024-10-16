@@ -1,0 +1,117 @@
+<div class="flex-1 justify-center px-72 py-6">
+    <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+      <p class="text-md text-gray-600 mb-4">
+        Información de la Orden de Trabajo. 
+      </p>
+      <div class="space-y-6">
+        <div class="mt-4">
+            <label for="id_ot">ID de Orden: </label>
+            <p id="id_ot" class="border border-gray-300 p-2 rounded">{{ id_ot_from_api }}</p> <!-- Display id_ot here -->
+        </div>
+  
+      <div class="space-y-6">
+        <div class="mt-4">
+          <label for="fecha">Fecha de Entrega: </label>
+          <p id="fecha" class="border border-gray-300 p-2 rounded">{{ form.get('fecha')?.value | date }}</p>        </div>
+  
+        <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
+  
+        <div>
+          <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+          <p id="descripcion" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
+            {{ form.get('descripcion')?.value }}
+          </p>
+        </div>
+  
+        <fieldset class="border border-gray-200 p-4 rounded-lg">
+          <legend class="text-lg font-semibold">Detalle Cliente</legend>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+              <p id="nombre" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('nombre')?.value }}</p>
+            </div>
+            <div>
+              <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
+              <p id="apellido" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('apellido')?.value }}</p>
+            </div>
+            <div>
+              <label for="rut_cliente" class="block text-sm font-medium text-gray-700">Run</label>
+              <p id="rut_cliente" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('rut_cliente')?.value }}</p>
+            </div>
+            <div class="w-16">
+              <label for="dv_cliente" class="block text-sm font-medium text-gray-700">DV</label>
+              <p id="dv_cliente" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('d_verificador_cliente')?.value }}</p>
+            </div>
+            <div>
+              <label for="correo" class="block text-sm font-medium text-gray-700">Correo</label>
+              <p id="correo" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('correo')?.value }}</p>
+            </div>
+            <div>
+              <label for="celular" class="block text-sm font-medium text-gray-700">Teléfono</label>
+              <p id="celular" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('celular')?.value }}</p>
+            </div>
+          </div>
+        </fieldset>
+  
+        <fieldset class="border border-gray-200 p-4 rounded-lg">
+          <legend class="text-lg font-semibold">Detalle Equipo</legend>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="tipo_equipo" class="block text-sm font-medium text-gray-700">Tipo de equipo</label>
+              <p id="tipo_equipo" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('tipo_equipo')?.value }}</p>
+            </div>
+            <div>
+              <label for="mod_equipo" class="block text-sm font-medium text-gray-700">Modelo</label>
+              <p id="mod_equipo" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('mod_equipo')?.value }}</p>
+            </div>
+            <div>
+              <label for="id_marca">Selecciona una marca:</label>
+              <p id="id_marca" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('id_marca')?.value }}</p>
+            </div>
+            <div>
+              <label for="num_equipo" class="block text-sm font-medium text-gray-700">S/N</label>
+              <p id="num_equipo" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('num_equipo')?.value }}</p>
+            </div>
+            <div>
+              <label for="fec_fabric" class="block text-sm font-medium text-gray-700">Fecha de fabricación</label>
+              <p id="fec_fabric" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('fec_fabric')?.value | date }}</p>
+            </div>
+          </div>
+        </fieldset>
+  
+        <fieldset class="border border-gray-200 p-4 rounded-lg">
+          <legend class="text-lg font-semibold">Servicio</legend>
+  
+          <div>
+            <label for="servicios">Selecciona un Servicio:</label>
+            <p id="servicios" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('nom_serv')?.value }}</p>
+          </div>
+  
+          <div *ngIf="selectedServicePrecio !== null">
+            <p>Precio del servicio seleccionado: <strong>${{ selectedServicePrecio }}</strong></p>
+          </div>
+        </fieldset>
+  
+        <fieldset class="border border-gray-200 p-4 rounded-lg">
+          <legend class="text-lg font-semibold">Usuario</legend>
+  
+          <div>
+            <label for="usuarios">Selecciona un Usuario:</label>
+            <p id="usuarios" class="block w-full border border-gray-300 rounded-md p-2">{{ form.get('nom_usu')?.value }} {{ form.get('ap_usu')?.value }}</p>
+          </div>
+  
+          <div *ngIf="selectedUsuarioName !== null">
+            <p>Nombre del usuario: <strong>{{ selectedUsuarioName }} {{ selectedUsuarioSurname }}</strong></p>
+          </div>
+        </fieldset>
+
+        <button [routerLink]="['reportes/createReport', id_ot_from_api]">✏️</button>
+
+  
+        
+
+
+  <div class="mt-6">
+  </div>
+  
+  

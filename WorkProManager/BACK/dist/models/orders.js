@@ -4,9 +4,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
+const cliente_1 = __importDefault(require("./cliente")); // Importa el modelo Cliente
+const usuario_1 = __importDefault(require("./usuario")); // Importa el modelo Usuario
+const servicio_1 = __importDefault(require("./servicio")); // Importa el modelo Servicio
+const equipo_1 = __importDefault(require("./equipo")); // Importa el modelo Equipo
+const estado_ot_1 = __importDefault(require("./estado_ot")); // Importa el modelo EstadoOT
 const connection_1 = __importDefault(require("../db/connection"));
+class Order extends sequelize_1.Model {
+}
 // Definir el modelo de 'Order'
-const Order = connection_1.default.define('Order', {
+Order.init({
     id_ot: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
@@ -57,8 +64,17 @@ const Order = connection_1.default.define('Order', {
         }
     }
 }, {
+    // Update the type to ModelOptions<Model<any, any>>
+    sequelize: connection_1.default,
+    modelName: 'orden_trabajo',
     tableName: 'orden_trabajo',
     createdAt: false,
     updatedAt: false
 });
+// Definir las relaciones
+Order.belongsTo(cliente_1.default, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
+Order.belongsTo(usuario_1.default, { foreignKey: 'id_usuario', targetKey: 'id_usuario' });
+Order.belongsTo(servicio_1.default, { foreignKey: 'id_serv', targetKey: 'id_serv' });
+Order.belongsTo(equipo_1.default, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
+Order.belongsTo(estado_ot_1.default, { foreignKey: 'id_estado', targetKey: 'id_estado' });
 exports.default = Order;

@@ -1,8 +1,17 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
+import Cliente from './cliente'; // Importa el modelo Cliente
+import Usuario from './usuario'; // Importa el modelo Usuario
+import Servicio from './servicio'; // Importa el modelo Servicio
+import Equipo from './equipo'; // Importa el modelo Equipo
+import EstadoOT from './estado_ot'; // Importa el modelo EstadoOT
 import db from '../db/connection';
 
+
+class Order extends Model {}
+
+
 // Definir el modelo de 'Order'
-const Order = db.define('Order', {
+Order.init({
     id_ot: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -47,15 +56,25 @@ const Order = db.define('Order', {
     },
     id_estado: {
         type: DataTypes.INTEGER,
-        references:{
+        references: {
             model: 'estado_ot',
             key: 'id_estado'
         }
     }
 }, {
+    // Update the type to ModelOptions<Model<any, any>>
+    sequelize: db,
+    modelName: 'orden_trabajo',
     tableName: 'orden_trabajo',
     createdAt: false,
     updatedAt: false
 });
+
+// Definir las relaciones
+Order.belongsTo(Cliente, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
+Order.belongsTo(Usuario, { foreignKey: 'id_usuario', targetKey: 'id_usuario' });
+Order.belongsTo(Servicio, { foreignKey: 'id_serv', targetKey: 'id_serv' });
+Order.belongsTo(Equipo, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
+Order.belongsTo(EstadoOT, { foreignKey: 'id_estado', targetKey: 'id_estado' });
 
 export default Order;

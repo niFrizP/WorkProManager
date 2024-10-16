@@ -1,0 +1,32 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+
+// Importa Angular Material
+@use '@angular/material' as mat;
+
+// Incluye los estilos comunes para Angular Material
+@include mat.core();
+
+// Define el objeto del tema
+$WorkProManager-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+// Incluye estilos de tema para el núcleo y cada componente utilizado en tu aplicación
+:root {
+  @include mat.all-component-themes($WorkProManager-theme);
+}
+
+// Comentarios opcionales
+// Descomenta la línea a continuación si quieres usar las clases de utilidad tipográfica predefinidas
+// @include mat.typography-hierarchy($WorkProManager-theme);
+
+// Descomenta la línea a continuación si quieres usar las entradas de color obsoletas
+// @include mat.color-variants-backwards-compatibility($WorkProManager-theme);

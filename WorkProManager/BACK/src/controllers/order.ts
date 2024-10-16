@@ -1,16 +1,68 @@
 import { Request, Response } from 'express';
 import Order from '../models/orders';
+import Equipo from '../models/equipo';
+import Cliente from '../models/cliente';
+import Usuario from '../models/usuario';
+import Servicio from '../models/servicio';
+import EstadoOT from '../models/estado_ot';
+
 
 export const getOrders = async (req: Request, res: Response) => {
-    const listOrders = await Order.findAll()
+    try {
+        const listOrders = await Order.findAll({
+            include: [
+                {
+                    model: Cliente,
+                    attributes: ['nombre'],
+                    required: true
+                },
+                {
+                    model: Servicio,
+                    attributes: ['nom_serv'],
+                    required: true
+                },
+                {
+                    model: Usuario,
+                    attributes: ['nom_usu'],
+                    required: true
+                },
+                {
+                    model: Equipo,
+                    attributes: ['mod_equipo'],
+                    required: true
+                },
+                {
+                    model: EstadoOT,
+                    attributes: ['tipo_est'],
+                    required: true
+                }
+            ]
+        });
 
-    res.json(listOrders)
-}
+        console.log('Consulta de órdenes:', JSON.stringify(listOrders, null, 2)); // Log de la consulta
+        res.json(listOrders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders',
+        });
+    }
+};
+
+
 
 export const getOrder = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const order = await Order.findByPk(id);
+        const order = await Order.findByPk(id, {
+            include: [
+                { model: Equipo },
+                { model: Cliente },
+                { model: Usuario },
+                { model: Servicio },
+                { model: EstadoOT }
+            ]
+        });
 
         if (order) {
             res.json(order);
@@ -26,7 +78,6 @@ export const getOrder = async (req: Request, res: Response) => {
         });
     }
 };
-
 
 export const deleteOrder = async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -73,16 +124,24 @@ export const postOrder = async (req: Request, res: Response) => {
 };
 
 
-
 export const updateOrder = async (req: Request, res: Response) => {
-    const { body } = req;
     const { id } = req.params;
+    const { id_estado, ...rest } = req.body; // Extraer id_estado y el resto del cuerpo
 
     try {
         const order = await Order.findByPk(id);
 
-        if(order) {
-            await order.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
+        if (order) {
+            // Si se proporciona id_estado, solo actualizar ese campo
+            if (id_estado !== undefined) {
+                await order.update({ id_estado }); // Actualiza solo id_estado
+                return res.json({
+                    msg: 'El estado de la orden fue actualizado con éxito'
+                });
+            }
+
+            // Si no se proporciona id_estado, actualizar todos los campos
+            await order.update(rest); // Actualiza todos los demás campos
             res.json({
                 msg: 'La orden fue actualizada con éxito'
             });
@@ -98,3 +157,6 @@ export const updateOrder = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+

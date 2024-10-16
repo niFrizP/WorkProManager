@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
+import Order from './orders';
 
 // Definición del modelo EstadoOT en lugar de Equipo
 const EstadoOT = db.define('EstadoOT', {
@@ -17,4 +18,5 @@ const EstadoOT = db.define('EstadoOT', {
     updatedAt: false // Desactiva el timestamp de actualización
 });
 
+EstadoOT.hasMany(EstadoOT, { foreignKey: 'id_estado' });
 export default EstadoOT;

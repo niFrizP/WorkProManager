@@ -27,4 +27,5 @@ const Equipo = connection_1.default.define('Equipo', {
     createdAt: false,
     updatedAt: false
 });
+Equipo.hasMany(Equipo, { foreignKey: 'num_equipo' });
 exports.default = Equipo;

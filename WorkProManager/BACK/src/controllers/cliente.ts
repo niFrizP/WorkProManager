@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Cliente from '../models/clientes';
+import Cliente from '../models/cliente';
 
 export const getClientes = async (req: Request, res: Response) => {
     const listClientes = await Cliente.findAll()

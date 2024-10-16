@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HeaderComponent } from './components/header/header.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // manten esto si usas forms
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ClienteService } from './services/cliente.service';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { OrdersModule } from './pages/orders/orders.module'; // manten si es necesario
 

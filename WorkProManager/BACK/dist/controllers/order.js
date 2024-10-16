@@ -8,21 +8,82 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrders = void 0;
 const orders_1 = __importDefault(require("../models/orders"));
+const equipo_1 = __importDefault(require("../models/equipo"));
+const cliente_1 = __importDefault(require("../models/cliente"));
+const usuario_1 = __importDefault(require("../models/usuario"));
+const servicio_1 = __importDefault(require("../models/servicio"));
+const estado_ot_1 = __importDefault(require("../models/estado_ot"));
 const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const listOrders = yield orders_1.default.findAll();
-    res.json(listOrders);
+    try {
+        const listOrders = yield orders_1.default.findAll({
+            include: [
+                {
+                    model: cliente_1.default,
+                    attributes: ['nombre'],
+                    required: true
+                },
+                {
+                    model: servicio_1.default,
+                    attributes: ['nom_serv'],
+                    required: true
+                },
+                {
+                    model: usuario_1.default,
+                    attributes: ['nom_usu'],
+                    required: true
+                },
+                {
+                    model: equipo_1.default,
+                    attributes: ['mod_equipo'],
+                    required: true
+                },
+                {
+                    model: estado_ot_1.default,
+                    attributes: ['tipo_est'],
+                    required: true
+                }
+            ]
+        });
+        console.log('Consulta de órdenes:', JSON.stringify(listOrders, null, 2)); // Log de la consulta
+        res.json(listOrders);
+    }
+    catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders',
+        });
+    }
 });
 exports.getOrders = getOrders;
 const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const order = yield orders_1.default.findByPk(id);
+        const order = yield orders_1.default.findByPk(id, {
+            include: [
+                { model: equipo_1.default },
+                { model: cliente_1.default },
+                { model: usuario_1.default },
+                { model: servicio_1.default },
+                { model: estado_ot_1.default }
+            ]
+        });
         if (order) {
             res.json(order);
         }
@@ -83,12 +144,20 @@ const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.postOrder = postOrder;
 const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
     const { id } = req.params;
+    const _a = req.body, { id_estado } = _a, rest = __rest(_a, ["id_estado"]); // Extraer id_estado y el resto del cuerpo
     try {
         const order = yield orders_1.default.findByPk(id);
         if (order) {
-            yield order.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
+            // Si se proporciona id_estado, solo actualizar ese campo
+            if (id_estado !== undefined) {
+                yield order.update({ id_estado }); // Actualiza solo id_estado
+                return res.json({
+                    msg: 'El estado de la orden fue actualizado con éxito'
+                });
+            }
+            // Si no se proporciona id_estado, actualizar todos los campos
+            yield order.update(rest); // Actualiza todos los demás campos
             res.json({
                 msg: 'La orden fue actualizada con éxito'
             });

@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
+import Order from './orders';
 
 // Definición del modelo Usuario
 const Usuario = db.define('Usuario', {
@@ -33,5 +34,7 @@ const Usuario = db.define('Usuario', {
     createdAt: false, // Desactiva el timestamp de creación
     updatedAt: false // Desactiva el timestamp de actualización
 });
+
+Usuario.hasMany(Usuario, { foreignKey: 'id_usuario' });
 
 export default Usuario;

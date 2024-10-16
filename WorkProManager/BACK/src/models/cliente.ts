@@ -1,11 +1,12 @@
-import { DataTypes } from 'sequelize';
-import db from '../db/connection';
+import { DataTypes, Model } from 'sequelize';
+import db from '../db/connection'; // Asegúrate de que esta ruta sea correcta
 
-const Cliente = db.define('Cliente', {
+class Cliente extends Model {}
+
+Cliente.init({
     rut_cliente: {
         type: DataTypes.INTEGER,
-        primaryKey: true, // Define que id_ot es la clave primaria
-       // Si es autoincremental, añade esto
+        primaryKey: true,
     },
     d_verificador_cliente: {
         type: DataTypes.STRING
@@ -23,9 +24,13 @@ const Cliente = db.define('Cliente', {
         type: DataTypes.INTEGER
     }
 }, {
+    sequelize: db, // Asegúrate de que 'db' esté definido correctamente
+    modelName: 'cliente',
     tableName: 'cliente', // Especifica el nombre exacto de la tabla
     createdAt: false,
     updatedAt: false
 });
+
+Cliente.hasMany(Cliente, { foreignKey: 'rut_cliente' });
 
 export default Cliente;

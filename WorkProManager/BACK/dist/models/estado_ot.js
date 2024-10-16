@@ -20,4 +20,5 @@ const EstadoOT = connection_1.default.define('EstadoOT', {
     createdAt: false, // Desactiva el timestamp de creación
     updatedAt: false // Desactiva el timestamp de actualización
 });
+EstadoOT.hasMany(EstadoOT, { foreignKey: 'id_estado' });
 exports.default = EstadoOT;
