@@ -1,54 +1,16 @@
 <div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
   <div class="contenedor">
-    <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
-
+    <h1 class="text-2xl font-bold text-center mb-4">Reportes</h1>
+    <br><br>
     <div class="flex justify-between items-center mb-4">
 
-      <div class="flex justify-between items-center mb-4">
-
-        <div>
-
-          <button type="button" [routerLink]="['/orders/new-ot']"
-            class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 new-ot-butt" [routerLink]="['/orders/new-ot']">
-            + Nueva
-          </button>
-          <div></div>
-
-          <div>
-            <label for="filter" class="mr-2 font-medium">Todos los usuarios</label>
-            <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedUsuario"
-              (change)="filterOrdersByUsuario(selectedUsuario)" title="Filtrar por usuario">
-              <option value="todos">Todas</option>
-              <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu }}
-                {{usuario.ap_usu}}
-              </option>
-            </select>
-          </div>
-
-          <div>
-            <label for="filter" class="mr-2 font-medium">Todos los servicios</label>
-            <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedServicio"
-              (change)="filterOrdersByServicio(selectedServicio)" title="Filtrar por servicio">
-              <option value="todos">Todos</option>
-              <option *ngFor="let servicio of servicios" [value]="servicio.nom_serv">{{ servicio.nom_serv }}</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="monthSelect" class="mr-2 font-medium">Mes</label>
-            <select #monthSelect class="p-2 border rounded"
-              (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)" title="Filtrar por mes">
-              <option value="0">Todos</option>
-              <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
-            </select>
-
-            <label for="yearSelect" class="ml-4 mr-2 font-medium">Año</label>
-            <select #yearSelect class="p-2 border rounded"
-              (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)" title="Filtrar por año">
-              <option value="0">Todos</option>
-              <option *ngFor="let year of years">{{ year }}</option>
-            </select>
-          </div>
+      <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+        <button type="button" [routerLink]="['/orders/new-ot']"
+          class="italic-text bg-blue-500 text-white p-2 rounded hover:bg-blue-600 new-ot-butt"
+          [routerLink]="['/orders/new-ot']">
+          + Nueva
+        </button>
+        <div class="flex flex-wrap gap-4">
           <form class="search-form" (submit)="filterOrdersByRutCliente()">
             <input type="text" placeholder="Buscar por RUT Cliente" [(ngModel)]="searchRutCliente"
               (input)="filterOrdersByRutCliente()" class="search-input" name="rut_cliente" />
@@ -61,14 +23,47 @@
             <button type="submit" class="search-btn">Buscar</button>
           </form>
 
-
-
         </div>
 
+        <div class="flex flex-wrap gap-4">
+          <label for="filter" class="mr-2 font-medium">Todos los usuarios</label>
+          <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedUsuario"
+            (change)="filterOrdersByUsuario(selectedUsuario)" title="Filtrar por usuario">
+            <option value="todos">Todas</option>
+            <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu }}
+              {{usuario.ap_usu}}
+            </option>
+          </select>
+        </div>
+
+        <div class="flex flex-wrap gap-4">
+          <label for="filter" class="mr-2 font-medium">Todos los servicios</label>
+          <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedServicio"
+            (change)="filterOrdersByServicio(selectedServicio)" title="Filtrar por servicio">
+            <option value="todos">Todos</option>
+            <option *ngFor="let servicio of servicios" [value]="servicio.nom_serv">{{ servicio.nom_serv }}</option>
+          </select>
+        </div>
+
+        <div class="flex flex-wrap gap-4">
+          <label for="monthSelect" class="mr-2 font-medium">Mes</label>
+          <select #monthSelect class="p-2 border rounded"
+            (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)" title="Filtrar por mes">
+            <option value="0">Todos</option>
+            <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+          </select>
+
+          <label for="yearSelect" class="ml-4 mr-2 font-medium">Año</label>
+          <select #yearSelect class="p-2 border rounded"
+            (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)" title="Filtrar por año">
+            <option value="0">Todos</option>
+            <option *ngFor="let year of years">{{ year }}</option>
+          </select>
+        </div>
       </div>
-
-
     </div>
+
+
 
     <table class="w-full border-collapse">
       <thead>
