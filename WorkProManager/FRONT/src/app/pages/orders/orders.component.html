@@ -1,116 +1,115 @@
-<div class="flex-3 ml-64 p-8">
-  <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
-
-
-
-  <div class="flex justify-between items-center mb-4">
-    
-    <div>
-      <label for="filter" class="mr-2 font-medium">Todas las OT</label>
-      <select #filterSelect class="p-2 border rounded" (change)="filterOrdersByStatus(filterSelect.value)">
-        <option value="todas">Todas</option>
-        <option value="en solicitud">En solicitud</option>
-        <option value="pendiente">Pendiente</option>
-        <option value="finalizado">Finalizado</option>
-
-      </select>
-
-      <button [routerLink]="['/orders/new-ot']" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 new-ot-butt" [routerLink]="['/orders/new-ot']">
-        + Nueva
-      </button>
-      <div></div>
-
-      <div>
-        <label for="filter" class="mr-2 font-medium">Todos los usuarios</label>
-        <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedUsuario" (change)="filterOrdersByUsuario(selectedUsuario)">
-          <option value="todos">Todas</option>
-          <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu }} {{usuario.ap_usu}}</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="filter" class="mr-2 font-medium">Todos los servicios</label>
-        <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedServicio" (change)="filterOrdersByServicio(selectedServicio)">
-          <option value="todos">Todos</option>
-          <option *ngFor="let servicio of servicios" [value]="servicio.nom_serv">{{ servicio.nom_serv }}</option>
-        </select>
-      </div>
+<div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
+  <div class="contenedor">
+    <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
+    <div class="flex justify-between items-center mb-4">
       
       <div>
-        <label for="monthSelect" class="mr-2 font-medium">Mes</label>
-        <select #monthSelect class="p-2 border rounded" (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)">
-          <option value="0">Todos</option>
-          <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+        <label for="filter" class="mr-2 font-medium">Todas las OT</label>
+        <select #filterSelect class="p-2 border rounded" (change)="filterOrdersByStatus(filterSelect.value)" title="Filter Orders by Status">
+          <option value="todas">Todas</option>
+          <option value="en solicitud">En solicitud</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="finalizado">Finalizado</option>
+
         </select>
 
-        <label for="yearSelect" class="ml-4 mr-2 font-medium">Año</label>
-        <select #yearSelect class="p-2 border rounded" (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)">
-          <option value="0">Todos</option>
-          <option *ngFor="let year of years">{{ year }}</option>
-        </select>
+        <button type="button" [routerLink]="['/orders/new-ot']" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 new-ot-butt" [routerLink]="['/orders/new-ot']">
+          + Nueva
+        </button>
+        <div></div>
+
+        <div>
+          <label for="filter" class="mr-2 font-medium">Todos los usuarios</label>
+          <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedUsuario" (change)="filterOrdersByUsuario(selectedUsuario)" title="Filter Orders by Usuario">
+            <option value="todos">Todas</option>
+            <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu }} {{usuario.ap_usu}}</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="filter" class="mr-2 font-medium">Todos los servicios</label>
+          <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedServicio" (change)="filterOrdersByServicio(selectedServicio)" title="Filter Orders by Servicio">
+            <option value="todos">Todos</option>
+            <option *ngFor="let servicio of servicios" [value]="servicio.nom_serv">{{ servicio.nom_serv }}</option>
+          </select>
+        </div>
+        
+        <div>
+          <label for="monthSelect" class="mr-2 font-medium">Mes</label>
+          <select #monthSelect class="p-2 border rounded" (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)" title="Filter Orders by Month">
+            <option value="0">Todos</option>
+            <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+          </select>
+
+          <label for="yearSelect" class="ml-4 mr-2 font-medium">Año</label>
+          <select #yearSelect class="p-2 border rounded" (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)" title="Filter Orders by Year">
+            <option value="0">Todos</option>
+            <option *ngFor="let year of years">{{ year }}</option>
+          </select>
+        </div>
+        <form class="search-form" (submit)="filterOrdersByRutCliente()">
+          <input
+            type="text"
+            placeholder="Buscar por RUT Cliente"
+            [(ngModel)]="searchRutCliente"
+            (input)="filterOrdersByRutCliente()"
+            class="search-input"
+            name="rut_cliente"
+          />
+          <button type="submit" class="search-btn">Buscar</button>
+        </form>
+
+        <form class="search-form" (submit)="filterOrdersByEquipo()">
+          <input
+            type="text"
+            placeholder="Buscar equipo por número de serie"
+            [(ngModel)]="searchEquipo"
+            (input)="filterOrdersByEquipo()"
+            class="search-input"
+            name="num_equipo"
+          />
+          <button type="submit" class="search-btn">Buscar</button>
+        </form>
+
+
+
       </div>
-      <form class="search-form" (submit)="filterOrdersByRutCliente()">
-        <input
-          type="text"
-          placeholder="Buscar por RUT Cliente"
-          [(ngModel)]="searchRutCliente"
-          (input)="filterOrdersByRutCliente()"
-          class="search-input"
-          name="rut_cliente"
-        />
-        <button type="submit" class="search-btn">Buscar</button>
-      </form>
-
-      <form class="search-form" (submit)="filterOrdersByEquipo()">
-        <input
-          type="text"
-          placeholder="Buscar equipo por número de serie"
-          [(ngModel)]="searchEquipo"
-          (input)="filterOrdersByEquipo()"
-          class="search-input"
-          name="num_equipo"
-        />
-        <button type="submit" class="search-btn">Buscar</button>
-      </form>
-
-
 
     </div>
 
+    <table class="w-full border-collapse">
+      <thead>
+        <tr>
+          <th class="border p-2">Fecha</th>
+          <th class="border p-2">OT ID</th>
+          <th class="border p-2">Descripción</th>
+          <th class="border p-2">Equipo</th>
+          <th class="border p-2">Costo</th>
+          <th class="border p-2">Rut Cliente</th>
+          <th class="border p-2">Servicio</th>
+          <th class="border p-2">Estado</th>
+          <th class="border p-2">Usuario</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
+          <td>{{ newOrder.fecha }}</td>
+          <td>{{ newOrder.id_ot }}</td>
+          <td>{{ newOrder.descripcion }}</td>
+          <td>{{ newOrder.Equipo.mod_equipo }}</td>
+          <td>{{ newOrder.costo }}</td>
+          <td>{{ newOrder.rut_cliente }}</td>
+          <td>{{ newOrder.Servicio.nom_serv }}</td>
+          <td>{{ newOrder.EstadoOT.tipo_est }}</td>
+          <td>{{ newOrder.Usuario.nom_usu }}</td>
+          <td>
+            <button type="button" [routerLink]="['/newOrders/edit', newOrder.id_ot]">✏️</button>
+            <button type="button" (click)="newOrder.id_ot !== undefined ? deleteOrder(newOrder.id_ot) : null">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+      <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
   </div>
-
-  <table class="w-full border-collapse">
-    <thead>
-      <tr>
-        <th class="border p-2">Fecha</th>
-        <th class="border p-2">OT ID</th>
-        <th class="border p-2">Descripción</th>
-        <th class="border p-2">Equipo</th>
-        <th class="border p-2">Costo</th>
-        <th class="border p-2">Rut Cliente</th>
-        <th class="border p-2">Servicio</th>
-        <th class="border p-2">Estado</th>
-        <th class="border p-2">Usuario</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
-        <td>{{ newOrder.fecha }}</td>
-        <td>{{ newOrder.id_ot }}</td>
-        <td>{{ newOrder.descripcion }}</td>
-        <td>{{ newOrder.Equipo.mod_equipo }}</td>
-        <td>{{ newOrder.costo }}</td>
-        <td>{{ newOrder.rut_cliente }}</td>
-        <td>{{ newOrder.Servicio.nom_serv }}</td>
-        <td>{{ newOrder.EstadoOT.tipo_est }}</td>
-        <td>{{ newOrder.Usuario.nom_usu }}</td>
-        <td>
-          <button [routerLink]="['/newOrders/edit', newOrder.id_ot]">✏️</button>
-          <button (click)="newOrder.id_ot !== undefined ? deleteOrder(newOrder.id_ot) : null">🗑️</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
 </div>
