@@ -13,12 +13,7 @@ export const getOrders = async (req: Request, res: Response) => {
             include: [
                 {
                     model: Cliente,
-                    attributes: ['nombre'],
-                    required: true
-                },
-                {
-                    model: Servicio,
-                    attributes: ['nom_serv'],
+                    attributes: ['nom_cli'],
                     required: true
                 },
                 {
@@ -33,7 +28,7 @@ export const getOrders = async (req: Request, res: Response) => {
                 },
                 {
                     model: EstadoOT,
-                    attributes: ['tipo_est'],
+                    attributes: ['nom_estado_ot'],
                     required: true
                 }
             ]
@@ -59,7 +54,6 @@ export const getOrder = async (req: Request, res: Response) => {
                 { model: Equipo },
                 { model: Cliente },
                 { model: Usuario },
-                { model: Servicio },
                 { model: EstadoOT }
             ]
         });
@@ -97,18 +91,17 @@ export const deleteOrder = async (req: Request, res: Response) => {
 }
 
 export const postOrder = async (req: Request, res: Response) => {
-    const { fecha, costo, descripcion, rut_cliente, id_usuario, id_serv, num_equipo,id_estado } = req.body;
+    const { fec_creacion, fec_entrega, descripcion, rut_cliente, rut_usuario, num_equipo,id_estado_ot } = req.body;
 
     try {
         const newOrder = await Order.create({
-            fecha,
-            costo, 
+            fec_creacion,
+            fec_entrega,
             descripcion,
             rut_cliente, // Incluye id_cliente en la creación
-            id_usuario, // Incluye id_usuario
-            id_serv,    // Incluye id_serv
+            rut_usuario, // Incluye rut_usuario
             num_equipo,  // Incluye num_equipo
-            id_estado
+            id_estado_ot
         });
 
         res.json({
@@ -126,22 +119,22 @@ export const postOrder = async (req: Request, res: Response) => {
 
 export const updateOrder = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { id_estado, ...rest } = req.body; // Extraer id_estado y el resto del cuerpo
+    const { fec_creacion, fec_entrega, descripcion, rut_cliente, rut_usuario, num_equipo, id_estado_ot } = req.body; // Obtener los campos del cuerpo de la solicitud
 
     try {
-        const order = await Order.findByPk(id);
+        const order = await Order.findByPk(id); // Buscar la orden por ID
 
         if (order) {
-            // Si se proporciona id_estado, solo actualizar ese campo
-            if (id_estado !== undefined) {
-                await order.update({ id_estado }); // Actualiza solo id_estado
-                return res.json({
-                    msg: 'El estado de la orden fue actualizado con éxito'
-                });
-            }
-
-            // Si no se proporciona id_estado, actualizar todos los campos
-            await order.update(rest); // Actualiza todos los demás campos
+            // Actualizar los campos del modelo
+            await order.update({
+                fec_creacion,
+                fec_entrega,
+                descripcion,
+                rut_cliente,
+                rut_usuario,
+                num_equipo,
+                id_estado_ot
+            }); // Actualiza todos los campos proporcionados
             res.json({
                 msg: 'La orden fue actualizada con éxito'
             });

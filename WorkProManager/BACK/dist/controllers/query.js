@@ -51,8 +51,8 @@ exports.countOrdersByDate = countOrdersByDate;
 const getOrdersByUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ordersCount = yield orders_1.default.findAll({
-            attributes: ['id_usuario', [connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número de órdenes por estado
-            group: ['id_usuario'], // Agrupar por el campo 'estado'
+            attributes: ['rut_usuario', [connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número de órdenes por estado
+            group: ['rut_usuario'], // Agrupar por el campo 'estado'
         });
         res.json(ordersCount);
     }
@@ -66,7 +66,7 @@ const getOrdersCosto = (req, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: ['', [connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número de órdenes por estado
-            group: ['id_usuario'], // Agrupar por el campo 'estado'
+            group: ['rut_usuario'], // Agrupar por el campo 'estado'
         });
         res.json(ordersCount);
     }
@@ -180,8 +180,8 @@ exports.getOrdersByMonthAndYear = getOrdersByMonthAndYear;
 const getOrdersBy = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ordersCount = yield orders_1.default.findAll({
-            attributes: ['id_usuario', [connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número de órdenes por estado
-            group: ['id_usuario'], // Agrupar por el campo 'estado'
+            attributes: ['rut_usuario', [connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número de órdenes por estado
+            group: ['rut_usuario'], // Agrupar por el campo 'estado'
         });
         res.json(ordersCount);
     }
@@ -237,14 +237,14 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.deleteOrder = deleteOrder;
 const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { fecha, costo, descripcion, rut_cliente, id_usuario, id_serv, num_equipo, id_estado } = req.body;
+    const { fecha, costo, descripcion, rut_cliente, rut_usuario, id_serv, num_equipo, id_estado } = req.body;
     try {
         const newOrder = yield orders_1.default.create({
             fecha,
             costo,
             descripcion,
             rut_cliente, // Incluye id_cliente en la creación
-            id_usuario, // Incluye id_usuario
+            rut_usuario, // Incluye rut_usuario
             id_serv, // Incluye id_serv
             num_equipo, // Incluye num_equipo
             id_estado
@@ -268,7 +268,7 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const order = yield orders_1.default.findByPk(id);
         if (order) {
-            yield order.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
+            yield order.update(body); // El body incluye ahora id_cliente, rut_usuario, etc.
             res.json({
                 msg: 'La orden fue actualizada con éxito'
             });

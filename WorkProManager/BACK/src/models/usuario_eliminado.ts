@@ -4,9 +4,9 @@ import Order from './orders';
 
 // Definición del modelo Usuario
 const UsuarioEliminado = db.define('UsuarioEliminado', {
-    id_usuario: {
+    rut_usuario: {
         type: DataTypes.INTEGER, // El tipo de dato es un entero
-        primaryKey: true, // Define que id_usuario es la clave primaria
+        primaryKey: true, // Define que rut_usuario es la clave primaria
         autoIncrement: true // Indica que se incrementa automáticamente
     },
     rut_usu: {
@@ -35,6 +35,6 @@ const UsuarioEliminado = db.define('UsuarioEliminado', {
     updatedAt: false // Desactiva el timestamp de actualización
 });
 
-UsuarioEliminado.hasMany(UsuarioEliminado, { foreignKey: 'id_usuario' });
+UsuarioEliminado.hasMany(UsuarioEliminado, { foreignKey: 'rut_usuario' });
 
 export default UsuarioEliminado;

@@ -4,7 +4,7 @@ import Order from './orders';
 
 // Definición del modelo EstadoOT en lugar de Equipo
 const EstadoOT = db.define('EstadoOT', {
-    id_estado: {
+    id_estado_ot: {
         type: DataTypes.INTEGER, // El tipo de dato es un entero
         primaryKey: true, // Define que id_estado es la clave primaria
         autoIncrement: true // Indica que se incrementa automáticamente
@@ -18,5 +18,5 @@ const EstadoOT = db.define('EstadoOT', {
     updatedAt: false // Desactiva el timestamp de actualización
 });
 
-EstadoOT.hasMany(EstadoOT, { foreignKey: 'id_estado' });
+EstadoOT.hasMany(EstadoOT, { foreignKey: 'id_estado_ot' });
 export default EstadoOT;

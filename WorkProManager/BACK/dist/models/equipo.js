@@ -10,17 +10,25 @@ const Equipo = connection_1.default.define('Equipo', {
         type: sequelize_1.DataTypes.INTEGER, // Puede ser STRING si el número de equipo tiene caracteres especiales
         primaryKey: true, // Define que id_equipo es la clave primaria
     },
-    tipo_equipo: {
-        type: sequelize_1.DataTypes.STRING
+    fec_fabric: {
+        type: sequelize_1.DataTypes.DATE
     },
     mod_equipo: {
         type: sequelize_1.DataTypes.STRING
     },
     id_marca: {
-        type: sequelize_1.DataTypes.INTEGER
+        type: sequelize_1.DataTypes.INTEGER,
+        references: {
+            model: 'marca',
+            key: 'nom_marca'
+        }
     },
-    fec_fabric: {
-        type: sequelize_1.DataTypes.DATE // Para la fecha de fabricación
+    id_tipo: {
+        type: sequelize_1.DataTypes.INTEGER,
+        references: {
+            model: 'tipo_equipo',
+            key: 'id_tipo'
+        }
     }
 }, {
     tableName: 'equipo', // Especifica el nombre exacto de la tabla

@@ -74,7 +74,7 @@ export class EditOrderComponent implements OnInit {
       descripcion: ['', Validators.required],
       rut_cliente: [null, Validators.required],
       id_serv: [null, Validators.required],
-      id_usuario: [null, Validators.required],
+      rut_usuario: [null, Validators.required],
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       celular: [null, Validators.required],
@@ -83,7 +83,7 @@ export class EditOrderComponent implements OnInit {
       mod_equipo: ['', Validators.required],
       fec_fabric: ['', Validators.required],
       id_marca: [null, Validators.required],
-      d_verificador_cliente: ['', Validators.required]
+      d_veri_cli: ['', Validators.required]
       
     });
     
@@ -121,7 +121,7 @@ export class EditOrderComponent implements OnInit {
           tipo_equipo: data.Equipo.tipo_equipo,
           celular: data.cliente.celular,
           correo: data.cliente.correo,
-          d_verificador_cliente: data.cliente.d_verificador_cliente,
+          d_veri_cli: data.cliente.d_veri_cli,
           ap_usu: data.Usuario.ap_usu,
           nom_usu: data.Usuario.nom_usu, // Cambia esto si el nombre no está directamente en 'Usuario'
           rut_cliente: data.rut_cliente,
@@ -133,7 +133,7 @@ export class EditOrderComponent implements OnInit {
           precio: data.Servicio.precio,
           fec_fabric: data.Equipo.fec_fabric,
           id_marca: data.Equipo.id_marca,
-          id_usuario: data.id_usuario,// Cambia esto si el ID de usuario no está directamente en 'Usuario'
+          rut_usuario: data.rut_usuario,// Cambia esto si el ID de usuario no está directamente en 'Usuario'
           precioReal: data.Servicio.precio,
         });
         console.log("Datos cargados desde la API:");
@@ -169,7 +169,7 @@ export class EditOrderComponent implements OnInit {
         id_estado: this.form.value.id_estado,
         rut_cliente: this.form.get('rut_cliente')?.value,
         id_serv: this.form.get('id_serv')?.value,
-        id_usuario: this.form.get('id_usuario')?.value,
+        rut_usuario: this.form.get('rut_usuario')?.value,
         equipo: equipo, // Assuming equipo is the result from createOrUpdateEquipo
         estado: this.form.get('id_estado')?.value // Assuming estado is the same as id_estado
       };
@@ -201,7 +201,7 @@ export class EditOrderComponent implements OnInit {
   private async createOrUpdateCliente(): Promise<Cliente> {
     const clienteData: Cliente = {
         rut_cliente: this.form.get('rut_cliente')?.value,
-        d_verificador_cliente: this.form.get('d_verificador_cliente')?.value,
+        d_veri_cli: this.form.get('d_veri_cli')?.value,
         nombre: this.form.get('nombre')?.value,
         apellido: this.form.get('apellido')?.value,
         correo: this.form.get('correo')?.value,
@@ -360,18 +360,18 @@ export class EditOrderComponent implements OnInit {
 
   onUserChange(event: Event) {
     const selectedId = (event.target as HTMLSelectElement).value;
-    const selectedUser = this.usuarios.find(usuario => usuario.id_usuario?.toString() === selectedId);
+    const selectedUser = this.usuarios.find(usuario => usuario.rut_usuario?.toString() === selectedId);
     
     if (selectedUser) {
       this.selectedUsuarioName = selectedUser.nom_usu;
       this.selectedUsuarioSurname = selectedUser.ap_usu;
-      this.selectedUsuarioID = selectedUser.id_usuario ?? null;
-      this.form.patchValue({ id_usuario: this.selectedUsuarioID });
+      this.selectedUsuarioID = selectedUser.rut_usuario ?? null;
+      this.form.patchValue({ rut_usuario: this.selectedUsuarioID });
     } else {
       this.selectedUsuarioName = null;
       this.selectedUsuarioSurname = null;
       this.selectedUsuarioID = null;
-      this.form.patchValue({ id_usuario: null });
+      this.form.patchValue({ rut_usuario: null });
     }
   }
   

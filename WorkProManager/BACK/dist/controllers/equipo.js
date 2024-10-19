@@ -14,15 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateEquipo = exports.postEquipo = exports.deleteEquipo = exports.getEquipo = exports.getEquipos = void 0;
 const equipo_1 = __importDefault(require("../models/equipo")); // Asegúrate de tener el modelo de Equipo importado
+const marca_1 = __importDefault(require("../models/marca"));
 const getEquipos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const listEquipos = yield equipo_1.default.findAll();
+    const listEquipos = yield equipo_1.default.findAll({ include: [{ model: marca_1.default, attributes: ['nom_marca'] }] });
     res.json(listEquipos);
 });
 exports.getEquipos = getEquipos;
 const getEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const equipo = yield equipo_1.default.findByPk(id);
+        const equipo = yield equipo_1.default.findByPk(id, { include: [{ model: marca_1.default, attributes: ['nom_marca'] }] });
         if (equipo) {
             res.json(equipo);
         }

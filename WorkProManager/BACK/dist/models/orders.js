@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const cliente_1 = __importDefault(require("./cliente")); // Importa el modelo Cliente
 const usuario_1 = __importDefault(require("./usuario")); // Importa el modelo Usuario
-const servicio_1 = __importDefault(require("./servicio")); // Importa el modelo Servicio
 const equipo_1 = __importDefault(require("./equipo")); // Importa el modelo Equipo
 const estado_ot_1 = __importDefault(require("./estado_ot")); // Importa el modelo EstadoOT
 const connection_1 = __importDefault(require("../db/connection"));
@@ -19,11 +18,11 @@ Order.init({
         primaryKey: true,
         autoIncrement: true
     },
-    fecha: {
+    fec_creacion: {
         type: sequelize_1.DataTypes.DATE
     },
-    costo: {
-        type: sequelize_1.DataTypes.INTEGER
+    fec_entrega: {
+        type: sequelize_1.DataTypes.DATE
     },
     descripcion: {
         type: sequelize_1.DataTypes.STRING
@@ -35,18 +34,11 @@ Order.init({
             key: 'rut_cliente'
         }
     },
-    id_usuario: {
+    rut_usuario: {
         type: sequelize_1.DataTypes.INTEGER,
         references: {
             model: 'usuario',
-            key: 'id_usuario'
-        }
-    },
-    id_serv: {
-        type: sequelize_1.DataTypes.INTEGER,
-        references: {
-            model: 'servicio',
-            key: 'id_serv'
+            key: 'rut_usuario'
         }
     },
     num_equipo: {
@@ -56,13 +48,13 @@ Order.init({
             key: 'num_equipo'
         }
     },
-    id_estado: {
+    id_estado_ot: {
         type: sequelize_1.DataTypes.INTEGER,
         references: {
             model: 'estado_ot',
-            key: 'id_estado'
+            key: 'id_estado_ot'
         }
-    }
+    },
 }, {
     // Update the type to ModelOptions<Model<any, any>>
     sequelize: connection_1.default,
@@ -73,8 +65,7 @@ Order.init({
 });
 // Definir las relaciones
 Order.belongsTo(cliente_1.default, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
-Order.belongsTo(usuario_1.default, { foreignKey: 'id_usuario', targetKey: 'id_usuario' });
-Order.belongsTo(servicio_1.default, { foreignKey: 'id_serv', targetKey: 'id_serv' });
+Order.belongsTo(usuario_1.default, { foreignKey: 'rut_usuario', targetKey: 'rut_usuario' });
 Order.belongsTo(equipo_1.default, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
-Order.belongsTo(estado_ot_1.default, { foreignKey: 'id_estado', targetKey: 'id_estado' });
+Order.belongsTo(estado_ot_1.default, { foreignKey: 'id_estado_ot', targetKey: 'id_estado_ot' });
 exports.default = Order;

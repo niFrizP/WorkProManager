@@ -4,7 +4,7 @@ export interface newOrder {
     costo: number;
     fecha: Date;
     descripcion: string;
-    id_usuario: number;
+    rut_usuario: number;
     id_serv: number;
     id_estado: number;
     rut_cliente: number;
@@ -16,7 +16,7 @@ export interface newOrder {
       apellido: string;
       celular: number;
       correo: string;
-      d_verificador_cliente: number;
+      d_veri_cli: number;
     };
     Servicio: {
       nom_serv: string;

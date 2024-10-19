@@ -9,18 +9,28 @@ const Equipo = db.define('Equipo', {
         primaryKey: true, // Define que id_equipo es la clave primaria
 
     },
-    tipo_equipo: {
-        type: DataTypes.STRING
+    fec_fabric: {
+        type: DataTypes.DATE
     },
     mod_equipo: {
         type: DataTypes.STRING
     },
     id_marca: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'marca',
+            key: 'nom_marca'
+        }
     },
-    fec_fabric: {
-        type: DataTypes.DATE // Para la fecha de fabricación
+    id_tipo: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'tipo_equipo',
+            key: 'id_tipo'
+        }
     }
+
+  
 }, {
     tableName: 'equipo', // Especifica el nombre exacto de la tabla
     createdAt: false,

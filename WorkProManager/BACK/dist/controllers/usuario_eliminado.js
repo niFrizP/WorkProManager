@@ -59,7 +59,7 @@ exports.deleteUsuario = deleteUsuario;
 const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { rut_usu, d_verificador_usu, nom_usu, ap_usu, correo } = req.body; // Extrae los datos relevantes
     try {
-        // Crear el nuevo usuario sin especificar `id_usuario`
+        // Crear el nuevo usuario sin especificar `rut_usuario`
         const newUsuario = yield usuario_eliminado_1.default.create({
             rut_usu,
             d_verificador_usu,
@@ -69,7 +69,7 @@ const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
         res.json({
             msg: 'El usuario fue agregado con éxito!',
-            usuario: newUsuario // Devuelve el nuevo usuario, incluyendo el id_usuario generado
+            usuario: newUsuario // Devuelve el nuevo usuario, incluyendo el rut_usuario generado
         });
     }
     catch (error) {

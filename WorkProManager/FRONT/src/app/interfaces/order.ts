@@ -6,7 +6,7 @@ export interface Order {
     costo: number;
     fecha: Date;
     descripcion: String;
-    id_usuario: number;
+    rut_usuario: number;
     id_serv: number;
     id_estado: Number;
     rut_cliente: number;

@@ -7,7 +7,7 @@ import Servicio from '../models/servicio';
 import Usuario from '../models/usuario';
 
 
-const sequelize = new Sequelize('orden_trabajo', 'root', 'pelota50', {
+const sequelize = new Sequelize('ot_db', 'root', 'pelota50', {
     host: 'localhost',
     dialect: 'mysql',
     

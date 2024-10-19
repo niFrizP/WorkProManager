@@ -9,13 +9,11 @@ import routesEquipo from '../routes/equipo';
 import routesRol from '../routes/rol';
 import logRoutes from '../routes/log';
 import routesPago from '../routes/pago'; 
-import routesReporte from '../routes/reporte';
 import routesMarca from '../routes/marca';
-import routesOrderEliminada from '../routes/orderEliminada';
 import routesUsuarioEliminado from '../routes/usuario_eliminado';
 import ordersCountByService from '../routes/order';
 import queryRoutes from '../routes/query';
-import routesQueryReport from '../routes/queryReport';
+import routesTipo from '../routes/tipo';
 import db from '../db/connection'; // Asegúrate de que aquí importas initModels
 
 class Server {
@@ -94,12 +92,12 @@ class Server {
             next();
         }, routesEstadoOt);
 
-        this.app.use('/api/reporte', (req: Request, res: Response, next: Function) => {
+        this.app.use('/api/tipo', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
-                console.log('Acceso a reportes');
+                console.log('Acceso a tipos');
             }
             next();
-        }, routesReporte);
+        }, routesTipo);
     
         this.app.use('/api/equipo', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
@@ -136,12 +134,6 @@ class Server {
             next();
         }, routesMarca);  
 
-        this.app.use('/api/orderEliminada', (req: Request, res: Response, next: Function) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a órdenes eliminadas');
-            }
-            next();
-        }, routesOrderEliminada);
 
         this.app.use('/api/usuarioEliminado', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
@@ -150,12 +142,7 @@ class Server {
             next();
         }, routesUsuarioEliminado);
 
-        this.app.use('/api/queryReport', (req: Request, res: Response, next: Function) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a reportes');
-            }
-            next();
-        }, routesQueryReport);
+     
     }
 
     middlewares() {

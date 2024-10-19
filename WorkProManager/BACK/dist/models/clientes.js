@@ -11,7 +11,7 @@ const Cliente = connection_1.default.define('Cliente', {
         primaryKey: true, // Define que id_ot es la clave primaria
         // Si es autoincremental, añade esto
     },
-    d_verificador_cliente: {
+    d_veri_cli: {
         type: sequelize_1.DataTypes.STRING
     },
     nombre: {
