@@ -21,9 +21,9 @@ const servicio_1 = __importDefault(require("../routes/servicio"));
 const estado_ot_1 = __importDefault(require("../routes/estado_ot"));
 const equipo_1 = __importDefault(require("../routes/equipo"));
 const rol_1 = __importDefault(require("../routes/rol"));
-const log_1 = __importDefault(require("../routes/log"));
-const pago_1 = __importDefault(require("../routes/pago"));
+const log_ot_1 = __importDefault(require("../routes/log_ot"));
 const marca_1 = __importDefault(require("../routes/marca"));
+const detalle_ot_1 = __importDefault(require("../routes/detalle_ot"));
 const usuario_eliminado_1 = __importDefault(require("../routes/usuario_eliminado"));
 const order_2 = __importDefault(require("../routes/order"));
 const query_1 = __importDefault(require("../routes/query"));
@@ -49,6 +49,18 @@ class Server {
                 msg: 'API Working'
             });
         });
+        this.app.use('/api/detalle_ot', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a detalles de órdenes de trabajo');
+            }
+            next();
+        }, detalle_ot_1.default);
+        this.app.use('/api/log_ot', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a logs de órdenes de trabajo');
+            }
+            next();
+        }, log_ot_1.default);
         this.app.use('/api/query', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a consultas');
@@ -114,13 +126,7 @@ class Server {
                 console.log('Acceso a logs');
             }
             next();
-        }, log_1.default);
-        this.app.use('/api/pago', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a pagos');
-            }
-            next();
-        }, pago_1.default);
+        }, log_ot_1.default);
         this.app.use('/api/marca', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a marcas');

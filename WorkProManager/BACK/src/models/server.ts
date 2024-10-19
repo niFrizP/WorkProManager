@@ -7,9 +7,9 @@ import routesServicio from '../routes/servicio';
 import routesEstadoOt from '../routes/estado_ot';
 import routesEquipo from '../routes/equipo';
 import routesRol from '../routes/rol';
-import logRoutes from '../routes/log';
-import routesPago from '../routes/pago'; 
+import logRoutes from '../routes/log_ot';
 import routesMarca from '../routes/marca';
+import detalleOtRoutes from '../routes/detalle_ot';
 import routesUsuarioEliminado from '../routes/usuario_eliminado';
 import ordersCountByService from '../routes/order';
 import queryRoutes from '../routes/query';
@@ -42,6 +42,20 @@ class Server {
                 msg: 'API Working'
             });
         });
+
+        this.app.use('/api/detalle_ot', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a detalles de órdenes de trabajo');
+            }
+            next();
+        }, detalleOtRoutes);
+
+        this.app.use('/api/log_ot', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a logs de órdenes de trabajo');
+            }
+            next();
+        }, logRoutes);
 
         this.app.use('/api/query', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
@@ -120,12 +134,6 @@ class Server {
             next();
         }, logRoutes);
 
-        this.app.use('/api/pago', (req: Request, res: Response, next: Function) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a pagos');
-            }
-            next();
-        }, routesPago);
 
         this.app.use('/api/marca', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {

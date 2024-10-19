@@ -9,7 +9,7 @@ const EstadoOT = db.define('EstadoOT', {
         primaryKey: true, // Define que id_estado es la clave primaria
         autoIncrement: true // Indica que se incrementa automáticamente
     },
-    tipo_est: {
+    nom_estado_ot: {
         type: DataTypes.STRING // Define el tipo de estado como una cadena de caracteres
     }
 }, {
