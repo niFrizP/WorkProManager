@@ -1,11 +1,16 @@
 aside {
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  .hidden {
-    display: none;
-  }
-  
-  .z-50 {
-    z-index: 50;
-  }
+  transition: transform 0.3s ease-in-out;
+}
+
+.hidden {
+  display: none;
+}
+
+.z-50 {
+  z-index: 50;
+}
+
+.bk-image{
+  background-image: url('https://i.imgur.com/MaVZEl4.jpeg');
+  background-size: cover;
+}
