@@ -1,1 +1,71 @@
-<p>login works!</p>
+<div class="min-h-screen bg-cover bg-center">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="w-full max-w-md" id="loginForm">
+            <div class="flex justify-center">
+                <div class="w-full">
+                    <!-- Formulario de inicio de sesión -->
+                    <form class="caja-glass bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" id="loginForm" action=""
+                        method="POST" autocomplete="off">
+                        <div class="text-center">
+                            <br>
+                            <figure>
+                                <img src="https://i.imgur.com/kTQg9EM.png" alt="WPM" class="w-32 mx-auto">
+                            </figure>
+                            <br>
+                            <p class="text-lg font-semibold text-gray-800">Ingrese sus credenciales para acceder.
+                            </p>
+                        </div>
+                        <!-- Run -->
+                        <div class="mb-4">
+                            <label class="block text-gray-800 text-sm font-bold mb-2">Ingrese su run</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <i class="fas fa-user text-gray-500"></i>
+                                </span>
+                                <input
+                                    class="shadow appearance-none border rounded w-full py-2 pl-10 pr-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    type="text" name="run_login" pattern="[a-zA-Z0-9$@.-]{7,20}"
+                                    placeholder="12345678-9" maxlength="12" required>
+                            </div>
+                        </div>
+                        <!-- Contraseña -->
+                        <div class="mb-6">
+                            <label class="block text-gray-800 text-sm font-bold mb-2">Contraseña</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <i class="fas fa-key text-gray-500"></i>
+                                </span>
+                                <input
+                                    class="shadow appearance-none border rounded w-full py-2 pl-10 pr-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    type="password" name="login_contra" pattern="[a-zA-Z0-9$@.-]{7,20}"
+                                    placeholder="********" maxlength="20" required>
+                            </div>
+                        </div>
+                        <!-- Botón de inicio de sesión -->
+                        <div class="flex items-center justify-center mt-4">
+                            <button type="submit"
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">
+                                Iniciar sesión
+                            </button>
+                        </div>
+                        <!-- Olvido su contraseña -->
+                        <div class="text-center mt-4">
+                            <p class="text-gray-800 text-sm font-bold mb-2">¿Olvidaste tu contraseña?</p>
+                            <div class="relative inline-block">
+                                <a href="index.php?vista=password_reset_request"
+                                    class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-10 rounded-full focus:outline-none focus:shadow-outline">
+                                    Restablecer contraseña
+                                </a>
+                            </div>
+                        </div>
+                        <br>
+                        <!-- Mensaje de error -->
+                        <div *ngIf="loginError" class="bg-red-500 text-white p-4 rounded mt-4">
+                            {{ loginError }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
