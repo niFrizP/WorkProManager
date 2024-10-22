@@ -2,13 +2,17 @@
 module.exports = {
   content: ["./src/**/*.{html,ts}"],
   theme: {
-    backdropFilter: {
-      'none': 'none',
-      'blur': 'blur(20px)',
-      extend: {},
+    extend: {
+      backgroundImage: {
+        'hero-pattern': "url('https://i.imgur.com/MaVZEl4.jpeg')",
+      },
+      backdropFilter: {
+        'none': 'none',
+        'blur': 'blur(20px)',
+      },
     },
-    plugins: [
-      require('tailwindcss-filters'),
-    ],
-  }
-}
+  },
+  plugins: [
+    require('tailwindcss-filters'),
+  ],
+};

@@ -1,7 +1,5 @@
 <div class="flex-3 ml-64 p-8">
-  <nav
-    class="relative flex items-center justify-between px-6 py-2 shadow-none bg-custom-gradient rounded-2xl"
-  >
+  <nav class="relative flex items-center justify-between px-6 py-2 shadow-none bg-custom-gradient rounded-2xl">
     <div class="flex items-center justify-between w-full">
       <div>
         <ol class="flex space-x-2 text-white opacity-50">
@@ -9,9 +7,9 @@
           <li *ngFor="let breadcrumb of breadcrumbs; let isLast = last">
             <a *ngIf="!isLast; else lastCrumb" href="#">{{
               breadcrumb | titlecase
-            }}</a>
+              }}</a>
             <ng-template #lastCrumb>
-              <span class="font-semibold">{{ breadcrumb | titlecase }}</span>
+              <span class="italic-text">{{ breadcrumb | titlecase }}</span>
             </ng-template>
             <span *ngIf="!isLast">/</span>
           </li>
@@ -25,25 +23,21 @@
       <div class="flex items-center space-x-4">
         <div class="relative">
           <i class="fas fa-search absolute left-3 top-2.5 text-gray-500"></i>
-          <input
-            type="text"
-            class="pl-9 py-2 rounded-lg bg-white text-sm text-gray-700 border border-gray-300 focus:border-blue-500 focus:outline-none"
-            placeholder="Busca acá..."
-          />
+          <input type="text"
+            class="italic-text pl-9 py-2 rounded-lg bg-white text-sm text-gray-700 border border-gray-300 focus:border-blue-500 focus:outline-none"
+            placeholder="Busca acá..." />
         </div>
 
-        <a href="#" class="text-sm font-semibold texto-azul flex items-center">
-          <i class="fa fa-user mr-1"></i> Admin
-        </a>
-
-        <a href="#" class="texto-azul" title="Ajustes">
-          <i class="fa fa-cog"></i>
+        <a [routerLink]="['./profile/']" class="text-sm font-semibold texto-azul flex items-center">
+          <i class="fa fa-user mr-1"></i> Perfil
         </a>
       </div>
-      
+
     </div>
   </nav>
   <br><br>
-  <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none" (click)="goBack()"> Volver</button>
+  <button type="submit"
+    class="px-6 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none"
+    (click)="goBack()"> Volver</button>
 
 </div>

@@ -31,7 +31,8 @@ import { SidebarComponent } from '../../components/sidebar/sidebar.component';
   imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent],
   templateUrl: './new-ot.component.html',
 })
-export class NewOtComponent implements OnInit {  usuarios: Usuario[] = [];
+export class NewOtComponent implements OnInit {
+[x: string]: any;  usuarios: Usuario[] = [];
   tipos: Tipo[] = [];
   marcas: Marca[] = [];
   selectedUsuarioName: string | null = null;

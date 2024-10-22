@@ -37,6 +37,10 @@ import { SidebarComponent } from '../../../components/sidebar/sidebar.component'
   // styleUrls: ['./new-ot.component.css']
 })
 export class NewOtComponent implements OnInit {
+[x: string]: any;
+onServiceChange($event: Event) {
+throw new Error('Method not implemented.');
+}
   mostrarSelectServicio: boolean = false; 
   servicios: Servicio[] = []; // Inicialización como array vacío
   serviciosArray: FormArray<FormGroup> = new FormArray<FormGroup>([]);
@@ -60,6 +64,7 @@ export class NewOtComponent implements OnInit {
   nuevoServicio: string = ''; // Variable para almacenar el nuevo servicio
   operacion: string = 'Agregar ';
   newOrderId: number | null = null; // Variable para almacenar el ID de la nueva orden
+selectedServicePrecio: any;
 
 
   constructor(

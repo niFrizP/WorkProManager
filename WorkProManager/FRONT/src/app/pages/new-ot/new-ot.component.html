@@ -42,7 +42,8 @@
               type="text"
               id="nombre"
               formControlName="nombre" 
-
+              title="Nombre del cliente"
+              placeholder="Ingrese el nombre del cliente"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
           </div>
@@ -52,6 +53,8 @@
               type="text"
               id="apellido"
               formControlName="apellido"
+              title="Apellido del cliente"
+              placeholder="Ingrese el apellido del cliente"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
           </div>
@@ -113,7 +116,7 @@
 
           <div>
             <label for="marcas">Selecciona una marca:</label>
-            <select id="id_marca" (change)="onMarcaChange($event)">
+            <select id="id_marca" title="Selecciona una marca" (change)="onMarcaChange($event)">
               <option value="">Seleccione una marca</option> <!-- Opción por defecto -->
               
               <!-- Iteramos sobre la lista de marcas obtenidas y cargadas en el componente -->
@@ -129,6 +132,8 @@
               type="text"
               id="num_equipo"
               formControlName="num_equipo"
+              title="Número de serie del equipo"
+              placeholder="Ingrese el número de serie del equipo"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
           </div>
@@ -138,6 +143,8 @@
               type="date"
               id="fec_fabric"
               formControlName="fec_fabric"
+              title="Fecha de fabricación del equipo"
+              placeholder="Ingrese la fecha de fabricación"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
           </div>

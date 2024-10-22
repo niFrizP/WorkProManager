@@ -47,4 +47,5 @@ bower_components/
 
 _metadata.json
 .tsbuildinfo
-
+node_modules/
+/dist/

@@ -1,9 +1,84 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
 
+/* Estilo general de la fuente */
 * {
   font-family: "IBM Plex Sans", sans-serif;
-  font-weight: 500;
+  font-weight: 400;
+  /* Ajustar según el peso deseado */
   font-style: normal;
+  /* Ajustar según el estilo deseado */
+}
+
+/* Estilo específico para encabezados */
+h1,
+h2,
+h6 {
+  font-weight: 700;
+  /* Usar negrita para encabezados */
+}
+
+/* Estilo para párrafos */
+p {
+  font-weight: 400;
+  /* Regular para párrafos */
+}
+
+/* Ejemplo de uso de fuente ligera en un texto específico */
+.light-text {
+  font-weight: 300;
+  /* Estilo ligero */
+}
+
+/* Ejemplo de uso de cursiva en un texto específico */
+.italic-text {
+  font-style: italic;
+  /* Estilo en cursiva */
+}
+
+.background {
+  background-color: rgb(22, 21, 21);
+  /* Color de fondo */
+}
+
+/* Definir la fuente normal (regular) */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/FRONT/assets/fonts/IBMPlexSans-Regular.woff2') format('woff2'),
+    url('/FRONT/assets/fonts/IBMPlexSans-Regular.woff') format('woff'),
+    url('/FRONT/assets/fonts/IBMPlexSans-Regular.ttf') format('truetype');
+  /* Fallback */
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Definir la fuente en cursiva */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/FRONT/assets/fonts/IBMPlexSans-Italic.woff2') format('woff2'),
+    url('/FRONT/assets/fonts/IBMPlexSans-Italic.woff') format('woff'),
+    url('/FRONT/assets/fonts/IBMPlexSans-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Definir la fuente negrita */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/FRONT/assets/fonts/IBMPlexSans-Bold.woff2') format('woff2'),
+    url('/FRONT/assets/fonts/IBMPlexSans-Bold.woff') format('woff'),
+    url('/FRONT/assets/fonts/IBMPlexSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Definir la fuente negrita cursiva */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/FRONT/assets/fonts/IBMPlexSans-BoldItalic.woff2') format('woff2'),
+    url('/FRONT/assets/fonts/IBMPlexSans-BoldItalic.woff') format('woff'),
+    url('/FRONT/assets/fonts/IBMPlexSans-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
 }
 
 body {
@@ -15,5 +90,12 @@ body {
 @tailwind components;
 @tailwind utilities;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

@@ -4,13 +4,14 @@ import { filter } from 'rxjs/operators';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { Location } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-header',
   standalone: true,
   template: '<app-header></app-header>',
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, RouterModule],
   providers: [TitleCasePipe],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],

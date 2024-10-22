@@ -1,69 +1,64 @@
-<!--<div class="flex-3 ml-64 p-8">
+<div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
+  <div class="contenedor">
     <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
-  
-    <div class="flex justify-between items-center mb-4">
-      <div>
-        
-  
-        <div>
-          <label for="filter" class="mr-2 font-medium">Todos los usuarios</label>
-          <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedUsuario" (change)="filterOrdersByUsuario(selectedUsuario)">
+
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+      <div class="flex flex-wrap gap-4">
+        <!-- Formulario de Búsqueda por RUT Cliente -->
+        <form class="search-form flex items-center gap-2" (submit)="filterOrdersByRutCliente()">
+          <input type="text" placeholder="Buscar por RUT Cliente" [(ngModel)]="searchRutCliente"
+            (input)="filterOrdersByRutCliente()" class="search-input p-2 border rounded" name="rut_cliente" />
+          <button type="submit" class="search-btn p-2 bg-blue-500 text-white rounded">Buscar</button>
+        </form>
+        <form class="search-form" (submit)="filterOrdersByEquipo()">
+          <input type="text" placeholder="Buscar equipo por número de serie" [(ngModel)]="searchEquipo"
+            (input)="filterOrdersByEquipo()" class="search-input" name="num_equipo" />
+          <button type="submit" class="search-btn">Buscar</button>
+        </form>
+      </div>
+      <!-- Select de Servicios -->
+      <div class="flex items-center gap-2">
+        <label for="filter" class="font-medium">Todos los servicios</label>
+        <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedServicio"
+          (change)="filterOrdersByServicio(selectedServicio)" title="Filtrar por servicio">
+          <option value="todos">Todos</option>
+          <option *ngFor="let servicio of servicios" [value]="servicio.nom_serv">{{ servicio.nom_serv }}</option>
+        </select>
+        <!-- Select de Usuarios -->
+        <div class="flex items-center gap-2">
+          <label for="filter" class="font-medium">Todos los usuarios</label>
+          <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedUsuario"
+            (change)="filterOrdersByUsuario(selectedUsuario)" title="Filtrar por usuario">
             <option value="todos">Todas</option>
-            <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu }} {{usuario.ap_usu}}</option>
+            <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu }} {{usuario.ap_usu}}
+            </option>
           </select>
         </div>
-  
-        <div>
-          <label for="filter" class="mr-2 font-medium">Todos los servicios</label>
-          <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedServicio" (change)="filterOrdersByServicio(selectedServicio)">
-            <option value="todos">Todos</option>
-            <option *ngFor="let servicio of servicios" [value]="servicio.nom_serv">{{ servicio.nom_serv }}</option>
-          </select>
-        </div>
-        
-        <div>
-          <label for="monthSelect" class="mr-2 font-medium">Mes</label>
-          <select #monthSelect class="p-2 border rounded" (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)">
+      </div>
+
+      <!-- Select de Mes y Año -->
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
+          <label for="monthSelect" class="font-medium">Mes</label>
+          <select #monthSelect class="p-2 border rounded"
+            (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)" title="Filtrar por mes">
             <option value="0">Todos</option>
             <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
           </select>
-  
-          <label for="yearSelect" class="ml-4 mr-2 font-medium">Año</label>
-          <select #yearSelect class="p-2 border rounded" (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)">
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label for="yearSelect" class="font-medium">Año</label>
+          <select #yearSelect class="p-2 border rounded"
+            (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)" title="Filtrar por año">
             <option value="0">Todos</option>
             <option *ngFor="let year of years">{{ year }}</option>
           </select>
         </div>
-        <form class="search-form" (submit)="filterOrdersByRutCliente()">
-          <input
-            type="text"
-            placeholder="Buscar por RUT Cliente"
-            [(ngModel)]="searchRutCliente"
-            (input)="filterOrdersByRutCliente()"
-            class="search-input"
-            name="rut_cliente"
-          />
-          <button type="submit" class="search-btn">Buscar</button>
-        </form>
-  
-        <form class="search-form" (submit)="filterOrdersByEquipo()">
-          <input
-            type="text"
-            placeholder="Buscar equipo por número de serie"
-            [(ngModel)]="searchEquipo"
-            (input)="filterOrdersByEquipo()"
-            class="search-input"
-            name="num_equipo"
-          />
-          <button type="submit" class="search-btn">Buscar</button>
-        </form>
-  
-        
-  
       </div>
-  
     </div>
-  
+
+
     <table class="w-full border-collapse">
       <thead>
         <tr>
@@ -90,12 +85,14 @@
           <td>{{ newOrder.EstadoOT.tipo_est }}</td>
           <td>{{ newOrder.Usuario.nom_usu }}</td>
           <td>
-            <button (click)="aprobarOT(newOrder.id_ot)" class="bg-green-500 text-white px-2 py-1 rounded-md">✅</button>
+            <button type="button" (click)="aprobarOT(newOrder.id_ot)"
+              class="bg-green-500 text-white px-2 py-1 rounded-md">✅</button>
           </td>
         </tr>
       </tbody>
     </table>
-  
+
+
     <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
   </div>
-  
+</div>
