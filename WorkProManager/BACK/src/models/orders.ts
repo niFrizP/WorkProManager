@@ -17,11 +17,11 @@ Order.init({
         primaryKey: true,
         autoIncrement: true
     },
-    fecha: {
+    fec_creacion: {
         type: DataTypes.DATE
     },
-    costo: {
-        type: DataTypes.INTEGER
+    fec_entrega: {
+        type: DataTypes.DATE
     },
     descripcion: {
         type: DataTypes.STRING
@@ -33,20 +33,14 @@ Order.init({
             key: 'rut_cliente'
         }
     },
-    id_usuario: {
+    rut_usuario: {
         type: DataTypes.INTEGER,
         references: {
             model: 'usuario',
-            key: 'id_usuario'
+            key: 'rut_usuario'
         }
     },
-    id_serv: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'servicio',
-            key: 'id_serv'
-        }
-    },
+
     num_equipo: {
         type: DataTypes.INTEGER,
         references: {
@@ -54,13 +48,15 @@ Order.init({
             key: 'num_equipo'
         }
     },
-    id_estado: {
+    id_estado_ot: {
         type: DataTypes.INTEGER,
         references: {
             model: 'estado_ot',
-            key: 'id_estado'
+            key: 'id_estado_ot'
         }
-    }
+    },
+    
+    
 }, {
     // Update the type to ModelOptions<Model<any, any>>
     sequelize: db,
@@ -72,9 +68,8 @@ Order.init({
 
 // Definir las relaciones
 Order.belongsTo(Cliente, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
-Order.belongsTo(Usuario, { foreignKey: 'id_usuario', targetKey: 'id_usuario' });
-Order.belongsTo(Servicio, { foreignKey: 'id_serv', targetKey: 'id_serv' });
+Order.belongsTo(Usuario, { foreignKey: 'rut_usuario', targetKey: 'rut_usuario' });
 Order.belongsTo(Equipo, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
-Order.belongsTo(EstadoOT, { foreignKey: 'id_estado', targetKey: 'id_estado' });
+Order.belongsTo(EstadoOT, { foreignKey: 'id_estado_ot', targetKey: 'id_estado_ot' });
 
 export default Order;

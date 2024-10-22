@@ -7,9 +7,9 @@ const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
 // Definición del modelo Usuario
 const UsuarioEliminado = connection_1.default.define('UsuarioEliminado', {
-    id_usuario: {
+    rut_usuario: {
         type: sequelize_1.DataTypes.INTEGER, // El tipo de dato es un entero
-        primaryKey: true, // Define que id_usuario es la clave primaria
+        primaryKey: true, // Define que rut_usuario es la clave primaria
         autoIncrement: true // Indica que se incrementa automáticamente
     },
     rut_usu: {
@@ -37,5 +37,5 @@ const UsuarioEliminado = connection_1.default.define('UsuarioEliminado', {
     createdAt: false, // Desactiva el timestamp de creación
     updatedAt: false // Desactiva el timestamp de actualización
 });
-UsuarioEliminado.hasMany(UsuarioEliminado, { foreignKey: 'id_usuario' });
+UsuarioEliminado.hasMany(UsuarioEliminado, { foreignKey: 'rut_usuario' });
 exports.default = UsuarioEliminado;

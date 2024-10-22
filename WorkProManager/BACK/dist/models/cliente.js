@@ -12,19 +12,19 @@ Cliente.init({
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
     },
-    d_verificador_cliente: {
+    d_veri_cli: {
         type: sequelize_1.DataTypes.STRING
     },
-    nombre: {
+    nom_cli: {
         type: sequelize_1.DataTypes.STRING
     },
-    apellido: {
+    ap_cli: {
         type: sequelize_1.DataTypes.STRING
     },
-    correo: {
+    email_cli: {
         type: sequelize_1.DataTypes.STRING
     },
-    celular: {
+    cel_cli: {
         type: sequelize_1.DataTypes.INTEGER
     }
 }, {

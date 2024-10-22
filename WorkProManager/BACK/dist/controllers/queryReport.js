@@ -54,12 +54,12 @@ const deleteReporte = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.deleteReporte = deleteReporte;
 const postReporte = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id_usuario, fecha, descripcion, id_ot } = req.body;
+    const { rut_usuario, fecha, descripcion, id_ot } = req.body;
     try {
         const newReporte = yield reporte_1.default.create({
             fecha,
             descripcion,
-            id_usuario,
+            rut_usuario,
             id_ot
         });
         res.json({
@@ -81,7 +81,7 @@ const updateReporte = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         const reporte = yield reporte_1.default.findByPk(id);
         if (reporte) {
-            yield reporte.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
+            yield reporte.update(body); // El body incluye ahora id_cliente, rut_usuario, etc.
             res.json({
                 msg: 'La orden fue actualizada con éxito'
             });

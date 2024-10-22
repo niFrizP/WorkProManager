@@ -49,7 +49,6 @@ export const postServicio = async (req: Request, res: Response) => {
         // Crear el nuevo servicio sin especificar `id_servicio`
         const newServicio = await Servicio.create({
             nom_serv,
-            precio
         });
 
         res.json({

@@ -20,8 +20,8 @@ const orders_1 = __importDefault(require("../models/orders"));
 const router = (0, express_1.Router)();
 router.get('/', order_1.getOrders); // Ruta para obtener las órdenes con joins
 router.get('/:id', order_1.getOrder); // Para obtener una orden específica por ID
-router.post('/', order_1.postOrder); // Para crear una nueva orden
 router.put('/:id', order_1.updateOrder); // Para actualizar una orden por ID
+router.post('/', order_1.postOrder); // Para crear una nueva orden
 router.delete('/:id', order_1.deleteOrder); // Para eliminar una orden por ID
 router.get('/count-by-status', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

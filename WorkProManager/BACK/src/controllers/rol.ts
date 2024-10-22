@@ -42,11 +42,11 @@ export const deleteRol = async (req: Request, res: Response) => {
 };
 
 export const postRol = async (req: Request, res: Response) => {
-    const { rol } = req.body; // Extrae el rol
+    const { nom_rol } = req.body; // Extrae el rol
 
     try {
         const newRol = await Rol.create({
-            rol
+            nom_rol
         });
 
         res.json({

@@ -43,12 +43,12 @@ export const deleteEstadoOT = async (req: Request, res: Response) => {
 };
 
 export const postEstadoOT = async (req: Request, res: Response) => {
-    const { tipo_est } = req.body; // Extrae los datos relevantes
+    const { nom_estado_ot } = req.body; // Extrae los datos relevantes
 
     try {
         // Crear el nuevo estado sin especificar `id_estado`
         const newEstadoOT = await EstadoOT.create({
-            tipo_est
+            nom_estado_ot
         });
 
         res.json({

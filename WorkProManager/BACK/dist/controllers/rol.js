@@ -57,10 +57,10 @@ const deleteRol = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.deleteRol = deleteRol;
 const postRol = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { rol } = req.body; // Extrae el rol
+    const { nom_rol } = req.body; // Extrae el rol
     try {
         const newRol = yield rol_1.default.create({
-            rol
+            nom_rol
         });
         res.json({
             msg: 'El rol fue agregado con éxito!',

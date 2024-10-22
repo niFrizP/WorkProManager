@@ -32,7 +32,7 @@
           </div>
           <div class="w-16">
             <label for="dv_cliente" class="block text-sm font-medium text-gray-700">DV</label>
-            <input type="text" id="d_verificador_cliente" formControlName="d_verificador_cliente"
+            <input type="text" id="d_veri_cli" formControlName="d_veri_cli"
               placeholder="d_verificador_cliente"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
               maxlength="1" placeholder="K" />
@@ -54,6 +54,8 @@
       <fieldset class="border border-gray-200 p-4 rounded-lg">
         <legend class="text-lg font-semibold">Detalle Equipo</legend>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
           <div>
             <label for="tipo_equipo" class="block text-sm font-medium text-gray-700">Tipo de equipo</label>
             <select id="tipo_equipo" formControlName="tipo_equipo" title="Tipo de equipo" required
@@ -63,6 +65,7 @@
               <option value="celular">Celular</option>
             </select>
           </div>
+     
           <div>
             <label for="mod_equipo" class="block text-sm font-medium text-gray-700">Modelo</label>
             <input type="text" id="mod_equipo" formControlName="mod_equipo" placeholder="Ej: A33 5g"
@@ -71,11 +74,11 @@
           </div>
           <div>
             <label for="marcas">Selecciona una marca:</label>
-            <select id="id_marca" formControlName="id_marca" (change)="onMarcaChange($event)" title="Marca Equipo"
+            <select id="id_marca" formControlName="id_marca"  title="Marca Equipo"
               required>
               <option value="id_marca">Seleccione una marca</option>
               <option *ngFor="let marca of marcas" [value]="marca.id_marca">
-                {{ marca.nombre_marca }}
+                {{ marca.nom_marca }}
               </option>
             </select>
           </div>
@@ -130,14 +133,14 @@
 
       <!-- Usuario -->
 
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
+    <fieldset class="border border-gray-200 p-4 rounded-lg">
         <legend class="text-lg font-semibold">Usuario</legend>
 
         <div>
           <label for="usuarios">Selecciona un Usuario:</label>
           <select id="usuarios" formControlName="id_usuario" (change)="onUserChange($event)" title="Usuario a realizar el servicio" required>
             <option value="">Seleccione un usuario</option>
-            <option *ngFor="let usuario of usuarios" [value]="usuario.id_usuario" formControlName="usuario.id_usuario">
+            <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario" formControlName="usuario.rut_usuario">
               {{ usuario.nom_usu }} {{usuario.ap_usu}}
             </option>
           </select>
@@ -156,3 +159,36 @@
           Guardar Orden de Trabajo
         </button>
       </div>
+     <!-- Sección de Servicios -->
+
+     <fieldset class="border border-gray-200 p-4 rounded-lg">
+      <legend class="text-lg font-semibold">Servicios</legend>
+    
+      <div>
+        <label for="servicio">Selecciona un Servicio:</label>
+        <select id="servicio" [(ngModel)]="servicioSeleccionado" (change)="onServicioChange($event)">
+          <option value="">Seleccione un servicio</option>
+          <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">
+            {{ servicio.nom_serv }}
+          </option>
+        </select>
+    
+        <!-- Botón para agregar el servicio -->
+        <button type="button" (click)="agregarServicio()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
+          Añadir Servicio
+        </button>
+      </div>
+    
+      <!-- Lista de servicios añadidos -->
+      <div *ngIf="serviciosSeleccionados.length > 0">
+        <h3>Servicios Añadidos:</h3>
+        <ul>
+          <li *ngFor="let servicio of serviciosSeleccionados">
+            {{ servicio.nom_serv }}
+            <!-- Botón para eliminar un servicio de la lista -->
+            <button type="button" (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
+          </li>
+        </ul>
+      </div>
+    
+    
