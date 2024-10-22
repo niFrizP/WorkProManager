@@ -12,8 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteDetalleOt = exports.updateDetalleOt = exports.postDetalleOt = exports.getDetalleOt = exports.getDetallesOtByOT = exports.getDetallesOt = void 0;
+exports.deleteDetalleOtByOtId = exports.deleteDetalleOt = exports.updateDetalleOt = exports.postDetalleOt = exports.getDetalleOt = exports.getDetallesOtByOT = exports.getDetallesOt = void 0;
 const detalle_ot_1 = __importDefault(require("../models/detalle_ot"));
+const servicio_1 = __importDefault(require("../models/servicio"));
 // Obtener todos los detalles de OT
 const getDetallesOt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -30,6 +31,7 @@ const getDetallesOtByOT = (req, res) => __awaiter(void 0, void 0, void 0, functi
     const { id_ot } = req.params;
     try {
         const detallesOt = yield detalle_ot_1.default.findAll({
+            include: [{ model: servicio_1.default, attributes: ['nom_serv'] }],
             where: { id_ot }
         });
         res.json(detallesOt);
@@ -131,3 +133,16 @@ const deleteDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.deleteDetalleOt = deleteDetalleOt;
+const deleteDetalleOtByOtId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id_ot } = req.params;
+    try {
+        yield detalle_ot_1.default.destroy({
+            where: { id_ot }
+        });
+    }
+    catch (error) {
+        console.error('Error en deleteDetalleOtByOtId:', error);
+        res.status(500).json({ message: 'Error al eliminar el detalle de OT' });
+    }
+});
+exports.deleteDetalleOtByOtId = deleteDetalleOtByOtId;

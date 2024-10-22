@@ -38,6 +38,10 @@ export class DetalleOTService {
         return this.http.delete<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}/${id_serv}`);
     }
 
+    deleteDetalleOTByOtId(id_ot: number): Observable<void> {
+        return this.http.delete<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}`);
+    }
+
     updateDetalleOT(id_ot: number,id_serv: number, detalleOT: DetalleOT): Observable<void> {
         return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}/${id_serv}`, detalleOT);
     }
