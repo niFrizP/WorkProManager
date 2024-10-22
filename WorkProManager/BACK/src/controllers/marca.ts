@@ -50,11 +50,11 @@ export const deleteMarca = async (req: Request, res: Response) => {
 }
 
 export const postMarca = async (req: Request, res: Response) => {
-    const { nombre_marca } = req.body; // Extrae el dato relevante
+    const { nom_marca } = req.body; // Extrae el dato relevante
 
     try {
         const newMarca = await Marca.create({
-            nombre_marca
+            nom_marca
         });
 
         res.json({

@@ -66,14 +66,14 @@ export class UsuariosComponent {
         this.page = page;
       }
 
-      deleteUsuario(id_usuario: number): void {
+      deleteUsuario(rut_usuario: number): void {
         if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
-          this.usuarioService.getUsuario(id_usuario).subscribe(
+          this.usuarioService.getUsuario(rut_usuario).subscribe(
             (usuario: Usuario) => {
               this.usuarioEliminadoService.saveUsuario(usuario).subscribe(
                 () => {
                   console.log('Orden registrada como eliminada', usuario);
-                  this.usuarioservice.deleteUsuarios(id_usuario).subscribe(
+                  this.usuarioservice.deleteUsuarios(rut_usuario).subscribe(
                     () => {
                       console.log('Orden eliminada');
                       this.loadusuarios(); // Actualizar la lista de órdenes

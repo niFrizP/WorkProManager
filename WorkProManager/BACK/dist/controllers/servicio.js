@@ -62,7 +62,6 @@ const postServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         // Crear el nuevo servicio sin especificar `id_servicio`
         const newServicio = yield servicio_1.default.create({
             nom_serv,
-            precio
         });
         res.json({
             msg: 'El servicio fue agregado con éxito!',

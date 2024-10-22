@@ -77,38 +77,36 @@
 
     </div>
 
-    <table class="w-full border-collapse">
-      <thead>
-        <tr>
-          <th class="border p-2">Fecha</th>
-          <th class="border p-2">OT ID</th>
-          <th class="border p-2">Descripción</th>
-          <th class="border p-2">Equipo</th>
-          <th class="border p-2">Costo</th>
-          <th class="border p-2">Rut Cliente</th>
-          <th class="border p-2">Servicio</th>
-          <th class="border p-2">Estado</th>
-          <th class="border p-2">Usuario</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
-          <td>{{ newOrder.fecha }}</td>
-          <td>{{ newOrder.id_ot }}</td>
-          <td>{{ newOrder.descripcion }}</td>
-          <td>{{ newOrder.Equipo.mod_equipo }}</td>
-          <td>{{ newOrder.costo }}</td>
-          <td>{{ newOrder.rut_cliente }}</td>
-          <td>{{ newOrder.Servicio.nom_serv }}</td>
-          <td>{{ newOrder.EstadoOT.tipo_est }}</td>
-          <td>{{ newOrder.Usuario.nom_usu }}</td>
-          <td>
-            <button type="button" [routerLink]="['/newOrders/edit', newOrder.id_ot]">✏️</button>
-            <button type="button" (click)="newOrder.id_ot !== undefined ? deleteOrder(newOrder.id_ot) : null">🗑️</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <table class="w-full border-collapse">
+    <thead>
+      <tr>
+        <th class="border p-2">Fecha de entrega</th>
+        <th class="border p-2">Equipo</th>
+        <th class="border p-2">OT ID</th>
+        <th class="border p-2">Descripción</th>
+        <th class="border p-2">Equipo</th>
+        <th class="border p-2">Rut Cliente</th>
+        <th class="border p-2">Estado</th>
+        <th class="border p-2">Usuario</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
+        <td>{{ newOrder.fec_entrega }}</td>
+        <td>{{ newOrder.num_equipo }}</td>
+        <td>{{ newOrder.id_ot }}</td>
+        <td>{{ newOrder.descripcion }}</td>
+        <td>{{ newOrder.Equipo.mod_equipo }}</td>
+        <td>{{ newOrder.rut_cliente }}</td>
+        <td>{{ newOrder.EstadoOT.nom_estado_ot }}</td>
+        <td>{{ newOrder.Usuario.nom_usu }}</td>
+        <td>
+          <button [routerLink]="['/newOrders/edit', newOrder.id_ot]">✏️</button>
+          <button (click)="newOrder.id_ot !== undefined ? deleteOrder(newOrder.id_ot) : null">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
       <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
   </div>

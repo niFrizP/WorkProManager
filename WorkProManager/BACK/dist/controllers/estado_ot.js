@@ -57,11 +57,11 @@ const deleteEstadoOT = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.deleteEstadoOT = deleteEstadoOT;
 const postEstadoOT = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { tipo_est } = req.body; // Extrae los datos relevantes
+    const { nom_estado_ot } = req.body; // Extrae los datos relevantes
     try {
         // Crear el nuevo estado sin especificar `id_estado`
         const newEstadoOT = yield estado_ot_1.default.create({
-            tipo_est
+            nom_estado_ot
         });
         res.json({
             msg: 'El estado fue agregado con éxito!',

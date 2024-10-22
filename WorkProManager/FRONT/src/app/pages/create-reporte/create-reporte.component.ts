@@ -29,7 +29,7 @@ export class CreateReportComponente implements OnInit {
     // Inicialización del formulario con la fecha deshabilitada
     this.today = new Date().toISOString().split('T')[0]; // Fecha de hoy formateada YYYY-MM-DD
     this.reportForm = this.fb.group({
-      id_usuario: [7, Validators.required],
+      rut_usuario: [7, Validators.required],
       id_ot: [null, Validators.required],
       fecha: [{ value: this.today, disabled: true }], // Fecha de hoy preestablecida y deshabilitada
       descripcion: ['', Validators.required]

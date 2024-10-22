@@ -7,7 +7,7 @@ const Marca = db.define('Marca', {
         primaryKey: true, // Define que id_marca es la clave primaria
         autoIncrement: true // Se puede agregar esto si es autoincremental
     },
-    nombre_marca: {
+    nom_marca: {
         type: DataTypes.STRING,
         allowNull: false // Asegura que no sea nulo
     }

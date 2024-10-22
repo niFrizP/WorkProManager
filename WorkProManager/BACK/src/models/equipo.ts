@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
-import Order from './orders';
+import Marca from './marca';
+import Tipo_Equipo from './tipo';
 
 const Equipo = db.define('Equipo', {
     
@@ -9,18 +10,28 @@ const Equipo = db.define('Equipo', {
         primaryKey: true, // Define que id_equipo es la clave primaria
 
     },
-    tipo_equipo: {
-        type: DataTypes.STRING
+    fecha_fab: {
+        type: DataTypes.DATE
     },
     mod_equipo: {
         type: DataTypes.STRING
     },
     id_marca: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'marca',
+            key: 'nom_marca'
+        }
     },
-    fec_fabric: {
-        type: DataTypes.DATE // Para la fecha de fabricación
+    id_tipo: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'nom_tipo',
+            key: 'id_tipo'
+        }
     }
+
+  
 }, {
     tableName: 'equipo', // Especifica el nombre exacto de la tabla
     createdAt: false,
@@ -28,6 +39,8 @@ const Equipo = db.define('Equipo', {
 });
 
 Equipo.hasMany(Equipo, { foreignKey: 'num_equipo' });
+Equipo.belongsTo(Marca, { foreignKey: 'id_marca', targetKey: 'id_marca' });
+Equipo.belongsTo(Tipo_Equipo, { foreignKey: 'id_tipo', targetKey: 'id_tipo' });
 
 
 export default Equipo;

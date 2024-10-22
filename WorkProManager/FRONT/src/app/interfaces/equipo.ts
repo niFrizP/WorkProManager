@@ -1,7 +1,7 @@
 export interface Equipo {
     num_equipo?: number;
-    tipo_equipo?: string;
+    id_tipo?: number;
     mod_equipo?: string;
-    fec_fabric?: Date;
+    fecha_fab?: Date;
     id_marca?: number;
 }

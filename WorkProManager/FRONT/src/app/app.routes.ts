@@ -7,12 +7,9 @@ import { NewOtComponent } from './pages/orders/new-ot/new-ot.component';
 import { LoginComponent } from './pages/login/login.component';
 import { OrdersComponent } from './pages/orders/orders.component';
 import { UsuariosComponent } from './pages/usuarios/usuarios.component';
-import { EditOrderComponent } from './pages/edit-order/edit-order.component';
-import { ReportesComponent } from './pages/reportes/reportes.component';
-import { ViewOrderComponent } from './pages/view-order/view-order.component';
 import { CreateReportComponente } from './pages/create-reporte/create-reporte.component';
-import { AprobacionesComponent } from './pages/aprobaciones/aprobaciones.component';
 import { AprobacionesTickComponent } from './pages/aprobaciones-tick/aprobaciones-tick.component';
+import { EditOrderComponent } from './pages/edit-order/edit-order.component';
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' }, // Redirige a 'home' al inicio
   { path: 'login', component: LoginComponent }, // Ruta a 'login'
@@ -22,11 +19,8 @@ export const routes: Routes = [
   { path: 'orders/new-ot', component: NewOtComponent }, // Ruta a 'new-ot'
   { path: 'header', component: HeaderComponent }, // Ruta a 'header'
   { path: 'profile', component: ProfileComponent }, // Ruta a 'profile'
-  { path: 'newOrders/edit/:id', component: EditOrderComponent },
-  { path: 'orderView/:id', component: ViewOrderComponent },
   { path: 'usuarios', component: UsuariosComponent }, // Ruta a 'usuarios'
-  { path: 'reportes', component: ReportesComponent }, // Ruta a 'reportes'
   { path: 'orderView/:id_ot/reportes/createReport/:id_ot', component: CreateReportComponente},
-  { path: 'aprobaciones', component: AprobacionesComponent}, // Ruta a 'aprobaciones'
+  { path: 'newOrders/edit/:id', component: EditOrderComponent},
   { path: 'aprobaciones/:id_ot', component: AprobacionesTickComponent}, // Ruta a 'aprobaciones'
 ];

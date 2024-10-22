@@ -42,8 +42,8 @@ export const countOrdersByDate = async (req: Request, res: Response) => {
 export const getOrdersByUsuario = async (req: Request, res: Response) => {
     try {
         const ordersCount = await Order.findAll({
-          attributes: ['id_usuario', [sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número de órdenes por estado
-          group: ['id_usuario'],  // Agrupar por el campo 'estado'
+          attributes: ['rut_usuario', [sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número de órdenes por estado
+          group: ['rut_usuario'],  // Agrupar por el campo 'estado'
         });
 
        
@@ -58,7 +58,7 @@ export const getOrdersCosto = async (req: Request, res: Response) => {
     try {
         const ordersCount = await Order.findAll({
           attributes: ['', [sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número de órdenes por estado
-          group: ['id_usuario'],  // Agrupar por el campo 'estado'
+          group: ['rut_usuario'],  // Agrupar por el campo 'estado'
         });
 
        
@@ -180,8 +180,8 @@ export const getOrdersByMonthAndYear = async (req: Request, res: Response) => {
 export const getOrdersBy = async (req: Request, res: Response) => {
     try {
         const ordersCount = await Order.findAll({
-          attributes: ['id_usuario', [sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número de órdenes por estado
-          group: ['id_usuario'],  // Agrupar por el campo 'estado'
+          attributes: ['rut_usuario', [sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número de órdenes por estado
+          group: ['rut_usuario'],  // Agrupar por el campo 'estado'
         });
 
        
@@ -241,7 +241,7 @@ export const deleteOrder = async (req: Request, res: Response) => {
 }
 
 export const postOrder = async (req: Request, res: Response) => {
-    const { fecha, costo, descripcion, rut_cliente, id_usuario, id_serv, num_equipo,id_estado } = req.body;
+    const { fecha, costo, descripcion, rut_cliente, rut_usuario, id_serv, num_equipo,id_estado } = req.body;
 
     try {
         const newOrder = await Order.create({
@@ -249,7 +249,7 @@ export const postOrder = async (req: Request, res: Response) => {
             costo, 
             descripcion,
             rut_cliente, // Incluye id_cliente en la creación
-            id_usuario, // Incluye id_usuario
+            rut_usuario, // Incluye rut_usuario
             id_serv,    // Incluye id_serv
             num_equipo,  // Incluye num_equipo
             id_estado
@@ -277,7 +277,7 @@ export const updateOrder = async (req: Request, res: Response) => {
         const order = await Order.findByPk(id);
 
         if(order) {
-            await order.update(body); // El body incluye ahora id_cliente, id_usuario, etc.
+            await order.update(body); // El body incluye ahora id_cliente, rut_usuario, etc.
             res.json({
                 msg: 'La orden fue actualizada con éxito'
             });

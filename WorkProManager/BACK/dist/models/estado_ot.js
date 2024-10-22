@@ -7,12 +7,12 @@ const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
 // Definición del modelo EstadoOT en lugar de Equipo
 const EstadoOT = connection_1.default.define('EstadoOT', {
-    id_estado: {
+    id_estado_ot: {
         type: sequelize_1.DataTypes.INTEGER, // El tipo de dato es un entero
         primaryKey: true, // Define que id_estado es la clave primaria
         autoIncrement: true // Indica que se incrementa automáticamente
     },
-    tipo_est: {
+    nom_estado_ot: {
         type: sequelize_1.DataTypes.STRING // Define el tipo de estado como una cadena de caracteres
     }
 }, {
@@ -20,5 +20,5 @@ const EstadoOT = connection_1.default.define('EstadoOT', {
     createdAt: false, // Desactiva el timestamp de creación
     updatedAt: false // Desactiva el timestamp de actualización
 });
-EstadoOT.hasMany(EstadoOT, { foreignKey: 'id_estado' });
+EstadoOT.hasMany(EstadoOT, { foreignKey: 'id_estado_ot' });
 exports.default = EstadoOT;

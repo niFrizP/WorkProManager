@@ -44,17 +44,17 @@ export const deleteCliente = async (req: Request, res: Response) => {
 }
 
 export const postCliente = async (req: Request, res: Response) => {
-    const { rut_cliente, nombre, apellido, correo, celular, d_verificador_cliente} = req.body; // Extrae los datos relevantes
+    const { rut_cliente, nom_cli, ap_cli, email_cli, cel_cli, d_veri_cli} = req.body; // Extrae los datos relevantes
 
     try {
         // Crear el nuevo cliente sin especificar `id_cliente`
         const newCliente = await Cliente.create({
             rut_cliente,
-            nombre,
-            apellido,
-            correo,
-            celular,
-            d_verificador_cliente
+            nom_cli,
+            ap_cli,
+            email_cli,
+            cel_cli,
+            d_veri_cli
         });
 
         res.json({

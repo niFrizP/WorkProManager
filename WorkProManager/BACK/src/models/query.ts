@@ -34,11 +34,11 @@ Query.init({
             key: 'rut_cliente'
         }
     },
-    id_usuario: {
+    rut_usuario: {
         type: DataTypes.INTEGER,
         references: {
             model: 'usuario',
-            key: 'id_usuario'
+            key: 'rut_usuario'
         }
     },
     id_serv: {
@@ -73,7 +73,7 @@ Query.init({
 
 // Definir las relaciones
 Query.belongsTo(Cliente, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
-Query.belongsTo(Usuario, { foreignKey: 'id_usuario', targetKey: 'id_usuario' });
+Query.belongsTo(Usuario, { foreignKey: 'rut_usuario', targetKey: 'rut_usuario' });
 Query.belongsTo(Servicio, { foreignKey: 'id_serv', targetKey: 'id_serv' });
 Query.belongsTo(Equipo, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
 Query.belongsTo(EstadoOT, { foreignKey: 'id_estado', targetKey: 'id_estado' });

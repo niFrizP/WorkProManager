@@ -11,7 +11,7 @@ const Marca = connection_1.default.define('Marca', {
         primaryKey: true, // Define que id_marca es la clave primaria
         autoIncrement: true // Se puede agregar esto si es autoincremental
     },
-    nombre_marca: {
+    nom_marca: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false // Asegura que no sea nulo
     }

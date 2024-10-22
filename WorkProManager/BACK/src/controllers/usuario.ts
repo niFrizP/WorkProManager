@@ -1,15 +1,17 @@
 import { Request, Response } from 'express';
 import Usuario from '../models/usuario'; // Asegúrate de tener el modelo de Usuario importado
+import Rol from '../models/rol';
 
 export const getUsuarios = async (req: Request, res: Response) => {
-    const listUsuarios = await Usuario.findAll();
+    const listUsuarios = await Usuario.findAll({include: [{model: Rol, attributes: ['nom_rol']}]});
     res.json(listUsuarios);
 };
+
 
 export const getUsuario = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const usuario = await Usuario.findByPk(id);
+        const usuario = await Usuario.findByPk(id,{include: [{model: Rol, attributes: ['nom_rol']}]});
 
         if (usuario) {
             res.json(usuario);
@@ -25,6 +27,8 @@ export const getUsuario = async (req: Request, res: Response) => {
         });
     }
 };
+
+
 
 export const deleteUsuario = async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -43,21 +47,24 @@ export const deleteUsuario = async (req: Request, res: Response) => {
 };
 
 export const postUsuario = async (req: Request, res: Response) => {
-    const { rut_usu, d_verificador_usu, nom_usu,ap_usu,  correo } = req.body; // Extrae los datos relevantes
+    const { rut_usuario, d_veri_usu, nom_usu,ap_usu,  email_usu, cel_usu, password, id_rol } = req.body; // Extrae los datos relevantes
 
     try {
-        // Crear el nuevo usuario sin especificar `id_usuario`
+        // Crear el nuevo usuario sin especificar `rut_usuario`
         const newUsuario = await Usuario.create({
-            rut_usu,
-            d_verificador_usu,
+            rut_usuario,
+            d_veri_usu,
             nom_usu,
             ap_usu, 
-            correo // El correo es opcional
+            email_usu,
+            cel_usu,
+            password,
+            id_rol
         });
 
         res.json({
             msg: 'El usuario fue agregado con éxito!',
-            usuario: newUsuario // Devuelve el nuevo usuario, incluyendo el id_usuario generado
+            usuario: newUsuario // Devuelve el nuevo usuario, incluyendo el rut_usuario generado
         });
     } catch (error) {
         console.log(error);
