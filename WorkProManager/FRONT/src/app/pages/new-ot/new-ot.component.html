@@ -9,8 +9,13 @@
 
       <div class="mt-4">
         <label for="fecha">Fecha de Entrega:</label>
-        <input type="date" id="fecha" formControlName="fecha" class="border border-gray-300 p-2 rounded" />
+        <input type="date" id="fecha" formControlName="fec_recogida" class="border border-gray-300 p-2 rounded" />
       </div>
+
+      <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
+
+     
+  
 
       <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
 
@@ -95,14 +100,7 @@
       <fieldset class="border border-gray-200 p-4 rounded-lg">
         <legend class="text-lg font-semibold">Detalle Equipo</legend>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label for="tipo_equipo" class="block text-sm font-medium text-gray-700">Tipo de equipo</label>
-            <select id="tipo_equipo" formControlName="tipo_equipo" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-              <option value="">Seleccione uno</option>
-              <option value="computador">Computador</option>
-              <option value="celular">Celular</option>
-            </select>
-          </div>
+         
           <div>
             <label for="mod_equipo" class="block text-sm font-medium text-gray-700">Modelo</label>
             <input
@@ -112,16 +110,19 @@
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
           </div>
+
           <div>
             <label for="marcas">Selecciona una marca:</label>
-            <select id="id_marca" formControlName="id_marca" (change)="onMarcaChange($event)">
-              <option value="id_marca">Seleccione una marca</option>
+            <select id="id_marca" (change)="onMarcaChange($event)">
+              <option value="">Seleccione una marca</option> <!-- Opción por defecto -->
+              
+              <!-- Iteramos sobre la lista de marcas obtenidas y cargadas en el componente -->
               <option *ngFor="let marca of marcas" [value]="marca.id_marca">
-                {{ marca.nombre_marca }}
+                {{ marca.nom_marca }} <!-- Mostramos el nombre de la marca -->
               </option>
             </select>
           </div>
-          
+         
           <div>
             <label for="num_equipo" class="block text-sm font-medium text-gray-700">S/N</label>
             <input

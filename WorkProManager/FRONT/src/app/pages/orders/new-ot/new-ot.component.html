@@ -95,14 +95,18 @@
       <fieldset class="border border-gray-200 p-4 rounded-lg">
         <legend class="text-lg font-semibold">Detalle Equipo</legend>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
           <div>
-            <label for="tipo_equipo" class="block text-sm font-medium text-gray-700">Tipo de equipo</label>
-            <select id="tipo_equipo" formControlName="tipo_equipo" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-              <option value="">Seleccione uno</option>
-              <option value="computador">Computador</option>
-              <option value="celular">Celular</option>
+            <label for="tipo">Selecciona un tipo:</label>
+            <select id="id_tipo" formControlName="id_tipo" (change)="onTipoChange($event)">
+              <option value="id_tipo">Seleccione un tipo</option>
+              <option *ngFor="let tipo of tipos" [value]="tipo.id_tipo">
+                {{ tipo.nom_tipo }}
+              </option>
             </select>
           </div>
+     
           <div>
             <label for="mod_equipo" class="block text-sm font-medium text-gray-700">Modelo</label>
             <input
@@ -114,10 +118,10 @@
           </div>
           <div>
             <label for="marcas">Selecciona una marca:</label>
-            <select id="id_marca" formControlName="id_marca" (change)="onMarcaChange($event)">
+            <select id="id_marca" formControlName="id_marca" >
               <option value="id_marca">Seleccione una marca</option>
               <option *ngFor="let marca of marcas" [value]="marca.id_marca">
-                {{ marca.nombre_marca }}
+                {{ marca.nom_marca }}
               </option>
             </select>
           </div>
@@ -142,30 +146,10 @@
           </div>
         </div>
       </fieldset>
+    
+      
 
-      <!-- Servicio -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
-        <legend class="text-lg font-semibold">Servicio</legend>
-        
-        <div>
-          <label for="servicios">Selecciona un Servicio:</label>
-          <select id="servicios" (change)="onServiceChange($event)" formControlName="id_serv">
-            <option value="">Seleccione un servicio</option>
-            <option *ngFor="let servicio of servicios" [value]="servicio.id_serv"> 
-              {{ servicio.nom_serv }}
-            </option>
-          </select>
-        </div>
-        
-        <div *ngIf="selectedServicePrecio !== null">
-          <p>Precio del servicio seleccionado: <strong>${{ selectedServicePrecio }}</strong></p>
-        </div>
-          
-      </fieldset>
-
-    <!-- Usuario -->
-
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
+    <fieldset class="border border-gray-200 p-4 rounded-lg">
         <legend class="text-lg font-semibold">Usuario</legend>
         
         <div>
@@ -195,3 +179,37 @@
           Guardar Orden de Trabajo
         </button>
       </div>
+
+     <!-- Sección de Servicios -->
+
+     <fieldset class="border border-gray-200 p-4 rounded-lg">
+      <legend class="text-lg font-semibold">Servicios</legend>
+    
+      <div>
+        <label for="servicio">Selecciona un Servicio:</label>
+        <select id="servicio" [(ngModel)]="servicioSeleccionado" (change)="onServicioChange($event)">
+          <option value="">Seleccione un servicio</option>
+          <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">
+            {{ servicio.nom_serv }}
+          </option>
+        </select>
+    
+        <!-- Botón para agregar el servicio -->
+        <button (click)="agregarServicio()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
+          Añadir Servicio
+        </button>
+      </div>
+    
+      <!-- Lista de servicios añadidos -->
+      <div *ngIf="serviciosSeleccionados.length > 0">
+        <h3>Servicios Añadidos:</h3>
+        <ul>
+          <li *ngFor="let servicio of serviciosSeleccionados">
+            {{ servicio.nom_serv }}
+            <!-- Botón para eliminar un servicio de la lista -->
+            <button (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
+          </li>
+        </ul>
+      </div>
+    
+    

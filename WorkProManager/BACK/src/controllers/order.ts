@@ -13,17 +13,17 @@ export const getOrders = async (req: Request, res: Response) => {
             include: [
                 {
                     model: Cliente,
-                    attributes: ['nom_cli'],
+                    attributes: ['nom_cli', 'ap_cli'],
                     required: true
                 },
                 {
                     model: Usuario,
-                    attributes: ['nom_usu'],
+                    attributes: ['nom_usu', 'ap_usu'],
                     required: true
                 },
                 {
                     model: Equipo,
-                    attributes: ['mod_equipo'],
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
                 {
@@ -105,7 +105,6 @@ export const postOrder = async (req: Request, res: Response) => {
         });
 
         res.json({
-            msg: 'La orden fue agregada con éxito!',
             order: newOrder
         });
     } catch (error) {

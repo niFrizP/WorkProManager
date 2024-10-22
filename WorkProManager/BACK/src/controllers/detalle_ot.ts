@@ -1,10 +1,24 @@
 import { Request, Response } from 'express';
 import Detalle_Ot from '../models/detalle_ot';
+import Servicio from '../models/servicio';
 
 // Obtener todos los detalles de OT
 export const getDetallesOt = async (req: Request, res: Response) => {
     try {
         const detallesOt = await Detalle_Ot.findAll();
+        res.json(detallesOt);
+    } catch (error) {
+        console.error('Error en getDetallesOt:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};
+
+export const getDetallesOtByOT = async (req: Request, res: Response) => {
+    const { id_ot } = req.params;
+    try {
+        const detallesOt = await Detalle_Ot.findAll({
+            where: { id_ot }
+        });
         res.json(detallesOt);
     } catch (error) {
         console.error('Error en getDetallesOt:', error);

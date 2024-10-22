@@ -8,4 +8,5 @@ router.get('/:id_ot/:id_serv', detalle_ot_1.getDetalleOt);
 router.post('/', detalle_ot_1.postDetalleOt);
 router.put('/:id_ot/:id_serv', detalle_ot_1.updateDetalleOt);
 router.delete('/:id_ot/:id_serv', detalle_ot_1.deleteDetalleOt);
+router.get('/:id_ot', detalle_ot_1.getDetallesOtByOT);
 exports.default = router;

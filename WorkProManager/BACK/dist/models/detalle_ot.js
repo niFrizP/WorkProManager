@@ -26,7 +26,7 @@ const Detalle_Ot = connection_1.default.define('detalle_ot', {
             model: 'usuario',
             key: 'rut_usuario'
         }
-    }
+    },
 }, {
     modelName: 'detalle_ot',
     tableName: 'detalle_ot',

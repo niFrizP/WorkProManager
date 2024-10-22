@@ -1,8 +1,10 @@
 export interface Usuario {
     rut_usuario?: number;
-    rut_us: string;
-    d_verificador_usu: string;
+    d_veri_usu: string;
     nom_usu: string;
     ap_usu: string;
-    correo: string;
+    email_usu: string;
+    cel_usu: string;
+    password: string;
+    id_rol: number;
 }

@@ -23,7 +23,7 @@ const Detalle_Ot = db.define('detalle_ot', {
             model: 'usuario',
             key: 'rut_usuario'
         }
-    }
+    },
 }, {
     modelName: 'detalle_ot',
     tableName: 'detalle_ot',

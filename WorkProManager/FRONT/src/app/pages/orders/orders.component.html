@@ -27,14 +27,6 @@
           <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu }} {{usuario.ap_usu}}</option>
         </select>
       </div>
-
-      <div>
-        <label for="filter" class="mr-2 font-medium">Todos los servicios</label>
-        <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedServicio" (change)="filterOrdersByServicio(selectedServicio)">
-          <option value="todos">Todos</option>
-          <option *ngFor="let servicio of servicios" [value]="servicio.nom_serv">{{ servicio.nom_serv }}</option>
-        </select>
-      </div>
       
       <div>
         <label for="monthSelect" class="mr-2 font-medium">Mes</label>
@@ -82,27 +74,25 @@
   <table class="w-full border-collapse">
     <thead>
       <tr>
-        <th class="border p-2">Fecha</th>
+        <th class="border p-2">Fecha de entrega</th>
+        <th class="border p-2">Equipo</th>
         <th class="border p-2">OT ID</th>
         <th class="border p-2">Descripción</th>
         <th class="border p-2">Equipo</th>
-        <th class="border p-2">Costo</th>
         <th class="border p-2">Rut Cliente</th>
-        <th class="border p-2">Servicio</th>
         <th class="border p-2">Estado</th>
         <th class="border p-2">Usuario</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
-        <td>{{ newOrder.fecha }}</td>
+        <td>{{ newOrder.fec_entrega }}</td>
+        <td>{{ newOrder.num_equipo }}</td>
         <td>{{ newOrder.id_ot }}</td>
         <td>{{ newOrder.descripcion }}</td>
         <td>{{ newOrder.Equipo.mod_equipo }}</td>
-        <td>{{ newOrder.costo }}</td>
         <td>{{ newOrder.rut_cliente }}</td>
-        <td>{{ newOrder.Servicio.nom_serv }}</td>
-        <td>{{ newOrder.EstadoOT.tipo_est }}</td>
+        <td>{{ newOrder.EstadoOT.nom_estado_ot }}</td>
         <td>{{ newOrder.Usuario.nom_usu }}</td>
         <td>
           <button [routerLink]="['/newOrders/edit', newOrder.id_ot]">✏️</button>

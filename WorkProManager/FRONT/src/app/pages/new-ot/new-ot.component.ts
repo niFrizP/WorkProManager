@@ -12,6 +12,7 @@ import { Usuario } from '../../interfaces/usuario';
 import { Marca } from '../../interfaces/marca';
 import { Equipo } from '../../interfaces/equipo';
 import { Cliente } from '../../interfaces/cliente';
+import { Tipo } from '../../interfaces/tipo'; // Asegúrate de tener una interfaz para el servicio
 
 // Services
 import { OrderService } from '../../services/order.service';
@@ -30,9 +31,8 @@ import { SidebarComponent } from '../../components/sidebar/sidebar.component';
   imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent],
   templateUrl: './new-ot.component.html',
 })
-export class NewOtComponent implements OnInit {
-  servicios: Servicio[] = [];
-  usuarios: Usuario[] = [];
+export class NewOtComponent implements OnInit {  usuarios: Usuario[] = [];
+  tipos: Tipo[] = [];
   marcas: Marca[] = [];
   selectedUsuarioName: string | null = null;
   selectedUsuarioSurname: string | null = null;
@@ -46,6 +46,8 @@ export class NewOtComponent implements OnInit {
   operacion: string = 'Agregar ';
   isSubmitting: boolean = false;
   formSubmitAttempt: boolean = false; // Para manejar el intento de envío del formulario
+  serviciosSeleccionados: Servicio[] = []; // Array para almacenar los servicios seleccionados
+  mostrarSelectServicio: boolean = false; // Controla la visibilidad del select de servicios
 
   constructor(
     private fb: FormBuilder,
@@ -59,19 +61,19 @@ export class NewOtComponent implements OnInit {
     private clienteService: ClienteService
   ) {
     this.form = this.fb.group({
+      fec_entrega: [null, Validators.required],
+      fec_recogida: [null, Validators.required],
       num_equipo: [null, Validators.required],
-      id_estado: [1, Validators.required],
-      costo: [null, [Validators.required, Validators.min(0)]],  // Asegura que el costo sea positivo
-      fecha: [null, Validators.required],
+      id_estado_ot: [1, Validators.required],
+      fecha_fab: [null, Validators.required],
       descripcion: ['', [Validators.required, Validators.minLength(10)]],  // Descripción debe tener al menos 10 caracteres
       rut_cliente: [null, Validators.required],
       id_serv: [null, Validators.required],
       rut_usuario: [null, Validators.required],
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
+      nom_cli: ['', Validators.required],
+      ap_cli: ['', Validators.required],
       celular: [null, [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],  // Número de teléfono de 9 dígitos
       correo: [null, [Validators.required, Validators.email]],  // Asegura un formato de correo válido
-      tipo_equipo: ['', Validators.required],
       mod_equipo: ['', Validators.required],
       fec_fabric: ['', Validators.required],
       id_marca: [null, Validators.required],
@@ -82,6 +84,7 @@ export class NewOtComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.cargarServicios();
     this.cargarUsuarios();
     this.cargarMarcas();
@@ -94,10 +97,6 @@ export class NewOtComponent implements OnInit {
   async addProduct(): Promise<void> {
     this.formSubmitAttempt = true;  // Activar mensajes de validación
 
-    if (this.form.invalid) {
-      this.handleFormErrors();
-      return;  // Prevenir el envío si el formulario es inválido
-    }
 
     this.loading = true;
     try {
@@ -105,16 +104,13 @@ export class NewOtComponent implements OnInit {
       const equipo = await this.createOrUpdateEquipo();
 
       const order: Order = {
+        fec_creacion: new Date(),
+        fec_entrega: this.form.get('fec_entrega')?.value,
         num_equipo: this.form.get('num_equipo')?.value,
-        costo: this.selectedServicePrecio ?? 0,
-        fecha: this.form.value.fecha,
         descripcion: this.form.value.descripcion,
-        id_estado: this.form.value.id_estado,
         rut_cliente: this.form.get('rut_cliente')?.value,
-        id_serv: this.form.get('id_serv')?.value,
         rut_usuario: this.form.get('rut_usuario')?.value,
-        equipo: equipo,
-        estado: this.form.get('id_estado')?.value
+        id_estado_ot: 1
       };
 
       await this._orderService.saveOrder(order).toPromise();
@@ -147,10 +143,10 @@ export class NewOtComponent implements OnInit {
     const clienteData: Cliente = {
       rut_cliente: this.form.get('rut_cliente')?.value,
       d_veri_cli: this.form.get('d_veri_cli')?.value,
-      nombre: this.form.get('nombre')?.value,
-      apellido: this.form.get('apellido')?.value,
-      correo: this.form.get('correo')?.value,
-      celular: this.form.get('celular')?.value
+      nom_cli: this.form.get('nom_cli')?.value,
+      ap_cli: this.form.get('ap_cli')?.value,
+      email_cli: this.form.get('correo')?.value,
+      cel_cli: this.form.get('celular')?.value
     };
 
     console.log('Cliente data:', JSON.stringify(clienteData, null, 2));
@@ -191,9 +187,9 @@ export class NewOtComponent implements OnInit {
   async createOrUpdateEquipo(): Promise<Equipo> {
     const equipoData: Equipo = {
       num_equipo: this.form.get('num_equipo')?.value,
-      tipo_equipo: this.form.get('tipo_equipo')?.value,
+      id_tipo: this.form.get('id_tipo')?.value,
       mod_equipo: this.form.get('mod_equipo')?.value,
-      fec_fabric: this.form.get('fec_fabric')?.value,
+      fecha_fab: this.form.get('fec_fab')?.value,
       id_marca: this.form.get('id_marca')?.value
     };
 
@@ -235,7 +231,7 @@ export class NewOtComponent implements OnInit {
   cargarServicios() {
     this.servicioService.getListServicios().subscribe({
       next: (data: Servicio[]) => {
-        this.servicios = data; // Asigna la respuesta a la variable
+        this.serviciosSeleccionados = data; // Asigna la respuesta a la variable
       },
       error: (error) => {
         console.error('Error al cargar servicios:', error); // Manejo de errores
@@ -264,6 +260,7 @@ export class NewOtComponent implements OnInit {
     this.marcaService.getListMarcas().subscribe({
       next: (data: Marca[]) => {
         this.marcas = data; // Asigna la respuesta a la variable
+        console.log(this.marcas);
       },
       error: (error) => {
         console.error('Error al cargar marcas:', error); // Manejo de errores
@@ -276,10 +273,9 @@ export class NewOtComponent implements OnInit {
 
   onServiceChange(event: Event) {
     const selectedId = (event.target as HTMLSelectElement).value;
-    const selectedService = this.servicios.find(servicio => servicio.id_serv?.toString() === selectedId);
+    const selectedService = this.serviciosSeleccionados.find(servicio => servicio.id_serv?.toString() === selectedId);
     
     if (selectedService) {
-      this.selectedServicePrecio = selectedService.precio;
       this.selectedServiceID = selectedService.id_serv ?? null;
       this.form.patchValue({ id_serv: this.selectedServiceID });
     } else {
@@ -311,9 +307,26 @@ export class NewOtComponent implements OnInit {
     const selectedMarca = this.marcas.find(marca => marca.id_marca?.toString() === selectedId);
     
     if (selectedMarca) {
-      this.selectedMarcaNombre = selectedMarca.nombre_marca;
+      this.selectedMarcaNombre = selectedMarca.nom_marca;
     } else {
       this.selectedMarcaNombre = null;
     }
+  }
+
+  // Nueva función para añadir un servicio seleccionado
+  agregarServicio(): void {
+    const servicioSeleccionado = this.form.get('id_serv')?.value;
+    if (servicioSeleccionado) {
+      const servicio = this.serviciosSeleccionados.find(s => s.id_serv === servicioSeleccionado);
+      if (servicio) {
+        this.serviciosSeleccionados.push(servicio);
+        this.form.patchValue({ id_serv: null }); // Reiniciar el select
+      }
+    }
+  }
+
+  // Nueva función para mostrar/ocultar el select de servicios
+  toggleSelectServicio(): void {
+    this.mostrarSelectServicio = !this.mostrarSelectServicio;
   }
 }

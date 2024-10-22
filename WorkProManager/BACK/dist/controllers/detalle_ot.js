@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteDetalleOt = exports.updateDetalleOt = exports.postDetalleOt = exports.getDetalleOt = exports.getDetallesOt = void 0;
+exports.deleteDetalleOt = exports.updateDetalleOt = exports.postDetalleOt = exports.getDetalleOt = exports.getDetallesOtByOT = exports.getDetallesOt = void 0;
 const detalle_ot_1 = __importDefault(require("../models/detalle_ot"));
 // Obtener todos los detalles de OT
 const getDetallesOt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -26,6 +26,20 @@ const getDetallesOt = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.getDetallesOt = getDetallesOt;
+const getDetallesOtByOT = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id_ot } = req.params;
+    try {
+        const detallesOt = yield detalle_ot_1.default.findAll({
+            where: { id_ot }
+        });
+        res.json(detallesOt);
+    }
+    catch (error) {
+        console.error('Error en getDetallesOt:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+});
+exports.getDetallesOtByOT = getDetallesOtByOT;
 // Obtener detalle de OT por ID
 const getDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id_ot, id_serv } = req.params;

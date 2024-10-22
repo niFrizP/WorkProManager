@@ -1,3 +1,4 @@
+/*
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
@@ -169,27 +170,13 @@ export class ViewOrderComponent {
 
 
 
-      // 3. Create order
-      const order: Order = {
-        num_equipo: this.form.get('num_equipo')?.value,
-        costo: this.selectedServicePrecio ?? 0,
-        fecha: this.form.value.fecha,
-        descripcion: this.form.value.descripcion,
-        id_estado: this.form.value.id_estado,
-        rut_cliente: this.form.get('rut_cliente')?.value,
-        id_serv: this.form.get('id_serv')?.value,
-        rut_usuario: this.form.get('rut_usuario')?.value,
-        equipo: equipo, // Assuming equipo is the result from createOrUpdateEquipo
-        estado: this.form.get('id_estado')?.value // Assuming estado is the same as id_estado
-      };
+    
 
       // Log the JSON representation of the order
-      console.log('Order JSON:', JSON.stringify(order, null, 2));
 
       const id = this.form.get('id_ot')?.value; // Asegúrate de obtener el ID de la orden de trabajo (ot)
 
       // Utiliza updateOrder en lugar de saveOrder
-      await this._orderService.updateOrder(this.id_ot, order).toPromise();
 
       this.loading = false;
       this.router.navigate(['/']);
@@ -211,10 +198,7 @@ export class ViewOrderComponent {
     const clienteData: Cliente = {
         rut_cliente: this.form.get('rut_cliente')?.value,
         d_veri_cli: this.form.get('d_veri_cli')?.value,
-        nombre: this.form.get('nombre')?.value,
         apellido: this.form.get('apellido')?.value,
-        correo: this.form.get('correo')?.value,
-        celular: this.form.get('celular')?.value
     };
 
     console.log('Cliente data:', JSON.stringify(clienteData, null, 2));
@@ -259,9 +243,7 @@ export class ViewOrderComponent {
   private async createOrUpdateEquipo(): Promise<Equipo> {
     const equipoData: Equipo = {
       num_equipo: this.form.get('num_equipo')?.value,
-      tipo_equipo: this.form.get('tipo_equipo')?.value,
       mod_equipo: this.form.get('mod_equipo')?.value,
-      fec_fabric: this.form.get('fec_fabric')?.value,
       id_marca: this.form.get('id_marca')?.value
     };
   
@@ -329,7 +311,6 @@ export class ViewOrderComponent {
     const selectedService = this.servicios.find(servicio => servicio.id_serv?.toString() === selectedId);
     
     if (selectedService) {
-      this.selectedServicePrecio = selectedService.precio;
       this.selectedServiceID = selectedService.id_serv ?? null;
       this.form.patchValue({ id_serv: this.selectedServiceID });
     } else {
@@ -404,7 +385,7 @@ export class ViewOrderComponent {
     
     // Comprobar si el usuario seleccionado existe antes de acceder a su precio
     if (selectedUser) {
-      this.selectedMarcaNombre = selectedUser.nombre_marca // Usa la propiedad precio o lo que necesites
+      this.selectedMarcaNombre = selectedUser.nom_marca // Usa la propiedad precio o lo que necesites
      
     } else {
       this.selectedMarcaNombre = null// Usa la propiedad precio o lo que necesites
@@ -435,3 +416,4 @@ export class ViewOrderComponent {
   
 
 }
+*/

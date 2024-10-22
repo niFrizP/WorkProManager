@@ -24,17 +24,17 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             include: [
                 {
                     model: cliente_1.default,
-                    attributes: ['nom_cli'],
+                    attributes: ['nom_cli', 'ap_cli'],
                     required: true
                 },
                 {
                     model: usuario_1.default,
-                    attributes: ['nom_usu'],
+                    attributes: ['nom_usu', 'ap_usu'],
                     required: true
                 },
                 {
                     model: equipo_1.default,
-                    attributes: ['mod_equipo'],
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
                 {
@@ -112,7 +112,6 @@ const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             id_estado_ot
         });
         res.json({
-            msg: 'La orden fue agregada con éxito!',
             order: newOrder
         });
     }

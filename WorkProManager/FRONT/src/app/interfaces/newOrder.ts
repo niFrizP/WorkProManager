@@ -1,39 +1,28 @@
 export interface newOrder {
-    id_ot?: number;
-    num_equipo: number;
-    costo: number;
-    fecha: Date;
-    descripcion: string;
-    rut_usuario: number;
-    id_serv: number;
-    id_estado: number;
-    rut_cliente: number;
-    año: number;
-    total: number; 
-    dia: number;
-    cliente: {
-      nombre: string;
-      apellido: string;
-      celular: number;
-      correo: string;
-      d_veri_cli: number;
-    };
-    Servicio: {
-      nom_serv: string;
-      precio: number;
-    };
-    Usuario: {
-      nom_usu: string;
-      ap_usu: string;
-    };
-    Equipo: {
+  id_ot?: number;
+  num_equipo: number;
+  fec_creacion: Date;
+  fec_entrega: Date;
+  descripcion: String;
+  rut_usuario: number;
+  id_estado_ot: Number;
+  rut_cliente: number;
+  cliente: {
+          nom_cli: string;
+          ap_cli: string;
+          cel_cli: string;
+          d_veri_cli: string;
+      },
+      Usuario: {
+          nom_usu: string;
+          ap_usu: string;
+      },
+  Equipo: {
       mod_equipo: string;
-      tipo_equipo: string;
-      fec_fabric: Date;
       id_marca: number;
-    };
-    EstadoOT: {
-      tipo_est: string;
-    };
-  }
-  
+      fecha_fab: Date;
+  },
+  EstadoOT: {
+      nom_estado_ot: string
+      }
+}
