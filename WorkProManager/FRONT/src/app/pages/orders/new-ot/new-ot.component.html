@@ -174,7 +174,7 @@
         </select>
     
         <!-- Botón para agregar el servicio -->
-        <button (click)="agregarServicio()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
+        <button type="button" (click)="agregarServicio()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
           Añadir Servicio
         </button>
       </div>
@@ -186,7 +186,7 @@
           <li *ngFor="let servicio of serviciosSeleccionados">
             {{ servicio.nom_serv }}
             <!-- Botón para eliminar un servicio de la lista -->
-            <button (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
+            <button type="button" (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
           </li>
         </ul>
       </div>
