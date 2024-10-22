@@ -88,7 +88,7 @@
         <td>{{ detalleOT.desc_detalle }}</td>
         <td>{{ detalleOT.rut_usuario }}</td>
         <td>
-          <button [routerLink]="['createReport/', detalleOT.id_ot]">✏️</button>
+          <button [routerLink]="['/reportes/createReport/', detalleOT.id_ot, detalleOT.id_serv]">✏️</button>
         </td>
       </tr>
     </tbody>

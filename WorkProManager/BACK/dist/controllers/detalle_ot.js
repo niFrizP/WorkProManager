@@ -47,7 +47,7 @@ const getDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const { id_ot, id_serv } = req.params;
     try {
         const detalleOt = yield detalle_ot_1.default.findOne({
-            where: { id_ot, id_serv }
+            where: { id_ot, id_serv }, include: [{ model: servicio_1.default, attributes: ['nom_serv'] }]
         });
         if (detalleOt) {
             res.json(detalleOt);

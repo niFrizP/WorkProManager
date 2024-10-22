@@ -32,7 +32,7 @@ export const getDetalleOt = async (req: Request, res: Response) => {
     const { id_ot, id_serv } = req.params;
     try {
         const detalleOt = await Detalle_Ot.findOne({
-            where: { id_ot, id_serv}
+            where: { id_ot, id_serv}, include: [{model: Servicio, attributes: ['nom_serv']}]
         });
 
         if (detalleOt) {

@@ -26,5 +26,5 @@ export const routes: Routes = [
   { path: 'aprobaciones/:id_ot', component: AprobacionesTickComponent}, // Ruta a 'aprobaciones'
   { path: 'reportes', component: ReportesComponent}, // Ruta a 'reportes'
   { path: 'reportes/createReport/:id', component: CreateReportComponent},
-  { path: 'detalle/:id', component: DetalleComponent},
+  { path: 'reportes/createReport/:id/:id_serv', component: DetalleComponent},
 ];
