@@ -14,15 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateUsuario = exports.postUsuario = exports.deleteUsuario = exports.getUsuario = exports.getUsuarios = void 0;
 const usuario_1 = __importDefault(require("../models/usuario")); // Asegúrate de tener el modelo de Usuario importado
+const rol_1 = __importDefault(require("../models/rol"));
 const getUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const listUsuarios = yield usuario_1.default.findAll();
+    const listUsuarios = yield usuario_1.default.findAll({ include: [{ model: rol_1.default, attributes: ['nom_rol'] }] });
     res.json(listUsuarios);
 });
 exports.getUsuarios = getUsuarios;
 const getUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const usuario = yield usuario_1.default.findByPk(id);
+        const usuario = yield usuario_1.default.findByPk(id, { include: [{ model: rol_1.default, attributes: ['nom_rol'] }] });
         if (usuario) {
             res.json(usuario);
         }
@@ -57,19 +58,22 @@ const deleteUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.deleteUsuario = deleteUsuario;
 const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { rut_usu, d_verificador_usu, nom_usu, ap_usu, correo } = req.body; // Extrae los datos relevantes
+    const { rut_usuario, d_veri_usu, nom_usu, ap_usu, email_usu, cel_usu, password, id_rol } = req.body; // Extrae los datos relevantes
     try {
-        // Crear el nuevo usuario sin especificar `id_usuario`
+        // Crear el nuevo usuario sin especificar `rut_usuario`
         const newUsuario = yield usuario_1.default.create({
-            rut_usu,
-            d_verificador_usu,
+            rut_usuario,
+            d_veri_usu,
             nom_usu,
             ap_usu,
-            correo // El correo es opcional
+            email_usu,
+            cel_usu,
+            password,
+            id_rol
         });
         res.json({
             msg: 'El usuario fue agregado con éxito!',
-            usuario: newUsuario // Devuelve el nuevo usuario, incluyendo el id_usuario generado
+            usuario: newUsuario // Devuelve el nuevo usuario, incluyendo el rut_usuario generado
         });
     }
     catch (error) {

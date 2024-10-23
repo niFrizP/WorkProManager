@@ -35,11 +35,11 @@ Query.init({
             key: 'rut_cliente'
         }
     },
-    id_usuario: {
+    rut_usuario: {
         type: sequelize_1.DataTypes.INTEGER,
         references: {
             model: 'usuario',
-            key: 'id_usuario'
+            key: 'rut_usuario'
         }
     },
     id_serv: {
@@ -73,7 +73,7 @@ Query.init({
 });
 // Definir las relaciones
 Query.belongsTo(cliente_1.default, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
-Query.belongsTo(usuario_1.default, { foreignKey: 'id_usuario', targetKey: 'id_usuario' });
+Query.belongsTo(usuario_1.default, { foreignKey: 'rut_usuario', targetKey: 'rut_usuario' });
 Query.belongsTo(servicio_1.default, { foreignKey: 'id_serv', targetKey: 'id_serv' });
 Query.belongsTo(equipo_1.default, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
 Query.belongsTo(estado_ot_1.default, { foreignKey: 'id_estado', targetKey: 'id_estado' });

@@ -1,14 +1,10 @@
 export interface Order {
-    equipo: any;
-    estado: any;
     id_ot?: number;
     num_equipo: number;
-    costo: number;
-    fecha: Date;
+    fec_creacion: Date;
+    fec_entrega: Date;
     descripcion: String;
-    id_usuario: number;
-    id_serv: number;
-    id_estado: Number;
+    rut_usuario: number;
+    id_estado_ot: Number;
     rut_cliente: number;
-
 }

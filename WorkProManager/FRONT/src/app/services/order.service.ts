@@ -32,8 +32,8 @@ export class OrderService {
     return this.http.delete<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}`)
   }
 
-  saveOrder(order: Order): Observable<void> {
-    return this.http.post<void>(`${this.myAppUrl}${this.myApiUrl}`,order)
+  saveOrder(order: Order): Observable<Order> {
+    return this.http.post<Order>(`${this.myAppUrl}${this.myApiUrl}`,order)
   }
 
   getOrder(id_ot: number): Observable<Order> {

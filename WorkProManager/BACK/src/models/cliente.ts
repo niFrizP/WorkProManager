@@ -8,19 +8,19 @@ Cliente.init({
         type: DataTypes.INTEGER,
         primaryKey: true,
     },
-    d_verificador_cliente: {
+    d_veri_cli: {
         type: DataTypes.STRING
     },
-    nombre: {
+    nom_cli: {
         type: DataTypes.STRING
     },
-    apellido: {
+    ap_cli: {
         type: DataTypes.STRING
     },
-    correo: {
+    email_cli: {
         type: DataTypes.STRING
     },
-    celular: {
+    cel_cli: {
         type: DataTypes.INTEGER
     }
 }, {

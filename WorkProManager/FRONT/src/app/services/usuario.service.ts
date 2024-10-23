@@ -21,19 +21,19 @@ export class UsuarioService {
    return this.http.get<Usuario[]>(`${this.myAppUrl}${this.myApiUrl}`);
   }
 
-  deleteUsuarios(id_usuario: number): Observable<void> {
-    return this.http.delete<void>(`${this.myAppUrl}${this.myApiUrl}${id_usuario}`)
+  deleteUsuarios(rut_usuario: number): Observable<void> {
+    return this.http.delete<void>(`${this.myAppUrl}${this.myApiUrl}${rut_usuario}`)
   }
 
   saveUsuario(usuario:Usuario): Observable<Usuario> {
     return this.http.post<Usuario>(`${this.myAppUrl}${this.myApiUrl}`,usuario)
   }
 
-  getUsuario(id_usuario: number): Observable<Usuario> {
-    return this.http.get<Usuario>(`${this.myAppUrl}${this.myApiUrl}${id_usuario}`)
+  getUsuario(rut_usuario: number): Observable<Usuario> {
+    return this.http.get<Usuario>(`${this.myAppUrl}${this.myApiUrl}${rut_usuario}`)
   }
 
-  updateUsuario(id_usuario: number, usuario: Usuario): Observable<void> {
-    return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${id_usuario}`, usuario);
+  updateUsuario(rut_usuario: number, usuario: Usuario): Observable<void> {
+    return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${rut_usuario}`, usuario);
   }
 }

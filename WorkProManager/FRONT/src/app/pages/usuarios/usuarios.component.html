@@ -22,15 +22,14 @@
         <tr *ngFor="
                   let usuario of usuarios
                   | paginate : { itemsPerPage: itemsPerPage, currentPage: page }
-              ">
-          <td>{{ usuario.rut_us }} {{ usuario.d_verificador_usu }} </td>
-          <td>{{ usuario.nom_usu }} {{ usuario.ap_usu }}</td>
-          <td>{{ usuario.correo }}</td> <!-- Asegúrate de que esta línea esté presente -->
-
-          <td>
-            <!-- Botón para editar la OT -->
-            <button>✏️</button>
-            <button (click)="usuario.id_usuario !== undefined ? deleteUsuario(usuario.id_usuario) : null">🗑️</button>
+              "
+          >
+              <td>{{ usuario.nom_usu }} {{ usuario.ap_usu }}</td>
+              
+              <td>
+                  <!-- Botón para editar la OT -->
+                  <button >✏️</button>
+                  <button (click)="usuario.rut_usuario !== undefined ? deleteUsuario(usuario.rut_usuario) : null">🗑️</button>
 
           </td>
         </tr>

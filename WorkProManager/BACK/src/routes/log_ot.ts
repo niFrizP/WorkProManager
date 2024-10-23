@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { getOtReporteByIds, getOtReportesByOrderId} from '../controllers/otReporte';
+import { getLogs } from '../controllers/log_ot';
 
 const router = Router();
 
+router.get('/', getLogs);
 
 export default router;

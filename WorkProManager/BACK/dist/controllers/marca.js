@@ -65,10 +65,10 @@ const deleteMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.deleteMarca = deleteMarca;
 const postMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nombre_marca } = req.body; // Extrae el dato relevante
+    const { nom_marca } = req.body; // Extrae el dato relevante
     try {
         const newMarca = yield marca_1.default.create({
-            nombre_marca
+            nom_marca
         });
         res.json({
             msg: 'La marca fue agregada con éxito!',
