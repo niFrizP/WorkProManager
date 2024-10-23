@@ -8,17 +8,23 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.21.0",
+    "express": "^4.21.1",
+    "express-middleware": "^3.4.2",
+    "force": "^0.0.3",
     "g": "^2.0.1",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.3",
+    "node": "^22.10.0",
+    "nodemon": "^3.1.7",
     "sequelize": "^6.37.4"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0"
-  }
+  },
+  "description": ""
 }
