@@ -1,0 +1,75 @@
+<div class="flex-1 justify-center px-72 py-6">
+  <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <!-- Leyenda de descripción -->
+    <p class="text-md text-gray-600 mb-4">
+      Completa el siguiente formulario para llevar constancia del servicio realizado.
+    </p>
+    
+    <form class="space-y-6" [formGroup]="form" (ngSubmit)="editProduct()">
+
+      <div class="mt-4">
+        <label for="fecha">Fecha de Entrega:</label>
+        <input type="date" id="fecha_detalle" formControlName="fecha_detalle" class="border border-gray-300 p-2 rounded" />
+      </div>
+
+      <p class="text-2xl font-semibold text-gray-700">Formulario de servicio</p>
+
+      
+      <!-- Descripción de la OT -->
+      <div>
+        <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+        <textarea
+          id="desc_detalle"
+          formControlName="desc_detalle"
+          rows="4"
+          class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+          placeholder="Añade una descripción detallada de la Orden de Trabajo..."
+        ></textarea>
+      </div>
+
+      <!-- Detalle Cliente -->
+      <fieldset class="border border-gray-200 p-4 rounded-lg">
+        <legend class="text-lg font-semibold">Detalle Usuario</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="nom_usu" class="block text-sm font-medium text-gray-700">RUT</label>
+            <input
+              type="text"
+              id="rut_usuario"
+              formControlName="rut_usuario" 
+
+              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+            />
+          </div>
+        </div>
+          
+      </fieldset>
+
+     
+
+      <!-- Servicio -->
+      <fieldset class="border border-gray-200 p-4 rounded-lg">
+        <legend class="text-lg font-semibold">Servicios</legend>
+      
+          <!-- Botón para agregar el servicio -->
+           <fieldset>
+            <div>
+             <input type="text" id="nom_serv" formControlName="nom_serv" class="border border-gray-300 p-2 rounded" />
+           </div>
+           </fieldset>
+
+
+      <!-- Botón para enviar el formulario -->
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
+          (click)="editProduct()"
+          [disabled]="isSubmitting" 
+
+
+
+        >
+        {{ isSubmitting ? 'Guardando...' : 'Guardar Orden de Trabajo' }} 
+      </button>
+      </div>

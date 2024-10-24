@@ -164,7 +164,7 @@
                  <li *ngFor="let servicio of serviciosSeleccionados">
                    {{ servicio.nom_serv }}
                    <!-- Botón para eliminar un servicio de la lista -->
-                   <button (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
+                   <button type="button" (click)="eliminarServicio($event, servicio)" class="text-red-500 ml-4">Eliminar</button>
                  </li>
                </ul>
              </div>

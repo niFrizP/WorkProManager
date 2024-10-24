@@ -102,7 +102,7 @@
         <td>{{ newOrder.Usuario.nom_usu }}</td>
         <td>
           <button [routerLink]="['/newOrders/edit', newOrder.id_ot]">✏️</button>
-          <button (click)="newOrder.id_ot !== undefined ? deleteOrder(newOrder.id_ot) : null">🗑️</button>
+          <button (click)="newOrder.id_ot !== undefined ? deleting(newOrder.id_ot) : null">🗑️</button>
         </td>
       </tr>
     </tbody>

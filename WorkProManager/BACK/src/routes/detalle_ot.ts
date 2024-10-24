@@ -5,7 +5,8 @@ import {
     postDetalleOt, 
     updateDetalleOt, 
     deleteDetalleOt,
-    getDetallesOtByOT
+    getDetallesOtByOT,
+    deleteDetalleOtByOtId,
 } from '../controllers/detalle_ot';
 
 const router = Router();
@@ -16,5 +17,5 @@ router.post('/', postDetalleOt);
 router.put('/:id_ot/:id_serv', updateDetalleOt);
 router.delete('/:id_ot/:id_serv', deleteDetalleOt);
 router.get('/:id_ot', getDetallesOtByOT);
-
+router.delete('/:id_ot', deleteDetalleOtByOtId);
 export default router;

@@ -16,7 +16,8 @@ export const getDetallesOt = async (req: Request, res: Response) => {
 export const getDetallesOtByOT = async (req: Request, res: Response) => {
     const { id_ot } = req.params;
     try {
-        const detallesOt = await Detalle_Ot.findAll({
+        const detallesOt = await Detalle_Ot.findAll({ 
+            include: [{model: Servicio, attributes: ['nom_serv']}],
             where: { id_ot }
         });
         res.json(detallesOt);
@@ -31,7 +32,7 @@ export const getDetalleOt = async (req: Request, res: Response) => {
     const { id_ot, id_serv } = req.params;
     try {
         const detalleOt = await Detalle_Ot.findOne({
-            where: { id_ot, id_serv}
+            where: { id_ot, id_serv}, include: [{model: Servicio, attributes: ['nom_serv']}]
         });
 
         if (detalleOt) {
@@ -113,6 +114,19 @@ export const deleteDetalleOt = async (req: Request, res: Response) => {
         }
     } catch (error) {
         console.error('Error en deleteDetalleOt:', error);
+        res.status(500).json({ message: 'Error al eliminar el detalle de OT' });
+    }
+};
+
+export const deleteDetalleOtByOtId = async (req: Request, res: Response) => {
+    const { id_ot } = req.params;
+
+    try {
+        await Detalle_Ot.destroy({
+            where: { id_ot }
+        });
+    } catch (error) {
+        console.error('Error en deleteDetalleOtByOtId:', error);
         res.status(500).json({ message: 'Error al eliminar el detalle de OT' });
     }
 };

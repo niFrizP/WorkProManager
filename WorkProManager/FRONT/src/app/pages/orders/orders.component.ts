@@ -18,6 +18,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
+import { DetalleOTService } from '../../services/detalle_ot.service';
 
 
 @Component({
@@ -79,6 +80,7 @@ export class OrdersComponent implements OnInit {
     private usuarioService: UsuarioService,
     private equipoService: EquipoService,
     private clienteService: ClienteService,
+    private detalleOTService: DetalleOTService,
     private servicioService: ServicioService
   ) {}
 
@@ -177,11 +179,35 @@ export class OrdersComponent implements OnInit {
       .filter(servicio => this.selectedServicio === 'todos' || servicio.nom_serv.toLowerCase() === this.selectedServicio)
   } 
 
+  deleting(id_ot: number): void {
+    this.deleteDetalleOTByOtId(id_ot);
+    this.deleteOrder(id_ot);
+  }
+
+
+
+  deleteDetalleOTByOtId(id_ot: number): void {
+    this.detalleOTService.deleteDetalleOTByOtId(id_ot).subscribe(
+      () => {
+        console.log('Detalle OT eliminado');
+        this.loadOrders();
+      },
+      (error) => {
+        console.error('Error eliminando el detalle OT', error);
+      }
+    );
+  }
+
+
   deleteOrder(id_ot: number): void {
     if (confirm('¿Estás seguro de que deseas eliminar esta orden?')) {
-      this.orderService.getOrder(id_ot).subscribe(
-        (order: Order) => {
-          this.ordereliminadaService.saveOrder(order).subscribe(
+
+
+
+
+      this.orderService.getNewOrder(id_ot).subscribe(
+        (order: newOrder) => {
+          this.orderService.saveOrder(order).subscribe(
             () => {
               console.log('Orden registrada como eliminada', order);
               this.orderService.deleteOrders(id_ot).subscribe(
