@@ -7,6 +7,8 @@ import {
     deleteDetalleOt,
     getDetallesOtByOT,
     deleteDetalleOtByOtId,
+    countDetalleOt,
+    countDetalleOtByEstado,
 } from '../controllers/detalle_ot';
 
 const router = Router();
@@ -18,4 +20,7 @@ router.put('/:id_ot/:id_serv', updateDetalleOt);
 router.delete('/:id_ot/:id_serv', deleteDetalleOt);
 router.get('/:id_ot', getDetallesOtByOT);
 router.delete('/:id_ot', deleteDetalleOtByOtId);
+router.get('/count/:id_ot/id', countDetalleOt);
+router.get('/count/:id_ot/:d_estado', countDetalleOtByEstado);
+
 export default router;

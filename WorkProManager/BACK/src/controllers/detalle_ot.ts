@@ -16,8 +16,7 @@ export const getDetallesOt = async (req: Request, res: Response) => {
 export const getDetallesOtByOT = async (req: Request, res: Response) => {
     const { id_ot } = req.params;
     try {
-        const detallesOt = await Detalle_Ot.findAll({ 
-            include: [{model: Servicio, attributes: ['nom_serv']}],
+        const detallesOt = await Detalle_Ot.findAll({
             where: { id_ot }
         });
         res.json(detallesOt);
@@ -48,7 +47,7 @@ export const getDetalleOt = async (req: Request, res: Response) => {
 
 // Crear un nuevo detalle de OT
 export const postDetalleOt = async (req: Request, res: Response) => {
-    const { id_ot, id_serv, fecha_detalle, desc_detalle, rut_usuario } = req.body;
+    const { id_ot, id_serv, fecha_detalle, desc_detalle, rut_usuario, d_estado } = req.body;
 
     try {
         const newDetalleOt = await Detalle_Ot.create({
@@ -56,7 +55,8 @@ export const postDetalleOt = async (req: Request, res: Response) => {
             id_serv,
             fecha_detalle,
             desc_detalle,
-            rut_usuario
+            rut_usuario,
+            d_estado
         });
 
         res.status(201).json({
@@ -72,7 +72,7 @@ export const postDetalleOt = async (req: Request, res: Response) => {
 // Actualizar un detalle de OT
 export const updateDetalleOt = async (req: Request, res: Response) => {
     const { id_ot, id_serv } = req.params;
-    const { fecha_detalle, desc_detalle, rut_usuario } = req.body;
+    const { fecha_detalle, desc_detalle, rut_usuario, d_estado } = req.body;
 
     try {
         const detalleOt = await Detalle_Ot.findOne({
@@ -85,9 +85,12 @@ export const updateDetalleOt = async (req: Request, res: Response) => {
                 id_serv,
                 fecha_detalle,
                 desc_detalle,
-                rut_usuario
+                rut_usuario,
+                d_estado
             });
             res.json({ message: 'Detalle de OT actualizado con éxito' });
+            
+
         } else {
             res.status(404).json({ message: 'Detalle de OT no encontrado' });
         }
@@ -99,11 +102,11 @@ export const updateDetalleOt = async (req: Request, res: Response) => {
 
 // Eliminar un detalle de OT
 export const deleteDetalleOt = async (req: Request, res: Response) => {
-    const { id_ot, id_servicio } = req.params;
+    const { id_ot, id_serv } = req.params;
 
     try {
         const detalleOt = await Detalle_Ot.findOne({
-            where: { id_ot, id_servicio }
+            where: { id_ot, id_serv }
         });
 
         if (detalleOt) {
@@ -118,15 +121,43 @@ export const deleteDetalleOt = async (req: Request, res: Response) => {
     }
 };
 
+
 export const deleteDetalleOtByOtId = async (req: Request, res: Response) => {
     const { id_ot } = req.params;
-
     try {
-        await Detalle_Ot.destroy({
-            where: { id_ot }
-        });
+        await Detalle_Ot.destroy({ where: { id_ot } });
+        res.json({ message: 'Detalle de OT eliminado con éxito' });
     } catch (error) {
         console.error('Error en deleteDetalleOtByOtId:', error);
         res.status(500).json({ message: 'Error al eliminar el detalle de OT' });
     }
-};
+};      
+
+export const countDetalleOt = async (req: Request, res: Response) => {
+    const { id_ot } = req.params;
+    try {
+        const counta = await Detalle_Ot.count({
+            where: { id_ot }
+        });
+        res.json(counta);
+    } catch (error) {
+        console.error('Error en countDetalleOt:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+}
+
+export const countDetalleOtByEstado = async (req: Request, res: Response) => {
+    const { id_ot, d_estado } = req.params;
+    try {
+        const counta = await Detalle_Ot.count({
+            where: { id_ot, d_estado }
+        });
+        res.json(counta);
+    } catch (error) {
+        console.error('Error en countDetalleOt:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+}
+
+
+

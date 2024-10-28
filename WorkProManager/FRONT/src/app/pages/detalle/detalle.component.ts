@@ -14,6 +14,7 @@ import { Equipo } from '../../interfaces/equipo';
 import { Cliente } from '../../interfaces/cliente';
 import { DetalleOT } from '../../interfaces/detalle_ot';
 import { newOrder } from '../../interfaces/newOrder';
+import { orderEstado } from '../../interfaces/newOrder';
 
 // Services
 import { OrderService } from '../../services/order.service';
@@ -35,11 +36,16 @@ import { error } from 'console';
   templateUrl: './detalle.component.html',
 })
 export class DetalleComponent implements OnInit {
+  onServiceChange($event: Event){
+    throw new Error('Method not implemented.');
+  }
   mostrarSelectServicio: boolean = false; 
   servicios: Servicio[] = []; // Inicialización como array vacío
   serviciosArray: FormArray<FormGroup> = new FormArray<FormGroup>([]);
   serviciosSeleccionados: any = []; // Cambia 'any' por el tipo adecuado
   servicioSeleccionado: number | null = null;
+  selectedServicioNombre: string | null = null;
+  selectedServicioID: number | null = null;
   usuarios: Usuario[] = [];
   marcas: Marca[] = [];
   newOrders: newOrder[] = [];
@@ -51,6 +57,8 @@ export class DetalleComponent implements OnInit {
   selectedUsuarioID: number | null = null;  // Add this line
   form: FormGroup;
   loading: boolean = false;
+  newDetalleOTId: number | null = null;
+  d_estado: number = 0;
   id_ot: number ;
   id_serv: number;
   nuevoServicio: string = ''; // Variable para almacenar el nuevo servicio
@@ -60,8 +68,11 @@ export class DetalleComponent implements OnInit {
   newOrderId: number | null = null; // Variable para almacenar el ID de la nueva orden
   orderDetails: newOrder | null = null;
   detalleOT: DetalleOT[] = [];
+  division: number = 0;
+  orderEstados: orderEstado[] = [];
 
-
+  datatotal: number = 0
+  datatotal2: number = 0
 
 
 
@@ -93,8 +104,12 @@ export class DetalleComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadServicios();
 
-    this.loadDetalle(this.id_ot, this.id_serv);
+    this.loadUsuarios();
+    this.loadDetalleServicio(this.id_ot, this.id_serv);
+
+
     console.log(this.id_ot);
     console.log(this.id_serv);
 
@@ -111,6 +126,30 @@ export class DetalleComponent implements OnInit {
     console.log(this.id_ot);
   }
 
+  loadUsuarios(){
+    this.usuarioService.getListUsuarios().subscribe((usuarios: Usuario[]) => {
+      this.usuarios = usuarios;
+    });
+  }
+
+  loadServicios(){
+    this.servicioService.getListServicios().subscribe((servicios: Servicio[]) => {
+      this.servicios = servicios;
+    });
+  }
+
+
+  loadDetalleServicio(id_ot: number, id_serv: number){
+    if (this.id_serv === 0){
+      this.loadDetalleByIDOT(this.id_ot);
+      console.log("loadDetalleByIDOT");
+    }
+    else{
+      this.loadDetalle(this.id_ot, this.id_serv);
+      console.log("loadDetalle");
+    }
+  }
+
   
   loadDetalle(id: number, id_serv: number): Promise<DetalleOT[]> {
     return new Promise((resolve, reject) => {
@@ -119,7 +158,7 @@ export class DetalleComponent implements OnInit {
           this.form.patchValue({
             id_serv: data.id_serv,
             fecha_detalle: data.fecha_detalle,
-            nom_serv: data.Servicio.nom_serv,
+            nom_serv: data.Servicio?.nom_serv || '',
             desc_detalle: data.desc_detalle,
             rut_usuario: data.rut_usuario,
           });
@@ -132,62 +171,69 @@ export class DetalleComponent implements OnInit {
       );
     });
   }
-  
-  
-  private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
 
-    // Crea un array de detalles OT a partir de servicios seleccionados
-    const detalleOTData: DetalleOT[] = this.serviciosSeleccionados.map((servicio: Servicio) => ({
-      id_ot: this.id_ot, // Asegúrate de que newOrderId esté definido
-      id_serv: servicio.id_serv!,
-      fecha_detalle: new Date(),
-      desc_detalle: servicio.nom_serv!,
-      rut_usuario: this.form.get('rut_usuario')?.value,
-    }));
-  
-    console.log('DetalleOT data:', JSON.stringify(detalleOTData, null, 2));
-  
-    const detalleOTResponses: DetalleOT[] = []; // Almacenará las respuestas de detalleOT
-  
-    try {
-      // Itera sobre cada detalle OT
-      for (const detalle of detalleOTData) {
-        const existingDetalleOT = await this.detalleOTService
-          .getListDetalleOTByOT(detalle.id_ot!, detalle.id_serv!)
-          .toPromise()
-          .catch((error) => {
-            if (error.status === 404) {
-              return null; // No detalleOT found, proceed to create
-            }
-            throw error; // Rethrow other errors
+  loadDetalleByIDOT(id: number): Promise<DetalleOT[]> {
+    return new Promise((resolve, reject) => {
+      this.detalleOTService.getListDetalleOTByOTId(id).subscribe(
+        (data: DetalleOT[]) => {
+          this.form.patchValue({
+            fecha_detalle: data[0].fecha_detalle,
+            desc_detalle: data[0].desc_detalle,
+            rut_usuario: data[0].rut_usuario,
           });
-  
-        if (existingDetalleOT) {
-          // Update existing detalleOT
-          const updateDetalleOT = await this.detalleOTService
-            .updateDetalleOT(detalle.id_ot!, detalle.id_serv!, detalle)
-            .toPromise();
-  
-          if (!updateDetalleOT) throw new Error('Failed to update detalleOT');
-          detalleOTResponses.push(updateDetalleOT); // Agregar a las respuestas
-        } else {
-          // Create a new detalleOT
-          const newDetalleOT = await this.detalleOTService.saveDetalleOT(detalle).toPromise();
-  
-          if (!newDetalleOT) throw new Error('Failed to create detalleOT');
-          console.log('New detalleOT created:', newDetalleOT);
-          detalleOTResponses.push(newDetalleOT); // Agregar a las respuestas
+        },
+        (error) => {
+          console.error('Error al cargar los detalles:', error);
+          reject(error); // Rechazando la promesa en caso de error
         }
-      }
+      );
+    });
+  }
   
-      return detalleOTResponses; // Devuelve todas las respuestas de detalleOT
+  
+  private async createOrUpdateDetalle(): Promise<DetalleOT> {
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
+    this.id_serv = Number(this.aRouter.snapshot.paramMap.get('id_serv'));
+
+    const detalleData: DetalleOT = {
+      id_ot: this.id_ot,
+      id_serv: this.id_serv !== 0 ? this.id_serv : this.form.get('id_serv')?.value,
+      fecha_detalle: this.form.get('fecha_detalle')?.value,
+      desc_detalle: this.form.get('desc_detalle')?.value,
+      rut_usuario: this.form.get('rut_usuario')?.value,
+      d_estado: 0
+    };
+
+    console.log(detalleData);
+
+    try {
+      const existingDetalleOT = await this.detalleOTService.getDetalleOt(detalleData.id_ot!, detalleData.id_serv!).toPromise().catch((error) => {
+        if (error.status === 404) {
+          return null; // No order found, proceed to create
+        }
+        throw error; // Rethrow other errors
+      });
+
+      if (existingDetalleOT) {
+        // Update existing order
+        const updateDetalleOT = await this.detalleOTService.updateDetalleOT(detalleData.id_ot!, detalleData.id_serv!, detalleData).toPromise();
+        if (!updateDetalleOT) throw new Error('Failed to update detalle');
+        return updateDetalleOT;
+      } else {
+        // Create a new order
+        const newDetalleOT = await this.detalleOTService.saveDetalleOT(detalleData).toPromise();
+        if (!newDetalleOT) {
+          throw new Error('Failed to create detalle');
+        }
+        return newDetalleOT as DetalleOT;
+      
+  
+      }
     } catch (error) {
-      console.error('Error creating or updating the detalleOT:', error);
+      console.error('Error creating or updating the detalle:', error);
       throw error;
     }
   }
-  
   
   async editProduct(): Promise<void> {
     this.loading = true;
@@ -197,7 +243,7 @@ export class DetalleComponent implements OnInit {
 
     try {
 
-      const detalleOT = await this.createOrUpdateDetalleOT();
+      const detalleOT = await this.createOrUpdateDetalle();
 
 
 
@@ -228,23 +274,143 @@ export class DetalleComponent implements OnInit {
   // ... (resto del código sin cambios)
 
 
+  onServicioChange(event: Event) {
+    const selectedId = (event.target as HTMLSelectElement).value;
+    const selectedServicio = this.servicios.find(servicio => servicio.id_serv?.toString() === selectedId);
+    if (selectedServicio) {
+      this.selectedServicioNombre = selectedServicio.nom_serv;
+      this.selectedServicioID = selectedServicio.id_serv ?? null;
+      this.form.patchValue({ id_serv: this.selectedServicioID });
+    }else{
+      this.selectedServicioNombre = null;
+      this.selectedServicioID = null;
+      this.form.patchValue({ id_serv: null });
+    }
+  }
   
-  
 
 
 
-  deleteDetalleOT(id_ot: number, id_serv: number) {
-    this.detalleOTService.deleteDetalleOT(id_ot, id_serv).subscribe({
-      next: () => {
-        console.log('DetalleOT deleted successfully');
-      },
-    });
+  onUserChange(event: Event) {
+    const selectedId = (event.target as HTMLSelectElement).value;
+    const selectedUser = this.usuarios.find(usuario => usuario.rut_usuario?.toString() === selectedId);
+    
+    if (selectedUser) {
+      this.selectedUsuarioName = selectedUser.nom_usu;
+      this.selectedUsuarioSurname = selectedUser.ap_usu;
+      this.selectedUsuarioID = selectedUser.rut_usuario ?? null;
+      this.form.patchValue({ rut_usuario: this.selectedUsuarioID });
+    } else {
+      this.selectedUsuarioName = null;
+      this.selectedUsuarioSurname = null;
+      this.selectedUsuarioID = null;
+      this.form.patchValue({ rut_usuario: null });
+    }
   }
 
+  anotherAction() {
+    // Datos que se envían para la actualización, cambiando d_estado a 1
+    const detalleData: DetalleOT = {
+      id_ot: this.id_ot,
+      id_serv: this.id_serv,
+      fecha_detalle: this.form.get('fecha_detalle')?.value,
+      desc_detalle: this.form.get('desc_detalle')?.value,
+      rut_usuario: this.form.get('rut_usuario')?.value,
+      d_estado: 1
+    };
 
+    this.detalleOTService.updateDetalleOT(this.id_ot, this.id_serv, detalleData).subscribe(
+      (data) => {
+        console.log(data);
+      },
+      (error) => {
+        console.error('Error al cargar los detalles:', error);
+      }
+    );
 
+    this.d_estado = 1;
+
+    this.obtenerCountTotal();
+    this.obtenerCountXEstado();
+
+console.log(typeof(this.datatotal));
+console.log(typeof(this.datatotal2));
+
+this.divisionCount();
+
+if (this.division == 100){
+
+  this.updateOrder();
+  this.router.navigate(['/']);
+  console.log("Orden de trabajo completada");
+
+}else{
+  console.log("Orden de trabajo en proceso");
+}
+
+    
+  }
   
 
+  obtenerCountXEstado(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      this.detalleOTService.getCountDetalleOTByEstado(this.id_ot, this.d_estado).subscribe(
+        (datatotal) => {
+          console.log("count");
+          console.log(datatotal);
+          this.datatotal = datatotal;
+          resolve(datatotal);
+        },
+        (error) => {
+          console.error('Error al cargar los detalles:', error);
+          reject(0);
+        }
+      );
+    });
+  }
+  
+obtenerCountTotal(): Promise<number> {
+
+return new Promise<number>((resolve, reject) => {
+
+    this.detalleOTService.getCountDetalleOT(this.id_ot).subscribe(
+    (datatotal2) => {
+      console.log("count total")
+      console.log(datatotal2);
+      this.datatotal2 = datatotal2;
+    },
+    (error) => {
+      console.error('Error al cargar los detalles:', error);
+    }
+  );
+});
+}
+
+updateOrder(): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+
+    this._orderService.updateOrderState(this.id_ot, 2).subscribe(
+      (data) => {
+        console.log("updateOrder");
+        console.log(data);
+        resolve();
+      },
+      (error) => {
+        console.error('Error al cargar los detalles:', error);
+        reject();
+      }
+    );
+    
+  });
+}
+
+divisionCount(): number {
+  this.division = this.datatotal / this.datatotal2 * 100;
+  console.log(this.division);
+  console.log(typeof(this.datatotal));
+  return this.division;
+
+}
 
 
   
@@ -252,6 +418,7 @@ export class DetalleComponent implements OnInit {
     const urlSegments = window.location.pathname.split('/');
     return Number(urlSegments[urlSegments.length - 1]); // Asegúrate de que este índice sea correcto
   }
+
 
   
 

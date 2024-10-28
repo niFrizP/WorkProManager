@@ -23,8 +23,15 @@ const Detalle_Ot = db.define('detalle_ot', {
         type: DataTypes.STRING
     },
     rut_usuario: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'usuario',
+            key: 'rut_usuario'
+        }
     },
+    d_estado: {
+        type: DataTypes.INTEGER
+    }
 }, {
     modelName: 'detalle_ot',
     tableName: 'detalle_ot',
@@ -38,7 +45,6 @@ const Detalle_Ot = db.define('detalle_ot', {
     ]
 });
 
-Detalle_Ot.belongsTo(Servicio, { foreignKey: 'id_serv', targetKey: 'id_serv' });
-
+Detalle_Ot.belongsTo(Servicio, { foreignKey: 'id_serv' });
 
 export default Detalle_Ot;

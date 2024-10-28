@@ -101,9 +101,8 @@
         <td>{{ newOrder.EstadoOT.nom_estado_ot }}</td>
         <td>{{ newOrder.Usuario.nom_usu }}</td>
         <td>
-          <button [routerLink]="['/newOrders/edit', newOrder.id_ot]">✏️</button>
-          <button (click)="newOrder.id_ot !== undefined ? deleting(newOrder.id_ot) : null">🗑️</button>
-        </td>
+          <button [routerLink]="['/edit-order', newOrder.id_ot]">✏️</button>
+<button (click)="newOrder.id_ot !== undefined ? deleting(newOrder.id_ot) : null">🗑️</button>        </td>
       </tr>
     </tbody>
   </table>

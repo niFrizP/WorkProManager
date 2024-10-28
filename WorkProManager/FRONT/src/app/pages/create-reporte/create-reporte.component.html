@@ -15,10 +15,11 @@
 
       </select>
 
-      <button [routerLink]="['/orders/new-ot']" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 new-ot-butt" [routerLink]="['/orders/new-ot']">
-        + Nueva
-      </button>
-      <div></div>
+
+      <button [routerLink]="['/reportes/createReport/', id_ot, 0]">✏️</button>
+
+
+
 
       <div>
         <label for="filter" class="mr-2 font-medium">Todos los usuarios</label>
@@ -89,7 +90,9 @@
         <td>{{ detalleOT.rut_usuario }}</td>
         <td>
           <button [routerLink]="['/reportes/createReport/', detalleOT.id_ot, detalleOT.id_serv]">✏️</button>
-        </td>
+          <button (click)="detalleOT.id_serv !== undefined ? deleting(detalleOT.id_ot,detalleOT.id_serv) : null">🗑️</button>        </td>
+
+
       </tr>
     </tbody>
   </table>

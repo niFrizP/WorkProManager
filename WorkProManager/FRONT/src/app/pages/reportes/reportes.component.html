@@ -96,6 +96,7 @@
         <td>{{ newOrder.Usuario.nom_usu }}</td>
         <td>
           <button [routerLink]="['createReport/', newOrder.id_ot]">✏️</button>
+          <button (click)="newOrder.id_ot !== undefined ? updateOrder(newOrder.id_ot) : null">✔️</button>
         </td>
       </tr>
     </tbody>

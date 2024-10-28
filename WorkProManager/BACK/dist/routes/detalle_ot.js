@@ -10,4 +10,6 @@ router.put('/:id_ot/:id_serv', detalle_ot_1.updateDetalleOt);
 router.delete('/:id_ot/:id_serv', detalle_ot_1.deleteDetalleOt);
 router.get('/:id_ot', detalle_ot_1.getDetallesOtByOT);
 router.delete('/:id_ot', detalle_ot_1.deleteDetalleOtByOtId);
+router.get('/count/:id_ot/id', detalle_ot_1.countDetalleOt);
+router.get('/count/:id_ot/:d_estado', detalle_ot_1.countDetalleOtByEstado);
 exports.default = router;

@@ -16,6 +16,8 @@ import { OrdersModule } from './pages/orders/orders.module'; // manten si es nec
     ReactiveFormsModule,
     FormsModule,
     HeaderComponent,
+    OrdersModule,
+    NgxPaginationModule
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],

@@ -70,12 +70,14 @@ export class ReportesComponent implements OnInit {
   filteredServicios: Servicio[] = [];
   page = 1;
   itemsPerPage = 10;
+  id_ot: number = 0; // Declare the id_ot property
 
   years = [2024, 2023, 2022]; // Asegúrate de rellenar con los años disponibles
 
 
   constructor(
     private ordereliminadaService: OrdereliminadaService,
+    private _orderService: OrderService,
     private orderService: OrderService,
     private usuarioService: UsuarioService,
     private equipoService: EquipoService,
@@ -235,11 +237,29 @@ export class ReportesComponent implements OnInit {
     }
   }
 
+  updateOrder(id_ot:number): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this._orderService.updateOrderState(id_ot, 3).subscribe(
+        
+        (data) => {
+          console.log(id_ot);
+          console.log("updateOrder");
+          console.log(data);
+          resolve();
+        },
+        (error) => {
+          console.error('Error al cargar los detalles:', error);
+          reject();
+        }
+      );
+      
+    });
+  }
   
+  confirmOrderCompletion(id_ot: number): void| undefined {
+      this.updateOrder(id_ot)
   
-
-  
-  
+}
 
   onPageChange(page: number): void {
     this.page = page;

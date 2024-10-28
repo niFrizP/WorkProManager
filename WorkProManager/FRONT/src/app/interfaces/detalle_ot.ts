@@ -6,7 +6,8 @@ export interface DetalleOT {
     fecha_detalle: Date;
     desc_detalle: string;
     rut_usuario: number;
-    Servicio: {
+    d_estado: number
+    Servicio?: {
         nom_serv: string;
-    }
+    } | undefined;
 }
