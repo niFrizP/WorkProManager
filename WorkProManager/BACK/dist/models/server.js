@@ -29,6 +29,7 @@ const order_2 = __importDefault(require("../routes/order"));
 const query_1 = __importDefault(require("../routes/query"));
 const tipo_1 = __importDefault(require("../routes/tipo"));
 const login_1 = __importDefault(require("../routes/login"));
+const solicitud_1 = __importDefault(require("../routes/solicitud"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const connection_1 = __importDefault(require("../db/connection")); // Asegúrate de que aquí importas initModels
 class Server {
@@ -59,6 +60,12 @@ class Server {
             }
             next();
         }, login_1.default);
+        this.app.use('/api/solicitud', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a solicitudes');
+            }
+            next();
+        }, solicitud_1.default);
         this.app.use('/api/detalle_ot', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a detalles de órdenes de trabajo');

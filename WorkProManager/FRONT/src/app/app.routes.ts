@@ -4,6 +4,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HeaderComponent } from './components/header/header.component';
 import { LoginComponent } from './pages/login/login.component';
+
 import { OrdersComponent } from './pages/orders/orders.component';
 import { NewOtComponent } from './pages/orders/new-ot/new-ot.component';
 import { UsuariosComponent } from './pages/usuarios/usuarios.component';
@@ -12,8 +13,11 @@ import { AprobacionesTickComponent } from './pages/aprobaciones-tick/aprobacione
 import { EditOrderComponent } from './pages/edit-order/edit-order.component';
 import { ReportesComponent } from './pages/reportes/reportes.component';
 import { DetalleComponent } from './pages/detalle/detalle.component';
+import path from 'path';
+import { CotizacionComponent } from './pages/cotizacion/cotizacion.component';
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' }, // Redirige a 'home' al inicio
+  { path: 'cotizacion', component: CotizacionComponent},
   { path: 'login', component: LoginComponent }, // Ruta a 'login'
   { path: 'home', component: HomeComponent }, // Ruta a 'home'
   { path: 'sidebar', component: SidebarComponent }, // Ruta a 'sidebar'

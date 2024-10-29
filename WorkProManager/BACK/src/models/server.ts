@@ -16,6 +16,7 @@ import queryRoutes from '../routes/query';
 import routesTipo from '../routes/tipo';
 import routesLogin from '../routes/login';
 import bodyparser from 'body-parser';
+import routerSolicitud from '../routes/solicitud';
 import cookieparser from 'cookie-parser';
 
 import db from '../db/connection'; // Asegúrate de que aquí importas initModels
@@ -63,6 +64,12 @@ class Server {
         }, routesLogin);
        
 
+        this.app.use('/api/solicitud', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a solicitudes');
+            }
+            next();
+        }, routerSolicitud);
 
         this.app.use('/api/detalle_ot', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {

@@ -96,7 +96,20 @@
         <td>{{ newOrder.Usuario.nom_usu }}</td>
         <td>
           <button [routerLink]="['createReport/', newOrder.id_ot]">✏️</button>
-          <button (click)="newOrder.id_ot !== undefined ? updateOrder(newOrder.id_ot) : null">✔️</button>
+
+            <!-- Botón para desplegar el submenú -->
+            <button (click)="toggleMenu(newOrder.id_ot ?? 0)">📄</button>
+          
+            <!-- Submenú desplegable -->
+            <div *ngIf="isMenuOpen" >
+              <label for="estados">Selecciona un estado:</label>
+              <select id="estados" formControlName="id_estado_ot" (change)="onUserChange($event)">
+                <option *ngFor="let estado of estados" [value]="estado.id_estado_ot">{{ estado.nom_estado_ot }}</option>
+              </select>
+            </div>
+          
+         
+
         </td>
       </tr>
     </tbody>
