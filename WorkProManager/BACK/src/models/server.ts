@@ -14,6 +14,10 @@ import routesUsuarioEliminado from '../routes/usuario_eliminado';
 import ordersCountByService from '../routes/order';
 import queryRoutes from '../routes/query';
 import routesTipo from '../routes/tipo';
+import routesLogin from '../routes/login';
+import bodyparser from 'body-parser';
+import cookieparser from 'cookie-parser';
+
 import db from '../db/connection'; // Asegúrate de que aquí importas initModels
 
 class Server {
@@ -23,7 +27,10 @@ class Server {
 
     constructor() {
         this.app = express();
+        this.app.use(cookieparser());
         this.port = process.env.PORT || '3001';
+        const JWT_SECRET = process.env.JWT_SECRET;
+
         this.middlewares();
         this.routes();
         this.dbConnect();
@@ -37,11 +44,25 @@ class Server {
     }
 
     routes() {
+
+
+        
         this.app.get('/', (req: Request, res: Response) => {
             res.json({
                 msg: 'API Working'
             });
         });
+
+
+
+        this.app.use('/api/login', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'POST') {
+                console.log('Acceso a login');
+            }
+            next();
+        }, routesLogin);
+       
+
 
         this.app.use('/api/detalle_ot', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
