@@ -5,4 +5,4 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Exporta la clave secreta
-export const JWT_SECRET: string = process.env.JWT_SECRET || 'defaultsecret';
+export const JWT_SECRET: string = 'defaultsecret';

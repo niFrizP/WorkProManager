@@ -34,3 +34,25 @@ const password = req.body.password;
 };    
 
 
+
+export const verificarToken = async (req: Request): Promise<Jwt | null> => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const decoded = jwt.verify(token, secretKey) as Jwt;
+    return decoded;
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      console.log('Token expirado');
+    } else {
+      console.log('Token inválido');
+    }
+    return null;
+  }
+}
+
+  

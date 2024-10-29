@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http'
 import { FormsModule } from '@angular/forms';
 import { UsuarioService } from '../../services/usuario.service';
 import { Usuario } from '../../interfaces/usuario';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -18,7 +19,7 @@ export class LoginComponent {
   usuario: Usuario[] = [];
 
 
-  constructor(private http: HttpClient, private usuarioService:UsuarioService) {}
+  constructor(private http: HttpClient, private usuarioService: UsuarioService, private router: Router) {}
 
   onSubmit() {
     let loginData = {
@@ -30,6 +31,7 @@ export class LoginComponent {
       (data) => {
         this.usuario = [data];
         console.log(this.usuario);
+        this.router.navigate(['/home']);
       },
       (error) => {
         this.loginError = error;

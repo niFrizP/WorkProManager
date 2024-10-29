@@ -57,6 +57,7 @@ class Server {
 
 
         this.app.use('/api/login', (req: Request, res: Response, next: Function) => {
+            this.app.use(cookieparser());
             if (req.method === 'POST') {
                 console.log('Acceso a login');
             }
@@ -182,7 +183,8 @@ class Server {
     }
 
     middlewares() {
-        this.app.use(cors());
+        this.app.use(cors({ origin: "http://localhost:4200", credentials: true
+        }));
         this.app.use(express.json());
     }
 
