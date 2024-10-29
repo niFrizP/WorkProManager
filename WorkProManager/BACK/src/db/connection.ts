@@ -5,6 +5,7 @@ import Equipo from '../models/equipo';
 import EstadoOT from '../models/estado_ot';
 import Servicio from '../models/servicio';
 import Usuario from '../models/usuario';
+import { configDotenv } from 'dotenv';
 
 
 const sequelize = new Sequelize('ot_db', 'root', 'pelota50', {

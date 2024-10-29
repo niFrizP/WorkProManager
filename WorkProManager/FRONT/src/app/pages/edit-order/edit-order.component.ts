@@ -80,6 +80,7 @@ export class EditOrderComponent implements OnInit {
     
   ) {
     this.form = this.fb.group({
+      id_ot: [null, Validators.required],
       num_equipo: [null, Validators.required],
       id_estado: [1, Validators.required],
       costo: [null, Validators.required],
@@ -102,7 +103,7 @@ export class EditOrderComponent implements OnInit {
       
     });
     
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
 
 
     this.formDetalleOT = this.fb.group({
@@ -177,13 +178,28 @@ export class EditOrderComponent implements OnInit {
         (data: DetalleOT[]) => {
           console.log(data);
           resolve(data);  // Resolviendo la promesa con los datos recibidos
+          console.log('DetalleOT Data:', data);
+  
+          // Filtrar y extraer los servicios a partir de los datos obtenidos
+          this.serviciosSeleccionados = data.map((detalle: DetalleOT) => ({
+            id_serv: detalle.id_serv,
+            nom_serv: detalle.desc_detalle, // Asegúrate de que esta propiedad exista o ajústala según tu API
+            fecha_detalle: detalle.fecha_detalle
+          }));
+  
+          console.log('Servicios seleccionados:', this.serviciosSeleccionados);
+  
+          resolve(data); // Resolviendo la promesa con los datos recibidos
         },
         (error) => {
           reject(error);  // Rechazando la promesa en caso de error
+          console.error('Error al cargar los detalles:', error);
+          reject(error); // Rechazando la promesa en caso de error
         }
       );
     });
   }
+  
   
   
   async editProduct(): Promise<void> {
@@ -199,9 +215,13 @@ export class EditOrderComponent implements OnInit {
       // 2. Create or update equipo
       const equipo = await this.createOrUpdateEquipo();
 
+      const order = await this.createOrUpdateOrder();
+
+
       const detalleOT = await this.createOrUpdateDetalleOT();
 
 
+      console.log(order);
 
       // Log the JSON representation of the order
 
@@ -219,6 +239,7 @@ export class EditOrderComponent implements OnInit {
 
     setTimeout(() => {
       // Lógica de éxito o error aquí
+      console.log(this.orderDetails);
       console.log("Orden de trabajo guardada");
       this.isSubmitting = false; // Rehabilitar el botón después de completar
     }, 2000); // Simulación de un retraso de 2 segundos
@@ -230,6 +251,10 @@ export class EditOrderComponent implements OnInit {
         rut_cliente: this.form.get('rut_cliente')?.value,
         d_veri_cli: this.form.get('d_veri_cli')?.value,
         apellido: this.form.get('apellido')?.value,
+        ap_cli: this.form.get('apellido')?.value,
+        nom_cli: this.form.get('nombre')?.value,
+        cel_cli: this.form.get('celular')?.value,
+        email_cli: this.form.get('correo')?.value,
     };
 
     console.log('Cliente data:', JSON.stringify(clienteData, null, 2));
@@ -319,10 +344,81 @@ export class EditOrderComponent implements OnInit {
 }
   // ... (resto del código sin cambios)
 
+  private async createOrUpdateOrder(): Promise<Order> {
+    // Usar this.id_ot en lugar de obtenerlo del formulario
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
+
+
+    const orderData: Order = {
+        id_ot: this.id_ot,
+        num_equipo: this.form.get('num_equipo')?.value,
+        id_estado_ot: this.form.get('id_estado')?.value,
+        fec_creacion: new Date(),
+        fec_entrega: this.form.get('fecha')?.value,
+        descripcion: this.form.get('descripcion')?.value,
+        rut_usuario: this.form.get('rut_usuario')?.value,
+        rut_cliente: this.form.get('rut_cliente')?.value,
+    };
+
+    try {
+        const existingOrder = await this._orderService.getOrder(orderData.id_ot!).toPromise().catch((error) => {
+            if (error.status === 404) {
+                return null; // No order found, proceed to create
+            }
+            throw error; // Rethrow other errors
+        });
+
+        if (existingOrder) {
+            // Update existing order
+            const updateOrder = await this._orderService.updateOrder(orderData.id_ot!, orderData).toPromise();
+            if (!updateOrder) throw new Error('Failed to update order');
+            return updateOrder;
+        } else {
+          console.log("No existe la orden");
+          console.log(orderData);
+            // Create a new order
+            return new Promise((resolve, reject) => {
+                this._orderService.saveOrder(orderData).subscribe({
+                    next: (response: any) => {  // Usamos 'any' para acceder a la respuesta completa
+                        console.log('Response from server:', response);
+
+                        // Asegúrate de que la respuesta tiene la estructura esperada
+                        const newOrder = response?.order; // Accede al objeto 'order'
+
+                        if (newOrder) {
+                            this.newOrderId = newOrder?.id_ot; // Accede a la propiedad 'id_ot'
+
+                            if (this.newOrderId) {
+                                console.log('New order ID:', this.newOrderId);
+                            } else {
+                                console.warn('No order ID found in response');
+                            }
+
+                            resolve(newOrder); // Devuelve la orden creada
+                        } else {
+                            console.warn('Order object not found in response');
+                            reject(new Error('Order object not found in response'));
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error creating order:', error);
+                        reject(error);
+                    }
+                });
+            });
+        }
+    } catch (error) {
+        console.error('Error creating or updating the order:', error);
+        throw error;
+    }
+}
+
   private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
+
     // Crea un array de detalles OT a partir de servicios seleccionados
     const detalleOTData: DetalleOT[] = this.serviciosSeleccionados.map((servicio: Servicio) => ({
-      id_ot: this.newOrderId!, // Asegúrate de que newOrderId esté definido
+      id_ot: this.id_ot, // Asegúrate de que newOrderId esté definido
       id_serv: servicio.id_serv!,
       fecha_detalle: new Date(),
       desc_detalle: servicio.nom_serv!,
@@ -408,9 +504,20 @@ export class EditOrderComponent implements OnInit {
     }
   }
 
-  eliminarServicio(servicio: any) {
+  eliminarServicio(event: Event, servicio: any) {
+    console.log(servicio);
+    this.deleteDetalleOT(this.id_ot, servicio.id_serv);
+
     this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: { id_serv: any }) => s.id_serv !== servicio.id_serv);
     }
+
+  deleteDetalleOT(id_ot: number, id_serv: number) {
+    this.detalleOTService.deleteDetalleOT(id_ot, id_serv).subscribe({
+      next: () => {
+        console.log('DetalleOT deleted successfully');
+      },
+    });
+  }
 
   serviceID(event: Event) {
     const selectedId = (event.target as HTMLSelectElement).value;

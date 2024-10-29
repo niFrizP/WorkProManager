@@ -26,6 +26,7 @@
     "@angular/ssr": "^18.2.3",
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
+    "ngx-cookie-service": "^18.0.0",
     "ngx-pagination": "^6.0.3",
     "ngx-toastr": "^19.0.0",
     "rollup": "^4.24.0",

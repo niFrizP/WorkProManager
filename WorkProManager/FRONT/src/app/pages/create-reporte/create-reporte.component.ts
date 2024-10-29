@@ -1,89 +1,181 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterModule, ActivatedRoute } from '@angular/router';
-import { Reporte } from '../../interfaces/reporte';
-import { ReporteService } from '../../services/reporte.service'; // Ajustar el path según sea necesario
 import { CommonModule } from '@angular/common';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { OrderService } from '../../services/order.service';
 import { Order } from '../../interfaces/order';
+import { UsuarioService } from '../../services/usuario.service';
+import { EquipoService } from '../../services/equipo.service';
+import { ClienteService } from '../../services/cliente.service';
+import { Usuario } from '../../interfaces/usuario';
+import { Equipo } from '../../interfaces/equipo';
+import { Cliente } from '../../interfaces/cliente';
+import { Servicio } from '../../interfaces/servicio';
+import { ServicioService } from '../../services/servicio.service';
+import { OrdereliminadaService } from '../../services/ordereliminada.service';
+import { newOrder } from '../../interfaces/newOrder';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
+import { FormsModule } from '@angular/forms';
+import { DetalleOTService } from '../../services/detalle_ot.service';
+import { DetalleOT } from '../../interfaces/detalle_ot';
+
 
 @Component({
-  selector: 'app-create_report',
+  selector: 'app-create-reporte',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule],
   templateUrl: './create-reporte.component.html',
-  styleUrls: ['./create-reporte.component.css'] // Opcional, si tienes estilos
+  styleUrls: ['./create-reporte.component.css'],
 })
-export class CreateReportComponente implements OnInit {
-  reportForm: FormGroup;
-  id_ot_from_api: number | undefined;
-  today: string; // Variable para la fecha de hoy
+export class CreateReportComponent implements OnInit {
+
+  numericError: string = '';  // Variable para almacenar el mensaje de error
+
+
+  months = [
+    { value: 1, name: 'Enero' },
+    { value: 2, name: 'Febrero' },
+    { value: 3, name: 'Marzo' },
+    { value: 4, name: 'Abril' },
+    { value: 5, name: 'Mayo' },
+    { value: 6, name: 'Junio' },
+    { value: 7, name: 'Julio' },
+    { value: 8, name: 'Agosto' },
+    { value: 9, name: 'Septiembre' },
+    { value: 10, name: 'Octubre' },
+    { value: 11, name: 'Noviembre' },
+    { value: 12, name: 'Diciembre' }
+  ];
+
+  orders: Order[] = [];
+  newOrders: newOrder[] = [];
+  usuarios: Usuario[] = [];
+  clientes: Cliente[] = [];
+  servicios: Servicio[] = [];
+  selectedMonth: number = 0;
+  selectedYear: number = 0;
+  selectedEquipo: string = '';
+  selectedStatus: string = 'todas';
+  selectedUsuario: string = 'todos';
+  selectedDate: Date | null = null;
+  selectedServicio: string = 'todos';
+  detalleOT: DetalleOT[] = [];
+  equipo: Equipo = {};
+  searchRutCliente: string = '';
+  id_ot: number = 0;
+  searchEquipo: string = '';
+  searchUsuario: string = '';
+  searchServicio: string = '';
+  filteredDetalles: DetalleOT[] = []; // Cambiado a newOrder[]
+  filteredUsers: Usuario[] = [];
+  filteredServicios: Servicio[] = [];
+  page = 1;
+  itemsPerPage = 10;
+
+  years = [2024, 2023, 2022]; // Asegúrate de rellenar con los años disponibles
+
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private reporteService: ReporteService, 
+    private ordereliminadaService: OrdereliminadaService,
+    private orderService: OrderService,
+    private usuarioService: UsuarioService,
     private aRouter: ActivatedRoute,
-    private orderService: OrderService	
+    private equipoService: EquipoService,
+    private clienteService: ClienteService,
+    private detalleOTService: DetalleOTService,
+    private servicioService: ServicioService
   ) {
-    // Inicialización del formulario con la fecha deshabilitada
-    this.today = new Date().toISOString().split('T')[0]; // Fecha de hoy formateada YYYY-MM-DD
-    this.reportForm = this.fb.group({
-      rut_usuario: [7, Validators.required],
-      id_ot: [null, Validators.required],
-      fecha: [{ value: this.today, disabled: true }], // Fecha de hoy preestablecida y deshabilitada
-      descripcion: ['', Validators.required]
-    });
+
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
+   
   }
 
   ngOnInit(): void {
-    this.getOrderIdFromUrl(); // Obtener id_ot desde la URL
+        this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
+
+    console.log(this.id_ot);
+    this.loadDetalles(this.id_ot);
+    this.loadUsers();
+    this.loadServicios();
+
+   
   }
 
-  // Método para obtener el id_ot de la URL
-  getOrderIdFromUrl(): void {
-    this.aRouter.paramMap.subscribe(params => {
-      this.id_ot_from_api = Number(params.get('id_ot')); // Obtener id_ot de la URL
-      console.log('ID de OT:', this.id_ot_from_api); 
-      this.reportForm.patchValue({ id_ot: this.id_ot_from_api }); // Asignar id_ot al formulario
-    });
+
+
+
+
+
+  loadUsers(): void {
+    this.usuarioService.getListUsuarios().subscribe(
+      (data: Usuario[]) => {
+        this.usuarios = data;
+      },
+      (error) => {
+        console.error('Error fetching users', error);
+      }
+    );
   }
 
-  // Método para actualizar el estado de la orden y crear el reporte
-  private updateOrderStateAndCreateReport(): void {
-    if (this.id_ot_from_api) {
-      const newOrderState = 2; // El nuevo estado que deseas establecer
+  loadServicios(): void {
+    this.servicioService.getListServicios().subscribe(
+      (data: Servicio[]) => {
+        this.servicios = data;
+      },
+      (error) => {
+        console.error('Error fetching services', error);
+      }
+    );
+  }
+  
+  loadDetalles(id: number): void {
+    this.detalleOTService.getListDetalleOTByOTId(id).subscribe(
+      (data: DetalleOT[]) => {
+        this.detalleOT = data;
+        this.filteredDetalles = this.detalleOT;
+      },  
+    );
+  }
 
-      this.orderService.updateOrderState(this.id_ot_from_api, newOrderState).subscribe(
-        response => {
-          console.log('Estado de la orden actualizado:', response);
-          this.createReport(); // Llamar a createReport después de actualizar
-        },
-        error => {
-          console.error('Error actualizando estado de la orden:', error);
-          // Manejar error (por ejemplo, mostrar mensaje al usuario)
+
+
+  filterUsers() {
+    this.filteredUsers = this.usuarios
+      .filter(usuario => this.selectedUsuario === 'todos' || usuario.nom_usu.toLowerCase() === this.selectedUsuario)
+  }
+
+  filterServicios() {
+    this.filteredServicios = this.servicios
+      .filter(servicio => this.selectedServicio === 'todos' || servicio.nom_serv.toLowerCase() === this.selectedServicio)
+  } 
+
+  deleting(id_ot: number,id_serv: number): void {
+
+
+    const remainingServicesCount = Number(this.detalleOTService.getCountDetalleOT(this.id_ot));
+
+   
+      this.detalleOTService.deleteDetalleOT(id_ot, id_serv).subscribe(
+        () => {
+          this.loadDetalles(this.id_ot);
         }
       );
-    }
+    
   }
 
-  // Método para crear el reporte
-  createReport(): void {
-    this.updateOrderStateAndCreateReport();
-    if (this.reportForm.valid) {
-      const newReport: Reporte = this.reportForm.getRawValue(); // Obtener valores del formulario incluso los deshabilitados
-      console.log(newReport); // Verificar los datos a enviar
-      
-      this.reporteService.saveReporte(newReport).subscribe(
-        response => {
-          console.log('Reporte creado:', response);
-          this.router.navigate(['/']); // Redirigir después de la creación exitosa
-        },
-        error => {
-          console.error('Error creando reporte:', error);
-          // Manejar error (por ejemplo, mostrar mensaje al usuario)
-        }
-      );
-    }
+
+ 
+  
+
+  
+  
+
+  
+  
+
+  onPageChange(page: number): void {
+    this.page = page;
   }
 }

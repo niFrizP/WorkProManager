@@ -28,11 +28,16 @@ const usuario_eliminado_1 = __importDefault(require("../routes/usuario_eliminado
 const order_2 = __importDefault(require("../routes/order"));
 const query_1 = __importDefault(require("../routes/query"));
 const tipo_1 = __importDefault(require("../routes/tipo"));
+const login_1 = __importDefault(require("../routes/login"));
+const solicitud_1 = __importDefault(require("../routes/solicitud"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const connection_1 = __importDefault(require("../db/connection")); // Asegúrate de que aquí importas initModels
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
+        this.app.use((0, cookie_parser_1.default)());
         this.port = process.env.PORT || '3001';
+        const JWT_SECRET = process.env.JWT_SECRET;
         this.middlewares();
         this.routes();
         this.dbConnect();
@@ -49,6 +54,19 @@ class Server {
                 msg: 'API Working'
             });
         });
+        this.app.use('/api/login', (req, res, next) => {
+            this.app.use((0, cookie_parser_1.default)());
+            if (req.method === 'POST') {
+                console.log('Acceso a login');
+            }
+            next();
+        }, login_1.default);
+        this.app.use('/api/solicitud', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a solicitudes');
+            }
+            next();
+        }, solicitud_1.default);
         this.app.use('/api/detalle_ot', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a detalles de órdenes de trabajo');
@@ -141,7 +159,8 @@ class Server {
         }, usuario_eliminado_1.default);
     }
     middlewares() {
-        this.app.use((0, cors_1.default)());
+        this.app.use((0, cors_1.default)({ origin: "http://localhost:4200", credentials: true
+        }));
         this.app.use(express_1.default.json());
     }
     dbConnect() {

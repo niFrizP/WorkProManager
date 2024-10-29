@@ -1,0 +1,89 @@
+<div class="flex-1 justify-center px-72 py-6">
+  <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <!-- Leyenda de descripción -->
+    <p class="text-md text-gray-600 mb-4">
+      Completa el siguiente formulario para llevar constancia del servicio realizado.
+    </p>
+    
+    <form class="space-y-6" [formGroup]="form" (ngSubmit)="editProduct()">
+
+      <div class="mt-4">
+        <label for="fecha">Fecha de Entrega:</label>
+        <input type="date" id="fecha_detalle" formControlName="fecha_detalle" class="border border-gray-300 p-2 rounded" />
+      </div>
+
+      <p class="text-2xl font-semibold text-gray-700">Formulario de servicio</p>
+
+      
+      <!-- Descripción de la OT -->
+      <div>
+        <label for="desc_detalle" class="block text-sm font-medium text-gray-700">Descripción</label>
+        <textarea
+          id="desc_detalle"
+          formControlName="desc_detalle"
+          rows="4"
+          class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+          placeholder="Añade una descripción detallada de la Orden de Trabajo..."
+        ></textarea>
+      </div>
+
+      <!-- Detalle Cliente -->
+      <fieldset class="border border-gray-200 p-4 rounded-lg">
+        <legend class="text-lg font-semibold">Usuario</legend>
+        
+        <div>
+          <label for="usuarios">Selecciona un Usuario:</label>
+          <select formControlName="rut_usuario" (change)="onUserChange($event)">
+            <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
+              {{ usuario.nom_usu }} {{ usuario.ap_usu }}
+            </option>
+          </select>
+        </div>
+        
+        <div *ngIf="selectedUsuarioName !== null">
+          <p>Precio del usuario seleccionado: <strong>{{ selectedUsuarioName }} {{ selectedUsuarioSurname }}</strong></p>
+        </div>
+          
+      </fieldset>
+
+     
+
+      <!-- Servicio -->
+      <fieldset class="border border-gray-200 p-4 rounded-lg">
+        <legend class="text-lg font-semibold">Servicio</legend>
+        
+        <div>
+          <label for="servicios">Selecciona un Servicio:</label>
+          <select formControlName="id_serv" (change)="onServicioChange($event)">
+            <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">
+              {{ servicio.nom_serv }}
+            </option>
+          </select>
+          
+        </div>
+        
+          
+      </fieldset>
+      <!-- Botón para enviar el formulario -->
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
+          (click)="editProduct()"
+          [disabled]="isSubmitting" 
+
+
+
+        >
+        {{ isSubmitting ? 'Guardando...' : 'Guardar Orden de Trabajo' }} 
+      </button>
+      </div>
+
+      <button
+      type="button"
+      class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600 flex items-center"
+      (click)="anotherAction()"
+    >
+      <i class="fas fa-check mr-2"></i>
+      Confirmar
+    </button>

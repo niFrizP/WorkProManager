@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../environments/environment'; 
+import { environment } from '../environments/environment';
+import { tap } from 'rxjs/operators'; 
 import { Usuario } from '../interfaces/usuario';
+import { AuthService } from './auth.service';
 
 
 @Injectable({
@@ -11,11 +13,12 @@ import { Usuario } from '../interfaces/usuario';
 export class UsuarioService {
   private myAppUrl: string;
   private myApiUrl: string;
+  private MyApiUrlLogin: string;
 
-  constructor(private http: HttpClient) { 
+  constructor(private http: HttpClient, private authService: AuthService) { 
     this.myAppUrl = environment.endpoint;
-    this.myApiUrl = 'api/usuario/'
-  }
+    this.myApiUrl = 'api/usuario/';
+    this.MyApiUrlLogin = 'api/';}
 
   getListUsuarios(): Observable<Usuario[]> {
    return this.http.get<Usuario[]>(`${this.myAppUrl}${this.myApiUrl}`);
@@ -35,5 +38,16 @@ export class UsuarioService {
 
   updateUsuario(rut_usuario: number, usuario: Usuario): Observable<void> {
     return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${rut_usuario}`, usuario);
+  }
+
+  login(rut_usuario: number, password: string): Observable<Usuario> {
+    return this.http.post<Usuario>(`${this.myAppUrl}${this.MyApiUrlLogin}login`, { rut_usuario, password })
+      .pipe(
+        tap((response: any) => {
+          if (response && response.token) {
+            this.authService.setToken(response.token); // Guarda el token en el AuthService
+          }
+        })
+      );
   }
 }

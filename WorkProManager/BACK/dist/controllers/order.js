@@ -140,7 +140,7 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 id_estado_ot
             }); // Actualiza todos los campos proporcionados
             res.json({
-                msg: 'La orden fue actualizada con éxito'
+                msg: 'La orden fue actualizada con éxito', order
             });
         }
         else {

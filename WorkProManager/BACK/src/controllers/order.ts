@@ -135,7 +135,7 @@ export const updateOrder = async (req: Request, res: Response) => {
                 id_estado_ot
             }); // Actualiza todos los campos proporcionados
             res.json({
-                msg: 'La orden fue actualizada con éxito'
+                msg: 'La orden fue actualizada con éxito', order
             });
         } else {
             res.status(404).json({

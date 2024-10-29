@@ -1,6 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import db from '../db/connection';
 import sequelize from 'sequelize';
+import Servicio from './servicio';
 
 const Detalle_Ot = db.define('detalle_ot', {
     id_ot: {
@@ -10,6 +11,10 @@ const Detalle_Ot = db.define('detalle_ot', {
     id_serv: {
         type: DataTypes.INTEGER,
         primaryKey: true,
+        references: {
+            model: 'servicio',
+            key: 'id_serv'
+        }
     },
     fecha_detalle: {
         type: DataTypes.DATE
@@ -24,6 +29,9 @@ const Detalle_Ot = db.define('detalle_ot', {
             key: 'rut_usuario'
         }
     },
+    d_estado: {
+        type: DataTypes.INTEGER
+    }
 }, {
     modelName: 'detalle_ot',
     tableName: 'detalle_ot',
@@ -32,10 +40,11 @@ const Detalle_Ot = db.define('detalle_ot', {
     indexes: [
         {
             unique: true,
-            fields: ['id_ot', 'id_servicio']
+            fields: ['id_ot', 'id_serv']
         }
     ]
 });
 
+Detalle_Ot.belongsTo(Servicio, { foreignKey: 'id_serv' });
 
 export default Detalle_Ot;

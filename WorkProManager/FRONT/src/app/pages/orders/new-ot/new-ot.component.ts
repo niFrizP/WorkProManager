@@ -100,7 +100,9 @@ selectedServicePrecio: any;
       d_veri_cli: ['', Validators.required],
       servicios: this.fb.array([this.fb.group({
         id_serv: [null, Validators.required],
-      })])
+      })]),
+      isSubmitting: [false] // Add this line
+
       
     });
     
@@ -114,6 +116,24 @@ selectedServicePrecio: any;
 
   ngOnInit(): void {
     this.cargarTipoEquipo();
+
+    this.form = this.fb.group({
+      nombre: ['', Validators.required],
+      apellido: ['', Validators.required],
+      rut_cliente: ['', Validators.required],
+      d_veri_cli: ['', [Validators.required, Validators.maxLength(1)]],
+      correo: ['', [Validators.required, Validators.email]],
+      celular: ['', Validators.required],
+      tipo_equipo: ['', Validators.required],
+      mod_equipo: ['', Validators.required],
+      id_marca: ['', Validators.required],
+      num_equipo: ['', Validators.required],
+      fec_fabric: ['', Validators.required],
+      id_serv: ['', Validators.required],
+      descripcion: ['', Validators.required],
+      fecha: ['', Validators.required],
+      id_usuario: ['', Validators.required]
+    });
     this.cargarServicios();
     this.cargarUsuarios();
     this.cargarMarcas();
@@ -357,6 +377,7 @@ private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
     id_serv: servicio.id_serv!,
     fecha_detalle: new Date(),
     desc_detalle: servicio.nom_serv!,
+    d_estado: 0,
     rut_usuario: this.form.get('rut_usuario')?.value,
   }));
 
@@ -535,3 +556,5 @@ private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
   }
 
 }
+
+

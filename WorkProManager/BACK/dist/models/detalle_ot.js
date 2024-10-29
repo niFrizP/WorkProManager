@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
+const servicio_1 = __importDefault(require("./servicio"));
 const Detalle_Ot = connection_1.default.define('detalle_ot', {
     id_ot: {
         type: sequelize_1.DataTypes.INTEGER,
@@ -13,6 +14,10 @@ const Detalle_Ot = connection_1.default.define('detalle_ot', {
     id_serv: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
+        references: {
+            model: 'servicio',
+            key: 'id_serv'
+        }
     },
     fecha_detalle: {
         type: sequelize_1.DataTypes.DATE
@@ -27,6 +32,9 @@ const Detalle_Ot = connection_1.default.define('detalle_ot', {
             key: 'rut_usuario'
         }
     },
+    d_estado: {
+        type: sequelize_1.DataTypes.INTEGER
+    }
 }, {
     modelName: 'detalle_ot',
     tableName: 'detalle_ot',
@@ -35,8 +43,9 @@ const Detalle_Ot = connection_1.default.define('detalle_ot', {
     indexes: [
         {
             unique: true,
-            fields: ['id_ot', 'id_servicio']
+            fields: ['id_ot', 'id_serv']
         }
     ]
 });
+Detalle_Ot.belongsTo(servicio_1.default, { foreignKey: 'id_serv' });
 exports.default = Detalle_Ot;

@@ -26,3 +26,8 @@ export interface newOrder {
       nom_estado_ot: string
       }
 }
+
+export interface orderEstado {
+    id_ot: number;
+    id_estado_ot: number;
+}

@@ -1,0 +1,12 @@
+<div class="submenu-container">
+  <!-- Botón para desplegar el submenú -->
+  <button (click)="toggleMenu()">📄</button>
+
+  <!-- Submenú desplegable -->
+  <div *ngIf="isMenuOpen" class="submenu">
+    <label for="estados">Selecciona un estado:</label>
+    <select id="estados" formControlName="id_estado_ot" (change)="onUserChange($event)">
+      <option *ngFor="let estado of estados" [value]="estado.id_estado_ot">{{ estado.nom_estado_ot }}</option>
+    </select>
+  </div>
+</div>

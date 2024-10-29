@@ -12,8 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteDetalleOt = exports.updateDetalleOt = exports.postDetalleOt = exports.getDetalleOt = exports.getDetallesOtByOT = exports.getDetallesOt = void 0;
+exports.countDetalleOtByEstado = exports.countDetalleOt = exports.deleteDetalleOtByOtId = exports.deleteDetalleOt = exports.updateDetalleOt = exports.postDetalleOt = exports.getDetalleOt = exports.getDetallesOtByOT = exports.getDetallesOt = void 0;
 const detalle_ot_1 = __importDefault(require("../models/detalle_ot"));
+const servicio_1 = __importDefault(require("../models/servicio"));
 // Obtener todos los detalles de OT
 const getDetallesOt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -45,7 +46,7 @@ const getDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const { id_ot, id_serv } = req.params;
     try {
         const detalleOt = yield detalle_ot_1.default.findOne({
-            where: { id_ot, id_serv }
+            where: { id_ot, id_serv }, include: [{ model: servicio_1.default, attributes: ['nom_serv'] }]
         });
         if (detalleOt) {
             res.json(detalleOt);
@@ -62,14 +63,15 @@ const getDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.getDetalleOt = getDetalleOt;
 // Crear un nuevo detalle de OT
 const postDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id_ot, id_serv, fecha_detalle, desc_detalle, rut_usuario } = req.body;
+    const { id_ot, id_serv, fecha_detalle, desc_detalle, rut_usuario, d_estado } = req.body;
     try {
         const newDetalleOt = yield detalle_ot_1.default.create({
             id_ot,
             id_serv,
             fecha_detalle,
             desc_detalle,
-            rut_usuario
+            rut_usuario,
+            d_estado
         });
         res.status(201).json({
             message: 'Detalle de OT creado con éxito',
@@ -85,7 +87,7 @@ exports.postDetalleOt = postDetalleOt;
 // Actualizar un detalle de OT
 const updateDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id_ot, id_serv } = req.params;
-    const { fecha_detalle, desc_detalle, rut_usuario } = req.body;
+    const { fecha_detalle, desc_detalle, rut_usuario, d_estado } = req.body;
     try {
         const detalleOt = yield detalle_ot_1.default.findOne({
             where: { id_ot, id_serv }
@@ -96,7 +98,8 @@ const updateDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function
                 id_serv,
                 fecha_detalle,
                 desc_detalle,
-                rut_usuario
+                rut_usuario,
+                d_estado
             });
             res.json({ message: 'Detalle de OT actualizado con éxito' });
         }
@@ -112,10 +115,10 @@ const updateDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.updateDetalleOt = updateDetalleOt;
 // Eliminar un detalle de OT
 const deleteDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id_ot, id_servicio } = req.params;
+    const { id_ot, id_serv } = req.params;
     try {
         const detalleOt = yield detalle_ot_1.default.findOne({
-            where: { id_ot, id_servicio }
+            where: { id_ot, id_serv }
         });
         if (detalleOt) {
             yield detalleOt.destroy();
@@ -131,3 +134,43 @@ const deleteDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.deleteDetalleOt = deleteDetalleOt;
+const deleteDetalleOtByOtId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id_ot } = req.params;
+    try {
+        yield detalle_ot_1.default.destroy({ where: { id_ot } });
+        res.json({ message: 'Detalle de OT eliminado con éxito' });
+    }
+    catch (error) {
+        console.error('Error en deleteDetalleOtByOtId:', error);
+        res.status(500).json({ message: 'Error al eliminar el detalle de OT' });
+    }
+});
+exports.deleteDetalleOtByOtId = deleteDetalleOtByOtId;
+const countDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id_ot } = req.params;
+    try {
+        const counta = yield detalle_ot_1.default.count({
+            where: { id_ot }
+        });
+        res.json(counta);
+    }
+    catch (error) {
+        console.error('Error en countDetalleOt:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+});
+exports.countDetalleOt = countDetalleOt;
+const countDetalleOtByEstado = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id_ot, d_estado } = req.params;
+    try {
+        const counta = yield detalle_ot_1.default.count({
+            where: { id_ot, d_estado }
+        });
+        res.json(counta);
+    }
+    catch (error) {
+        console.error('Error en countDetalleOt:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+});
+exports.countDetalleOtByEstado = countDetalleOtByEstado;

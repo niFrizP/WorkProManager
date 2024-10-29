@@ -1,23 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { NgxPaginationModule } from 'ngx-pagination';
-import { RouterModule } from '@angular/router';
-import { OrderService } from '../../services/order.service';
-import { Order } from '../../interfaces/order';
-import { UsuarioService } from '../../services/usuario.service';
-import { EquipoService } from '../../services/equipo.service';
-import { ClienteService } from '../../services/cliente.service';
-import { Usuario } from '../../interfaces/usuario';
-import { Equipo } from '../../interfaces/equipo';
-import { Cliente } from '../../interfaces/cliente';
-import { Servicio } from '../../interfaces/servicio';
-import { ServicioService } from '../../services/servicio.service';
-import { OrdereliminadaService } from '../../services/ordereliminada.service';
-import { newOrder } from '../../interfaces/newOrder';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
+import { DetalleOTService } from '../../services/detalle_ot.service';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { OrderService } from '../../services/order.service';
+import { UsuarioService } from '../../services/usuario.service';
+import { EquipoService } from '../../services/equipo.service';
+import { ClienteService } from '../../services/cliente.service';
+import { ServicioService } from '../../services/servicio.service';  
+import { Order } from '../../interfaces/order';
+import { newOrder } from '../../interfaces/newOrder';
+import { Usuario } from '../../interfaces/usuario';
+import { Cliente } from '../../interfaces/cliente';
+import { Servicio } from '../../interfaces/servicio';
+import { Equipo } from '../../interfaces/equipo';
+import { OrdereliminadaService } from '../../services/ordereliminada.service';
 
 
 @Component({
@@ -79,6 +80,7 @@ export class OrdersComponent implements OnInit {
     private usuarioService: UsuarioService,
     private equipoService: EquipoService,
     private clienteService: ClienteService,
+    private detalleOTService: DetalleOTService,
     private servicioService: ServicioService
   ) {}
 
@@ -177,11 +179,30 @@ export class OrdersComponent implements OnInit {
       .filter(servicio => this.selectedServicio === 'todos' || servicio.nom_serv.toLowerCase() === this.selectedServicio)
   } 
 
+  deleting(id_ot: number): void {
+    this.deleteDetalleOTByOtId(id_ot);
+    this.deleteOrder(id_ot);
+  }
+
+
+
+  deleteDetalleOTByOtId(id_ot: number): void {
+    this.detalleOTService.deleteDetalleOTByOtId(id_ot).subscribe(
+      () => {
+        console.log('Detalle OT eliminado');
+        this.loadOrders();
+      },
+      (error) => {
+        console.error('Error eliminando el detalle OT', error);
+      }
+    );
+  }
+
   deleteOrder(id_ot: number): void {
     if (confirm('¿Estás seguro de que deseas eliminar esta orden?')) {
-      this.orderService.getOrder(id_ot).subscribe(
-        (order: Order) => {
-          this.ordereliminadaService.saveOrder(order).subscribe(
+      this.orderService.getNewOrder(id_ot).subscribe(
+        (order: newOrder) => {
+          this.orderService.saveOrder(order).subscribe(
             () => {
               console.log('Orden registrada como eliminada', order);
               this.orderService.deleteOrders(id_ot).subscribe(
@@ -208,6 +229,10 @@ export class OrdersComponent implements OnInit {
       );
     }
   }
+
+
+
+     
 
   
   

@@ -1,34 +1,101 @@
-<div class="flex-1 justify-center px-72 py-6">
-    <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-      <p class="text-md text-gray-600 mb-4">
-        Completa el siguiente formulario para crear un nuevo reporte.
-      </p>
-  
-      <form class="space-y-6" [formGroup]="reportForm" (ngSubmit)="createReport()">
-        <div class="mt-4">
-          <label for="rut_usuario">Nombre del usuario: 7</label>
-        </div>
-  
-        <div class="mt-4">
-          <label for="id_ot" formControlName="id_ot">ID de OT: {{ id_ot_from_api }} </label>
-        </div>
-  
-        <div class="mt-4">
-          <label for="fecha">Fecha:</label>
-          <input type="date" id="fecha" formControlName="fecha" class="border border-gray-300 p-2 rounded" [disabled]="true" [value]="today" />
-        </div>
-  
-        <div class="mt-4">
-          <label for="descripcion">Descripción:</label>
-          <textarea id="descripcion" formControlName="descripcion" rows="4" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="Añade una descripción detallada del reporte..." required></textarea>
-        </div>
-  
-        <div class="flex justify-end">
-          <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">
-            Crear Reporte
-          </button>
-        </div>
+<div class="flex-3 ml-64 p-8">
+  <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
+
+
+
+  <div class="flex justify-between items-center mb-4">
+    
+    <div>
+      <label for="filter" class="mr-2 font-medium">Todas las OT</label>
+      <select #filterSelect class="p-2 border rounded">
+        <option value="todas">Todas</option>
+        <option value="en solicitud">En solicitud</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="finalizado">Finalizado</option>
+
+      </select>
+
+
+      <button [routerLink]="['/reportes/createReport/', id_ot, 0]">✏️</button>
+
+
+
+
+      <div>
+        <label for="filter" class="mr-2 font-medium">Todos los usuarios</label>
+        <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedUsuario">
+          <option value="todos">Todas</option>
+          <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu }} {{usuario.ap_usu}}</option>
+        </select>
+      </div>
+      
+      <div>
+        <label for="monthSelect" class="mr-2 font-medium">Mes</label>
+        <select #monthSelect class="p-2 border rounded">
+          <option value="0">Todos</option>
+          <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+        </select>
+
+        <label for="yearSelect" class="ml-4 mr-2 font-medium">Año</label>
+        <select #yearSelect class="p-2 border rounded">
+          <option value="0">Todos</option>
+          <option *ngFor="let year of years">{{ year }}</option>
+        </select>
+      </div>
+      <form class="search-form">
+        <input
+          type="text"
+          placeholder="Buscar por RUT Cliente"
+          [(ngModel)]="searchRutCliente"
+          class="search-input"
+          name="rut_cliente"
+        />
+        <button type="submit" class="search-btn">Buscar</button>
       </form>
+
+      <form class="search-form">
+        <input
+          type="text"
+          placeholder="Buscar equipo por número de serie"
+          [(ngModel)]="searchEquipo"
+          class="search-input"
+          name="num_equipo"
+        />
+        <button type="submit" class="search-btn">Buscar</button>
+      </form>
+
+
+
     </div>
+
   </div>
-  
+
+  <table class="w-full border-collapse">
+    <thead>
+      <tr>
+        <th class="border p-2">ID OT</th>
+        <th class="border p-2">ID Servicio</th>
+        <th class="border p-2">Fecha detalle</th>
+        <th class="border p-2">Descripción</th>
+        <th class="border p-2">Usuario</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let detalleOT of filteredDetalles | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
+        <td>{{ detalleOT.id_ot }}</td>
+        <td>{{ detalleOT.id_serv }}</td>
+        <td>{{ detalleOT.fecha_detalle }}</td>
+        <td>{{ detalleOT.desc_detalle }}</td>
+        <td>{{ detalleOT.rut_usuario }}</td>
+        <td>
+          <button [routerLink]="['/reportes/createReport/', detalleOT.id_ot, detalleOT.id_serv]">✏️</button>
+          <button (click)="detalleOT.id_serv !== undefined ? deleting(detalleOT.id_ot,detalleOT.id_serv) : null">🗑️</button>        </td>
+
+
+      </tr>
+    </tbody>
+  </table>
+
+  <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+</div>

@@ -1,6 +1,18 @@
+<<<<<<< HEAD
 import { Request, Response} from "express";
 import Usuario from "../models/usuario";
 import { verificarToken, esAdmin } from "../middleware/autenticacion";
+=======
+import { Request, Response } from 'express';
+import Usuario from '../models/usuario'; // Asegúrate de tener el modelo de Usuario importado
+import Rol from '../models/rol';
+import { verificarToken, esAdmin } from '../middleware/autenticacion';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { JWT_SECRET } from '../config';
+
+const secretKey = process.env.SECRET_KEY as string;
+>>>>>>> b9a15bf71ee39199331c1f05fdccf088284400be
 
 export const getUsuarios = async (req: Request, res: Response) => {
     try {
@@ -62,9 +74,14 @@ export const deleteUsuario = async (req: Request, res: Response) => {
 };
 
 export const postUsuario = async (req: Request, res: Response) => {
-    const { rut_usuario, d_veri_usu, nom_usu,ap_usu,  email_usu, cel_usu, password, id_rol } = req.body; // Extrae los datos relevantes
+    
+    const { rut_usuario, d_veri_usu, nom_usu,ap_usu,  email_usu,password, cel_usu, id_rol } = req.body; // Extrae los datos relevantes
 
     try {
+        const hashedPassword = await bcrypt.hash(password, 10); // Encriptar la contraseña
+
+
+        // Crear el nuevo usuario sin especificar `id_usuario`
         // Crear el nuevo usuario sin especificar `rut_usuario`
         const newUsuario = await Usuario.create({
             rut_usuario,
@@ -73,18 +90,18 @@ export const postUsuario = async (req: Request, res: Response) => {
             ap_usu, 
             email_usu,
             cel_usu,
-            password,
+            password: hashedPassword,
             id_rol
         });
 
         res.json({
             msg: 'El usuario fue agregado con éxito!',
-            usuario: newUsuario // Devuelve el nuevo usuario, incluyendo el rut_usuario generado
+            usuario: newUsuario // Devuelve el nuevo usuario, incluyendo el id_usuario generado
         });
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
+            msg: 'Upps, ocurrió un error. Comuníquese con soporte, error post'
         });
     }
 };
@@ -110,4 +127,9 @@ export const updateUsuario = async (req: Request, res: Response) => {
         console.log(error);
         res.status(500).json({ msg: "Error al eliminar usuario"});
     }
+<<<<<<< HEAD
 };
+=======
+};
+
+>>>>>>> b9a15bf71ee39199331c1f05fdccf088284400be
