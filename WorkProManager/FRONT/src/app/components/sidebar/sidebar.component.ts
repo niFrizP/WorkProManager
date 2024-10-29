@@ -23,6 +23,7 @@ export class SidebarComponent {
     { name: 'Usuarios', link: './usuarios', icon: 'fas fa-plus' },
     { name: 'Reportes', link: './reportes', icon: 'fas fa-chart-line' },
     { name: 'Aprobaciones', link: './aprobaciones', icon: 'fas fa-plus' },
+    { name: 'Cotizacion', link: './cotizacion', icon: 'fas fa-plus' },
   ];
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;

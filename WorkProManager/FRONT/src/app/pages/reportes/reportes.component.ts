@@ -17,21 +17,24 @@ import { newOrder } from '../../interfaces/newOrder';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DetalleOTService } from '../../services/detalle_ot.service';
-
+import { EstadoOT } from '../../interfaces/estadoot';
+import { EstadoOTService } from '../../services/estado_ot.service';
 
 @Component({
   selector: 'app-reportes',
   standalone: true,
-  imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule],
+  imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ReactiveFormsModule],
   templateUrl: './reportes.component.html',
   styleUrls: ['./reportes.component.css'],
 })
 export class ReportesComponent implements OnInit {
 
   numericError: string = '';  // Variable para almacenar el mensaje de error
+  isSubmenuOpen: number | null = null; // Controla la visibilidad del submenú
 
+  selectedEstadoID: number | null = null;
 
   months = [
     { value: 1, name: 'Enero' },
@@ -52,8 +55,10 @@ export class ReportesComponent implements OnInit {
   newOrders: newOrder[] = [];
   usuarios: Usuario[] = [];
   clientes: Cliente[] = [];
+  isMenuOpen = false;
   servicios: Servicio[] = [];
   selectedMonth: number = 0;
+  selectedEstadoName = '';
   selectedYear: number = 0;
   selectedEquipo: string = '';
   selectedStatus: string = 'todas';
@@ -67,25 +72,36 @@ export class ReportesComponent implements OnInit {
   searchServicio: string = '';
   filteredOrders: newOrder[] = []; // Cambiado a newOrder[]
   filteredUsers: Usuario[] = [];
+  estadosOT: EstadoOT[] = [];
   filteredServicios: Servicio[] = [];
   page = 1;
+  form: FormGroup;
+  estados: EstadoOT[] = [];
   itemsPerPage = 10;
+  id_ot: number = 0; // Declare the id_ot property
 
   years = [2024, 2023, 2022]; // Asegúrate de rellenar con los años disponibles
 
 
   constructor(
     private ordereliminadaService: OrdereliminadaService,
+    private _orderService: OrderService,
     private orderService: OrderService,
     private usuarioService: UsuarioService,
     private equipoService: EquipoService,
     private clienteService: ClienteService,
     private detalleOTService: DetalleOTService,
-    private servicioService: ServicioService
-  ) {}
+    private servicioService: ServicioService,
+    private estadoOTService: EstadoOTService,
+    private fb: FormBuilder,
+  ) {  this.form = this.fb.group({
+    id_estado_ot: this.selectedEstadoID
+  });}
 
   ngOnInit(): void {
     this.loadOrders();
+    this.loadEstados();
+
     this.loadUsers();
     this.loadServicios();
 
@@ -111,6 +127,34 @@ export class ReportesComponent implements OnInit {
   }
 
   
+
+  // Actualiza el formulario cuando cambia la selección
+  public onUserChange(event: Event) {
+    const selectedId = (event.target as HTMLSelectElement).value;
+    const selectedEstado = this.estados.find(estado => estado.id_estado_ot?.toString() === selectedId);
+    
+    if (selectedEstado) {
+      this.selectedEstadoName = selectedEstado.nom_estado_ot;
+      this.selectedEstadoID = selectedEstado.id_estado_ot ?? null;
+      console.log(this.selectedEstadoID);
+      
+      // Actualiza el valor en el formulario
+      this.form.patchValue({ id_estado_ot: this.selectedEstadoID });
+      console.log(this.form.value);
+      
+      // Emitir el evento al componente padre
+
+      
+
+      this.estadoUpdated(this.id_ot,this.selectedEstadoID??0);
+
+
+      
+      // Cerrar el menú
+      this.isMenuOpen = false; // Cerrar el submenú
+    }
+  }
+  
   filterOrdersByMonthYear(month: number, year: number) {
     this.selectedMonth = month;
     this.selectedYear = year;
@@ -121,6 +165,12 @@ export class ReportesComponent implements OnInit {
 
   filterOrdersByEquipo() {
     this.filterOrders();
+  }
+
+  toggleMenu(id_ot: number): void {
+    this.isMenuOpen = !this.isMenuOpen;
+    this.id_ot = id_ot;
+    console.log(this.id_ot);
   }
 
   loadUsers(): void {
@@ -143,6 +193,17 @@ export class ReportesComponent implements OnInit {
         console.error('Error fetching services', error);
       }
     );
+  }
+
+  loadEstados() {
+    this.estadoOTService.getListEstadosOT().subscribe(data => {
+      this.estados = data;
+    });
+  }
+
+  toggleSubmenu(id_ot: number ) {
+    // Alterna el submenú solo para el registro seleccionado
+    this.isSubmenuOpen = this.isSubmenuOpen === id_ot ? null : id_ot;
   }
   
   loadOrders(): void {
@@ -184,6 +245,7 @@ export class ReportesComponent implements OnInit {
     this.deleteOrder(id_ot);
   }
 
+  
 
 
   deleteDetalleOTByOtId(id_ot: number): void {
@@ -235,13 +297,47 @@ export class ReportesComponent implements OnInit {
     }
   }
 
+  updateOrder(id_ot:number): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this._orderService.updateOrderState(id_ot, 3).subscribe(
+        
+        (data) => {
+          console.log(id_ot);
+          console.log("updateOrder");
+          console.log(data);
+          resolve();
+        },
+        (error) => {
+          console.error('Error al cargar los detalles:', error);
+          reject();
+        }
+      );
+      
+    });
+  }
   
+  confirmOrderCompletion(id_ot: number): void| undefined {
+      this.updateOrder(id_ot)
   
-
-  
-  
+}
 
   onPageChange(page: number): void {
     this.page = page;
   }
+
+ 
+
+  estadoUpdated(id_ot: number | null ,estadoId: number | null) {
+    // Lógica para manejar la actualización del estado en el componente padre
+    this.orderService.updateOrderState(id_ot ?? 0, estadoId ?? 0).subscribe(
+      () => {
+        console.log('Estado actualizado');
+        this.loadOrders();
+      },
+      (error) => {
+        console.error('Error actualizando el estado', error);
+      }
+    );
+  }
+  
 }

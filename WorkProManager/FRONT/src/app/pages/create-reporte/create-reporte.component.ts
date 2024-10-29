@@ -151,9 +151,22 @@ export class CreateReportComponent implements OnInit {
       .filter(servicio => this.selectedServicio === 'todos' || servicio.nom_serv.toLowerCase() === this.selectedServicio)
   } 
 
+  deleting(id_ot: number,id_serv: number): void {
 
 
+    const remainingServicesCount = Number(this.detalleOTService.getCountDetalleOT(this.id_ot));
 
+   
+      this.detalleOTService.deleteDetalleOT(id_ot, id_serv).subscribe(
+        () => {
+          this.loadDetalles(this.id_ot);
+        }
+      );
+    
+  }
+
+
+ 
   
 
   

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../environments/environment'; 
 import { Order } from '../interfaces/order'; 
 import { newOrder } from '../interfaces/newOrder';
+import { orderEstado } from '../interfaces/newOrder';
 
 
 @Injectable({
@@ -48,8 +49,11 @@ export class OrderService {
     return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}`, order);
   }
 
+
   // Nuevo método para actualizar solo el id_estado
-  updateOrderState(id_ot: number, id_estado: number): Observable<void> {
-    return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}`, { id_estado });
+  updateOrderState(id_ot: number, id_estado_ot: number): Observable<void> {
+    return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}`, { id_estado_ot });
   }
+
+
 }

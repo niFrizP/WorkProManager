@@ -48,3 +48,6 @@ bower_components/
 _metadata.json
 .tsbuildinfo
 node_modules/
+
+.config.ts
+/config.ts

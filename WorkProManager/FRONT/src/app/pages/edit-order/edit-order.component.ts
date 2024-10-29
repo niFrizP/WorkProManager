@@ -103,7 +103,7 @@ export class EditOrderComponent implements OnInit {
       
     });
     
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
 
 
     this.formDetalleOT = this.fb.group({
@@ -176,6 +176,8 @@ export class EditOrderComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.detalleOTService.getListDetalleOTByOTId(id).subscribe(
         (data: DetalleOT[]) => {
+          console.log(data);
+          resolve(data);  // Resolviendo la promesa con los datos recibidos
           console.log('DetalleOT Data:', data);
   
           // Filtrar y extraer los servicios a partir de los datos obtenidos
@@ -190,6 +192,7 @@ export class EditOrderComponent implements OnInit {
           resolve(data); // Resolviendo la promesa con los datos recibidos
         },
         (error) => {
+          reject(error);  // Rechazando la promesa en caso de error
           console.error('Error al cargar los detalles:', error);
           reject(error); // Rechazando la promesa en caso de error
         }
@@ -247,6 +250,7 @@ export class EditOrderComponent implements OnInit {
     const clienteData: Cliente = {
         rut_cliente: this.form.get('rut_cliente')?.value,
         d_veri_cli: this.form.get('d_veri_cli')?.value,
+        apellido: this.form.get('apellido')?.value,
         ap_cli: this.form.get('apellido')?.value,
         nom_cli: this.form.get('nombre')?.value,
         cel_cli: this.form.get('celular')?.value,
@@ -342,7 +346,8 @@ export class EditOrderComponent implements OnInit {
 
   private async createOrUpdateOrder(): Promise<Order> {
     // Usar this.id_ot en lugar de obtenerlo del formulario
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
+
 
     const orderData: Order = {
         id_ot: this.id_ot,
@@ -409,7 +414,7 @@ export class EditOrderComponent implements OnInit {
 }
 
   private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
 
     // Crea un array de detalles OT a partir de servicios seleccionados
     const detalleOTData: DetalleOT[] = this.serviciosSeleccionados.map((servicio: Servicio) => ({

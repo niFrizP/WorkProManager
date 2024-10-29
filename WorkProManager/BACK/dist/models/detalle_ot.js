@@ -26,8 +26,15 @@ const Detalle_Ot = connection_1.default.define('detalle_ot', {
         type: sequelize_1.DataTypes.STRING
     },
     rut_usuario: {
-        type: sequelize_1.DataTypes.INTEGER
+        type: sequelize_1.DataTypes.INTEGER,
+        references: {
+            model: 'usuario',
+            key: 'rut_usuario'
+        }
     },
+    d_estado: {
+        type: sequelize_1.DataTypes.INTEGER
+    }
 }, {
     modelName: 'detalle_ot',
     tableName: 'detalle_ot',
@@ -40,5 +47,5 @@ const Detalle_Ot = connection_1.default.define('detalle_ot', {
         }
     ]
 });
-Detalle_Ot.belongsTo(servicio_1.default, { foreignKey: 'id_serv', targetKey: 'id_serv' });
+Detalle_Ot.belongsTo(servicio_1.default, { foreignKey: 'id_serv' });
 exports.default = Detalle_Ot;

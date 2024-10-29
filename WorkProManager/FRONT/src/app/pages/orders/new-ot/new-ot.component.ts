@@ -100,7 +100,9 @@ selectedServicePrecio: any;
       d_veri_cli: ['', Validators.required],
       servicios: this.fb.array([this.fb.group({
         id_serv: [null, Validators.required],
-      })])
+      })]),
+      isSubmitting: [false] // Add this line
+
       
     });
     
@@ -375,6 +377,7 @@ private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
     id_serv: servicio.id_serv!,
     fecha_detalle: new Date(),
     desc_detalle: servicio.nom_serv!,
+    d_estado: 0,
     rut_usuario: this.form.get('rut_usuario')?.value,
   }));
 
@@ -553,3 +556,5 @@ private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
   }
 
 }
+
+

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { newOrder } from '../../interfaces/newOrder';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -15,10 +16,20 @@ export class HomeComponent implements OnInit {
   ordersByYear: newOrder[] = [];
   ordersByDay: newOrder[] = [];
   ordersByEstadoSum: newOrder[] = [];
-  constructor() {}
+  constructor(private authService:AuthService) {}
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
 
-  }
+  onLogin(formData: any) {
+    this.authService.login(formData).subscribe(response => {
+       console.log('Inicio de sesión exitoso', response);
+    }, error => {
+       console.error('Error en el inicio de sesión', error);
+    });
+ }
+
+
+
+
 
 }

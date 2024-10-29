@@ -5,12 +5,16 @@
         Completa el siguiente formulario para crear una nueva Orden de Trabajo. Asegúrate de proporcionar todos los detalles requeridos.
       </p>
       
-      <form class="space-y-6" [formGroup]="form" (ngSubmit)="editProduct()">
+      <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
   
         <div class="mt-4">
           <label for="fecha">Fecha de Entrega:</label>
           <input type="date" id="fecha" formControlName="fecha" class="border border-gray-300 p-2 rounded" />
         </div>
+  
+  
+       
+    
   
         <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
   
@@ -37,7 +41,8 @@
                 type="text"
                 id="nombre"
                 formControlName="nombre" 
-  
+                title="Nombre del cliente"
+                placeholder="Ingrese el nombre del cliente"
                 class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
               />
             </div>
@@ -47,6 +52,8 @@
                 type="text"
                 id="apellido"
                 formControlName="apellido"
+                title="Apellido del cliente"
+                placeholder="Ingrese el apellido del cliente"
                 class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
               />
             </div>
@@ -95,7 +102,7 @@
         <fieldset class="border border-gray-200 p-4 rounded-lg">
           <legend class="text-lg font-semibold">Detalle Equipo</legend>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            
+           
             <div>
               <label for="mod_equipo" class="block text-sm font-medium text-gray-700">Modelo</label>
               <input
@@ -105,22 +112,27 @@
                 class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
               />
             </div>
+  
             <div>
               <label for="marcas">Selecciona una marca:</label>
-              <select id="id_marca" formControlName="id_marca" (change)="onMarcaChange($event)">
-                <option value="id_marca">Seleccione una marca</option>
+              <select id="id_marca" title="Selecciona una marca" (change)="onMarcaChange($event)">
+                <option value="">Seleccione una marca</option> <!-- Opción por defecto -->
+                
+                <!-- Iteramos sobre la lista de marcas obtenidas y cargadas en el componente -->
                 <option *ngFor="let marca of marcas" [value]="marca.id_marca">
-                  {{ marca.nom_marca }}
+                  {{ marca.nom_marca }} <!-- Mostramos el nombre de la marca -->
                 </option>
               </select>
             </div>
-            
+           
             <div>
               <label for="num_equipo" class="block text-sm font-medium text-gray-700">S/N</label>
               <input
                 type="text"
                 id="num_equipo"
                 formControlName="num_equipo"
+                title="Número de serie del equipo"
+                placeholder="Ingrese el número de serie del equipo"
                 class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
               />
             </div>
@@ -130,45 +142,47 @@
                 type="date"
                 id="fec_fabric"
                 formControlName="fec_fabric"
+                title="Fecha de fabricación del equipo"
+                placeholder="Ingrese la fecha de fabricación"
                 class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
               />
             </div>
           </div>
         </fieldset>
   
-        <!-- Servicio -->
-        <fieldset class="border border-gray-200 p-4 rounded-lg">
-          <legend class="text-lg font-semibold">Servicios</legend>
+        <!-- Sección de Servicios -->
+  
+       <fieldset class="border border-gray-200 p-4 rounded-lg">
+        <legend class="text-lg font-semibold">Servicios</legend>
+      
+        <div>
+          <label for="servicio">Selecciona un Servicio:</label>
+          <select id="servicio" [(ngModel)]="servicioSeleccionado" (change)="onServicioChange($event)">
+            <option value="">Seleccione un servicio</option>
+            <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">
+              {{ servicio.nom_serv }}
+            </option>
+          </select>
+      
+          <!-- Botón para agregar el servicio -->
+          <button (click)="agregarServicio()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600"></button>
+          <button type="button" (click)="agregarServicio()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
+            Añadir Servicio
+          </button>
         
-          <div>
-            <label for="servicio">Selecciona un Servicio:</label>
-            <select id="id_serv" [(ngModel)]="servicioSeleccionado" (change)="onServicioChange($event)">
-              <option value="">Seleccione un servicio</option>
-              <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">
-                {{ servicio.nom_serv }}
-              </option>
-            </select>
-        
-            <!-- Botón para agregar el servicio -->
-             <fieldset>
-              <div>
-               <button (click)="agregarServicio()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
-                 Añadir Servicio
-               </button>
-             </div>
-           
-             <!-- Lista de servicios añadidos -->
-             <div *ngIf="serviciosSeleccionados.length > 0">
-               <h3>Servicios Añadidos:</h3>
-               <ul>
-                 <li *ngFor="let servicio of serviciosSeleccionados">
-                   {{ servicio.nom_serv }}
-                   <!-- Botón para eliminar un servicio de la lista -->
-                   <button type="button" (click)="eliminarServicio($event, servicio)" class="text-red-500 ml-4">Eliminar</button>
-                 </li>
-               </ul>
-             </div>
-             </fieldset>
+      
+        <!-- Lista de servicios añadidos -->
+        <div *ngIf="serviciosSeleccionados.length > 0">
+          <h3>Servicios Añadidos:</h3>
+          <ul>
+            <li *ngFor="let servicio of serviciosSeleccionados">
+              {{ servicio.nom_serv }}
+              <!-- Botón para eliminar un servicio de la lista -->
+              <button (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
+              <button type="button" (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
+            </li>
+          </ul>
+        </div>
   
       <!-- Usuario -->
   
@@ -177,7 +191,7 @@
           
           <div>
             <label for="usuarios">Selecciona un Usuario:</label>
-            <select id="rut_usuario" formControlName="rut_usuario" (change)="onUserChange($event)">
+            <select id="usuarios" formControlName="rut_usuario" (change)="onUserChange($event)">
               <option value="">Seleccione un usuario</option>
               <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario" formControlName="usuario.rut_usuario">
                 {{ usuario.nom_usu }} {{usuario.ap_usu}}
@@ -186,24 +200,39 @@
           </div>
           
           <div *ngIf="selectedUsuarioName !== null">
-            <p>Nombre del usuario: <strong>{{ selectedUsuarioName }} {{ selectedUsuarioSurname }}</strong></p>
+            <p>Precio del usuario seleccionado: <strong>{{ selectedUsuarioName }} {{ selectedUsuarioSurname }}</strong></p>
           </div>
             
         </fieldset>
-        
+
+        <!-- Descripción de la OT -->
+
+        <fieldset>
+
+
+            <div>
+                <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+                <textarea
+                  id="descripcion"
+                  formControlName="desc_sol"
+                  rows="4"
+                  class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+                  placeholder="Añade una descripción detallada de la Orden de Trabajo..."
+                ></textarea>
+              </div>
+            
+        </fieldset>
   
         <!-- Botón para enviar el formulario -->
-        <div class="flex justify-end">
-          <button
-            type="submit"
-            class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
-            (click)="editProduct()"
-            [disabled]="isSubmitting" 
-  
-  
-  
-          >
-          {{ isSubmitting ? 'Guardando...' : 'Guardar Orden de Trabajo' }} 
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
+          (click)="addProduct()"
+          [disabled]="form.get('isSubmitting')?.value"
+        >
+          {{ form.get('isSubmitting')?.value ? 'Guardando...' : 'Guardar Orden de Trabajo' }}
         </button>
-        </div>
+      </div>
+
   
