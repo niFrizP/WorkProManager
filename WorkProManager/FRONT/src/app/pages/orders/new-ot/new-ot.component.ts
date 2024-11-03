@@ -116,6 +116,24 @@ selectedServicePrecio: any;
 
   ngOnInit(): void {
     this.cargarTipoEquipo();
+
+    this.form = this.fb.group({
+      nombre: ['', Validators.required],
+      apellido: ['', Validators.required],
+      rut_cliente: ['', Validators.required],
+      d_veri_cli: ['', [Validators.required, Validators.maxLength(1)]],
+      correo: ['', [Validators.required, Validators.email]],
+      celular: ['', Validators.required],
+      tipo_equipo: ['', Validators.required],
+      mod_equipo: ['', Validators.required],
+      id_marca: ['', Validators.required],
+      num_equipo: ['', Validators.required],
+      fec_fabric: ['', Validators.required],
+      id_serv: ['', Validators.required],
+      descripcion: ['', Validators.required],
+      fecha: ['', Validators.required],
+      id_usuario: ['', Validators.required]
+    });
     this.cargarServicios();
     this.cargarUsuarios();
     this.cargarMarcas();

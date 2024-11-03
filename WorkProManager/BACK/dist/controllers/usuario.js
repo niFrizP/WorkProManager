@@ -13,33 +13,47 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateUsuario = exports.postUsuario = exports.deleteUsuario = exports.getUsuario = exports.getUsuarios = void 0;
-const usuario_1 = __importDefault(require("../models/usuario")); // Asegúrate de tener el modelo de Usuario importado
-const rol_1 = __importDefault(require("../models/rol"));
-const bcrypt_1 = __importDefault(require("bcrypt"));
-const secretKey = process.env.SECRET_KEY;
+const usuario_1 = __importDefault(require("../models/usuario"));
+const autenticacion_1 = require("../middleware/autenticacion");
 const getUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const listUsuarios = yield usuario_1.default.findAll({ include: [{ model: rol_1.default, attributes: ['nom_rol'] }] });
-    res.json(listUsuarios);
+    try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({ msg: "No autorizado" });
+        }
+        if (!(0, autenticacion_1.esAdmin)(decoded)) {
+            return res.status(403).json({ msg: "No tienes permisos para realizar esta acción" });
+        }
+        const listUsuarios = yield usuario_1.default.findAll();
+        res.json(listUsuarios);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "Error al obtener usuarios" });
+    }
 });
 exports.getUsuarios = getUsuarios;
 const getUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const usuario = yield usuario_1.default.findByPk(id, { include: [{ model: rol_1.default, attributes: ['nom_rol'] }] });
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({ msg: "No autorizado" });
+        }
+        if (decoded.id_usuario.toString() !== id && !(0, autenticacion_1.esAdmin)(decoded)) {
+            return res.status(403).json({ msg: "No tienes permisos para ver este usuario" });
+        }
+        const usuario = yield usuario_1.default.findByPk(id);
         if (usuario) {
             res.json(usuario);
         }
         else {
-            res.status(404).json({
-                msg: `No existe un usuario con el id ${id}`
-            });
+            res.status(404).json({ msg: "No existe un usuario con ese ID ${id}" });
         }
     }
     catch (error) {
         console.log(error);
-        res.status(500).json({
-            msg: `Error al obtener el usuario, contacta con soporte`
-        });
+        res.status(500).json({ msg: "Error al obtener usuario" });
     }
 });
 exports.getUsuario = getUsuario;
@@ -60,10 +74,8 @@ const deleteUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.deleteUsuario = deleteUsuario;
 const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { rut_usuario, d_veri_usu, nom_usu, ap_usu, email_usu, password, cel_usu, id_rol } = req.body; // Extrae los datos relevantes
+    const { rut_usuario, d_veri_usu, nom_usu, ap_usu, email_usu, cel_usu, password, id_rol } = req.body; // Extrae los datos relevantes
     try {
-        const hashedPassword = yield bcrypt_1.default.hash(password, 10); // Encriptar la contraseña
-        // Crear el nuevo usuario sin especificar `id_usuario`
         // Crear el nuevo usuario sin especificar `rut_usuario`
         const newUsuario = yield usuario_1.default.create({
             rut_usuario,
@@ -72,18 +84,18 @@ const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             ap_usu,
             email_usu,
             cel_usu,
-            password: hashedPassword,
+            password,
             id_rol
         });
         res.json({
             msg: 'El usuario fue agregado con éxito!',
-            usuario: newUsuario // Devuelve el nuevo usuario, incluyendo el id_usuario generado
+            usuario: newUsuario // Devuelve el nuevo usuario, incluyendo el rut_usuario generado
         });
     }
     catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte, error post'
+            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
         });
     }
 });
@@ -92,24 +104,23 @@ const updateUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const { body } = req;
     const { id } = req.params;
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({ msg: "No autorizado" });
+        }
+        if (!(0, autenticacion_1.esAdmin)(decoded)) {
+            return res.status(403).json({ msg: "No tienes permisos para eliminar usuarios" });
+        }
         const usuario = yield usuario_1.default.findByPk(id);
-        if (usuario) {
-            yield usuario.update(body);
-            res.json({
-                msg: 'El usuario fue actualizado con éxito'
-            });
+        if (!usuario) {
+            return res.status(404).json({ msg: "No existe usuario con el ID ${id}" });
         }
-        else {
-            res.status(404).json({
-                msg: `No existe un usuario con el id ${id}`
-            });
-        }
+        yield usuario.destroy();
+        res.json({ msg: "Usuario eliminado con éxito" });
     }
     catch (error) {
         console.log(error);
-        res.status(500).json({
-            msg: `Upps, ocurrió un error. Comuníquese con soporte`
-        });
+        res.status(500).json({ msg: "Error al eliminar usuario" });
     }
 });
 exports.updateUsuario = updateUsuario;

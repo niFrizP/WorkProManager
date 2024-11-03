@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+import { Request, Response} from "express";
+import Usuario from "../models/usuario";
+import { verificarToken, esAdmin } from "../middleware/autenticacion";
+=======
 import { Request, Response } from 'express';
 import Usuario from '../models/usuario'; // Asegúrate de tener el modelo de Usuario importado
 import Rol from '../models/rol';
@@ -7,30 +12,46 @@ import bcrypt from 'bcrypt';
 import { JWT_SECRET } from '../config';
 
 const secretKey = process.env.SECRET_KEY as string;
+>>>>>>> b9a15bf71ee39199331c1f05fdccf088284400be
 
 export const getUsuarios = async (req: Request, res: Response) => {
-    const listUsuarios = await Usuario.findAll({include: [{model: Rol, attributes: ['nom_rol']}]});
-    res.json(listUsuarios);
+    try {
+        const decoded = await verificarToken(req);
+        if (!decoded) {
+            return res.status(401).json({ msg: "No autorizado"});
+        }
+        if (!esAdmin(decoded)) {
+            return res.status(403).json({ msg: "No tienes permisos para realizar esta acción"});
+        }
+        const listUsuarios = await Usuario.findAll();
+        res.json(listUsuarios);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "Error al obtener usuarios"});
+    }
 };
 
 
 export const getUsuario = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const usuario = await Usuario.findByPk(id,{include: [{model: Rol, attributes: ['nom_rol']}]});
+          const decoded = await verificarToken(req);
+          if (!decoded) {
+              return res.status(401).json({ msg: "No autorizado"});
+          }
+          if (decoded.id_usuario.toString() !== id && !esAdmin(decoded)) {
+              return res.status(403).json({ msg: "No tienes permisos para ver este usuario"});
+          }
 
-        if (usuario) {
-            res.json(usuario);
-        } else {
-            res.status(404).json({
-                msg: `No existe un usuario con el id ${id}`
-            });
-        }
-    } catch (error) {
+          const usuario = await Usuario.findByPk(id);
+          if (usuario) {
+              res.json(usuario);
+          } else {
+              res.status(404).json({ msg: "No existe un usuario con ese ID ${id}"});
+          }
+      } catch (error) {
         console.log(error);
-        res.status(500).json({
-            msg: `Error al obtener el usuario, contacta con soporte`
-        });
+        res.status(500).json({ msg: "Error al obtener usuario"});
     }
 };
 
@@ -88,25 +109,27 @@ export const postUsuario = async (req: Request, res: Response) => {
 export const updateUsuario = async (req: Request, res: Response) => {
     const { body } = req;
     const { id } = req.params;
-
     try {
-        const usuario = await Usuario.findByPk(id);
-
-        if (usuario) {
-            await usuario.update(body);
-            res.json({
-                msg: 'El usuario fue actualizado con éxito'
-            });
-        } else {
-            res.status(404).json({
-                msg: `No existe un usuario con el id ${id}`
-            });
+        const decoded = await verificarToken(req);
+        if (!decoded) {
+            return res.status(401).json({ msg: "No autorizado"});
         }
+        if (!esAdmin(decoded)) {
+            return res.status(403).json({ msg: "No tienes permisos para eliminar usuarios"});
+        }
+        const usuario = await Usuario.findByPk(id);
+        if (!usuario) {
+            return res.status(404).json({ msg: "No existe usuario con el ID ${id}"});
+        }
+        await usuario.destroy();
+        res.json({ msg: "Usuario eliminado con éxito"});
     } catch (error) {
         console.log(error);
-        res.status(500).json({
-            msg: `Upps, ocurrió un error. Comuníquese con soporte`
-        });
+        res.status(500).json({ msg: "Error al eliminar usuario"});
     }
+<<<<<<< HEAD
+};
+=======
 };
 
+>>>>>>> b9a15bf71ee39199331c1f05fdccf088284400be

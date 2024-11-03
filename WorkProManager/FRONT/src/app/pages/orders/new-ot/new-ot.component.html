@@ -1,36 +1,15 @@
-<div class="flex-1 justify-center px-72 py-6">
-  <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <!-- Leyenda de descripción -->
-    <p class="text-md text-gray-600 mb-4">
-      Completa el siguiente formulario para crear una nueva Orden de Trabajo. Asegúrate de proporcionar todos los detalles requeridos.
-    </p>
-    
-    <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
-
-      <div class="mt-4">
-        <label for="fecha">Fecha de Entrega:</label>
-        <input type="date" id="fecha" formControlName="fecha" class="border border-gray-300 p-2 rounded" />
-      </div>
+<div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
+  <div class="contenedor">
+    <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+      <h3 class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</h3>
+      <br><br>
+      <!-- Leyenda de descripción -->
+      <p class="text-md text-gray-600 mb-4">
+        Completa el siguiente formulario para crear una nueva Orden de Trabajo. Asegúrate de proporcionar todos los
+        detalles requeridos.
+      </p>
 
       <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
-
-     
-  
-
-      <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
-
-      
-      <!-- Descripción de la OT -->
-      <div>
-        <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
-        <textarea
-          id="descripcion"
-          formControlName="descripcion"
-          rows="4"
-          class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-          placeholder="Añade una descripción detallada de la Orden de Trabajo..."
-        ></textarea>
-      </div>
 
       <!-- Detalle Cliente -->
       <fieldset class="border border-gray-200 p-4 rounded-lg">
