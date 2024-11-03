@@ -74,8 +74,10 @@ const deleteUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.deleteUsuario = deleteUsuario;
 const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { rut_usuario, d_veri_usu, nom_usu, ap_usu, email_usu, cel_usu, password, id_rol } = req.body; // Extrae los datos relevantes
+    const { rut_usuario, d_veri_usu, nom_usu, ap_usu, email_usu, password, cel_usu, id_rol } = req.body; // Extrae los datos relevantes
     try {
+        const hashedPassword = yield bcrypt.hash(password, 10); // Encriptar la contraseña
+        // Crear el nuevo usuario sin especificar `id_usuario`
         // Crear el nuevo usuario sin especificar `rut_usuario`
         const newUsuario = yield usuario_1.default.create({
             rut_usuario,
@@ -84,18 +86,18 @@ const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             ap_usu,
             email_usu,
             cel_usu,
-            password,
+            password: hashedPassword,
             id_rol
         });
         res.json({
             msg: 'El usuario fue agregado con éxito!',
-            usuario: newUsuario // Devuelve el nuevo usuario, incluyendo el rut_usuario generado
+            usuario: newUsuario // Devuelve el nuevo usuario, incluyendo el id_usuario generado
         });
     }
     catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
+            msg: 'Upps, ocurrió un error. Comuníquese con soporte, error post'
         });
     }
 });
