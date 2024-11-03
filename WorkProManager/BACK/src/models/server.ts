@@ -23,12 +23,17 @@ import db from '../db/connection'; // Asegúrate de que aquí importas initModel
 
 class Server {
     
-    private app: Application;
+    public app: Application;
     private port: string;
 
     constructor() {
         this.app = express();
+
         this.app.use(cookieparser());
+        this.app.use(cors({
+            origin: 'http://localhost:4200',   // Dirección del frontend
+            credentials: true                  // Permite el envío de cookies
+        }));
         this.port = process.env.PORT || '3001';
         const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -57,7 +62,6 @@ class Server {
 
 
         this.app.use('/api/login', (req: Request, res: Response, next: Function) => {
-            this.app.use(cookieparser());
             if (req.method === 'POST') {
                 console.log('Acceso a login');
             }

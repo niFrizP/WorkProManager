@@ -27,7 +27,6 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileComponent }, // Ruta a 'profile'
   { path: 'usuarios', component: UsuariosComponent }, // Ruta a 'usuarios'
   { path: 'edit-order/:id_ot', component: EditOrderComponent}, // Ruta a 'edit-order'
-  { path: 'aprobaciones/:id_ot', component: AprobacionesTickComponent}, // Ruta a 'aprobaciones'
   { path: 'reportes', component: ReportesComponent}, // Ruta a 'reportes'
   { path: 'reportes/createReport/:id', component: CreateReportComponent},
   { path: 'reportes/createReport/:id/:id_serv', component: DetalleComponent},
