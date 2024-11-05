@@ -5,6 +5,7 @@ import { CommonModule, TitleCasePipe } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 
 @Component({
@@ -22,7 +23,8 @@ export class HeaderComponent implements OnInit {
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private location: Location
+    private location: Location,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -37,6 +39,10 @@ export class HeaderComponent implements OnInit {
   goBack(): void {
     this.location.back();
   }
+
+
+
+
 
   // Función recursiva para generar el breadcrumb
   createBreadcrumbs(

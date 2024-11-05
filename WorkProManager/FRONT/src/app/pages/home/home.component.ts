@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { newOrder } from '../../interfaces/newOrder';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-home',
@@ -16,17 +18,32 @@ export class HomeComponent implements OnInit {
   ordersByYear: newOrder[] = [];
   ordersByDay: newOrder[] = [];
   ordersByEstadoSum: newOrder[] = [];
-  constructor(private authService:AuthService) {}
+  constructor(private authService:AuthService, private router:Router) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
 
-  onLogin(formData: any) {
-    this.authService.login(formData).subscribe(response => {
-       console.log('Inicio de sesión exitoso', response);
-    }, error => {
-       console.error('Error en el inicio de sesión', error);
-    });
- }
+    this.authService.verificarToken().subscribe(
+      (data) => {
+        console.log(data);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+
+  }
+
+   async logout() {
+    try {
+      await this.authService.logout().toPromise();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error(error);
+    }
+
+    this.router.navigate(['/login']);
+  }
+  
 
 
 

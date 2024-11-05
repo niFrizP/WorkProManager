@@ -70,6 +70,7 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {},
           "configurations": {
             "production": {
               "buildTarget": "WorkProManager:build:production"
@@ -108,6 +109,9 @@
     }
   },
   "cli": {
-    "analytics": "e8616319-d997-41e9-90a9-8dad3e5ee425"
+    "analytics": "e8616319-d997-41e9-90a9-8dad3e5ee425",
+    "cache": {
+      "environment": "all"
+    }
   }
 }

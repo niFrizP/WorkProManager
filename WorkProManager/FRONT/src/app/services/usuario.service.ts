@@ -18,7 +18,7 @@ export class UsuarioService {
   constructor(private http: HttpClient, private authService: AuthService) { 
     this.myAppUrl = environment.endpoint;
     this.myApiUrl = 'api/usuario/';
-    this.MyApiUrlLogin = 'api/';}
+    this.MyApiUrlLogin = 'api/login';}
 
   getListUsuarios(): Observable<Usuario[]> {
    return this.http.get<Usuario[]>(`${this.myAppUrl}${this.myApiUrl}`);
@@ -41,13 +41,13 @@ export class UsuarioService {
   }
 
   login(rut_usuario: number, password: string): Observable<Usuario> {
-    return this.http.post<Usuario>(`${this.myAppUrl}${this.MyApiUrlLogin}login`, { rut_usuario, password })
+    return this.http.post<Usuario>(`${this.myAppUrl}${this.MyApiUrlLogin}`, { rut_usuario, password }, { withCredentials: true })
       .pipe(
         tap((response: any) => {
-          if (response && response.token) {
-            this.authService.setToken(response.token); // Guarda el token en el AuthService
+          if (response && response.message === 'Inicio de sesión exitoso') {
+            console.log('Login exitoso:', response);
+            // Aquí podrías realizar acciones adicionales, como redireccionar al usuario
           }
         })
-      );
-  }
+      );}
 }

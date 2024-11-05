@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http'
 import { FormsModule } from '@angular/forms';
 import { UsuarioService } from '../../services/usuario.service';
 import { Usuario } from '../../interfaces/usuario';
+import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -19,7 +20,7 @@ export class LoginComponent {
   usuario: Usuario[] = [];
 
 
-  constructor(private http: HttpClient, private usuarioService: UsuarioService, private router: Router) {}
+  constructor(private http: HttpClient, private usuarioService: UsuarioService, private router: Router,private authService:AuthService) {}
 
   onSubmit() {
     let loginData = {
@@ -31,6 +32,7 @@ export class LoginComponent {
       (data) => {
         this.usuario = [data];
         console.log(this.usuario);
+
         this.router.navigate(['/home']);
       },
       (error) => {
@@ -38,5 +40,15 @@ export class LoginComponent {
         console.log(this.loginError);
       }
     );
-  }
-}
+
+
+    this.authService.verificarToken().subscribe(
+      (data) => {
+        console.log(data);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+
+}}

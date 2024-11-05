@@ -36,6 +36,10 @@ class Server {
     constructor() {
         this.app = (0, express_1.default)();
         this.app.use((0, cookie_parser_1.default)());
+        this.app.use((0, cors_1.default)({
+            origin: 'http://localhost:4200', // Dirección del frontend
+            credentials: true // Permite el envío de cookies
+        }));
         this.port = process.env.PORT || '3001';
         const JWT_SECRET = process.env.JWT_SECRET;
         this.middlewares();
@@ -55,7 +59,6 @@ class Server {
             });
         });
         this.app.use('/api/login', (req, res, next) => {
-            this.app.use((0, cookie_parser_1.default)());
             if (req.method === 'POST') {
                 console.log('Acceso a login');
             }
