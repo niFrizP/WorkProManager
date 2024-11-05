@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
+    "express-rate-limit": "^7.4.1",
     "tailwindcss": "^3.4.13"
   }
 }
