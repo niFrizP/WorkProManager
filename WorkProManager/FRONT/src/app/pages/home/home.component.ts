@@ -33,15 +33,9 @@ export class HomeComponent implements OnInit {
 
   }
 
-   async logout() {
-    try {
-      await this.authService.logout().toPromise();
-      this.router.navigate(['/login']);
-    } catch (error) {
-      console.error(error);
-    }
-
-    this.router.navigate(['/login']);
+   logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login'])
   }
   
 
