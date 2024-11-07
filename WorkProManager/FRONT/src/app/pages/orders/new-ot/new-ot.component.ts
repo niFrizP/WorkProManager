@@ -34,7 +34,7 @@ import { SidebarComponent } from '../../../components/sidebar/sidebar.component'
   standalone: true,
   imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule],
   templateUrl: './new-ot.component.html',
-  // styleUrls: ['./new-ot.component.css']
+  styleUrls: ['./new-ot.component.css']
 })
 export class NewOtComponent implements OnInit {
 [x: string]: any;

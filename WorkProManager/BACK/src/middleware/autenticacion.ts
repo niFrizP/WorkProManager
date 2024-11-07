@@ -1,15 +1,8 @@
 import { Request} from "express";
 import jwt from "jsonwebtoken";
-<<<<<<< HEAD
 
 interface DecodedToken {
     id_usuario: number;
-=======
-import env from "dotenv";
-
-interface DecodedToken {
-    rut_usuario: number;
->>>>>>> b9a15bf71ee39199331c1f05fdccf088284400be
     rol: string;
 }
 

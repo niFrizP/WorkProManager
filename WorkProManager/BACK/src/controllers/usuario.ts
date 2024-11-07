@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import { Request, Response} from "express";
-import Usuario from "../models/usuario";
-import { verificarToken, esAdmin } from "../middleware/autenticacion";
-=======
 import { Request, Response } from 'express';
 import Usuario from '../models/usuario'; // Asegúrate de tener el modelo de Usuario importado
 import Rol from '../models/rol';
@@ -12,7 +7,6 @@ import bcrypt from 'bcrypt';
 import { JWT_SECRET } from '../config';
 
 const secretKey = process.env.SECRET_KEY as string;
->>>>>>> b9a15bf71ee39199331c1f05fdccf088284400be
 
 export const getUsuarios = async (req: Request, res: Response) => {
     try {
@@ -23,11 +17,16 @@ export const getUsuarios = async (req: Request, res: Response) => {
         if (!esAdmin(decoded)) {
             return res.status(403).json({ msg: "No tienes permisos para realizar esta acción"});
         }
-        const listUsuarios = await Usuario.findAll();
-        res.json(listUsuarios);
+        const usuarios = await Usuario.findAll();
+        res.json({
+            error: false,
+            data: usuarios
+        });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ msg: "Error al obtener usuarios"});
+        console.log('Error en getUsuarios', error);
+        res.status(500).json({ 
+            error: true,
+            msg: "Error al obtener usuarios"});
     }
 };
 
@@ -127,9 +126,4 @@ export const updateUsuario = async (req: Request, res: Response) => {
         console.log(error);
         res.status(500).json({ msg: "Error al eliminar usuario"});
     }
-<<<<<<< HEAD
 };
-=======
-};
-
->>>>>>> b9a15bf71ee39199331c1f05fdccf088284400be
