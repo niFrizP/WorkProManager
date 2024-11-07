@@ -20,6 +20,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatDatepickerModule,
     MatInputModule,
     MatNativeDateModule,
+    ReactiveFormsModule
   ],
   exports: [
     OrdersComponent, // Exporta el componente si quieres usarlo en otros módulos
