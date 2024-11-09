@@ -25,6 +25,7 @@
               placeholder="Ingrese el nombre del cliente"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
+            <div *ngIf="isFieldInvalid('nombre')" class="text-red-500 text-sm">Nombre obligatorio.</div>
           </div>
           <div>
             <label for="client-lastname" class="block text-sm font-medium text-gray-700">Apellido</label>
@@ -36,6 +37,7 @@
               placeholder="Ingrese el apellido del cliente"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
+            <div *ngIf="isFieldInvalid('apellido')" class="text-red-500 text-sm">Apellido obligatorio.</div>
           </div>
           <div>
             <label for="rut_cliente" class="block text-sm font-medium text-gray-700">Run</label>
@@ -45,6 +47,7 @@
               formControlName="rut_cliente"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
+            <div *ngIf="isFieldInvalid('rut_cliente')" class="text-red-500 text-sm">Ingrese rut valido</div>
           </div>
           <div class="w-16">
             <label for="dv_cliente" class="block text-sm font-medium text-gray-700">DV</label>
@@ -56,6 +59,7 @@
               maxlength="1"
               placeholder="K"
             />
+            <div *ngIf="isFieldInvalid('d_veri_cli')" class="text-red-500 text-sm">Ingrese dígito verificador</div>
           </div>
           <div>
             <label for="correo" class="block text-sm font-medium text-gray-700">Correo</label>
@@ -65,6 +69,7 @@
               formControlName="correo" 
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
+            <div *ngIf="isFieldInvalid('email')" class="text-red-500 text-sm">Ingrese un Correo</div>
           </div>
           <div>
             <label for="celular" class="block text-sm font-medium text-gray-700">Teléfono</label>
@@ -74,6 +79,7 @@
               formControlName="celular"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
+            <div *ngIf="isFieldInvalid('tel')" class="text-red-500 text-sm">Ingrese número de teléfono</div>
           </div>
         </div>
       </fieldset>
@@ -91,6 +97,7 @@
               formControlName="mod_equipo"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
+            <div *ngIf="isFieldInvalid('mod_equipo')" class="text-red-500 text-sm">Ingrese modelo del equipo</div>
           </div>
 
           <div>
@@ -115,6 +122,7 @@
               placeholder="Ingrese el número de serie del equipo"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
+            <div *ngIf="isFieldInvalid('num_equipo')" class="text-red-500 text-sm">Ingrese S/N del equipo</div>
           </div>
           <div>
             <label for="device-manufacture-date" class="block text-sm font-medium text-gray-700">Fecha de fabricación</label>
