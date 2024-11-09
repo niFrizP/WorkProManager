@@ -19,6 +19,7 @@ import { Cliente } from '../../interfaces/cliente';
 import { Servicio } from '../../interfaces/servicio';
 import { Equipo } from '../../interfaces/equipo';
 import { OrdereliminadaService } from '../../services/ordereliminada.service';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 
 @Component({
@@ -27,8 +28,36 @@ import { OrdereliminadaService } from '../../services/ordereliminada.service';
   imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css'],
+  animations: [
+    trigger('slideInOut',[
+      state('true', style({
+        height: '*',
+        opacity: 1,
+        overflow: 'hidden'
+      })),
+      state('false', style({
+        height: '0',
+        opacity: 0,
+        overflow: 'hidden'
+      })),
+      transition('true <=> false', animate('300ms ease-in-out'))
+    ])
+  ],
 })
 export class OrdersComponent implements OnInit {
+
+  menuAbierto: { [key: string]: boolean } = {
+    filtroEstado: false,
+    filtroUsuario: false,
+    filtroServicio: false,
+    filtroFecha: false,
+    filtrosCliente: false,
+    filtroEquipo: false
+  };
+
+  toggleMenu(menu: string): void{
+    this.menuAbierto[menu] = !this.menuAbierto[menu];
+  }
 
   numericError: string = '';  // Variable para almacenar el mensaje de error
 
