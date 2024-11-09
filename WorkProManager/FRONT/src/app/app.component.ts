@@ -20,7 +20,7 @@ import { SubmenuComponent } from './components/submenu-component/submenu-compone
     FormsModule,
     HeaderComponent,
     OrdersModule,
-    NgxPaginationModule
+    NgxPaginationModule,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
