@@ -47,6 +47,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 export class OrdersComponent implements OnInit {
 
   menuAbierto: { [key: string]: boolean } = {
+    filtrosGenerales: false,
     filtroEstado: false,
     filtroUsuario: false,
     filtroServicio: false,
@@ -57,6 +58,7 @@ export class OrdersComponent implements OnInit {
 
   toggleMenu(menu: string): void{
     this.menuAbierto[menu] = !this.menuAbierto[menu];
+    console.log(this.menuAbierto);
   }
 
   numericError: string = '';  // Variable para almacenar el mensaje de error
