@@ -22,26 +22,33 @@ import { UsuarioService } from '../../services/usuario.service';
 import { MarcaService } from '../../services/marca.service';
 import { ClienteService } from '../../services/cliente.service';
 import { EquipoService } from '../../services/equipo.service';
+import { SolicitudService } from '../../services/solicitud.service';
 
 // Components
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { DetalleOTService } from '../../services/detalle_ot.service';
 import { error } from 'console';
+import { Solicitud } from '../../interfaces/solicitud';
+import { ModalComponent } from '../../components/modal/modal.component';
 
 @Component({
   selector: 'app-edit-order',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule],
+  imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule, ModalComponent],
   templateUrl: './edit-order.component.html',
   // styleUrls: ['./new-ot.component.css']
 })
 export class EditOrderComponent implements OnInit {
   mostrarSelectServicio: boolean = false; 
+    solicitudForm: FormGroup;  // Define el FormGroup para el formulario
+
+  solicitudes: Solicitud[] = [];
   servicios: Servicio[] = []; // Inicialización como array vacío
   serviciosArray: FormArray<FormGroup> = new FormArray<FormGroup>([]);
   serviciosSeleccionados: any = []; // Cambia 'any' por el tipo adecuado
   servicioSeleccionado: number | null = null;
   usuarios: Usuario[] = [];
+  newSolicitudId: number | null = null;
   marcas: Marca[] = [];
   newOrders: newOrder[] = [];
   selectedUsuarioName: string | null = null;
@@ -61,8 +68,8 @@ export class EditOrderComponent implements OnInit {
   newOrderId: number | null = null; // Variable para almacenar el ID de la nueva orden
   orderDetails: newOrder | null = null;
   detalleOT: DetalleOT[] = [];
-
-
+  isModalOpen = true;
+  cargando = true;
 
 
 
@@ -76,13 +83,25 @@ export class EditOrderComponent implements OnInit {
     private usuarioService:UsuarioService,
     private marcaService:MarcaService,
     private equipoService:EquipoService,
-    private clienteService:ClienteService
+    private clienteService:ClienteService,
+    private solicitudService:SolicitudService
     
   ) {
+
+    this.solicitudForm = this.fb.group({
+      id_sol: [null],
+      id_ot: [null],
+      desc_sol: [''],
+      id_estado_ot: [null]
+    });
+
+    const orden_id = this.aRouter.snapshot.paramMap.get('id_ot');
+
+
     this.form = this.fb.group({
       id_ot: [null, Validators.required],
       num_equipo: [null, Validators.required],
-      id_estado: [1, Validators.required],
+      id_estado: [2, Validators.required],
       costo: [null, Validators.required],
       fecha: [null, Validators.required],
       descripcion: ['', Validators.required],
@@ -99,7 +118,8 @@ export class EditOrderComponent implements OnInit {
       mod_equipo: ['', Validators.required],
       fec_fabric: ['', Validators.required],
       id_marca: [null, Validators.required],
-      d_veri_cli: ['', Validators.required]
+      d_veri_cli: ['', Validators.required],
+      desc_sol: ['', Validators.required],
       
     });
     
@@ -114,12 +134,16 @@ export class EditOrderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
+    this.serviciosSeleccionados = [];
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
     this.loadOrder(this.id_ot);
     this.loadDetalle(this.id_ot);
     console.log(this.id_ot);
     this.cargarServicios();
     this.cargarUsuarios();
     this.cargarMarcas();
+    this.getot(this.id_ot);
     
 
     
@@ -200,7 +224,75 @@ export class EditOrderComponent implements OnInit {
     });
   }
   
+  getot(id_ot: number) {
+    this.solicitudService.getSolByOt(id_ot).subscribe((data: Solicitud[]) => {
+      this.solicitudes = data;
+      console.log(this.solicitudes);
+
+      // Usa patchValue para actualizar los valores del formulario con la primera solicitud obtenida
+      if (this.solicitudes.length > 0) {
+        this.solicitudForm.patchValue(this.solicitudes[0]);
+      }
+    });
+  }
+
+  openModal(event:Event) {
+
+    event.preventDefault(); // Esto evita que el botón haga submit del formulario
+    this.isModalOpen = true;
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
+    console.log('Abriendo modal con id_ot:', this.id_ot);  // Verifica que el id_ot se pasa al abrir el modal
+
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+  private async createorupdateSolicitud(): Promise<Solicitud> {
+
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
+
+
+    const solicitudData: Solicitud = {
+      id_ot: this.id_ot,
+      desc_sol: this.form.get('desc_sol')?.value,
+      id_estado_ot: this.form.get('id_estado')?.value,};
+    
+    console.log('Solicitud data:')
+    console.log(JSON.stringify(solicitudData, null, 2));
   
+    
+        return new Promise((resolve, reject) => {
+          this.solicitudService.saveSolicitud(solicitudData).subscribe({
+            next: (response: any) => {
+              console.log('Response from server:', response);
+  
+              // Asegúrate de que la respuesta tiene la estructura esperada
+              const newSolicitud = response?.solicitud; // Accede al objeto 'solicitud'
+  
+              if (newSolicitud) {
+                this.newSolicitudId = newSolicitud?.id_sol; // Accede a la propiedad 'id_sol'
+  
+                if (this.newSolicitudId) {
+                  console.log('New solicitud ID:', this.newSolicitudId);
+                } else {
+                  console.warn('No solicitud ID found in response');
+                }
+  
+                resolve(newSolicitud); // Devuelve la solicitud creada
+              } else {
+                console.warn('Solicitud object not found in response');
+                reject(new Error('Solicitud object not found in response'));
+              }
+            },
+            error: (error) => {
+              console.error('Error creating solicitud:', error);
+              reject(error);
+            }
+          });
+        });
+      }
   
   async editProduct(): Promise<void> {
     this.loading = true;
@@ -219,6 +311,8 @@ export class EditOrderComponent implements OnInit {
 
 
       const detalleOT = await this.createOrUpdateDetalleOT();
+
+      const solicitud = await this.createorupdateSolicitud();
 
 
       console.log(order);
@@ -485,11 +579,13 @@ export class EditOrderComponent implements OnInit {
   
  
   onServicioChange(event: any) {
+    event.preventDefault();
     const servicioId = event.target.value;
     this.servicioSeleccionado = servicioId ? parseInt(servicioId) : null;
   }
 
-  agregarServicio() {
+  agregarServicio(event:Event) {
+    event.preventDefault();
     if (this.servicioSeleccionado) {
       // Encontrar el servicio completo según el ID
       const servicio = this.servicios.find(serv => serv.id_serv === this.servicioSeleccionado);
@@ -520,6 +616,7 @@ export class EditOrderComponent implements OnInit {
   }
 
   serviceID(event: Event) {
+    event.preventDefault();
     const selectedId = (event.target as HTMLSelectElement).value;
     const selectedService = this.servicios.find(servicio => servicio.id_serv?.toString() === selectedId);
     
@@ -547,6 +644,20 @@ export class EditOrderComponent implements OnInit {
     });
 
   }
+
+  onSubmit(event: Event) {
+    event.preventDefault();
+    this.isSubmitting = true;
+
+    // Simula un proceso de guardado (esto puede ser una llamada a tu servicio)
+    setTimeout(() => {
+      this.isSubmitting = false;
+      this.editProduct()
+      // Aquí puedes agregar lógica para manejar la respuesta de tu API
+    }, 2000);
+  }
+  
+  
 
   onUserChange(event: Event) {
     const selectedId = (event.target as HTMLSelectElement).value;

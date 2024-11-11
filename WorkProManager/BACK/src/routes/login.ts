@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
     const token = jwt.sign(
         {
             rut_usuario: response?.rut_usuario,
-            rol: response.rol,
+            id_rol: response.id_rol,
             iat: Math.floor(Date.now() / 1000), // Timestamp actual
         },
         JWT_SECRET,
@@ -25,7 +25,7 @@ router.post('/', async (req, res) => {
         if (response) {
         res.cookie('access_token', token, {
             path: '/',
-            httpOnly: true, //COOKIE PUEDE ACCEDERSE SOLO DESDE EL SERVIDOR
+            httpOnly: false, //COOKIE PUEDE ACCEDERSE SOLO DESDE EL SERVIDOR
             secure: true, //SOLO SE ENVIA SI ES HTTPS
             sameSite: 'none',
             maxAge: 60 * 60 * 1000 //1 HORA
@@ -45,7 +45,7 @@ router.post('/logout', (req, res) => {
 // Ruta de verificación de token
 router.get('/verify', verificarTokenn, (req: Request, res: Response) => {
     // Responde solo con el `rut_usuario`
-    res.json({ rut_usuario: (req as any).rut_usuario });
+    res.json({ id_rol: (req as any).id_rol, rut_usuario: (req as any).rut_usuario });
 });
 
 

@@ -21,6 +21,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { DetalleOTService } from '../../services/detalle_ot.service';
 import { EstadoOT } from '../../interfaces/estadoot';
 import { EstadoOTService } from '../../services/estado_ot.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-reportes',
@@ -93,6 +94,7 @@ export class ReportesComponent implements OnInit {
     private detalleOTService: DetalleOTService,
     private servicioService: ServicioService,
     private estadoOTService: EstadoOTService,
+    public authService: AuthService,
     private fb: FormBuilder,
   ) {  this.form = this.fb.group({
     id_estado_ot: this.selectedEstadoID
@@ -101,7 +103,6 @@ export class ReportesComponent implements OnInit {
   ngOnInit(): void {
     this.loadOrders();
     this.loadEstados();
-
     this.loadUsers();
     this.loadServicios();
 
@@ -172,6 +173,12 @@ export class ReportesComponent implements OnInit {
     this.id_ot = id_ot;
     console.log(this.id_ot);
   }
+
+  filterUsersByRut(): any[] {
+    const userRut = this.authService.getUserId(); // Obtén el `rut_usuario` desde `authService`
+    return this.usuarios.filter(usuario => usuario.rut_usuario === userRut);
+  }
+
 
   loadUsers(): void {
     this.usuarioService.getListUsuarios().subscribe(

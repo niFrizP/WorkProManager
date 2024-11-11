@@ -47,6 +47,7 @@ throw new Error('Method not implemented.');
   usuarios: Usuario[] = [];
   marcas: Marca[] = [];
   tipos: Tipo[] = [];
+  isSubmitting: boolean = false;
   orders: Order[] = [];
   detalleOTs: DetalleOT[] = [];
   selectedUsuarioName: string | null = null;
@@ -132,7 +133,8 @@ selectedServicePrecio: any;
       id_serv: ['', Validators.required],
       descripcion: ['', Validators.required],
       fecha: ['', Validators.required],
-      id_usuario: ['', Validators.required]
+      id_usuario: ['', Validators.required],
+      id_estado: [2, Validators.required],
     });
     this.cargarServicios();
     this.cargarUsuarios();
@@ -151,6 +153,10 @@ selectedServicePrecio: any;
 
   async addProduct(): Promise<void> {
     this.loading = true;
+
+    if (this.isSubmitting) return; // Si ya se está enviando, no hacer nada
+    this.isSubmitting = true; // Desactivar el botón
+
 
     try {
       // 1. Create or update cliente
@@ -182,11 +188,13 @@ selectedServicePrecio: any;
   }
 
   onServicioChange(event: any) {
+    event.preventDefault();
     const servicioId = event.target.value;
     this.servicioSeleccionado = servicioId ? parseInt(servicioId) : null;
   }
 
-  agregarServicio() {
+  agregarServicio(event: Event) {
+    event.preventDefault();
     if (this.servicioSeleccionado) {
       // Encontrar el servicio completo según el ID
       const servicio = this.servicios.find(serv => serv.id_serv === this.servicioSeleccionado);
@@ -201,7 +209,7 @@ selectedServicePrecio: any;
     }
   }
 
-  eliminarServicio(servicio: any) {
+  eliminarServicio(event:Event,servicio: any) {
     this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: { id_serv: any }) => s.id_serv !== servicio.id_serv);
     }
 
@@ -253,7 +261,17 @@ selectedServicePrecio: any;
     }
 }
 
+onSubmit(event: Event) {
+  event.preventDefault();
+  this.isSubmitting = true;
 
+  // Simula un proceso de guardado (esto puede ser una llamada a tu servicio)
+  setTimeout(() => {
+    this.isSubmitting = false;
+    this.addProduct()
+    // Aquí puedes agregar lógica para manejar la respuesta de tu API
+  }, 2000);
+}
   
   private async createOrUpdateEquipo(): Promise<Equipo> {
     const equipoData: Equipo = {
@@ -314,7 +332,7 @@ selectedServicePrecio: any;
         fec_creacion: new Date(),
         fec_entrega: this.form.get('fecha')?.value,
         descripcion: this.form.get('descripcion')?.value,
-        rut_usuario: this.form.get('rut_usuario')?.value,
+        rut_usuario: this.selectedUsuarioID ?? 0,
         rut_cliente: this.form.get('rut_cliente')?.value,
     };
 
@@ -378,7 +396,7 @@ private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
     fecha_detalle: new Date(),
     desc_detalle: servicio.nom_serv!,
     d_estado: 0,
-    rut_usuario: this.form.get('rut_usuario')?.value,
+    rut_usuario: this.selectedUsuarioID ?? 0,
   }));
 
   console.log('DetalleOT data:', JSON.stringify(detalleOTData, null, 2));

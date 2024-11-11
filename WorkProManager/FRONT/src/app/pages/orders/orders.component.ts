@@ -19,7 +19,7 @@ import { Cliente } from '../../interfaces/cliente';
 import { Servicio } from '../../interfaces/servicio';
 import { Equipo } from '../../interfaces/equipo';
 import { OrdereliminadaService } from '../../services/ordereliminada.service';
-
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-orders',
@@ -81,7 +81,8 @@ export class OrdersComponent implements OnInit {
     private equipoService: EquipoService,
     private clienteService: ClienteService,
     private detalleOTService: DetalleOTService,
-    private servicioService: ServicioService
+    private servicioService: ServicioService,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -196,6 +197,11 @@ export class OrdersComponent implements OnInit {
         console.error('Error eliminando el detalle OT', error);
       }
     );
+  }
+
+  filterUsersByRut(): any[] {
+    const userRut = this.authService.getUserId(); // Obtén el `rut_usuario` desde `authService`
+    return this.usuarios.filter(usuario => usuario.rut_usuario === userRut);
   }
 
   deleteOrder(id_ot: number): void {

@@ -51,5 +51,7 @@ const Usuario = db.define('Usuario', {
 
 Usuario.hasMany(Usuario, { foreignKey: 'rut_usuario' });
 Usuario.belongsTo(Rol, { foreignKey: 'id_rol',  targetKey: 'id_rol' });
+Usuario.hasMany(Usuario, { foreignKey: 'rut_usuario' });
+
 
 export default Usuario;

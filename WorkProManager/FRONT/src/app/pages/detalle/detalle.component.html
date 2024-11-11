@@ -28,7 +28,7 @@
       </div>
 
       <!-- Detalle Cliente -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
+      <fieldset class="border border-gray-200 p-4 rounded-lg" *ngIf="authService.getUserRole() === 3">
         <legend class="text-lg font-semibold">Usuario</legend>
         
         <div>

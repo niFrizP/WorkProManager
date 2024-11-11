@@ -11,6 +11,27 @@
 
       <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
 
+        <div class="mt-4">
+          <label for="fecha">Fecha de Entrega:</label>
+          <input type="date" id="fecha" formControlName="fecha" class="border border-gray-300 p-2 rounded" />
+        </div>
+  
+        <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
+  
+        
+        <!-- Descripción de la OT -->
+        <div>
+          <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+          <textarea
+            id="descripcion"
+            formControlName="descripcion"
+            rows="4"
+            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+            placeholder="Añade una descripción detallada de la Orden de Trabajo..."
+          ></textarea>
+        </div>
+  
+
       <!-- Detalle Cliente -->
       <fieldset class="border border-gray-200 p-4 rounded-lg">
         <legend class="text-lg font-semibold">Detalle Cliente</legend>
@@ -144,25 +165,25 @@
           </option>
         </select>
     
-        <!-- Botón para agregar el servicio -->
-        <button (click)="agregarServicio()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
-        <button type="button" (click)="agregarServicio()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
-          Añadir Servicio
-        </button>
-      
-    
-      <!-- Lista de servicios añadidos -->
-      <div *ngIf="serviciosSeleccionados.length > 0">
-        <h3>Servicios Añadidos:</h3>
-        <ul>
-          <li *ngFor="let servicio of serviciosSeleccionados">
-            {{ servicio.nom_serv }}
-            <!-- Botón para eliminar un servicio de la lista -->
-            <button (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
-            <button type="button" (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
-          </li>
-        </ul>
-      </div>
+        <fieldset>
+          <div>
+           <button (click)="agregarServicio($event)" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
+             Añadir Servicio
+           </button>
+         </div>
+       
+         <!-- Lista de servicios añadidos -->
+         <div *ngIf="serviciosSeleccionados.length > 0">
+           <h3>Servicios Añadidos:</h3>
+           <ul>
+             <li *ngFor="let servicio of serviciosSeleccionados">
+               {{ servicio.nom_serv }}
+               <!-- Botón para eliminar un servicio de la lista -->
+               <button type="button" (click)="eliminarServicio($event, servicio)" class="text-red-500 ml-4">Eliminar</button>
+             </li>
+           </ul>
+         </div>
+         </fieldset>
 
     <!-- Usuario -->
 
@@ -171,7 +192,7 @@
         
         <div>
           <label for="usuarios">Selecciona un Usuario:</label>
-          <select id="usuarios" formControlName="rut_usuario" (change)="onUserChange($event)">
+          <select id="rut_usuario" formControlName="rut_usuario" (change)="onUserChange($event)">
             <option value="">Seleccione un usuario</option>
             <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario" formControlName="usuario.rut_usuario">
               {{ usuario.nom_usu }} {{usuario.ap_usu}}
@@ -189,12 +210,10 @@
       <!-- Botón para enviar el formulario -->
       <div class="flex justify-end">
         <button
+        click="onSubmit($event)"
           type="submit"
           class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
-          (click)="addProduct()"
-          [disabled]="form.get('isSubmitting')?.value"
-        >
-          {{ form.get('isSubmitting')?.value ? 'Guardando...' : 'Guardar Orden de Trabajo' }}
-        </button>
+          >
+        {{ isSubmitting ? 'Guardando...' : 'Guardar Orden de Trabajo' }} 
+      </button>
       </div>
-

@@ -14,16 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateUsuario = exports.postUsuario = exports.deleteUsuario = exports.getUsuario = exports.getUsuarios = void 0;
 const usuario_1 = __importDefault(require("../models/usuario"));
-const autenticacion_1 = require("../middleware/autenticacion");
+const bcrypt_1 = __importDefault(require("bcrypt"));
 const getUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const decoded = yield (0, autenticacion_1.verificarToken)(req);
-        if (!decoded) {
-            return res.status(401).json({ msg: "No autorizado" });
-        }
-        if (!(0, autenticacion_1.esAdmin)(decoded)) {
-            return res.status(403).json({ msg: "No tienes permisos para realizar esta acción" });
-        }
         const listUsuarios = yield usuario_1.default.findAll();
         res.json(listUsuarios);
     }
@@ -36,13 +29,6 @@ exports.getUsuarios = getUsuarios;
 const getUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const decoded = yield (0, autenticacion_1.verificarToken)(req);
-        if (!decoded) {
-            return res.status(401).json({ msg: "No autorizado" });
-        }
-        if (decoded.id_usuario.toString() !== id && !(0, autenticacion_1.esAdmin)(decoded)) {
-            return res.status(403).json({ msg: "No tienes permisos para ver este usuario" });
-        }
         const usuario = yield usuario_1.default.findByPk(id);
         if (usuario) {
             res.json(usuario);
@@ -76,7 +62,7 @@ exports.deleteUsuario = deleteUsuario;
 const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { rut_usuario, d_veri_usu, nom_usu, ap_usu, email_usu, password, cel_usu, id_rol } = req.body; // Extrae los datos relevantes
     try {
-        const hashedPassword = yield bcrypt.hash(password, 10); // Encriptar la contraseña
+        const hashedPassword = yield bcrypt_1.default.hash(password, 10); // Encriptar la contraseña
         // Crear el nuevo usuario sin especificar `id_usuario`
         // Crear el nuevo usuario sin especificar `rut_usuario`
         const newUsuario = yield usuario_1.default.create({
@@ -106,19 +92,18 @@ const updateUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const { body } = req;
     const { id } = req.params;
     try {
-        const decoded = yield (0, autenticacion_1.verificarToken)(req);
-        if (!decoded) {
-            return res.status(401).json({ msg: "No autorizado" });
-        }
-        if (!(0, autenticacion_1.esAdmin)(decoded)) {
-            return res.status(403).json({ msg: "No tienes permisos para eliminar usuarios" });
-        }
         const usuario = yield usuario_1.default.findByPk(id);
-        if (!usuario) {
-            return res.status(404).json({ msg: "No existe usuario con el ID ${id}" });
+        if (usuario) {
+            yield usuario.update(body);
+            res.json({ msg: "Usuario actualizado con éxito" });
         }
-        yield usuario.destroy();
-        res.json({ msg: "Usuario eliminado con éxito" });
+        else {
+            res.status(404).json({ msg: "No existe un usuario con ese ID" });
+        }
+        if (usuario) {
+            yield usuario.destroy();
+            res.json({ msg: "Usuario eliminado con éxito" });
+        }
     }
     catch (error) {
         console.log(error);

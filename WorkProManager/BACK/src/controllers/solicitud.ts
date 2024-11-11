@@ -84,3 +84,16 @@ export const updateSolicitud = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const getDetallesOtByOT = async (req: Request, res: Response) => {
+    const { id_ot } = req.params;
+    try {
+        const solicitud = await Solicitud.findAll({
+            where: { id_ot }
+        });
+        res.json(solicitud);
+    } catch (error) {
+        console.error('Error en solicitud:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};

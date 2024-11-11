@@ -20,12 +20,13 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { DetalleOTService } from '../../services/detalle_ot.service';
 import { DetalleOT } from '../../interfaces/detalle_ot';
+import { ModalComponent } from '../../components/modal/modal.component';
 
 
 @Component({
   selector: 'app-create-reporte',
   standalone: true,
-  imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule],
+  imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ModalComponent],
   templateUrl: './create-reporte.component.html',
   styleUrls: ['./create-reporte.component.css'],
 })
@@ -75,6 +76,7 @@ export class CreateReportComponent implements OnInit {
   itemsPerPage = 10;
 
   years = [2024, 2023, 2022]; // Asegúrate de rellenar con los años disponibles
+  isModalOpen = true;
 
 
   constructor(
@@ -96,6 +98,7 @@ export class CreateReportComponent implements OnInit {
         this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
 
     console.log(this.id_ot);
+    
     this.loadDetalles(this.id_ot);
     this.loadUsers();
     this.loadServicios();
@@ -103,8 +106,20 @@ export class CreateReportComponent implements OnInit {
    
   }
 
+  
 
+  openModal(event:Event) {
 
+    event.preventDefault(); // Esto evita que el botón haga submit del formulario
+    this.isModalOpen = true;
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
+    console.log('Abriendo modal con id_ot:', this.id_ot);  // Verifica que el id_ot se pasa al abrir el modal
+
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
 
 
 

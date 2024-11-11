@@ -23,6 +23,7 @@ import { UsuarioService } from '../../services/usuario.service';
 import { MarcaService } from '../../services/marca.service';
 import { ClienteService } from '../../services/cliente.service';
 import { EquipoService } from '../../services/equipo.service';
+import { AuthService } from '../../services/auth.service';
 
 // Components
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
@@ -86,7 +87,8 @@ export class DetalleComponent implements OnInit {
     private usuarioService:UsuarioService,
     private marcaService:MarcaService,
     private equipoService:EquipoService,
-    private clienteService:ClienteService
+    private clienteService:ClienteService,
+    public authService: AuthService
     
   ) {
     this.form = this.fb.group({
@@ -389,7 +391,7 @@ return new Promise<number>((resolve, reject) => {
 updateOrder(): Promise<void> {
   return new Promise<void>((resolve, reject) => {
 
-    this._orderService.updateOrderState(this.id_ot, 2).subscribe(
+    this._orderService.updateOrderState(this.id_ot, 4).subscribe(
       (data) => {
         console.log("updateOrder");
         console.log(data);

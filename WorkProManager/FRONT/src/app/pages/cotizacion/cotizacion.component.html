@@ -157,7 +157,7 @@
       
         <div>
           <label for="servicio">Selecciona un Servicio:</label>
-          <select id="servicio" [(ngModel)]="servicioSeleccionado" (change)="onServicioChange($event)">
+          <select id="id_serv" [(ngModel)]="servicioSeleccionado" (change)="onServicioChange($event)">
             <option value="">Seleccione un servicio</option>
             <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">
               {{ servicio.nom_serv }}
@@ -165,8 +165,7 @@
           </select>
       
           <!-- Botón para agregar el servicio -->
-          <button (click)="agregarServicio()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600"></button>
-          <button type="button" (click)="agregarServicio()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
+          <button type="button" (click)="agregarServicio($event)" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
             Añadir Servicio
           </button>
         
@@ -235,4 +234,3 @@
         </button>
       </div>
 
-  

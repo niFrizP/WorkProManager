@@ -1,0 +1,19 @@
+<div class="modal-backdrop" (click)="closeModal($event)"></div>
+<div class="modal-content">
+  <h2>Contenido del Modal</h2>
+  <p>ID de la Orden de Trabajo: {{ id_ot }}</p>
+  
+  <!-- Contenido con desplazamiento -->
+  <div class="modal-body">
+    <div *ngFor="let solicitud of solicitudes">
+      <p><strong>ID de Solicitud:</strong> {{ solicitud.id_sol }}</p>
+      <p><strong>ID de OT:</strong> {{ solicitud.id_ot }}</p>
+      <p><strong>Descripción:</strong> {{ solicitud.desc_sol }}</p>
+      <p><strong>Estado de OT:</strong> {{ solicitud.id_estado_ot }}</p>
+      <hr />
+    </div>
+    <p>Este es el contenido de tu modal.</p>
+  </div>
+
+  <button (click)="closeModal($event)">Cerrar</button>
+</div>

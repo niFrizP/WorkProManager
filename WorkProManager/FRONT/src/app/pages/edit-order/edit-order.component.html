@@ -1,11 +1,19 @@
 <div class="flex-1 justify-center px-72 py-6">
+
+  <p>{{id_ot}}</p>
+  
+  <!-- home.component.html -->
+  <button (click)="openModal($event)">Abrir Modal</button>
+
+  <!-- Solo se muestra el modal si isModalOpen es true -->
+  <app-modal *ngIf="isModalOpen && id_ot !== null && id_ot !== 0" [id_ot]="id_ot" (closed)="closeModal()"></app-modal>
     <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
       <!-- Leyenda de descripción -->
       <p class="text-md text-gray-600 mb-4">
         Completa el siguiente formulario para crear una nueva Orden de Trabajo. Asegúrate de proporcionar todos los detalles requeridos.
       </p>
       
-      <form class="space-y-6" [formGroup]="form" (ngSubmit)="editProduct()">
+      <form class="space-y-6" [formGroup]="form" (ngSubmit)="onSubmit($event)">
   
         <div class="mt-4">
           <label for="fecha">Fecha de Entrega:</label>
@@ -152,7 +160,7 @@
             <!-- Botón para agregar el servicio -->
              <fieldset>
               <div>
-               <button (click)="agregarServicio()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
+               <button (click)="agregarServicio($event)" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
                  Añadir Servicio
                </button>
              </div>
@@ -190,20 +198,35 @@
           </div>
             
         </fieldset>
+
+
+        <fieldset>
+
+
+          <div>
+              <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+              <textarea
+                id="descripcion"
+                formControlName="desc_sol"
+                rows="4"
+                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+                placeholder="Añade una descripción detallada de la Orden de Trabajo..."
+              ></textarea>
+            </div>
+          
+      </fieldset>
+
         
   
         <!-- Botón para enviar el formulario -->
         <div class="flex justify-end">
           <button
+          click="onSubmit($event)"
             type="submit"
             class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
-            (click)="editProduct()"
-            [disabled]="isSubmitting" 
-  
-  
-  
-          >
+            >
           {{ isSubmitting ? 'Guardando...' : 'Guardar Orden de Trabajo' }} 
         </button>
         </div>
-  
+
+       

@@ -39,4 +39,8 @@ export class SolicitudService {
     getSolByUser(id_user: number): Observable<Solicitud[]> {
         return this.http.get<Solicitud[]>(`${this.myAppUrl}${this.myApiUrl}user/${id_user}`);
     }
+
+    getSolByOt(id_ot: number): Observable<Solicitud[]> {
+        return this.http.get<Solicitud[]>(`${this.myAppUrl}${this.myApiUrl}solicitud/${id_ot}`);
+    }
 }
