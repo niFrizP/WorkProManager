@@ -1,18 +1,21 @@
 <div class="flex-3 ml-64 p-6">
   <div class="flex flex-wrap px-6 py-6 space-x-6">
-    <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
+    <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4 relative">
+      <span class="badge absolute top-2 right-2 text-green-600"> {{ totalOrdersByYear}}</span>
       <p class="uppercase text-sm font-semibold text-gray-500">
         Total de OT anuales
-      </p>0
+      </p>
       <h5 class="font-bold">{{totalOrdersByYear}}</h5>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
+    <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4 relative">
+      <span class="badge absolute top-2 right-2 text-green-600"> {{ ordersOfTheDay }}</span>
       <p class="uppercase text-sm font-semibold text-gray-500">Total de OT del dia</p>
       <h5 class="font-bold">{{ordersOfTheDay}}</h5>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-xl p-4 w-1/3">
+    <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4 relative">
+      <span class="badge absolute top-2 right-2 text-green-600"> {{ ordersByofEstadoSum}}</span>
       <p class="uppercase text-sm font-semibold text-gray-500">
         OT Finalizadas
       </p>
