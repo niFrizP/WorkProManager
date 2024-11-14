@@ -1,28 +1,22 @@
-<div class="flex-3 ml-64 p-8">
+<div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
   <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
 
-
-
   <div class="flex justify-between items-center mb-4">
-
     <div *ngIf="authService.getUserId() as rut">
       <p>Bienvenido, usuario con RUT: {{ rut }}</p>
     </div>
-    
-    
+
     <div>
       <label for="filter" class="mr-2 font-medium">Todas las OT</label>
       <select #filterSelect class="p-2 border rounded" (change)="filterOrdersByStatus(filterSelect.value)">
         <option value="todas">Todas</option>
-          <option value="pendiente">Pendiente</option>
-          <option value="en proceso">En proceso</option>
-          <option value="incompleto">incompleto</option>
-          <option value="completo">completo</option>
-          <option value="finalizado">finalizado</option>
-          <option value="rechazado">rechazado</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="en proceso">En proceso</option>
+        <option value="incompleto">incompleto</option>
+        <option value="completo">completo</option>
+        <option value="finalizado">finalizado</option>
+        <option value="rechazado">rechazado</option>
       </select>
-
-     
 
       <div *ngIf="authService.getUserRole() === 2">
         <label for="filter" class="mr-2 font-medium">Filtrar por RUT</label>
@@ -32,17 +26,15 @@
           </option>
         </select>
       </div>
-      
-      
 
-      <div *ngIf="authService.getUserRole() === 3  && authService.getUserRole() === 1">
+      <div *ngIf="authService.getUserRole() === 3 || authService.getUserRole() === 1">
         <label for="filter" class="mr-2 font-medium">Todos los usuarios</label>
-        <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedUsuario" (change)="filterOrdersByUsuario(selectedUsuario)" title="Filter Orders by Usuario">
+        <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedUsuario" (change)="filterOrdersByUsuario(selectedUsuario)" title="Filtrar órdenes por usuario">
           <option value="todos">Todas</option>
           <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu }} {{usuario.ap_usu}}</option>
         </select>
       </div>
-      
+
       <div>
         <label for="monthSelect" class="mr-2 font-medium">Mes</label>
         <select #monthSelect class="p-2 border rounded" (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)">
@@ -56,6 +48,7 @@
           <option *ngFor="let year of years">{{ year }}</option>
         </select>
       </div>
+
       <form class="search-form" (submit)="filterOrdersByRutCliente()">
         <input
           type="text"
@@ -79,11 +72,7 @@
         />
         <button type="submit" class="search-btn">Buscar</button>
       </form>
-
-
-
     </div>
-
   </div>
 
   <table class="w-full border-collapse">
@@ -100,38 +89,62 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
+      <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+      [ngClass]="{ 'text-red-600': newOrder.VistaSolicitud.isview }">
+        
         <td>{{ newOrder.fec_entrega }}</td>
         <td>{{ newOrder.num_equipo }}</td>
         <td>{{ newOrder.id_ot }}</td>
         <td>{{ newOrder.descripcion }}</td>
         <td>{{ newOrder.Equipo.mod_equipo }}</td>
         <td>{{ newOrder.rut_cliente }}</td>
-        <td>{{ newOrder.EstadoOT.nom_estado_ot }}</td>
+        <td> 
+          {{ newOrder.EstadoOT.nom_estado_ot }}</td>
         <td>{{ newOrder.Usuario.nom_usu }}</td>
+        <td><span *ngIf="newOrder.VistaSolicitud.isview">
+          ⚠️ 
+        </span>
+        <span *ngIf="!newOrder.VistaSolicitud.isview">
+          ✅
+        </span></td>
         <td>
           <button [routerLink]="['createReport/', newOrder.id_ot]">✏️</button>
-
-            <!-- Botón para desplegar el submenú -->
-             <div *ngIf="authService.getUserRole() === 3">
-
-               <button (click)="toggleMenu(newOrder.id_ot ?? 0)">📄</button>
-             </div>
-          
-            <!-- Submenú desplegable -->
-            <div *ngIf="isMenuOpen" >
-              <label for="estados">Selecciona un estado:</label>
-              <select id="estados" formControlName="id_estado_ot" (change)="onUserChange($event)">
-                <option *ngFor="let estado of estados" [value]="estado.id_estado_ot">{{ estado.nom_estado_ot }}</option>
-              </select>
-            </div>
-          
-         
-
+          <div *ngIf="authService.getUserRole() === 3">
+            <button *ngIf="newOrder.id_ot !== undefined" (click)="toggleMenu(newOrder.id_ot)">📄</button>
+          </div>
+          <div *ngIf="isMenuOpen === newOrder.id_ot">
+            <label for="estados">Selecciona un estado:</label>
+            <select id="estados" formControlName="id_estado_ot" (change)="onUserChange($event, newOrder.id_ot ?? 0)">
+              <option *ngFor="let estado of estados" [value]="estado.id_estado_ot">
+                {{ estado.nom_estado_ot }}
+              </option>
+            </select>
+          </div>
         </td>
       </tr>
     </tbody>
   </table>
 
   <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+
+  <div *ngIf="isModalOpen" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Confirmación</h2>
+      <p>¿Estás seguro de actualizar el estado a "{{ selectedEstadoName }}"?</p>
+      <form class="space-y-6" [formGroup]="form" (ngSubmit)="confirmUpdate(id_ot)">
+        <div>
+          <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+          <textarea id="descripcion" formControlName="desc_sol" rows="4" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="Añade una descripción detallada de la Orden de Trabajo..."></textarea>
+          <div class="mt-4">
+            <label for="fecha">Plazo para completar la solicitud:</label>
+            <input type="date" id="fecha_plazo" formControlName="fecha_plazo" class="border border-gray-300 p-2 rounded" />
+          </div>
+        </div>
+      </form>
+      <div class="modal-actions">
+        <button (click)="cancelUpdate()">Cancelar</button>
+        <button (click)="confirmUpdate(id_ot)" type="submit">Aceptar</button>
+      </div>
+    </div>
+  </div>
 </div>

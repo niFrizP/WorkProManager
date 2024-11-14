@@ -137,6 +137,7 @@ export class EditOrderComponent implements OnInit {
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
     this.serviciosSeleccionados = [];
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
+    this.updateSolicitudOnLoad()
     this.loadOrder(this.id_ot);
     this.loadDetalle(this.id_ot);
     console.log(this.id_ot);
@@ -144,6 +145,7 @@ export class EditOrderComponent implements OnInit {
     this.cargarUsuarios();
     this.cargarMarcas();
     this.getot(this.id_ot);
+
     
 
     
@@ -257,7 +259,10 @@ export class EditOrderComponent implements OnInit {
     const solicitudData: Solicitud = {
       id_ot: this.id_ot,
       desc_sol: this.form.get('desc_sol')?.value,
-      id_estado_ot: this.form.get('id_estado')?.value,};
+      id_estado_ot: this.form.get('id_estado')?.value,
+      isView: false,
+      fecha_emision: new Date(),
+    };
     
     console.log('Solicitud data:')
     console.log(JSON.stringify(solicitudData, null, 2));
@@ -293,6 +298,36 @@ export class EditOrderComponent implements OnInit {
           });
         });
       }
+
+
+      updateSolicitudOnLoad() {
+        this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
+        this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
+          this.solicitudes = data.reverse();
+          console.log(this.solicitudes);
+          
+    
+       this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, true).subscribe({
+          next: () => {
+            console.log('Solicitud updated successfully');
+          },
+        });   
+
+
+        this.solicitudService.updateSolicitudByFecha(this.solicitudes[0].id_sol!, new Date).subscribe({
+          next: () => {
+            console.log('Solicitud updated successfully');
+          },
+        });   
+
+  
+        
+
+      })
+      
+    }
+    
+    
   
   async editProduct(): Promise<void> {
     this.loading = true;

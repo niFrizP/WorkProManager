@@ -20,7 +20,7 @@ import { Servicio } from '../../interfaces/servicio';
 import { Equipo } from '../../interfaces/equipo';
 import { OrdereliminadaService } from '../../services/ordereliminada.service';
 import { AuthService } from '../../services/auth.service';
-
+import { QueryService } from '../../services/query';
 @Component({
   selector: 'app-orders',
   standalone: true,
@@ -65,11 +65,14 @@ export class OrdersComponent implements OnInit {
   searchEquipo: string = '';
   searchUsuario: string = '';
   searchServicio: string = '';
+  searchRut: string = '';
   filteredOrders: newOrder[] = []; // Cambiado a newOrder[]
   filteredUsers: Usuario[] = [];
   filteredServicios: Servicio[] = [];
   page = 1;
+  rut_usuario: number = 0;
   itemsPerPage = 10;
+  rol_id: number = 0;
 
   years = [2024, 2023, 2022]; // Asegúrate de rellenar con los años disponibles
 
@@ -79,6 +82,7 @@ export class OrdersComponent implements OnInit {
     private orderService: OrderService,
     private usuarioService: UsuarioService,
     private equipoService: EquipoService,
+    private queryService:QueryService,
     private clienteService: ClienteService,
     private detalleOTService: DetalleOTService,
     private servicioService: ServicioService,
@@ -86,9 +90,16 @@ export class OrdersComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
+    this.rut_usuario = this.authService.getUserId() ?? 0; // Obtén el `rut_usuario` desde
+    this.rol_id = this.authService.getRolId() ?? 0; // Obtén el `rol_id` desde `authService`
+    console.log(this.rut_usuario)
+    console.log(this.rol_id)
     this.loadOrders();
+
     this.loadUsers();
     this.loadServicios();
+    
 
    
   }
@@ -124,6 +135,11 @@ export class OrdersComponent implements OnInit {
     this.filterOrders();
   }
 
+  
+  filterOrdersByRutUsuario() {
+    this.filterOrders();
+  }
+
   loadUsers(): void {
     this.usuarioService.getListUsuarios().subscribe(
       (data: Usuario[]) => {
@@ -147,17 +163,58 @@ export class OrdersComponent implements OnInit {
   }
   
   loadOrders(): void {
+    console.log(this.rut_usuario)
+
+    if(this.rol_id == 2){
+
+      this.queryService.getOrdersByUsuario(this.rut_usuario).subscribe(
+        (data: newOrder[]) => {
+          this.newOrders = data;
+
+          this.filteredOrders = this.newOrders; // Inicializar filteredOrders
+          this.sortOrders(this.newOrders);
+          console.log(this.newOrders.map(newOrder => newOrder.EstadoOT.nom_estado_ot));
+
+          
+        },
+        (error) => {
+          console.error('Error fetching orders', error);
+        }
+      );
+
+    }else{
+    
     this.orderService.getlistnewOrders().subscribe(
       (data: newOrder[]) => {
         this.newOrders = data;
         this.filteredOrders = this.newOrders; // Inicializar filteredOrders
         console.log(this.newOrders.map(newOrder => newOrder.EstadoOT.nom_estado_ot));
+        this.sortOrders(this.newOrders);
+
       },
       (error) => {
         console.error('Error fetching orders', error);
       }
     );
   }
+}
+
+sortOrders(newOrders: any[]): any[] {
+  console.log("hola")
+  console.log(newOrders);
+
+  return newOrders.sort((a, b) => {
+    // Primero, las órdenes cuyo isview es true
+    if (a.VistaSolicitud.isview && !b.VistaSolicitud.isview) {
+      return -1;
+    }
+    if (!a.VistaSolicitud.isview && b.VistaSolicitud.isview) {
+      return 1;
+    }
+    return 0;  // Si ambos tienen el mismo valor en isview, no cambiamos el orden
+  });
+}
+
 
   filterOrders() {
     this.filteredOrders = this.newOrders
@@ -167,7 +224,11 @@ export class OrdersComponent implements OnInit {
       .filter(newOrder => !this.searchRutCliente || newOrder.rut_cliente.toString().toLowerCase().includes(this.searchRutCliente.toLowerCase()))
       .filter(newOrder => !this.selectedDate || new Date(newOrder.fec_entrega).toDateString() === this.selectedDate?.toDateString())
       .filter(newOrder => !this.searchEquipo || newOrder.Equipo.mod_equipo.toString().toLowerCase().includes(this.searchEquipo.toString().toLowerCase()))
+      .filter(newOrder => !this.searchUsuario || newOrder.rut_usuario.toString().toLowerCase().includes(this.searchUsuario.toLowerCase()))
       .filter(newOrder => this.selectedUsuario === 'todos' || newOrder.Usuario.nom_usu.toLowerCase() === this.selectedUsuario.toLowerCase())// Filtro de usuario
+
+      this.filteredOrders = this.sortOrders(this.filteredOrders);
+
   }
 
   filterUsers() {

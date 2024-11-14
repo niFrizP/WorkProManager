@@ -115,12 +115,24 @@
   
             <div>
               <label for="marcas">Selecciona una marca:</label>
-              <select id="id_marca" title="Selecciona una marca" (change)="onMarcaChange($event)">
+              <select id="id_marca" title="Selecciona una marca" formControlName="id_marca" (change)="onMarcaChange($event)">
                 <option value="">Seleccione una marca</option> <!-- Opción por defecto -->
                 
                 <!-- Iteramos sobre la lista de marcas obtenidas y cargadas en el componente -->
                 <option *ngFor="let marca of marcas" [value]="marca.id_marca">
                   {{ marca.nom_marca }} <!-- Mostramos el nombre de la marca -->
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label for="tipos">Selecciona el tipo de equipo:</label>
+              <select id="id_tipo" title="Selecciona el tipo de equipo" formControlName="id_tipo" (change)="onTipoChange($event)">
+                <option value="">Seleccione el tipo de equipo</option> <!-- Opción por defecto -->
+                
+                <!-- Iteramos sobre la lista de marcas obtenidas y cargadas en el componente -->
+                <option *ngFor="let tipo of tipos" [value]="tipo.id_tipo">
+                  {{ tipo.nom_tipo }} <!-- Mostramos el nombre de la marca -->
                 </option>
               </select>
             </div>

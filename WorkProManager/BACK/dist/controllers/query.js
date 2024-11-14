@@ -12,19 +12,186 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersBy = exports.getOrdersByMonthAndYear = exports.getOrdersFromLast7DaysExcludingWeekends = exports.getOrdersByYear = exports.getOrdersByFecha = exports.getOrdersEstadoSum = exports.getOrdersCosto = exports.getOrdersByUsuario = exports.countOrdersByDate = exports.getOrdersByEstado = void 0;
+exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersBy = exports.getOrdersByMonthAndYear = exports.getOrdersFromLast7DaysExcludingWeekends = exports.getOrdersByYear = exports.getOrdersByFecha = exports.getOrdersEstadoSum = exports.getOrdersCosto = exports.getOrdersByUsuario = exports.countOrdersByDate = exports.getOrdersByEstadoEliminadaByUser = exports.getOrdersByEstadoByUser = exports.getOrdersByEstadoTotalByUser = exports.getOrdersByEstadoEliminada = exports.getOrdersByEstadoTotal = exports.getOrdersByEstado = exports.getOrdersByEstadoTotalEnTiempo = exports.getOrdersByEstadoEnTiempo = exports.getOrdersByEstadoByUser_5 = exports.getOrdersByEstadoByUser_4 = exports.getOrdersByEstadoByUser_3 = exports.getOrdersByEstadoByUser_2 = exports.getOrdersByEstadoByUser_1 = void 0;
 const orders_1 = __importDefault(require("../models/orders"));
 const equipo_1 = __importDefault(require("../models/equipo"));
 const cliente_1 = __importDefault(require("../models/cliente"));
 const usuario_1 = __importDefault(require("../models/usuario"));
 const servicio_1 = __importDefault(require("../models/servicio"));
 const estado_ot_1 = __importDefault(require("../models/estado_ot"));
+const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
-const getOrdersByEstado = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getOrdersByEstadoByUser_1 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ordersCount = yield orders_1.default.findAll({
-            attributes: ['id_estado', [connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número de órdenes por estado
-            group: ['id_estado'], // Agrupar por el campo 'estado'
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.in]: [1], // Filtrar donde el estado no sea 5 ni 6
+                } }, ({
+                fec_entrega: {
+                    [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
+                },
+                rut_usuario: {
+                    [sequelize_1.Op.eq]: req.body.rut_usuario
+                }
+            })),
+        });
+        res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+});
+exports.getOrdersByEstadoByUser_1 = getOrdersByEstadoByUser_1;
+const getOrdersByEstadoByUser_2 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.in]: [2], // Filtrar donde el estado no sea 5 ni 6
+                } }, ({
+                fec_entrega: {
+                    [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
+                },
+                rut_usuario: {
+                    [sequelize_1.Op.eq]: req.body.rut_usuario
+                }
+            })),
+        });
+        res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+});
+exports.getOrdersByEstadoByUser_2 = getOrdersByEstadoByUser_2;
+const getOrdersByEstadoByUser_3 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.in]: [3], // Filtrar donde el estado no sea 5 ni 6
+                } }, ({
+                fec_entrega: {
+                    [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
+                },
+                rut_usuario: {
+                    [sequelize_1.Op.eq]: req.body.rut_usuario
+                }
+            })),
+        });
+        res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+});
+exports.getOrdersByEstadoByUser_3 = getOrdersByEstadoByUser_3;
+const getOrdersByEstadoByUser_4 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.in]: [4], // Filtrar donde el estado no sea 5 ni 6
+                } }, ({
+                fec_entrega: {
+                    [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
+                },
+                rut_usuario: {
+                    [sequelize_1.Op.eq]: req.body.rut_usuario
+                }
+            })),
+        });
+        res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+});
+exports.getOrdersByEstadoByUser_4 = getOrdersByEstadoByUser_4;
+const getOrdersByEstadoByUser_5 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.in]: [5], // Filtrar donde el estado no sea 5 ni 6
+                } }, ({
+                fec_entrega: {
+                    [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
+                },
+                rut_usuario: {
+                    [sequelize_1.Op.eq]: req.body.rut_usuario
+                }
+            })),
+        });
+        res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+});
+exports.getOrdersByEstadoByUser_5 = getOrdersByEstadoByUser_5;
+const getOrdersByEstadoEnTiempo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { startDate, endDate } = req.body;
+    try {
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
+                } }, (startDate && endDate && {
+                fec_entrega: {
+                    [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
+                    [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
+                },
+            })),
+        });
+        res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+});
+exports.getOrdersByEstadoEnTiempo = getOrdersByEstadoEnTiempo;
+const getOrdersByEstadoTotalEnTiempo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { startDate, endDate } = req.body;
+    try {
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.notIn]: [6], // Filtrar donde el estado no sea 6
+                } }, (startDate && endDate && {
+                fec_entrega: {
+                    [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
+                    [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
+                },
+            })),
+        });
+        res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+});
+exports.getOrdersByEstadoTotalEnTiempo = getOrdersByEstadoTotalEnTiempo;
+const getOrdersByEstado = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { startDate, endDate } = req.body;
+    try {
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
+                } }, (startDate && endDate && {
+                fec_entrega: {
+                    [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
+                },
+            })),
         });
         res.json(ordersCount);
     }
@@ -34,6 +201,120 @@ const getOrdersByEstado = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.getOrdersByEstado = getOrdersByEstado;
+const getOrdersByEstadoTotal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { startDate, endDate } = req.body;
+    try {
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.notIn]: [6], // Filtrar donde el estado no sea 6
+                } }, (startDate && endDate && {
+                fec_entrega: {
+                    [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
+                },
+            })),
+        });
+        res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+});
+exports.getOrdersByEstadoTotal = getOrdersByEstadoTotal;
+const getOrdersByEstadoEliminada = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { startDate, endDate } = req.body;
+    try {
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.in]: [6], // Filtrar donde el estado no sea 6
+                } }, (startDate && endDate && {
+                fec_entrega: {
+                    [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
+                },
+            })),
+        });
+        res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+});
+exports.getOrdersByEstadoEliminada = getOrdersByEstadoEliminada;
+const getOrdersByEstadoTotalByUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { startDate, endDate } = req.body;
+    try {
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.notIn]: [6], // Filtrar donde el estado no sea 6
+                } }, (startDate && endDate && {
+                fec_entrega: {
+                    [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
+                },
+                rut_usuario: {
+                    [sequelize_1.Op.eq]: req.body.rut_usuario
+                }
+            })),
+        });
+        res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+});
+exports.getOrdersByEstadoTotalByUser = getOrdersByEstadoTotalByUser;
+const getOrdersByEstadoByUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { startDate, endDate } = req.body;
+    try {
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
+                } }, (startDate && endDate && {
+                fec_entrega: {
+                    [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
+                },
+                rut_usuario: {
+                    [sequelize_1.Op.eq]: req.body.rut_usuario
+                }
+            })),
+        });
+        res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+});
+exports.getOrdersByEstadoByUser = getOrdersByEstadoByUser;
+const getOrdersByEstadoEliminadaByUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { startDate, endDate } = req.body;
+    try {
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
+            where: Object.assign({ id_estado_ot: {
+                    [sequelize_1.Op.in]: [6], // Filtrar donde el estado no sea 6
+                } }, (startDate && endDate && {
+                fec_entrega: {
+                    [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
+                },
+                rut_usuario: {
+                    [sequelize_1.Op.eq]: req.body.rut_usuario
+                }
+            })),
+        });
+        res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+});
+exports.getOrdersByEstadoEliminadaByUser = getOrdersByEstadoEliminadaByUser;
 const countOrdersByDate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const count = yield orders_1.default.findAll({
@@ -80,12 +361,12 @@ const getOrdersEstadoSum = (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [
-                'id_estado',
-                [connection_1.default.fn('COUNT', connection_1.default.col('costo')), 'total_estado'] // Sumar el valor de id_estado por usuario
+                'id_estado_ot',
+                [connection_1.default.fn('COUNT', connection_1.default.col('costo')), 'total_estado'] // Sumar el valor de id_estado_ot por usuario
             ],
-            group: ['id_estado'], // Agrupar por usuario
+            group: ['id_estado_ot'], // Agrupar por usuario
             where: {
-                id_estado: 3
+                id_estado_ot: 3
             }
         });
         res.json(ordersCount);
@@ -237,7 +518,7 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.deleteOrder = deleteOrder;
 const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { fecha, costo, descripcion, rut_cliente, rut_usuario, id_serv, num_equipo, id_estado } = req.body;
+    const { fecha, costo, descripcion, rut_cliente, rut_usuario, id_serv, num_equipo, id_estado_ot } = req.body;
     try {
         const newOrder = yield orders_1.default.create({
             fecha,
@@ -247,7 +528,7 @@ const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             rut_usuario, // Incluye rut_usuario
             id_serv, // Incluye id_serv
             num_equipo, // Incluye num_equipo
-            id_estado
+            id_estado_ot
         });
         res.json({
             msg: 'La orden fue agregada con éxito!',

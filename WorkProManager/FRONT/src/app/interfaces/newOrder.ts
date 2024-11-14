@@ -24,7 +24,11 @@ export interface newOrder {
   },
   EstadoOT: {
       nom_estado_ot: string
-      }
+      },
+      VistaSolicitud: {
+            id_ot: number;
+            isview: boolean;
+        }
 }
 
 export interface orderEstado {

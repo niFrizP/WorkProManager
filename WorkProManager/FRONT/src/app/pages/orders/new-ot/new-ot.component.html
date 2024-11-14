@@ -1,4 +1,4 @@
-<div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
+<div class="flex-1 justify-center px-72 py-6">
   <div class="contenedor">
     <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
       <h3 class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</h3>
@@ -115,8 +115,20 @@
           </div>
 
           <div>
+            <label for="tipos">Selecciona el tipo de equipo:</label>
+            <select id="id_tipo" title="Selecciona el tipo de equipo" formControlName="id_tipo" (change)="onTipoChange($event)">
+              <option value="">Seleccione el tipo de equipo</option> <!-- Opción por defecto -->
+              
+              <!-- Iteramos sobre la lista de marcas obtenidas y cargadas en el componente -->
+              <option *ngFor="let tipo of tipos" [value]="tipo.id_tipo">
+                {{ tipo.nom_tipo }} <!-- Mostramos el nombre de la marca -->
+              </option>
+            </select>
+          </div>
+
+          <div>
             <label for="marcas">Selecciona una marca:</label>
-            <select id="id_marca" title="Selecciona una marca" (change)="onMarcaChange($event)">
+            <select id="id_marca" title="Selecciona una marca" formControlName="id_marca" (change)="onMarcaChange($event)">
               <option value="">Seleccione una marca</option> <!-- Opción por defecto -->
               
               <!-- Iteramos sobre la lista de marcas obtenidas y cargadas en el componente -->
@@ -205,6 +217,22 @@
         </div>
           
       </fieldset>
+
+      <fieldset>
+
+
+        <div>
+            <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+            <textarea
+              id="descripcion"
+              formControlName="desc_sol"
+              rows="4"
+              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+              placeholder="Añade una descripción detallada de la Orden de Trabajo..."
+            ></textarea>
+          </div>
+        
+    </fieldset>
       
 
       <!-- Botón para enviar el formulario -->

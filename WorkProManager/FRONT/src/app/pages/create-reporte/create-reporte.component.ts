@@ -20,6 +20,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { DetalleOTService } from '../../services/detalle_ot.service';
 import { DetalleOT } from '../../interfaces/detalle_ot';
+import { SolicitudService } from '../../services/solicitud.service';
+import { Solicitud } from '../../interfaces/solicitud';
 import { ModalComponent } from '../../components/modal/modal.component';
 
 
@@ -73,6 +75,7 @@ export class CreateReportComponent implements OnInit {
   filteredUsers: Usuario[] = [];
   filteredServicios: Servicio[] = [];
   page = 1;
+  solicitudes:Solicitud[] = [];
   itemsPerPage = 10;
 
   years = [2024, 2023, 2022]; // Asegúrate de rellenar con los años disponibles
@@ -87,7 +90,8 @@ export class CreateReportComponent implements OnInit {
     private equipoService: EquipoService,
     private clienteService: ClienteService,
     private detalleOTService: DetalleOTService,
-    private servicioService: ServicioService
+    private servicioService: ServicioService,
+    private solicitudService: SolicitudService
   ) {
 
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
@@ -95,15 +99,19 @@ export class CreateReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-        this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
 
+        this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
+        this.updateSolicitudOnLoad();
+
+
+        
     console.log(this.id_ot);
     
     this.loadDetalles(this.id_ot);
     this.loadUsers();
     this.loadServicios();
+    
 
-   
   }
 
   
@@ -116,6 +124,29 @@ export class CreateReportComponent implements OnInit {
     console.log('Abriendo modal con id_ot:', this.id_ot);  // Verifica que el id_ot se pasa al abrir el modal
 
   }
+
+  updateSolicitudOnLoad() {
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
+    this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
+      this.solicitudes = data.reverse();
+      console.log(this.solicitudes);
+
+   this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, true).subscribe({
+      next: () => {
+        console.log('Solicitud updated successfully');
+        console.log(this.solicitudes[0].id_sol);
+      },
+    });   
+
+    this.solicitudService.updateSolicitudByFecha(this.solicitudes[0].id_sol!, new Date).subscribe({
+      next: () => {
+        console.log('Solicitud updated successfully');
+      },
+    });   
+    
+
+  })
+}
 
   closeModal() {
     this.isModalOpen = false;

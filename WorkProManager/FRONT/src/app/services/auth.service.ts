@@ -113,6 +113,11 @@ export class AuthService {
     return this.userId;
   }
 
+  getUserIdObs(): Observable<number> {
+    console.log('Usuario:', this.userId);
+    return of(this.userId);
+  }
+
   getRolIdLocal(): number | null {
     if (typeof window !== 'undefined') {
       const role = localStorage.getItem('userRole');

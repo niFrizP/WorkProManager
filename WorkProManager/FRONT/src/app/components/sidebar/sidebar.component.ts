@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CookieManagementService } from '../../services/cookie.service';
+import { OrderService } from '../../services/order.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -14,23 +15,36 @@ import { CookieManagementService } from '../../services/cookie.service';
 export class SidebarComponent implements OnInit {
   sidebarOpen = false;
   resources: any[] = [];
+  array: any[] = [];
+  contar: number = 0;
 
-
-
-  constructor(public authService: AuthService, public cookieService: CookieManagementService) {
+  count: number = 0;
+  constructor(public authService: AuthService, public cookieService: CookieManagementService , public orderService: OrderService) {
     this.initializeResources();
   }
 
   ngOnInit(): void {
     console.log('Sidebar Component Initialized');
 
+    this.contarNotificaciones()
+
     this.initializeResources();
 
   }
 
+  contarNotificaciones() {
+   this.orderService.countOrderNotifications().subscribe((data) => {
+      this.contar = data.count;
+      console.log('Conteo de notificaciones:', this.contar);
+    }); 
+    
+  }
+  
+
   initializeResources() {
     const userRole = this.authService.getRolIdLocal() // Obtén el rol del usuario actual
     console.log('User Role:', userRole); // Verifica el rol del usuario
+
 
     // Define los recursos con roles permitidos
     this.resources = [

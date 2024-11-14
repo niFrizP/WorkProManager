@@ -14,6 +14,7 @@ import { Equipo } from '../../interfaces/equipo';
 import { Cliente } from '../../interfaces/cliente';
 import { DetalleOT } from '../../interfaces/detalle_ot';
 import { newOrder } from '../../interfaces/newOrder';
+import { Solicitud } from '../../interfaces/solicitud';
 import { orderEstado } from '../../interfaces/newOrder';
 
 // Services
@@ -23,6 +24,7 @@ import { UsuarioService } from '../../services/usuario.service';
 import { MarcaService } from '../../services/marca.service';
 import { ClienteService } from '../../services/cliente.service';
 import { EquipoService } from '../../services/equipo.service';
+import { SolicitudService } from '../../services/solicitud.service';
 import { AuthService } from '../../services/auth.service';
 
 // Components
@@ -61,6 +63,7 @@ export class DetalleComponent implements OnInit {
   newDetalleOTId: number | null = null;
   d_estado: number = 0;
   id_ot: number ;
+  solicitudes : Solicitud[] = [];
   id_serv: number;
   nuevoServicio: string = ''; // Variable para almacenar el nuevo servicio
   operacion: string = 'Agregar ';
@@ -88,6 +91,7 @@ export class DetalleComponent implements OnInit {
     private marcaService:MarcaService,
     private equipoService:EquipoService,
     private clienteService:ClienteService,
+    private solicitudService:SolicitudService,
     public authService: AuthService
     
   ) {
@@ -402,9 +406,48 @@ updateOrder(): Promise<void> {
         reject();
       }
     );
+
+    this.updateSolicitudOnLoad(this.id_ot)
     
   });
 }
+
+updateSolicitudOnLoad(id_ot: number): void {
+
+  this.solicitudService.getSolByOt(id_ot).subscribe((data: Solicitud[]) => {
+    this.solicitudes = data.reverse();
+    console.log(this.solicitudes);
+    
+
+ this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, true).subscribe({
+    next: () => {
+      console.log('Solicitud updated successfully');
+    },
+  });   
+
+
+  this.solicitudService.updateSolicitudByFecha(this.solicitudes[0].id_sol!, new Date).subscribe({
+    next: () => {
+      console.log('Solicitud updated successfully');
+    },
+  });   
+  
+  this.solicitudService.updateSolicitudByFechaTermino(this.solicitudes[1].id_sol!, new Date).subscribe({
+    next: () => {
+      console.log('Solicitud updated successfully');
+      console.log(this.solicitudes[1].id_sol);
+    },
+    error: (error) => {
+      console.error('Error al cargar los detalles:', error);
+      console.log(this.solicitudes[1].id_sol);
+
+    }
+  });  
+
+})
+
+}
+
 
 divisionCount(): number {
   this.division = this.datatotal / this.datatotal2 * 100;

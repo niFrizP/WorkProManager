@@ -1,14 +1,35 @@
 // WorkProManager/BACK/src/routes/order.ts
 import { Router } from 'express';
-import {  getOrder,getOrdersCosto, getOrdersEstadoSum, countOrdersByDate, getOrdersByEstado, getOrdersByYear ,getOrdersFromLast7DaysExcludingWeekends ,getOrdersByMonthAndYear ,getOrdersByUsuario, postOrder, updateOrder, deleteOrder, getOrdersByFecha } from '../controllers/query';
-import { Sequelize } from 'sequelize';
+import {  getOrder,getOrdersCosto,getOrdersByEstadoByUser_1,getOrdersByEstadoByUser_2,getOrdersByEstadoByUser_3,getOrdersByEstadoByUser_4 ,getOrdersEstadoSum, getOrdersByEstadoTotalEnTiempo, getOrdersByEstadoEliminadaByUser,getOrdersByEstadoEnTiempo, getOrdersByEstadoTotalByUser, getOrdersByEstadoByUser, countOrdersByDate,getOrdersByEstadoEliminada, getOrdersByEstado, getOrdersByYear ,getOrdersFromLast7DaysExcludingWeekends ,getOrdersByMonthAndYear ,getOrdersByEstadoByUser_5,getOrdersByUsuario, postOrder, updateOrder, deleteOrder, getOrdersByFecha, getOrdersByEstadoTotal } from '../controllers/query';
+import {  getOrdersByUsuarioOrder} from '../controllers/order';
 import sequelize from '../db/connection';
 import db from '../db/connection';
 import Order from '../models/orders';
 
 const router = Router();
 
-router.get('/', getOrdersByEstado); // Ruta para obtener las órdenes con joins
+router.post('/getorderbyid', getOrdersByUsuarioOrder); // Ruta para obtener las órdenes con joins
+
+router.post('/getUser1', getOrdersByEstadoByUser_1)
+
+router.post('/getUser2', getOrdersByEstadoByUser_2)
+
+router.post('/getUser3', getOrdersByEstadoByUser_3)
+
+router.post('/getUser4', getOrdersByEstadoByUser_4)
+
+router.post('/getUser5', getOrdersByEstadoByUser_5)
+
+router.post('/orderValidasEnTiempo', getOrdersByEstadoEnTiempo)
+router.post('/orderTotalValidasEnTiempo', getOrdersByEstadoTotalEnTiempo); // Ruta para obtener las órdenes con joins
+
+
+router.post('/', getOrdersByEstadoTotal); // Ruta para obtener las órdenes con joins
+router.post('/orderActivas', getOrdersByEstado); // Ruta para obtener las órdenes con joins
+router.post('/orderEliminadas', getOrdersByEstadoEliminada); // Ruta para obtener las órdenes con joins
+router.post('/orderTotalByUsuario', getOrdersByEstadoTotalByUser); // Ruta para obtener las órdenes con joins
+router.post('/orderEliminadaByUsuario', getOrdersByEstadoEliminadaByUser); // Ruta para obtener las órdenes con joins
+router.post('/orderByUsuario', getOrdersByEstadoByUser); // Ruta para obtener las órdenes con joins
 router.get('/usuario', getOrdersByUsuario); // Ruta para obtener las órdenes con joins
 router.get('/costo', getOrdersEstadoSum); // Ruta para obtener las órdenes con joins
 router.get('/dia', countOrdersByDate); // Ruta para obtener las órdenes con joins

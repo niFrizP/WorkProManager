@@ -70,3 +70,49 @@ tbody tr:nth-child(even) {
 tbody tr:hover {
   background-color: #e6f7ff; /* Color al pasar el mouse */
 }
+
+/* Estilos básicos para el modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+}
+
+.modal-actions {
+  margin-top: 20px;
+}
+
+button {
+  margin: 5px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #f0f0f0;
+}
+
+/* En tu archivo CSS o en el archivo de estilos global */
+.bg-red-500 {
+  background-color: #ff0000; /* Fondo rojo */
+}
+
+.text-white {
+  color: #ffffff; /* Texto blanco */
+}

@@ -222,7 +222,12 @@ export class CotizacionComponent {
         const solicitudData: Solicitud = {
           id_ot: this.newOrderId!,
           desc_sol: this.form.get('desc_sol')?.value,
-          id_estado_ot: this.form.get('id_estado')?.value,};
+          id_estado_ot: this.form.get('id_estado')?.value,
+          isView: false,
+          fecha_emision: new Date(),
+          
+
+        };
         
         console.log('Solicitud data:')
         console.log(JSON.stringify(solicitudData, null, 1));
