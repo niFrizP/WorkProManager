@@ -13,8 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateUsuario = exports.postUsuario = exports.deleteUsuario = exports.getUsuario = exports.getUsuarios = void 0;
-const usuario_1 = __importDefault(require("../models/usuario"));
+const usuario_1 = __importDefault(require("../models/usuario")); // Asegúrate de tener el modelo de Usuario importado
 const autenticacion_1 = require("../middleware/autenticacion");
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const secretKey = process.env.SECRET_KEY;
 const getUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const decoded = yield (0, autenticacion_1.verificarToken)(req);
@@ -24,12 +26,18 @@ const getUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         if (!(0, autenticacion_1.esAdmin)(decoded)) {
             return res.status(403).json({ msg: "No tienes permisos para realizar esta acción" });
         }
-        const listUsuarios = yield usuario_1.default.findAll();
-        res.json(listUsuarios);
+        const usuarios = yield usuario_1.default.findAll();
+        res.json({
+            error: false,
+            data: usuarios
+        });
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json({ msg: "Error al obtener usuarios" });
+        console.log('Error en getUsuarios', error);
+        res.status(500).json({
+            error: true,
+            msg: "Error al obtener usuarios"
+        });
     }
 });
 exports.getUsuarios = getUsuarios;
@@ -76,7 +84,7 @@ exports.deleteUsuario = deleteUsuario;
 const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { rut_usuario, d_veri_usu, nom_usu, ap_usu, email_usu, password, cel_usu, id_rol } = req.body; // Extrae los datos relevantes
     try {
-        const hashedPassword = yield bcrypt.hash(password, 10); // Encriptar la contraseña
+        const hashedPassword = yield bcrypt_1.default.hash(password, 10); // Encriptar la contraseña
         // Crear el nuevo usuario sin especificar `id_usuario`
         // Crear el nuevo usuario sin especificar `rut_usuario`
         const newUsuario = yield usuario_1.default.create({
