@@ -11,18 +11,9 @@ import rateLimit from 'express-rate-limit';
 
 const router = Router();
 
-// Limitador de peticiones
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 100, // 100 peticiones
-    message: 'Has excedido el número de peticiones permitidas, intente más tarde',
-});
 
-// Ruta de verificación de token
-router.get('/verify', limiter,verificarTokenn, (req: Request, res: Response) => {
-    // Responde solo con el `rut_usuario`
-    res.json({ rut_usuario: (req as any).rut_usuario });
-});
+
+
 
 router.post('/', async (req, res) => {
     const response = await login(req, res);
