@@ -19,6 +19,7 @@ import { AuthRolGuard } from './auth-rol.guard';
 import { AuthGuard } from './auth.guard';
 import { CanActivate } from '@angular/router';
 import { AuthService } from './services/auth.service';
+
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' }, // Redirige a 'home' al inicio
   { path: 'cotizacion', component: CotizacionComponent, canActivate: [AuthRolGuard],  data: { requiredRoles: [1,3] } }, // Ruta a 'cotizacion'
