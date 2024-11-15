@@ -22,6 +22,8 @@ import { OrdereliminadaService } from '../../services/ordereliminada.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { AuthService } from '../../services/auth.service';
 import { QueryService } from '../../services/query';
+import { PdfGeneratorComponent } from '../pdf-generator/pdf-generator.component';
+import { PdfGeneratorService } from '../../services/pdf-generator.service';
 
 @Component({
   selector: 'app-orders',
@@ -118,7 +120,8 @@ export class OrdersComponent implements OnInit {
     private clienteService: ClienteService,
     private detalleOTService: DetalleOTService,
     private servicioService: ServicioService,
-    public authService: AuthService
+    public authService: AuthService,
+    private pdfGeneratorService: PdfGeneratorService
   ) {}
 
   ngOnInit(): void {
@@ -250,7 +253,7 @@ sortOrders(newOrders: any[]): any[] {
 
   filterOrders() {
     this.filteredOrders = this.newOrders
-      .filter(newOrder => this.selectedStatus === 'todas' || newOrder.EstadoOT.nom_estado_ot.toLowerCase() === this.selectedStatus)
+      .filter(newOrder => this.selectedStatus === 'todas' || newOrder.EstadoOT.nom_estado_ot.toLowerCase() === this.selectedStatus.toLowerCase())
       .filter(newOrder => this.selectedMonth === 0 || new Date(newOrder.fec_entrega).getMonth() + 1 === this.selectedMonth)
       .filter(newOrder => this.selectedYear === 0 || new Date(newOrder.fec_entrega).getFullYear() === this.selectedYear)
       .filter(newOrder => !this.searchRutCliente || newOrder.rut_cliente.toString().toLowerCase().includes(this.searchRutCliente.toLowerCase()))
@@ -328,10 +331,21 @@ sortOrders(newOrders: any[]): any[] {
       );
     }
   }
-  
 
+  generatePDF(order: newOrder): void {
+    const fileName = `orden_de_trabajo_${order.id_ot}.pdf`;
+    const pdfContent = `
+      <h1>Orden de Trabajo</h1>
+      <p><strong>ID:</strong> ${order.id_ot}</p>
+      <p><strong>Descripción:</strong> ${order.descripcion}</p>
+      <p><strong>Estado:</strong> ${order.EstadoOT.nom_estado_ot}</p>
+      <p><strong>Cliente:</strong> ${order.rut_cliente}</p>
+      <p><strong>Fecha de entrega:</strong> ${order.fec_entrega}</p>
+      <p><strong>Equipo:</strong> ${order.Equipo.mod_equipo}</p>
+    `;
   
-  
+    this.pdfGeneratorService.generatePDFContent(pdfContent, fileName);
+  }
 
   onPageChange(page: number): void {
     this.page = page;

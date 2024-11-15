@@ -116,8 +116,10 @@
               type="text"
               id="mod_equipo"
               formControlName="mod_equipo"
+              placeholder="Ingrese modelo del equipo"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
+            <div *ngIf="isFieldInvalid('mod_equipo')" class="text-red-500 text-sm">Ingrese modelo del equipo</div>
           </div>
 
           <div>
