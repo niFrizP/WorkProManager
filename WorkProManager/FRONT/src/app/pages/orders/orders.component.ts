@@ -20,6 +20,7 @@ import { Servicio } from '../../interfaces/servicio';
 import { Equipo } from '../../interfaces/equipo';
 import { OrdereliminadaService } from '../../services/ordereliminada.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { PdfGeneratorService } from '../../services/pdf-generator.service';
 
 
 @Component({
@@ -112,7 +113,7 @@ export class OrdersComponent implements OnInit {
     private equipoService: EquipoService,
     private clienteService: ClienteService,
     private detalleOTService: DetalleOTService,
-    private servicioService: ServicioService
+    private servicioService: ServicioService,
   ) {}
 
   ngOnInit(): void {
@@ -260,12 +261,6 @@ export class OrdersComponent implements OnInit {
       );
     }
   }
-
-
-
-     
-
-  
   
 
   

@@ -69,4 +69,11 @@ export class HeaderComponent implements OnInit {
 
     return breadcrumbs;
   }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login'])
+  }
+  
+
 }

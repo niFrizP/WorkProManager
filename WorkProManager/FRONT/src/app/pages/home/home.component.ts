@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { newOrder } from '../../interfaces/newOrder';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { PdfGeneratorService } from '../../services/pdf-generator.service';
 
 
 @Component({
@@ -18,7 +19,7 @@ export class HomeComponent implements OnInit {
   ordersByYear: newOrder[] = [];
   ordersByDay: newOrder[] = [];
   ordersByEstadoSum: newOrder[] = [];
-  constructor(private authService:AuthService, private router:Router) {}
+  constructor(private authService:AuthService, private router:Router, private pdfGeneratorService: PdfGeneratorService) {}
 
   ngOnInit(): void {
 
@@ -38,6 +39,9 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/login'])
   }
   
+  generarPDF(){
+    this.pdfGeneratorService.generatePDF('pdf-content', 'ordenes_de_trabajo.pdf');
+  }
 
 
 
