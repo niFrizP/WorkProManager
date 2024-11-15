@@ -25,6 +25,8 @@ import { EstadoOTService } from '../../services/estado_ot.service';
 import { AuthService } from '../../services/auth.service';
 import { SolicitudService } from '../../services/solicitud.service';
 import { Solicitud } from '../../interfaces/solicitud';
+import { trigger } from '@angular/animations';
+import { animate, state, style, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-reportes',
@@ -60,9 +62,6 @@ export class ReportesComponent implements OnInit {
     filtroEquipo: false
   };
 
-  toggleMenu(menu: string): void{
-    this.menuAbierto[menu] = !this.menuAbierto[menu];
-  }
 
   numericError: string = '';  // Variable para almacenar el mensaje de error
   isSubmenuOpen: number | null = null; // Controla la visibilidad del submenú

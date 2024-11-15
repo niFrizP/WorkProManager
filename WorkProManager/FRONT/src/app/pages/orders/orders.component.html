@@ -30,17 +30,11 @@
                 </div>
               </div>
 
-        </select>
-
         <div *ngIf="authService.getUserRole() === 1 || authService.getUserRole() === 3">
           <button type="button" [routerLink]="['/orders/new-ot']" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 new-ot-butt" [routerLink]="['/orders/new-ot']">
             + Nueva
           </button>
         </div>
-
-        
-        
-        
 
         
         <div>
