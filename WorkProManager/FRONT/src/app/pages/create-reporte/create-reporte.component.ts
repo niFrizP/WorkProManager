@@ -20,6 +20,9 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { DetalleOTService } from '../../services/detalle_ot.service';
 import { DetalleOT } from '../../interfaces/detalle_ot';
+import { error } from 'node:console';
+import { ReporteService } from '../../services/reporte.service';
+import { response } from 'express';
 import { SolicitudService } from '../../services/solicitud.service';
 import { Solicitud } from '../../interfaces/solicitud';
 import { ModalComponent } from '../../components/modal/modal.component';
@@ -33,6 +36,7 @@ import { ModalComponent } from '../../components/modal/modal.component';
   styleUrls: ['./create-reporte.component.css'],
 })
 export class CreateReportComponent implements OnInit {
+
 
   numericError: string = '';  // Variable para almacenar el mensaje de error
 
@@ -81,6 +85,14 @@ export class CreateReportComponent implements OnInit {
   years = [2024, 2023, 2022]; // Asegúrate de rellenar con los años disponibles
   isModalOpen = true;
 
+  nuevoReporte = {
+    titulo: '',
+    descripcion: '',
+    usuario: '',
+    servicio: '',
+    fecha: ''
+  }
+
 
   constructor(
     private ordereliminadaService: OrdereliminadaService,
@@ -91,6 +103,7 @@ export class CreateReportComponent implements OnInit {
     private clienteService: ClienteService,
     private detalleOTService: DetalleOTService,
     private servicioService: ServicioService,
+    private reporteService: ReporteService,
     private solicitudService: SolicitudService
   ) {
 
@@ -113,8 +126,6 @@ export class CreateReportComponent implements OnInit {
     
 
   }
-
-  
 
   openModal(event:Event) {
 
@@ -152,8 +163,6 @@ export class CreateReportComponent implements OnInit {
     this.isModalOpen = false;
   }
 
-
-
   loadUsers(): void {
     this.usuarioService.getListUsuarios().subscribe(
       (data: Usuario[]) => {
@@ -181,21 +190,13 @@ export class CreateReportComponent implements OnInit {
       (data: DetalleOT[]) => {
         this.detalleOT = data;
         this.filteredDetalles = this.detalleOT;
-      },  
+      },
+      (error) => {
+        console.error('Error fetching detalles', error);
+      }
     );
   }
 
-
-
-  filterUsers() {
-    this.filteredUsers = this.usuarios
-      .filter(usuario => this.selectedUsuario === 'todos' || usuario.nom_usu.toLowerCase() === this.selectedUsuario)
-  }
-
-  filterServicios() {
-    this.filteredServicios = this.servicios
-      .filter(servicio => this.selectedServicio === 'todos' || servicio.nom_serv.toLowerCase() === this.selectedServicio)
-  } 
 
   deleting(id_ot: number,id_serv: number): void {
 
@@ -210,16 +211,17 @@ export class CreateReportComponent implements OnInit {
       );
     
   }
-
-
- 
   
-
-  
-  
-
-  
-  
+  onSubmit(): void {
+    this.reporteService.createReporte(this.nuevoReporte).subscribe(
+      response => {
+        console.log('Reporte Creado', response);
+      },
+      error => {
+        console.error('Errror creando el reporte', error);
+      }
+    );
+  }
 
   onPageChange(page: number): void {
     this.page = page;

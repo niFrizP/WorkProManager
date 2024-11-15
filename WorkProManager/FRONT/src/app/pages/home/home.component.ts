@@ -40,15 +40,11 @@ export class HomeComponent implements OnInit {
   ordersByDay: newOrder[] = [];
   ordersByEstadoSum: newOrder[] = [];
 
-
   ordersCount1: number = 0;
   ordersCount2: number = 0;
   ordersCount3: number = 0;
   ordersCount4: number = 0;
   ordersCount5: number = 0;
-
-
-
 
   countTotalActivas: number = 0;
   countTotal: number = 0;
@@ -367,6 +363,9 @@ this.showDashboard = false; // Controla si mostrar los dashboards
     this.router.navigate(['/login']);
   }
   
+  generarPDF(){
+    this.pdfGeneratorService.generatePDF('pdf-content', 'ordenes_de_trabajo.pdf');
+  }
 
 
 

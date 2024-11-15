@@ -35,74 +35,21 @@
           <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu }} {{usuario.ap_usu}}</option>
         </select>
       </div>
-      
-      <div>
-        <label for="monthSelect" class="mr-2 font-medium">Mes</label>
-        <select #monthSelect class="p-2 border rounded">
-          <option value="0">Todos</option>
-          <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
-        </select>
 
-        <label for="yearSelect" class="ml-4 mr-2 font-medium">Año</label>
-        <select #yearSelect class="p-2 border rounded">
-          <option value="0">Todos</option>
-          <option *ngFor="let year of years">{{ year }}</option>
+      <div class="mb-4">
+        <label for="servicio" class="block font-medium">Servicio:</label>
+        <select id="servicio" class="w-full p-2 border rounded" [(ngModel)]="nuevoReporte.servicio" name="servicio" required>
+          <option value="">Seleccione un servicio</option>
+          <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">{{ servicio.nom_serv }}</option>
         </select>
       </div>
-      <form class="search-form">
-        <input
-          type="text"
-          placeholder="Buscar por RUT Cliente"
-          [(ngModel)]="searchRutCliente"
-          class="search-input"
-          name="rut_cliente"
-        />
-        <button type="submit" class="search-btn">Buscar</button>
-      </form>
 
-      <form class="search-form">
-        <input
-          type="text"
-          placeholder="Buscar equipo por número de serie"
-          [(ngModel)]="searchEquipo"
-          class="search-input"
-          name="num_equipo"
-        />
-        <button type="submit" class="search-btn">Buscar</button>
-      </form>
+      <div class="mb-4">
+        <label for="fecha" class="block font-medium">Fecha:</label>
+        <input type="date" id="fecha" class="w-full p-2 border rounded" [(ngModel)]="nuevoReporte.fecha" name="fecha" required>
+      </div>
 
-
-
-    </div>
-
+      <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Crear Reporte</button>
+    </form>
   </div>
-
-  <table class="w-full border-collapse">
-    <thead>
-      <tr>
-        <th class="border p-2">ID OT</th>
-        <th class="border p-2">ID Servicio</th>
-        <th class="border p-2">Fecha detalle</th>
-        <th class="border p-2">Descripción</th>
-        <th class="border p-2">Usuario</th>
-
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let detalleOT of filteredDetalles | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
-        <td>{{ detalleOT.id_ot }}</td>
-        <td>{{ detalleOT.id_serv }}</td>
-        <td>{{ detalleOT.fecha_detalle }}</td>
-        <td>{{ detalleOT.desc_detalle }}</td>
-        <td>{{ detalleOT.rut_usuario }}</td>
-        <td>
-          <button [routerLink]="['/reportes/createReport/', detalleOT.id_ot, detalleOT.id_serv]">✏️</button>
-          <button (click)="detalleOT.id_serv !== undefined ? deleting(detalleOT.id_ot,detalleOT.id_serv) : null">🗑️</button>        </td>
-
-
-      </tr>
-    </tbody>
-  </table>
-
-  <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
 </div>

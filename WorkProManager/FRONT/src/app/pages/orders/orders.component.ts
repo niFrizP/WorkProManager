@@ -19,8 +19,10 @@ import { Cliente } from '../../interfaces/cliente';
 import { Servicio } from '../../interfaces/servicio';
 import { Equipo } from '../../interfaces/equipo';
 import { OrdereliminadaService } from '../../services/ordereliminada.service';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 import { AuthService } from '../../services/auth.service';
 import { QueryService } from '../../services/query';
+
 @Component({
   selector: 'app-orders',
   standalone: true,
@@ -326,12 +328,6 @@ sortOrders(newOrders: any[]): any[] {
       );
     }
   }
-
-
-
-     
-
-  
   
 
   

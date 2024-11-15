@@ -6,17 +6,29 @@
       <div *ngIf="authService.getUserId() as rut">
       <p>Bienvenido, usuario con RUT: {{ rut }}</p>
     </div>
-
-      <div>
-        <label for="filter" class="mr-2 font-medium">Todas las OT</label>
-        <select #filterSelect class="p-2 border rounded" (change)="filterOrdersByStatus(filterSelect.value)" title="Filter Orders by Status">
-          <option value="todas">Todas</option>
-          <option value="pendiente">Pendiente</option>
-          <option value="en proceso">En proceso</option>
-          <option value="incompleto">incompleto</option>
-          <option value="completo">completo</option>
-          <option value="finalizado">finalizado</option>
-          <option value="rechazado">rechazado</option>
+      
+    <div class="mb-4" >
+      <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center" (click)="toggleMenu('filtrosGenerales')">
+        <span>Filtros</span>
+        <span>{{ menuAbierto['filtrosGenerales'] ? '▼' : '▶' }}</span>
+      </button>
+      <div [@slideInOut]="menuAbierto['filtrosGenerales']">
+        <div class="grid grid-cols-1 gap-4 mt-2">
+              <!-- Filtro por estado-->
+              <div class="mb-4 grid grid-cols-2 gap-4 ">
+                <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center" (click)="toggleMenu('filtroEstado')">
+                  <span>Filtrar por estado</span>
+                  <span>{{ menuAbierto['filtroEstado'] ? '▼' : '▶'}}</span>
+                </button>
+                <div [@slideInOut]="menuAbierto['filtroEstado']">
+                  <select #filterSelect class="w-full p-2 border rounded mt-2" (change)="filterOrdersByStatus(filterSelect.value)">
+                    <option value="todas">Todas</option>
+                    <option value="en solicitud">En Solicitud</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="finalizado">Finalizado</option>
+                  </select>
+                </div>
+              </div>
 
         </select>
 
