@@ -4,7 +4,12 @@ import Equipo from '../models/equipo';
 import Cliente from '../models/cliente';
 import Usuario from '../models/usuario';
 import Servicio from '../models/servicio';
+import { Model, Op, QueryTypes } from 'sequelize';
+import sequelize from '../db/connection';
+
 import EstadoOT from '../models/estado_ot';
+import Solicitud from '../models/solicitud';
+import VistaSolicitud from '../models/vistamin';
 
 
 export const getOrders = async (req: Request, res: Response) => {
@@ -30,8 +35,136 @@ export const getOrders = async (req: Request, res: Response) => {
                     model: EstadoOT,
                     attributes: ['nom_estado_ot'],
                     required: true
+                },
+                   { model: VistaSolicitud,
+                    attributes: ['isview', 'fecha_emision'],
+                    required: true
+                   },
+                
+            ],
+        });
+
+        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
+        res.json(listOrders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders',
+        });
+    }
+};
+
+export const countOrdersNotification = async (req: Request, res: Response) => {
+    try {
+        const countOrders = await Order.count({
+            include: [
+                {
+                    model: Cliente,
+                    attributes: ['nom_cli', 'ap_cli'],
+                    required: true,
+                },
+                {
+                    model: Usuario,
+                    attributes: ['nom_usu', 'ap_usu'],
+                    required: true,
+                },
+                {
+                    model: Equipo,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true,
+                },
+                {
+                    model: EstadoOT,
+                    attributes: ['nom_estado_ot'],
+                    required: true,
+                },
+                {
+                    model: VistaSolicitud,
+                    attributes: ['isview', 'fecha_emision'],
+                    required: true,
+                    where: {
+                        isview: true,
+                    },
+                },
+            ],
+        });
+
+        console.log('Número de órdenes con isview true:', countOrders);
+        res.json({ count: countOrders });
+    } catch (error) {
+        console.error('Error fetching count of orders:', error);
+        res.status(500).json({
+            msg: 'Error fetching count of orders',
+        });
+    }
+};
+
+export const getSolicitudesFromView = async (req: Request, res: Response) => {
+    try {
+        // Consultar todos los datos desde la vista
+        const solicitudesFromView = await sequelize.query('SELECT * FROM vista_solicitudes_min_fecha', {
+            type: QueryTypes.SELECT,  // Especificamos que esperamos resultados de tipo SELECT
+        });
+
+        // Enviar los resultados al cliente
+        res.json(solicitudesFromView);
+    } catch (error) {
+        console.error('Error al obtener solicitudes desde la vista:', error);
+        res.status(500).json({ message: 'Error al obtener solicitudes desde la vista', error: error.message });
+    }
+};
+
+export const createSolicitudView = async (req: Request, res: Response) => {
+    try {
+        // Consulta SQL para crear la vista
+        const createViewQuery = `
+            CREATE OR REPLACE VIEW vista_solicitudes_min_fecha AS
+            SELECT id_sol, id_ot, fecha_emision, isview
+            FROM solicitud s1
+            WHERE fecha_emision = (
+                SELECT MIN(fecha_emision)
+                FROM solicitud s2
+                WHERE s2.id_ot = s1.id_ot
+            );
+        `;
+
+        // Ejecutar la consulta para crear la vista
+        await sequelize.query(createViewQuery);
+
+        res.json({ message: 'Vista creada o actualizada correctamente' });
+    } catch (error) {
+        console.error('Error al crear la vista:', error);
+        res.status(500).json({ message: 'Error al crear la vista', error: error.message });
+    }
+};
+
+export const getOrdersByUsuarioOrder = async (req: Request, res: Response) => {
+    try {
+        const listOrders = await Order.findAll({
+            include: [
+                {
+                    model: Cliente,
+                    attributes: ['nom_cli', 'ap_cli'],
+                    required: true
+                },
+                {
+                    model: Usuario,
+                    attributes: ['nom_usu', 'ap_usu'],
+                    required: true
+                },
+                {
+                    model: Equipo,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true
+                },
+                {
+                    model: EstadoOT,
+                    attributes: ['nom_estado_ot'],
+                    required: true
                 }
-            ]
+            ], where: {
+                rut_usuario: req.body.rut_usuario
+            }
         });
 
         console.log('Consulta de órdenes:', JSON.stringify(listOrders, null, 2)); // Log de la consulta
@@ -43,8 +176,6 @@ export const getOrders = async (req: Request, res: Response) => {
         });
     }
 };
-
-
 
 export const getOrder = async (req: Request, res: Response) => {
     const { id } = req.params;

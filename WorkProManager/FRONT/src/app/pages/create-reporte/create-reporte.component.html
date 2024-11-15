@@ -1,4 +1,14 @@
 <div class="flex-3 ml-64 p-8">
+
+  
+  <p>{{id_ot}}</p>
+  <!-- home.component.html -->
+  <button (click)="openModal($event)">Abrir Modal</button>
+
+  <!-- Solo se muestra el modal si isModalOpen es true -->
+  <app-modal *ngIf="isModalOpen && id_ot !== null && id_ot !== 0" [id_ot]="id_ot" (closed)="closeModal()"></app-modal>
+
+
   <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
 
 
@@ -17,9 +27,6 @@
 
 
       <button [routerLink]="['/reportes/createReport/', id_ot, 0]">✏️</button>
-
-
-
 
       <div>
         <label for="filter" class="mr-2 font-medium">Todos los usuarios</label>

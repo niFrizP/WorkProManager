@@ -12,12 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrders = void 0;
+exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersByUsuarioOrder = exports.createSolicitudView = exports.getSolicitudesFromView = exports.countOrdersNotification = exports.getOrders = void 0;
 const orders_1 = __importDefault(require("../models/orders"));
 const equipo_1 = __importDefault(require("../models/equipo"));
 const cliente_1 = __importDefault(require("../models/cliente"));
 const usuario_1 = __importDefault(require("../models/usuario"));
+const sequelize_1 = require("sequelize");
+const connection_1 = __importDefault(require("../db/connection"));
 const estado_ot_1 = __importDefault(require("../models/estado_ot"));
+const vistamin_1 = __importDefault(require("../models/vistamin"));
 const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const listOrders = yield orders_1.default.findAll({
@@ -41,8 +44,134 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     model: estado_ot_1.default,
                     attributes: ['nom_estado_ot'],
                     required: true
+                },
+                { model: vistamin_1.default,
+                    attributes: ['isview', 'fecha_emision'],
+                    required: true
+                },
+            ],
+        });
+        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
+        res.json(listOrders);
+    }
+    catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders',
+        });
+    }
+});
+exports.getOrders = getOrders;
+const countOrdersNotification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const countOrders = yield orders_1.default.count({
+            include: [
+                {
+                    model: cliente_1.default,
+                    attributes: ['nom_cli', 'ap_cli'],
+                    required: true,
+                },
+                {
+                    model: usuario_1.default,
+                    attributes: ['nom_usu', 'ap_usu'],
+                    required: true,
+                },
+                {
+                    model: equipo_1.default,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true,
+                },
+                {
+                    model: estado_ot_1.default,
+                    attributes: ['nom_estado_ot'],
+                    required: true,
+                },
+                {
+                    model: vistamin_1.default,
+                    attributes: ['isview', 'fecha_emision'],
+                    required: true,
+                    where: {
+                        isview: true,
+                    },
+                },
+            ],
+        });
+        console.log('Número de órdenes con isview true:', countOrders);
+        res.json({ count: countOrders });
+    }
+    catch (error) {
+        console.error('Error fetching count of orders:', error);
+        res.status(500).json({
+            msg: 'Error fetching count of orders',
+        });
+    }
+});
+exports.countOrdersNotification = countOrdersNotification;
+const getSolicitudesFromView = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Consultar todos los datos desde la vista
+        const solicitudesFromView = yield connection_1.default.query('SELECT * FROM vista_solicitudes_min_fecha', {
+            type: sequelize_1.QueryTypes.SELECT, // Especificamos que esperamos resultados de tipo SELECT
+        });
+        // Enviar los resultados al cliente
+        res.json(solicitudesFromView);
+    }
+    catch (error) {
+        console.error('Error al obtener solicitudes desde la vista:', error);
+        res.status(500).json({ message: 'Error al obtener solicitudes desde la vista', error: error.message });
+    }
+});
+exports.getSolicitudesFromView = getSolicitudesFromView;
+const createSolicitudView = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Consulta SQL para crear la vista
+        const createViewQuery = `
+            CREATE OR REPLACE VIEW vista_solicitudes_min_fecha AS
+            SELECT id_sol, id_ot, fecha_emision, isview
+            FROM solicitud s1
+            WHERE fecha_emision = (
+                SELECT MIN(fecha_emision)
+                FROM solicitud s2
+                WHERE s2.id_ot = s1.id_ot
+            );
+        `;
+        // Ejecutar la consulta para crear la vista
+        yield connection_1.default.query(createViewQuery);
+        res.json({ message: 'Vista creada o actualizada correctamente' });
+    }
+    catch (error) {
+        console.error('Error al crear la vista:', error);
+        res.status(500).json({ message: 'Error al crear la vista', error: error.message });
+    }
+});
+exports.createSolicitudView = createSolicitudView;
+const getOrdersByUsuarioOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const listOrders = yield orders_1.default.findAll({
+            include: [
+                {
+                    model: cliente_1.default,
+                    attributes: ['nom_cli', 'ap_cli'],
+                    required: true
+                },
+                {
+                    model: usuario_1.default,
+                    attributes: ['nom_usu', 'ap_usu'],
+                    required: true
+                },
+                {
+                    model: equipo_1.default,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true
+                },
+                {
+                    model: estado_ot_1.default,
+                    attributes: ['nom_estado_ot'],
+                    required: true
                 }
-            ]
+            ], where: {
+                rut_usuario: req.body.rut_usuario
+            }
         });
         console.log('Consulta de órdenes:', JSON.stringify(listOrders, null, 2)); // Log de la consulta
         res.json(listOrders);
@@ -54,7 +183,7 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
 });
-exports.getOrders = getOrders;
+exports.getOrdersByUsuarioOrder = getOrdersByUsuarioOrder;
 const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {

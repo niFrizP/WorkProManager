@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
 import Solicitud from '../models/solicitud';
+import { Model } from 'sequelize';
 
 export const getSolicitudes = async (req: Request, res: Response) => {
-    const listSolicitudes = await Solicitud.findAll();
+    const listSolicitudes = await Solicitud.findAll({
+        include: [{ all: true }]
+    });
+    
     res.json(listSolicitudes);
 };
 
@@ -42,11 +46,11 @@ export const deleteSolicitud = async (req: Request, res: Response) => {
 };
 
 export const postSolicitud = async (req: Request, res: Response) => {
-    const { desc_sol, id_estado_ot, id_ot } = req.body; // Extrae el solicitud
+    const { desc_sol, id_estado_ot, id_ot, isView,fecha_emision,  fecha_vista, fecha_termino, fecha_plazo } = req.body; // Extrae el solicitud
 
     try {
         const newSolicitud = await Solicitud.create({
-            desc_sol, id_estado_ot, id_ot
+            desc_sol, id_estado_ot, id_ot, isView, fecha_vista, fecha_termino, fecha_emision, fecha_plazo
         });
 
         res.json({
@@ -84,3 +88,30 @@ export const updateSolicitud = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const getDetallesOtByOT = async (req: Request, res: Response) => {
+    const { id_ot } = req.params;
+    try {
+        const solicitud = await Solicitud.findAll({
+            where: { id_ot }
+        });
+        res.json(solicitud);
+    } catch (error) {
+        console.error('Error en solicitud:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};
+
+
+export const getDetallesOtByOTFilter = async (req: Request, res: Response) => {
+    const { id_ot } = req.params;
+    try {
+        const solicitud = await Solicitud.findAll({
+            where: { id_ot }
+        });
+        res.json(solicitud);
+    } catch (error) {
+        console.error('Error en solicitud:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+}

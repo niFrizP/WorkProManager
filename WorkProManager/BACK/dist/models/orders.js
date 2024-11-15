@@ -9,6 +9,8 @@ const usuario_1 = __importDefault(require("./usuario")); // Importa el modelo Us
 const equipo_1 = __importDefault(require("./equipo")); // Importa el modelo Equipo
 const estado_ot_1 = __importDefault(require("./estado_ot")); // Importa el modelo EstadoOT
 const connection_1 = __importDefault(require("../db/connection"));
+const solicitud_1 = __importDefault(require("./solicitud"));
+const vistamin_1 = __importDefault(require("./vistamin"));
 class Order extends sequelize_1.Model {
 }
 // Definir el modelo de 'Order'
@@ -16,7 +18,11 @@ Order.init({
     id_ot: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        references: {
+            model: 'solicitud',
+            key: 'id_ot'
+        }
     },
     fec_creacion: {
         type: sequelize_1.DataTypes.DATE
@@ -66,6 +72,10 @@ Order.init({
 // Definir las relaciones
 Order.belongsTo(cliente_1.default, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
 Order.belongsTo(usuario_1.default, { foreignKey: 'rut_usuario', targetKey: 'rut_usuario' });
+Order.belongsTo(solicitud_1.default, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.belongsTo(equipo_1.default, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
+Order.hasMany(Order, { foreignKey: 'id_ot' });
 Order.belongsTo(estado_ot_1.default, { foreignKey: 'id_estado_ot', targetKey: 'id_estado_ot' });
+Order.belongsTo(vistamin_1.default, { foreignKey: 'id_ot', targetKey: 'id_ot' });
+Order.hasMany(solicitud_1.default, { foreignKey: 'id_ot' }); // Cambiado a hasMany
 exports.default = Order;

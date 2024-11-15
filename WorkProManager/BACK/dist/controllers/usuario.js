@@ -13,44 +13,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateUsuario = exports.postUsuario = exports.deleteUsuario = exports.getUsuario = exports.getUsuarios = void 0;
-const usuario_1 = __importDefault(require("../models/usuario")); // Asegúrate de tener el modelo de Usuario importado
-const autenticacion_1 = require("../middleware/autenticacion");
+const usuario_1 = __importDefault(require("../models/usuario"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const secretKey = process.env.SECRET_KEY;
 const getUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const decoded = yield (0, autenticacion_1.verificarToken)(req);
-        if (!decoded) {
-            return res.status(401).json({ msg: "No autorizado" });
-        }
-        if (!(0, autenticacion_1.esAdmin)(decoded)) {
-            return res.status(403).json({ msg: "No tienes permisos para realizar esta acción" });
-        }
-        const usuarios = yield usuario_1.default.findAll();
-        res.json({
-            error: false,
-            data: usuarios
-        });
+        const listUsuarios = yield usuario_1.default.findAll();
+        res.json(listUsuarios);
     }
     catch (error) {
-        console.log('Error en getUsuarios', error);
-        res.status(500).json({
-            error: true,
-            msg: "Error al obtener usuarios"
-        });
+        console.log(error);
+        res.status(500).json({ msg: "Error al obtener usuarios" });
     }
 });
 exports.getUsuarios = getUsuarios;
 const getUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const decoded = yield (0, autenticacion_1.verificarToken)(req);
-        if (!decoded) {
-            return res.status(401).json({ msg: "No autorizado" });
-        }
-        if (decoded.id_usuario.toString() !== id && !(0, autenticacion_1.esAdmin)(decoded)) {
-            return res.status(403).json({ msg: "No tienes permisos para ver este usuario" });
-        }
         const usuario = yield usuario_1.default.findByPk(id);
         if (usuario) {
             res.json(usuario);
@@ -114,19 +92,18 @@ const updateUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const { body } = req;
     const { id } = req.params;
     try {
-        const decoded = yield (0, autenticacion_1.verificarToken)(req);
-        if (!decoded) {
-            return res.status(401).json({ msg: "No autorizado" });
-        }
-        if (!(0, autenticacion_1.esAdmin)(decoded)) {
-            return res.status(403).json({ msg: "No tienes permisos para eliminar usuarios" });
-        }
         const usuario = yield usuario_1.default.findByPk(id);
-        if (!usuario) {
-            return res.status(404).json({ msg: "No existe usuario con el ID ${id}" });
+        if (usuario) {
+            yield usuario.update(body);
+            res.json({ msg: "Usuario actualizado con éxito" });
         }
-        yield usuario.destroy();
-        res.json({ msg: "Usuario eliminado con éxito" });
+        else {
+            res.status(404).json({ msg: "No existe un usuario con ese ID" });
+        }
+        if (usuario) {
+            yield usuario.destroy();
+            res.json({ msg: "Usuario eliminado con éxito" });
+        }
     }
     catch (error) {
         console.log(error);

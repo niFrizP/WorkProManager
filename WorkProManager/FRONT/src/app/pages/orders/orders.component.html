@@ -1,121 +1,73 @@
 <div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
   <div class="contenedor">
     <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
-    <button type="button" [routerLink]="['/orders/new-ot']" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 new-ot-butt mb-4">
-      Nueva OT
-    </button>
+    <div class="flex justify-between items-center mb-4">
+      
+      <div *ngIf="authService.getUserId() as rut">
+      <p>Bienvenido, usuario con RUT: {{ rut }}</p>
+    </div>
 
-    <div class="mb-4">
-      <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center" (click)="toggleMenu('filtrosGenerales')">
-        <span>Filtros</span>
-        <span>{{ menuAbierto['filtrosGenerales'] ? '▼' : '▶' }}</span>
-      </button>
-      <div [@slideInOut]="menuAbierto['filtrosGenerales']">
-        <div class="grid grid-cols-1 gap-4 mt-2">
-              <!-- Filtro por estado-->
-              <div class="mb-4 grid grid-cols-2 gap-4 ">
-                <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center" (click)="toggleMenu('filtroEstado')">
-                  <span>Filtrar por estado</span>
-                  <span>{{ menuAbierto['filtroEstado'] ? '▼' : '▶'}}</span>
-                </button>
-                <div [@slideInOut]="menuAbierto['filtroEstado']">
-                  <select #filterSelect class="w-full p-2 border rounded mt-2" (change)="filterOrdersByStatus(filterSelect.value)">
-                    <option value="todas">Todas</option>
-                    <option value="en solicitud">En Solicitud</option>
-                    <option value="pendiente">Pendiente</option>
-                    <option value="finalizado">Finalizado</option>
-                  </select>
-                </div>
-              </div>
+      <div>
+        <label for="filter" class="mr-2 font-medium">Todas las OT</label>
+        <select #filterSelect class="p-2 border rounded" (change)="filterOrdersByStatus(filterSelect.value)" title="Filter Orders by Status">
+          <option value="todas">Todas</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="en proceso">En proceso</option>
+          <option value="incompleto">incompleto</option>
+          <option value="completo">completo</option>
+          <option value="finalizado">finalizado</option>
+          <option value="rechazado">rechazado</option>
 
-              <!--Filtro por usuario-->
-              <div class="mb-4 grid grid-cols-2 gap-4">
-                <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center" (click)="toggleMenu('filtroUsuario')">
-                  <span>Filtrar por Usuario</span>
-                  <span>{{ menuAbierto['filtroUsuario'] ? '▼' : '▶' }}</span>
-                </button>
-                <div [@slideInOut]="menuAbierto['filtroUsuario']">
-                  <select class="w-full p-2 border rounded mt-2" [(ngModel)]="selectedUsuario" (change)="filterOrdersByUsuario(selectedUsuario)">
-                    <option value="todos">Todos</option>
-                    <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu}} {{ usuario.ap_usu}}</option>          
-                  </select>
-                </div>
-              </div>
+        </select>
 
-              <!--Filtro por servicio-->
-              <div class="mb-4 grid grid-cols-2 gap-4">
-                <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center" (click)="toggleMenu('filtroServicio')">
-                  <span>Filtrar por Servicio</span>
-                  <span>{{ menuAbierto['filtroServicio'] ? '▼' : '▶' }}</span>
-                </button>
-                <div [@slideInOut]="menuAbierto['filtroServicio']">
-                  <select class="w-full p-2 border rounded mt-2" [(ngModel)]="selectedServicio" (change)="filterOrdersByServicio(selectedServicio)">
-                    <option value="todos">Todos</option>
-                    <option *ngFor="let servicio of servicios" [value]="servicio.nom_serv"> {{ servicio.nom_serv}}</option>
-                  </select>
-                </div>
-              </div>
-
-              <!--Filtro por fecha-->
-              <div class="mb-4 grid grid-cols-2 gap-4">
-                <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center" (click)="toggleMenu('filtroFecha')">
-                  <span>Filtrar por Fecha</span>
-                  <span>{{ menuAbierto['filtroFecha'] ? '▼' : '▶' }}</span>
-                </button>
-                <div [@slideInOut]="menuAbierto['filtroFecha']">
-                  <div class="grid grid-cols-2 gap-4 mt-2">
-                    <div>
-                      <select #monthSelect class="w-full p-2 border rounded" (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)">
-                        <option value="0">Todos los meses</option>
-                        <option *ngFor="let month of months" [value]="month.value"> {{ month.name }}</option>
-                      </select>
-                    </div>
-                    <div>
-                      <select #yearSelect class="w-full p-2 border rounded" (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)">
-                        <option value="0">Todos los años</option>
-                        <option *ngFor="let year of years"> {{ year }}</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!--Filtro por cliente-->
-              <div class="mb-4 grid grid-cols-2 gap-4">
-                <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center" (click)="toggleMenu('filtroCliente')">
-                  <span>Filtrar por Cliente</span>
-                  <span>{{ menuAbierto['filtroCliente'] ? '▼' : '▶' }}</span>
-                </button>
-                <div [@slideInOut]="menuAbierto['filtroCliente']">
-                  <form class="mt-2" (submit)="filterOrdersByRutCliente()">
-                    <input type="text" 
-                    placeholder="Buscar por Rut Cliente"
-                    [(ngModel)]="searchRutCliente"
-                    class="w-full p-2 border rounded mb-2"
-                    name="rut_cliente">
-                    <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Buscar</button>
-                  </form>
-                </div>
-              </div>
-
-              <!--Filtro por equipo-->
-              <div class="mb-4 grid grid-cols-2 gap-4">
-                <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center" (click)="toggleMenu('filtroEquipo')">
-                  <span>Filtrar por Equipo</span>
-                  <span>{{ menuAbierto['filtroEquipo'] ? '▼' : '▶' }}</span>
-                </button>
-                <div [@slideInOut]="menuAbierto['filtroEquipo']">
-                  <form class="mt-2" (submit)="filterOrdersByEquipo()">
-                    <input type="text"
-                    placeholder="Buscar equipo por número de serie"
-                    [(ngModel)]="searchEquipo"
-                    class="w-full p-2 border rounded mb-2"
-                    name="num_equipo"/>
-                    <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Buscar</button>
-                  </form>
-                </div>
-              </div>
+        <div *ngIf="authService.getUserRole() === 1 || authService.getUserRole() === 3">
+          <button type="button" [routerLink]="['/orders/new-ot']" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 new-ot-butt" [routerLink]="['/orders/new-ot']">
+            + Nueva
+          </button>
         </div>
+
+        
+        
+        
+
+        
+        <div>
+          <label for="filter" class="mr-2 font-medium">Todos los servicios</label>
+          <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedServicio" (change)="filterOrdersByServicio(selectedServicio)" title="Filter Orders by Servicio">
+            <option value="todos">Todos</option>
+            <option *ngFor="let servicio of servicios" [value]="servicio.nom_serv">{{ servicio.nom_serv }}</option>
+          </select>
+        </div>
+        
+        <div>
+          <label for="monthSelect" class="mr-2 font-medium">Mes</label>
+          <select #monthSelect class="p-2 border rounded" (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)" title="Filter Orders by Month">
+            <option value="0">Todos</option>
+            <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+          </select>
+
+          <label for="yearSelect" class="ml-4 mr-2 font-medium">Año</label>
+          <select #yearSelect class="p-2 border rounded" (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)" title="Filter Orders by Year">
+            <option value="0">Todos</option>
+            <option *ngFor="let year of years">{{ year }}</option>
+          </select>
+        </div>
+        
+
+        <form class="search-form" (submit)="filterOrdersByEquipo()">
+          <input
+            type="text"
+            placeholder="Buscar equipo por número de serie"
+            [(ngModel)]="searchEquipo"
+            (input)="filterOrdersByEquipo()"
+            class="search-input"
+            name="num_equipo"
+          />
+          <button type="submit" class="search-btn">Buscar</button>
+        </form>
+
+
+
       </div>
     </div>
 
@@ -130,10 +82,13 @@
         <th class="border p-2">Rut Cliente</th>
         <th class="border p-2">Estado</th>
         <th class="border p-2">Usuario</th>
+        <th class="border p-2">Rut Usuario</th>
+
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
+      <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+      [ngClass]="{ 'text-red-600': newOrder.VistaSolicitud.isview }">
         <td>{{ newOrder.fec_entrega }}</td>
         <td>{{ newOrder.num_equipo }}</td>
         <td>{{ newOrder.id_ot }}</td>
@@ -142,6 +97,14 @@
         <td>{{ newOrder.rut_cliente }}</td>
         <td>{{ newOrder.EstadoOT.nom_estado_ot }}</td>
         <td>{{ newOrder.Usuario.nom_usu }}</td>
+        <td>{{newOrder.rut_usuario}}</td>
+        <td>{{newOrder.VistaSolicitud.isview}}</td>
+        <span *ngIf="newOrder.VistaSolicitud.isview">
+          ⚠️ 
+        </span>
+        <span *ngIf="!newOrder.VistaSolicitud.isview">
+          ✅
+        </span>
         <td>
           <button [routerLink]="['/edit-order', newOrder.id_ot]">✏️</button>
 <button (click)="newOrder.id_ot !== undefined ? deleting(newOrder.id_ot) : null">🗑️</button>        </td>
