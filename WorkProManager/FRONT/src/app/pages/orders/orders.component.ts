@@ -27,8 +27,38 @@ import { QueryService } from '../../services/query';
   imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css'],
+  animations: [
+    trigger('slideInOut',[
+      state('true', style({
+        height: '*',
+        opacity: 1,
+        overflow: 'hidden'
+      })),
+      state('false', style({
+        height: '0',
+        opacity: 0,
+        overflow: 'hidden'
+      })),
+      transition('true <=> false', animate('300ms ease-in-out'))
+    ])
+  ],
 })
 export class OrdersComponent implements OnInit {
+
+  menuAbierto: { [key: string]: boolean } = {
+    filtrosGenerales: false,
+    filtroEstado: false,
+    filtroUsuario: false,
+    filtroServicio: false,
+    filtroFecha: false,
+    filtrosCliente: false,
+    filtroEquipo: false
+  };
+
+  toggleMenu(menu: string): void{
+    this.menuAbierto[menu] = !this.menuAbierto[menu];
+    console.log(this.menuAbierto);
+  }
 
   numericError: string = '';  // Variable para almacenar el mensaje de error
 

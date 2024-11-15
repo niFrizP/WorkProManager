@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router'; // Para la navegación
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatDatepickerModule,
     MatInputModule,
     MatNativeDateModule,
+    ReactiveFormsModule
   ],
   exports: [
     OrdersComponent, // Exporta el componente si quieres usarlo en otros módulos

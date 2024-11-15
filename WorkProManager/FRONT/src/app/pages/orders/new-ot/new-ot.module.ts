@@ -7,14 +7,17 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 
-@Component({
-
-  selector: 'app-new-ot',
-
-  templateUrl: './new-ot.component.html',
-
-  styleUrls: ['./new-ot.component.css']
-
+@NgModule({
+  declarations: [
+    
+  ],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    RouterModule,
+    NewOtComponent
+  ]
 })
 export class NewOtModule {
   serviciosSeleccionados: any;
@@ -29,8 +32,9 @@ export class NewOtModule {
 
     // Implement the logic to remove the service from the list
 
-    this.serviciosSeleccionados = this.serviciosSeleccionados.filter(s => s !== servicio);
+    this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: any) => s !== servicio);
 
   }
 
 }
+
