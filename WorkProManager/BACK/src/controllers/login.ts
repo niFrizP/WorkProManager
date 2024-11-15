@@ -41,6 +41,7 @@ export const login = async (req: Request, res: Response) => {
         const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
 
         // Extrae el `rut_usuario` del payload del token
+        const id_rol = decoded.id_rol;
         const rut_usuario = decoded.rut_usuario;
         if (!rut_usuario) {
             console.log("RUT de usuario no encontrado en el token");
@@ -50,6 +51,7 @@ export const login = async (req: Request, res: Response) => {
 
         // Agregar el `rut_usuario` al request para usarlo en la respuesta o en otras rutas
         (req as any).rut_usuario = rut_usuario;
+        (req as any).id_rol = id_rol;
 
         next();
     } catch (error) {

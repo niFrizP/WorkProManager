@@ -15,10 +15,13 @@ export class UsuarioService {
   private myApiUrl: string;
   private MyApiUrlLogin: string;
 
+
   constructor(private http: HttpClient, private authService: AuthService) { 
     this.myAppUrl = environment.endpoint;
     this.myApiUrl = 'api/usuario/';
     this.MyApiUrlLogin = 'api/login';}
+
+    
 
   getListUsuarios(): Observable<Usuario[]> {
    return this.http.get<Usuario[]>(`${this.myAppUrl}${this.myApiUrl}`);

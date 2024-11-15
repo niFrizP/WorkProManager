@@ -15,6 +15,7 @@ import { Equipo } from '../../../interfaces/equipo';
 import { Tipo } from '../../../interfaces/tipo';
 import { Cliente } from '../../../interfaces/cliente';
 import { DetalleOT } from '../../../interfaces/detalle_ot';
+import { Solicitud } from '../../../interfaces/solicitud';
 
 // Services
 import { OrderService } from '../../../services/order.service';
@@ -24,6 +25,7 @@ import { MarcaService } from '../../../services/marca.service';
 import { ClienteService } from '../../../services/cliente.service';
 import { EquipoService } from '../../../services/equipo.service';
 import { TipoService } from '../../../services/tipo';
+import { SolicitudService } from '../../../services/solicitud.service';
 import { DetalleOTService } from '../../../services/detalle_ot.service';
 
 // Components
@@ -47,8 +49,10 @@ throw new Error('Method not implemented.');
   usuarios: Usuario[] = [];
   marcas: Marca[] = [];
   tipos: Tipo[] = [];
+  isSubmitting: boolean = false;
   orders: Order[] = [];
   detalleOTs: DetalleOT[] = [];
+  newSolicitudId: number | null = null;
   selectedUsuarioName: string | null = null;
   selectedUsuarioSurname: string | null = null;
   selectedServicioNombre: string | null = null;
@@ -78,6 +82,7 @@ selectedServicePrecio: any;
     private marcaService:MarcaService,
     private equipoService:EquipoService,
     private clienteService:ClienteService,
+    private solicitudService:SolicitudService,
     private tipoService:TipoService
     
   ) {
@@ -93,11 +98,11 @@ selectedServicePrecio: any;
       apellido: ['', Validators.required],
       celular: [null, Validators.required],
       correo: ['', Validators.required],
-      tipo_equipo: ['', Validators.required],
       mod_equipo: ['', Validators.required],
       fec_fabric: ['', Validators.required],
       id_marca: [null, Validators.required],
       d_veri_cli: ['', Validators.required],
+      isView: [false],
       servicios: this.fb.array([this.fb.group({
         id_serv: [null, Validators.required],
       })]),
@@ -128,16 +133,18 @@ selectedServicePrecio: any;
       mod_equipo: ['', Validators.required],
       id_marca: ['', Validators.required],
       num_equipo: ['', Validators.required],
+      id_tipo: [null, Validators.required],
       fec_fabric: ['', Validators.required],
       id_serv: ['', Validators.required],
       descripcion: ['', [Validators.required, Validators.minLength(10)]],
       fecha: ['', Validators.required],
-      id_usuario: ['', Validators.required]
+      id_usuario: ['', Validators.required],
+      id_estado: [2, Validators.required],
     });
     this.cargarServicios();
     this.cargarUsuarios();
     this.cargarMarcas();
-
+    this.cargarTipoEquipo();
 
     
 
@@ -172,6 +179,10 @@ selectedServicePrecio: any;
 
     this.loading = true;
 
+    if (this.isSubmitting) return; // Si ya se está enviando, no hacer nada
+    this.isSubmitting = true; // Desactivar el botón
+
+
     try {
       // 1. Create or update cliente
       const cliente = await this.createOrUpdateCliente();
@@ -183,6 +194,7 @@ selectedServicePrecio: any;
       const order = await this.createOrUpdateOrder();
 
       // Log the JSON representation of the order
+      const solicitud = await this.createorupdateSolicitud();
 
 
       const detalleOT = await this.createOrUpdateDetalleOT();
@@ -201,12 +213,59 @@ selectedServicePrecio: any;
     }
   }
 
+
+  private async createorupdateSolicitud(): Promise<Solicitud> {
+    const solicitudData: Solicitud = {
+      id_ot: this.newOrderId!,
+      desc_sol: this.form.get('desc_sol')?.value,
+      id_estado_ot: this.form.get('id_estado')?.value,
+      isView: false,
+      fecha_emision: new Date(),
+    };
+    
+    console.log('Solicitud data:')
+    console.log(JSON.stringify(solicitudData, null, 2));
+  
+    
+        return new Promise((resolve, reject) => {
+          this.solicitudService.saveSolicitud(solicitudData).subscribe({
+            next: (response: any) => {
+              console.log('Response from server:', response);
+  
+              // Asegúrate de que la respuesta tiene la estructura esperada
+              const newSolicitud = response?.solicitud; // Accede al objeto 'solicitud'
+  
+              if (newSolicitud) {
+                this.newSolicitudId = newSolicitud?.id_sol; // Accede a la propiedad 'id_sol'
+  
+                if (this.newSolicitudId) {
+                  console.log('New solicitud ID:', this.newSolicitudId);
+                } else {
+                  console.warn('No solicitud ID found in response');
+                }
+  
+                resolve(newSolicitud); // Devuelve la solicitud creada
+              } else {
+                console.warn('Solicitud object not found in response');
+                reject(new Error('Solicitud object not found in response'));
+              }
+            },
+            error: (error) => {
+              console.error('Error creating solicitud:', error);
+              reject(error);
+            }
+          });
+        });
+      }
+
   onServicioChange(event: any) {
+    event.preventDefault();
     const servicioId = event.target.value;
     this.servicioSeleccionado = servicioId ? parseInt(servicioId) : null;
   }
 
-  agregarServicio() {
+  agregarServicio(event: Event) {
+    event.preventDefault();
     if (this.servicioSeleccionado) {
       // Encontrar el servicio completo según el ID
       const servicio = this.servicios.find(serv => serv.id_serv === this.servicioSeleccionado);
@@ -221,7 +280,7 @@ selectedServicePrecio: any;
     }
   }
 
-  eliminarServicio(servicio: any) {
+  eliminarServicio(event:Event,servicio: any) {
     this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: { id_serv: any }) => s.id_serv !== servicio.id_serv);
     }
 
@@ -273,7 +332,17 @@ selectedServicePrecio: any;
     }
 }
 
+onSubmit(event: Event) {
+  event.preventDefault();
+  this.isSubmitting = true;
 
+  // Simula un proceso de guardado (esto puede ser una llamada a tu servicio)
+  setTimeout(() => {
+    this.isSubmitting = false;
+    this.addProduct()
+    // Aquí puedes agregar lógica para manejar la respuesta de tu API
+  }, 2000);
+}
   
   private async createOrUpdateEquipo(): Promise<Equipo> {
     const equipoData: Equipo = {
@@ -334,7 +403,7 @@ selectedServicePrecio: any;
         fec_creacion: new Date(),
         fec_entrega: this.form.get('fecha')?.value,
         descripcion: this.form.get('descripcion')?.value,
-        rut_usuario: this.form.get('rut_usuario')?.value,
+        rut_usuario: this.selectedUsuarioID ?? 0,
         rut_cliente: this.form.get('rut_cliente')?.value,
     };
 
@@ -398,7 +467,7 @@ private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
     fecha_detalle: new Date(),
     desc_detalle: servicio.nom_serv!,
     d_estado: 0,
-    rut_usuario: this.form.get('rut_usuario')?.value,
+    rut_usuario: this.selectedUsuarioID ?? 0,
   }));
 
   console.log('DetalleOT data:', JSON.stringify(detalleOTData, null, 2));
@@ -544,6 +613,7 @@ private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
     // Comprobar si el usuario seleccionado existe antes de acceder a su precio
     if (selectedUser) {
       this.selectedTipoNombre = selectedUser.nom_tipo // Usa la propiedad precio o lo que necesites
+      console.log(selectedId)
      
     } else {
       this.selectedTipoNombre = null// Usa la propiedad precio o lo que necesites
@@ -566,8 +636,6 @@ private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
 
     }
   }
-
-
 
 
    // Nueva función para mostrar/ocultar el select de servicios

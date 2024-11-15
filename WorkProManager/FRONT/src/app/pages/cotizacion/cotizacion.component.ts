@@ -17,7 +17,7 @@ import { Cliente } from '../../interfaces/cliente';
 import { DetalleOT } from '../../interfaces/detalle_ot';
 import { Solicitud } from '../../interfaces/solicitud';
 
-// Services
+// Services  
 import { OrderService } from '../../services/order.service';
 import { ServicioService } from '../../services/servicio.service';
 import { UsuarioService } from '../../services/usuario.service';
@@ -26,19 +26,22 @@ import { ClienteService } from '../../services/cliente.service';
 import { EquipoService } from '../../services/equipo.service';
 import { TipoService } from '../../services/tipo';
 import { DetalleOTService } from '../../services/detalle_ot.service';
+import { AuthService } from '../../services/auth.service';
 import { SolicitudService } from '../../services/solicitud.service';
 
 // Components
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { ModalComponent } from '../../components/modal/modal.component';
 
 @Component({
   selector: 'app-cotizacion',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule],
+  imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule, ModalComponent],
   templateUrl: './cotizacion.component.html',
   styleUrl: './cotizacion.component.css'
 })
 export class CotizacionComponent {
+  isLoading = true; // Cambia el estado de carga cuando termine
 
   [x: string]: any;
   onServiceChange($event: Event) {
@@ -86,11 +89,12 @@ export class CotizacionComponent {
       private clienteService:ClienteService,
       private tipoService:TipoService,
       private solicitudService:SolicitudService, 
+      private authService: AuthService,
       
     ) {
       this.form = this.fb.group({
         num_equipo: [null, Validators.required],
-        id_estado: [2, Validators.required],
+        id_estado: [1, Validators.required],
         fecha: [null, Validators.required],
         id_tipo: [null, Validators.required],
         descripcion: ['', Validators.required],
@@ -125,6 +129,23 @@ export class CotizacionComponent {
       this.cargarServicios();
       this.cargarUsuarios();
       this.cargarMarcas();
+
+
+      
+    this.authService.verificarToken().subscribe({
+      next: (data) => {
+        // Guarda los datos de usuario
+        this.authService.saveUserData(data.rut_usuario, data.id_rol);
+        console.log('Usuario verificado:', data);
+      },
+      error: (err) => {
+        console.error('Error al verificar el token:', err);
+      },
+    });
+
+
+      this.isLoading = false; // Cambia el estado de carga cuando termine
+
   
   
       
@@ -177,7 +198,8 @@ export class CotizacionComponent {
       this.servicioSeleccionado = servicioId ? parseInt(servicioId) : null;
     }
   
-    agregarServicio() {
+    agregarServicio(event: Event) {
+      event.preventDefault();
       if (this.servicioSeleccionado) {
         // Encontrar el servicio completo según el ID
         const servicio = this.servicios.find(serv => serv.id_serv === this.servicioSeleccionado);
@@ -200,10 +222,15 @@ export class CotizacionComponent {
         const solicitudData: Solicitud = {
           id_ot: this.newOrderId!,
           desc_sol: this.form.get('desc_sol')?.value,
-          id_estado_ot: this.form.get('id_estado')?.value,};
+          id_estado_ot: this.form.get('id_estado')?.value,
+          isView: false,
+          fecha_emision: new Date(),
+          
+
+        };
         
         console.log('Solicitud data:')
-        console.log(JSON.stringify(solicitudData, null, 2));
+        console.log(JSON.stringify(solicitudData, null, 1));
       
         
             return new Promise((resolve, reject) => {
@@ -592,6 +619,7 @@ export class CotizacionComponent {
     }
   
   }
+  
   
   
   

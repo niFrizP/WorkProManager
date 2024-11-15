@@ -55,5 +55,9 @@ export class OrderService {
     return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}`, { id_estado_ot });
   }
 
+  countOrderNotifications(): Observable<any> {
+    return this.http.get<any>(`${this.myAppUrl}${this.myApiUrl}countOrderN`);
+  }
+
 
 }

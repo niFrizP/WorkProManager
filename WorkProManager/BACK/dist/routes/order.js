@@ -19,6 +19,9 @@ const connection_1 = __importDefault(require("../db/connection"));
 const orders_1 = __importDefault(require("../models/orders"));
 const router = (0, express_1.Router)();
 router.get('/', order_1.getOrders); // Ruta para obtener las órdenes con joins
+router.get('/count', order_1.createSolicitudView);
+router.get('/solicitudes', order_1.getSolicitudesFromView);
+router.get('/countOrderN', order_1.countOrdersNotification); // Para obtener una orden específica por ID
 router.get('/:id', order_1.getOrder); // Para obtener una orden específica por ID
 router.put('/:id', order_1.updateOrder); // Para actualizar una orden por ID
 router.post('/', order_1.postOrder); // Para crear una nueva orden
@@ -30,6 +33,19 @@ router.get('/count-by-status', (req, res) => __awaiter(void 0, void 0, void 0, f
             group: ['estado'], // Agrupar por el campo 'estado'
         });
         res.json(ordersCount);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener los datos');
+    }
+}));
+router.get('/ordersByUsuario', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const ordersByUsuario = yield orders_1.default.findAll({
+            attributes: ['rut_usuario', [connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número de órdenes por usuario
+            group: ['rut_usuario'], // Agrupar por el campo 'rut_usuario'
+        });
+        res.json(ordersByUsuario);
     }
     catch (error) {
         console.error(error);

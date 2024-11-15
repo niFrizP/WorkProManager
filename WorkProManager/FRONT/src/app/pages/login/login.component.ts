@@ -32,8 +32,10 @@ export class LoginComponent {
       (data) => {
         this.usuario = [data];
         console.log(this.usuario);
+        this.router.navigate(['/home']).then(() => {
+          window.location.reload();  // Recarga la página
+        });
 
-        this.router.navigate(['/home']);
       },
       (error) => {
         this.loginError = error;
@@ -41,14 +43,17 @@ export class LoginComponent {
       }
     );
 
-
-    this.authService.verificarToken().subscribe(
-      (data) => {
-        console.log(data);
+     this.authService.verificarToken().subscribe({
+      next: (data) => {
+        // Guarda los datos de usuario
+        this.authService.saveUserData(data.rut_usuario, data.id_rol);
+        console.log('Usuario verificado:', data);
       },
-      (error) => {
-        console.log(error);
-      }
-    );
+      error: (err) => {
+        console.error('Error al verificar el token:', err);
+      },
+    });
+
+
 
 }}

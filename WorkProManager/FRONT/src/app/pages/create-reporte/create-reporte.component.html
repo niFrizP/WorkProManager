@@ -1,23 +1,38 @@
-<div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
-  <div class="contenedor">
-    <h1 class="text-2xl font-bold text-center mb-4">Crear Reporte</h1>
+<div class="flex-3 ml-64 p-8">
+
+  
+  <p>{{id_ot}}</p>
+  <!-- home.component.html -->
+  <button (click)="openModal($event)">Abrir Modal</button>
+
+  <!-- Solo se muestra el modal si isModalOpen es true -->
+  <app-modal *ngIf="isModalOpen && id_ot !== null && id_ot !== 0" [id_ot]="id_ot" (closed)="closeModal()"></app-modal>
+
+
+  <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
+
+
+
+  <div class="flex justify-between items-center mb-4">
     
-    <form (ngSubmit)="onSubmit()" #reporteForm="ngForm">
-      <div class="mb-4">
-        <label for="titulo" class="block font-medium">Título:</label>
-        <input type="text" id="titulo" class="w-full p-2 border rounded" [(ngModel)]="nuevoReporte.titulo" name="titulo" required>
-      </div>
+    <div>
+      <label for="filter" class="mr-2 font-medium">Todas las OT</label>
+      <select #filterSelect class="p-2 border rounded">
+        <option value="todas">Todas</option>
+        <option value="en solicitud">En solicitud</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="finalizado">Finalizado</option>
 
-      <div class="mb-4">
-        <label for="descripcion" class="block font-medium">Descripción:</label>
-        <textarea id="descripcion" class="w-full p-2 border rounded" [(ngModel)]="nuevoReporte.descripcion" name="descripcion" required></textarea>
-      </div>
+      </select>
 
-      <div class="mb-4">
-        <label for="usuario" class="block font-medium">Usuario:</label>
-        <select id="usuario" class="w-full p-2 border rounded" [(ngModel)]="nuevoReporte.usuario" name="usuario" required>
-          <option value="">Seleccione un usuario</option>
-          <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">{{ usuario.nom_usu }} {{ usuario.ap_usu }}</option>
+
+      <button [routerLink]="['/reportes/createReport/', id_ot, 0]">✏️</button>
+
+      <div>
+        <label for="filter" class="mr-2 font-medium">Todos los usuarios</label>
+        <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedUsuario">
+          <option value="todos">Todas</option>
+          <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu }} {{usuario.ap_usu}}</option>
         </select>
       </div>
 

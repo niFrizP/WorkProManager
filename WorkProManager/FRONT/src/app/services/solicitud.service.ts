@@ -36,7 +36,32 @@ export class SolicitudService {
         return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${id_sol}`, solicitud);
     }
 
+    updateSolicitudByView(id_sol: number, isView: boolean): Observable<void> {
+        const url = `${this.myAppUrl}${this.myApiUrl}${id_sol}`;
+        return this.http.put<void>(url, { isView });
+    }
+
+    updateSolicitudByFecha(id_sol: number, fecha_vista: Date): Observable<Date> {
+        const url = `${this.myAppUrl}${this.myApiUrl}${id_sol}`;
+        return this.http.put<Date>(url, { fecha_vista });
+    }
+
+    updateSolicitudByFechaEmision(id_sol: number, fecha_emision: Date): Observable<Date> {
+        const url = `${this.myAppUrl}${this.myApiUrl}${id_sol}`;
+        return this.http.put<Date>(url, { fecha_emision });
+    }
+
+    updateSolicitudByFechaTermino(id_sol: number, fecha_termino: Date): Observable<Date> {
+        const url = `${this.myAppUrl}${this.myApiUrl}${id_sol}`;
+        return this.http.put<Date>(url, { fecha_termino });
+    }
+    
+
     getSolByUser(id_user: number): Observable<Solicitud[]> {
         return this.http.get<Solicitud[]>(`${this.myAppUrl}${this.myApiUrl}user/${id_user}`);
+    }
+
+    getSolByOt(id_ot: number): Observable<Solicitud[]> {
+        return this.http.get<Solicitud[]>(`${this.myAppUrl}${this.myApiUrl}solicitud/${id_ot}`);
     }
 }

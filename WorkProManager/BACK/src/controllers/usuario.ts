@@ -1,32 +1,13 @@
-import { Request, Response } from 'express';
-import Usuario from '../models/usuario'; // Asegúrate de tener el modelo de Usuario importado
-import Rol from '../models/rol';
-import { verificarToken, esAdmin } from '../middleware/autenticacion';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import { JWT_SECRET } from '../config';
-
-const secretKey = process.env.SECRET_KEY as string;
-
+import { Request, Response} from "express";
+import Usuario from "../models/usuario";
+import bcrypt from "bcrypt";
 export const getUsuarios = async (req: Request, res: Response) => {
     try {
-        const decoded = await verificarToken(req);
-        if (!decoded) {
-            return res.status(401).json({ msg: "No autorizado"});
-        }
-        if (!esAdmin(decoded)) {
-            return res.status(403).json({ msg: "No tienes permisos para realizar esta acción"});
-        }
-        const usuarios = await Usuario.findAll();
-        res.json({
-            error: false,
-            data: usuarios
-        });
+        const listUsuarios = await Usuario.findAll();
+        res.json(listUsuarios);
     } catch (error) {
-        console.log('Error en getUsuarios', error);
-        res.status(500).json({ 
-            error: true,
-            msg: "Error al obtener usuarios"});
+        console.log(error);
+        res.status(500).json({ msg: "Error al obtener usuarios"});
     }
 };
 
@@ -34,13 +15,7 @@ export const getUsuarios = async (req: Request, res: Response) => {
 export const getUsuario = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-          const decoded = await verificarToken(req);
-          if (!decoded) {
-              return res.status(401).json({ msg: "No autorizado"});
-          }
-          if (decoded.id_usuario.toString() !== id && !esAdmin(decoded)) {
-              return res.status(403).json({ msg: "No tienes permisos para ver este usuario"});
-          }
+       
 
           const usuario = await Usuario.findByPk(id);
           if (usuario) {
@@ -109,19 +84,18 @@ export const updateUsuario = async (req: Request, res: Response) => {
     const { body } = req;
     const { id } = req.params;
     try {
-        const decoded = await verificarToken(req);
-        if (!decoded) {
-            return res.status(401).json({ msg: "No autorizado"});
-        }
-        if (!esAdmin(decoded)) {
-            return res.status(403).json({ msg: "No tienes permisos para eliminar usuarios"});
-        }
+ 
         const usuario = await Usuario.findByPk(id);
-        if (!usuario) {
-            return res.status(404).json({ msg: "No existe usuario con el ID ${id}"});
+        if (usuario) {
+            await usuario.update(body);
+            res.json({ msg: "Usuario actualizado con éxito"});
+        } else {
+            res.status(404).json({ msg: "No existe un usuario con ese ID"});
         }
-        await usuario.destroy();
-        res.json({ msg: "Usuario eliminado con éxito"});
+        if (usuario) {
+            await usuario.destroy();
+            res.json({ msg: "Usuario eliminado con éxito"});
+        }
     } catch (error) {
         console.log(error);
         res.status(500).json({ msg: "Error al eliminar usuario"});
