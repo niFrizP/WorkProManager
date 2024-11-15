@@ -25,8 +25,7 @@ import { EstadoOTService } from '../../services/estado_ot.service';
 import { AuthService } from '../../services/auth.service';
 import { SolicitudService } from '../../services/solicitud.service';
 import { Solicitud } from '../../interfaces/solicitud';
-import { trigger } from '@angular/animations';
-import { animate, state, style, transition } from '@angular/animations';
+import { animate, trigger, state, style, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-reportes',
@@ -46,7 +45,7 @@ import { animate, state, style, transition } from '@angular/animations';
         opacity: 0,
         overflow: 'hidden'
       })),
-      transition('true <=> false', animate('300ms ease-in-out'))
+      transition('true <=> false', animate('300ms ease-in-out'))  
     ])
   ],
 })
@@ -61,7 +60,6 @@ export class ReportesComponent implements OnInit {
     filtrosCliente: false,
     filtroEquipo: false
   };
-
 
   numericError: string = '';  // Variable para almacenar el mensaje de error
   isSubmenuOpen: number | null = null; // Controla la visibilidad del submenú
