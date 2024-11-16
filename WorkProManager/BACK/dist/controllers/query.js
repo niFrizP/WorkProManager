@@ -12,12 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersBy = exports.getOrdersByMonthAndYear = exports.getOrdersFromLast7DaysExcludingWeekends = exports.getOrdersByYear = exports.getOrdersByFecha = exports.getOrdersEstadoSum = exports.getOrdersCosto = exports.getOrdersByUsuario = exports.countOrdersByDate = exports.getOrdersByEstadoEliminadaByUser = exports.getOrdersByEstadoByUser = exports.getOrdersByEstadoTotalByUser = exports.getOrdersByEstadoEliminada = exports.getOrdersByEstadoTotal = exports.getOrdersByEstado = exports.getOrdersByEstadoTotalEnTiempo = exports.getOrdersByEstadoEnTiempo = exports.getOrdersByEstadoByUser_5 = exports.getOrdersByEstadoByUser_4 = exports.getOrdersByEstadoByUser_3 = exports.getOrdersByEstadoByUser_2 = exports.getOrdersByEstadoByUser_1 = void 0;
+exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersBy = exports.getOrdersByMonthAndYear = exports.getOrdersFromLast7DaysExcludingWeekends = exports.getOrdersByYear = exports.getOrdersByFecha = exports.getOrdersEstadoSum = exports.getOrdersCosto = exports.getOrdersByUsuario = exports.countOrdersByDate = exports.getOrdersByEstadoEliminadaByUser = exports.getOrdersByEstadoByUser = exports.getOrdersByEstadoTotalByUser = exports.getOrdersByEstadoEliminada = exports.getOrdersByEstadoTotal = exports.getOrdersByEstado = exports.getOrdersByEstadoTotalEnTiempo = exports.getOrdersByEstadoEnTiempoGrafico = exports.getOrdersByEstadoEnTiempo = exports.getOrdersByEstadoByUser_5 = exports.getOrdersByEstadoByUser_4 = exports.getOrdersByEstadoByUser_3 = exports.getOrdersByEstadoByUser_2 = exports.getOrdersByEstadoByUser_1 = void 0;
 const orders_1 = __importDefault(require("../models/orders"));
 const equipo_1 = __importDefault(require("../models/equipo"));
 const cliente_1 = __importDefault(require("../models/cliente"));
 const usuario_1 = __importDefault(require("../models/usuario"));
-const servicio_1 = __importDefault(require("../models/servicio"));
 const estado_ot_1 = __importDefault(require("../models/estado_ot"));
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
@@ -158,6 +157,39 @@ const getOrdersByEstadoEnTiempo = (req, res) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.getOrdersByEstadoEnTiempo = getOrdersByEstadoEnTiempo;
+const getOrdersByEstadoEnTiempoGrafico = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Definir la expresión de fecha para agrupar por mes/año
+        const monthYearFormat = connection_1.default.fn('DATE_FORMAT', connection_1.default.col('fec_entrega'), '%Y-%m');
+        const ordersCount = yield orders_1.default.findAll({
+            attributes: [
+                [monthYearFormat, 'monthYear'], // Agrupar por año y mes
+                [connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total'], // Contar las órdenes por mes
+            ],
+            where: {
+                id_estado_ot: {
+                    [sequelize_1.Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
+                },
+                fec_entrega: {
+                    [sequelize_1.Op.between]: [
+                        connection_1.default.fn('DATE_SUB', connection_1.default.fn('NOW'), connection_1.default.literal('INTERVAL 12 MONTH')), // Fecha de hace 12 meses
+                        connection_1.default.fn('NOW'), // Fecha actual
+                    ],
+                },
+            },
+            group: [monthYearFormat], // Agrupar por mes y año
+            order: [[monthYearFormat, 'ASC']], // Ordenar por mes/año
+        });
+        // Enviar los datos como respuesta
+        res.json(ordersCount);
+    }
+    catch (error) {
+        // Mejor manejo de errores con el mensaje completo
+        console.error('Error al obtener los datos:', error);
+        res.status(500).send('Error al obtener los datos: ' + error);
+    }
+});
+exports.getOrdersByEstadoEnTiempoGrafico = getOrdersByEstadoEnTiempoGrafico;
 const getOrdersByEstadoTotalEnTiempo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { startDate, endDate } = req.body;
     try {
@@ -480,7 +512,6 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 { model: equipo_1.default },
                 { model: cliente_1.default },
                 { model: usuario_1.default },
-                { model: servicio_1.default },
                 { model: estado_ot_1.default }
             ]
         });

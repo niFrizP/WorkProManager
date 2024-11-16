@@ -14,6 +14,7 @@ import { Equipo } from '../../interfaces/equipo';
 import { Cliente } from '../../interfaces/cliente';
 import { DetalleOT } from '../../interfaces/detalle_ot';
 import { newOrder } from '../../interfaces/newOrder';
+import { AuthService } from '../../services/auth.service';
 
 // Services
 import { OrderService } from '../../services/order.service';
@@ -70,6 +71,10 @@ export class EditOrderComponent implements OnInit {
   detalleOT: DetalleOT[] = [];
   isModalOpen = true;
   cargando = true;
+  rut_remitente: number | null = 0;
+  rut_receptorActual: number | null = 0;
+  rut_receptor: number | null = 0;
+  
 
 
 
@@ -84,7 +89,8 @@ export class EditOrderComponent implements OnInit {
     private marcaService:MarcaService,
     private equipoService:EquipoService,
     private clienteService:ClienteService,
-    private solicitudService:SolicitudService
+    private solicitudService:SolicitudService,
+    private authService: AuthService
     
   ) {
 
@@ -120,6 +126,8 @@ export class EditOrderComponent implements OnInit {
       id_marca: [null, Validators.required],
       d_veri_cli: ['', Validators.required],
       desc_sol: ['', Validators.required],
+      rut_receptor: [null, Validators.required],
+      rut_remitente: [null, Validators.required],
       
     });
     
@@ -141,10 +149,15 @@ export class EditOrderComponent implements OnInit {
     this.loadOrder(this.id_ot);
     this.loadDetalle(this.id_ot);
     console.log(this.id_ot);
+    this.form.patchValue({ rut_usuario: this.form.get('rut_usuario')?.value });
     this.cargarServicios();
     this.cargarUsuarios();
     this.cargarMarcas();
     this.getot(this.id_ot);
+    this.rut_remitente = this.authService.getIdLocal()
+    console.log(this.rut_remitente);
+    this.rut_receptorActual = this.authService.getIdLocal()
+
 
     
 
@@ -262,10 +275,17 @@ export class EditOrderComponent implements OnInit {
       id_estado_ot: this.form.get('id_estado')?.value,
       isView: false,
       fecha_emision: new Date(),
+      rut_remitente: this.rut_receptorActual,
     };
     
     console.log('Solicitud data:')
     console.log(JSON.stringify(solicitudData, null, 2));
+
+    this.solicitudService.updateSolicitudByFechaTermino(this.solicitudes[0].id_sol!, new Date).subscribe({
+      next: () => {
+        console.log('Solicitud updated successfully');
+      }
+    });
   
     
         return new Promise((resolve, reject) => {
@@ -302,9 +322,16 @@ export class EditOrderComponent implements OnInit {
 
       updateSolicitudOnLoad() {
         this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
+
         this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
           this.solicitudes = data.reverse();
           console.log(this.solicitudes);
+
+          if(this.rut_receptorActual != this.solicitudes[0].rut_receptor) {
+            console.log("No es el receptor");
+
+          }else
+
           
     
        this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, true).subscribe({

@@ -37,7 +37,7 @@ export const getOrders = async (req: Request, res: Response) => {
                     required: true
                 },
                    { model: VistaSolicitud,
-                    attributes: ['isview', 'fecha_emision'],
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
                     required: true
                    },
                 
@@ -80,7 +80,7 @@ export const countOrdersNotification = async (req: Request, res: Response) => {
                 },
                 {
                     model: VistaSolicitud,
-                    attributes: ['isview', 'fecha_emision'],
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
                     required: true,
                     where: {
                         isview: true,
@@ -110,7 +110,7 @@ export const getSolicitudesFromView = async (req: Request, res: Response) => {
         res.json(solicitudesFromView);
     } catch (error) {
         console.error('Error al obtener solicitudes desde la vista:', error);
-        res.status(500).json({ message: 'Error al obtener solicitudes desde la vista', error: error.message });
+        res.status(500).json({ message: 'Error al obtener solicitudes desde la vista', error });
     }
 };
 
@@ -119,7 +119,7 @@ export const createSolicitudView = async (req: Request, res: Response) => {
         // Consulta SQL para crear la vista
         const createViewQuery = `
             CREATE OR REPLACE VIEW vista_solicitudes_min_fecha AS
-            SELECT id_sol, id_ot, fecha_emision, isview
+            SELECT id_sol, id_ot, fecha_emision, isview, fecha_plazo, rut_remitente, rut_receptor
             FROM solicitud s1
             WHERE fecha_emision = (
                 SELECT MIN(fecha_emision)
@@ -134,7 +134,7 @@ export const createSolicitudView = async (req: Request, res: Response) => {
         res.json({ message: 'Vista creada o actualizada correctamente' });
     } catch (error) {
         console.error('Error al crear la vista:', error);
-        res.status(500).json({ message: 'Error al crear la vista', error: error.message });
+        res.status(500).json({ message: 'Error al crear la vista', error });
     }
 };
 
@@ -161,13 +161,116 @@ export const getOrdersByUsuarioOrder = async (req: Request, res: Response) => {
                     model: EstadoOT,
                     attributes: ['nom_estado_ot'],
                     required: true
-                }
-            ], where: {
-                rut_usuario: req.body.rut_usuario
+                },
+                   { model: VistaSolicitud,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
+                    required: true
+                   },
+                
+            ],where: {
+                rut_usuario: req.body.rut_usuario,
+                id_estado_ot:{[Op.in]: [1,2]}, // Filtrar donde el estado no sea 5 ni 6
             }
         });
 
-        console.log('Consulta de órdenes:', JSON.stringify(listOrders, null, 2)); // Log de la consulta
+        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
+        res.json(listOrders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders',
+        });
+    }
+};
+
+export const getOrdersEliminadas = async (req: Request, res: Response) => {
+    try {
+        // Determinar el filtro dinámico para `rut_usuario`
+        const filters: any = {
+            id_estado_ot: { [Op.in]: [6] }, // Filtrar estado específico
+        };
+
+        if (req.body.rut_usuario) {
+            filters.rut_usuario = req.body.rut_usuario;
+        }
+
+        const listOrders = await Order.findAll({
+            include: [
+                {
+                    model: Cliente,
+                    attributes: ['nom_cli', 'ap_cli'],
+                    required: true,
+                },
+                {
+                    model: Usuario,
+                    attributes: ['nom_usu', 'ap_usu'],
+                    required: true,
+                },
+                {
+                    model: Equipo,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true,
+                },
+                {
+                    model: EstadoOT,
+                    attributes: ['nom_estado_ot'],
+                    required: true,
+                },
+                {
+                    model: VistaSolicitud,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
+                    required: true,
+                },
+            ],
+            where: filters, // Aplica el filtro dinámico
+        });
+
+        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
+        res.json(listOrders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders',
+        });
+    }
+};
+
+export const getOrdersByUsuarioOrderEnProceso = async (req: Request, res: Response) => {
+    try {
+        const listOrders = await Order.findAll({
+            include: [
+                {
+                    model: Cliente,
+                    attributes: ['nom_cli', 'ap_cli'],
+                    required: true
+                },
+                {
+                    model: Usuario,
+                    attributes: ['nom_usu', 'ap_usu'],
+                    required: true
+                },
+                {
+                    model: Equipo,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true
+                },
+                {
+                    model: EstadoOT,
+                    attributes: ['nom_estado_ot'],
+                    required: true
+                },
+                   { model: VistaSolicitud,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
+                    required: true
+                   },
+                
+            ],where: {
+                rut_usuario: req.body.rut_usuario,
+                id_estado_ot:{[Op.in]: [3,4]}, // Filtrar donde el estado no sea 5 ni 6
+            }
+        });
+
+        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
         res.json(listOrders);
     } catch (error) {
         console.error('Error fetching orders:', error);

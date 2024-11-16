@@ -28,6 +28,7 @@ export interface newOrder {
       VistaSolicitud: {
             id_ot: number;
             isview: boolean;
+            fecha_plazo: Date;
         }
 }
 

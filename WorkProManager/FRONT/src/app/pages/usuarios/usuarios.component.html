@@ -4,7 +4,7 @@
     <div class="flex justify-between items-center mb-4">
 
       <button [routerLink]="['/orders/new-ot']" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 new-ot-butt"
-        [routerLink]="['/orders/new-ot']">
+        [routerLink]="['/usuarios/create-usuario']">
         + Nueva
       </button>
     </div>
@@ -24,11 +24,12 @@
                   | paginate : { itemsPerPage: itemsPerPage, currentPage: page }
               "
           >
+              <td>{{usuario.rut_usuario}}</td>
               <td>{{ usuario.nom_usu }} {{ usuario.ap_usu }}</td>
-              
+              <td>{{ usuario.email_usu}}</td>
               <td>
                   <!-- Botón para editar la OT -->
-                  <button >✏️</button>
+                  <button [routerLink]="['edit-usuario/', usuario.rut_usuario]">✏️</button>
                   <button (click)="usuario.rut_usuario !== undefined ? deleteUsuario(usuario.rut_usuario) : null">🗑️</button>
 
           </td>

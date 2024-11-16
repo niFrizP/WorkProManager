@@ -57,4 +57,8 @@ export class DetalleOTService {
     updateDetalleOT(id_ot: number,id_serv: number, detalleOT: DetalleOT): Observable<void> {
         return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}/${id_serv}`, detalleOT);
     }
+
+    updateDetalleOTByDigito(id_ot: number,id_serv: number, d_estado: number): Observable<void> {
+        return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}/${id_serv}`, {d_estado});
+    }
 }

@@ -23,6 +23,14 @@ VistaSolicitud.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
+    rut_remitente: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    rut_receptor: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     // Otros campos según tu vista
   },
   {

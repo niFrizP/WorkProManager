@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule, F
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
+
 import { firstValueFrom } from 'rxjs';
 
 // Interfaces
@@ -31,12 +33,14 @@ import { AuthService } from '../../services/auth.service';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { DetalleOTService } from '../../services/detalle_ot.service';
 import { error } from 'console';
+import { EstadoOT } from '../../interfaces/estadoot';
 
 @Component({
   selector: 'app-detalle',
   standalone: true,
   imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule],
   templateUrl: './detalle.component.html',
+  styleUrls: ['./detalle.component.css']
 })
 export class DetalleComponent implements OnInit {
   onServiceChange($event: Event){
@@ -48,23 +52,29 @@ export class DetalleComponent implements OnInit {
   serviciosSeleccionados: any = []; // Cambia 'any' por el tipo adecuado
   servicioSeleccionado: number | null = null;
   selectedServicioNombre: string | null = null;
+  selectedEstadoName: string | null = null;
+  selectedEstadoID: number | null = null;
   selectedServicioID: number | null = null;
   usuarios: Usuario[] = [];
   marcas: Marca[] = [];
+  newSolicitudId: number | null = null;
   newOrders: newOrder[] = [];
   selectedUsuarioName: string | null = null;
   selectedUsuarioSurname: string | null = null;
   selectedServicePrecio: number | null = null;
+  public isMenuOpen: number | undefined = undefined; // Inicializado como 'undefined'
   selectedMarcaNombre: string | null = null;
   selectedServiceID: number | null = null;
   selectedUsuarioID: number | null = null;  // Add this line
   form: FormGroup;
+  estados: EstadoOT[] = [];
   loading: boolean = false;
   newDetalleOTId: number | null = null;
   d_estado: number = 0;
-  id_ot: number ;
+  isModalOpen = false;
+  public id_ot: number ;
   solicitudes : Solicitud[] = [];
-  id_serv: number;
+  public id_serv: number;
   nuevoServicio: string = ''; // Variable para almacenar el nuevo servicio
   operacion: string = 'Agregar ';
   isSubmitting: boolean = false;
@@ -74,15 +84,16 @@ export class DetalleComponent implements OnInit {
   detalleOT: DetalleOT[] = [];
   division: number = 0;
   orderEstados: orderEstado[] = [];
-
+  isloading: boolean = false;
   datatotal: number = 0
   datatotal2: number = 0
+  resta: number = 0;
 
 
 
   constructor(
     private fb: FormBuilder,
-    private _orderService: OrderService,
+    private _orderService:OrderService,
     private router: Router,
     private aRouter: ActivatedRoute,
     private detalleOTService:DetalleOTService,
@@ -110,14 +121,25 @@ export class DetalleComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
+    this.id_serv = Number(this.aRouter.snapshot.paramMap.get('id_serv'));
+    this.isMenuOpen = this.id_ot;
     this.loadServicios();
 
     this.loadUsuarios();
     this.loadDetalleServicio(this.id_ot, this.id_serv);
-
+      
+    this.obtenerCountTotal();
+    this.obtenerCountXEstado();
+    this.divisionCount();
+    this.resta = this.datatotal2 - this.datatotal;
+    console.log(this.resta);
+    console.log(this.datatotal2);
 
     console.log(this.id_ot);
     console.log(this.id_serv);
+    this.isloading = false;
 
 
     
@@ -207,7 +229,7 @@ export class DetalleComponent implements OnInit {
       fecha_detalle: this.form.get('fecha_detalle')?.value,
       desc_detalle: this.form.get('desc_detalle')?.value,
       rut_usuario: this.form.get('rut_usuario')?.value,
-      d_estado: 0
+      d_estado: 1
     };
 
     console.log(detalleData);
@@ -246,7 +268,6 @@ export class DetalleComponent implements OnInit {
 
     if (this.isSubmitting) return; // Si ya se está enviando, no hacer nada
     this.isSubmitting = true; // Desactivar el botón
-
     try {
 
       const detalleOT = await this.createOrUpdateDetalle();
@@ -260,7 +281,6 @@ export class DetalleComponent implements OnInit {
       // Utiliza updateOrder en lugar de saveOrder
 
       this.loading = false;
-      this.router.navigate(['/']);
     } catch (error) {
       console.error('Error creating order:', error);
       this.loading = false;
@@ -276,8 +296,23 @@ export class DetalleComponent implements OnInit {
 
   }
 
+  public cancelUpdate(): void {
+    this.closeModal();  // Solo cierra el modal sin hacer nada más
+    
+  
+  }
 
-  // ... (resto del código sin cambios)
+  toggleMenu(id_ot: number | undefined): void {
+    console.log("ID de la orden:", id_ot);
+    if (id_ot === undefined) {
+      console.log("No existe una orden con un id válido.");
+      return;
+    }
+    
+    // Si `isMenuOpen` ya es el `id_ot` actual, ciérralo; de lo contrario, ábrelo
+    this.isMenuOpen = this.isMenuOpen === id_ot ? undefined : id_ot;
+    console.log("Estado de isMenuOpen:", this.isMenuOpen);
+  }
 
 
   onServicioChange(event: Event) {
@@ -294,78 +329,263 @@ export class DetalleComponent implements OnInit {
     }
   }
   
-
-
-
-  onUserChange(event: Event) {
-    const selectedId = (event.target as HTMLSelectElement).value;
-    const selectedUser = this.usuarios.find(usuario => usuario.rut_usuario?.toString() === selectedId);
+  public openModal(id_ot:number): void {
     
-    if (selectedUser) {
-      this.selectedUsuarioName = selectedUser.nom_usu;
-      this.selectedUsuarioSurname = selectedUser.ap_usu;
-      this.selectedUsuarioID = selectedUser.rut_usuario ?? null;
-      this.form.patchValue({ rut_usuario: this.selectedUsuarioID });
-    } else {
-      this.selectedUsuarioName = null;
-      this.selectedUsuarioSurname = null;
-      this.selectedUsuarioID = null;
-      this.form.patchValue({ rut_usuario: null });
+    this.id_ot = id_ot; // Asigna el `id_ot` a la propiedad `id_ot`
+    this.isModalOpen = true;
+
+    
+
+  }
+
+
+  public onUserChange(event: Event, id_ot: number): void {
+
+    const selectedId = (event.target as HTMLSelectElement).value;
+    const selectedEstado = this.estados.find(estado => estado.id_estado_ot?.toString() === selectedId);
+    
+    if (selectedEstado) {
+      this.selectedEstadoName = selectedEstado.nom_estado_ot;
+      this.selectedEstadoID = selectedEstado.id_estado_ot ?? null;
+      console.log(this.selectedEstadoID);
+      
+      // Actualiza el valor en el formulario
+      this.form.patchValue({ id_estado_ot: this.selectedEstadoID });
+      console.log(this.form.value);
+      
+      // Emitir el evento al componente padre
+
+      this.openModal(id_ot);
+
+
+      // Cerrar el menú
+    }
+
+
+  }
+
+
+  
+
+  async anotherAction() {
+
+    
+    
+    try {
+      // Datos que se envían para la actualización, cambiando d_estado a 1
+      const detalleData: DetalleOT = {
+        id_ot: this.id_ot,
+        id_serv: this.id_serv,
+        fecha_detalle: this.form.get('fecha_detalle')?.value,
+        desc_detalle: this.form.get('desc_detalle')?.value,
+        rut_usuario: this.form.get('rut_usuario')?.value,
+        d_estado: 1
+      };
+  
+      
+  
+      this.d_estado = 1;
+
+      // Actualiza el detalle
+      await this.detalleOTService.updateDetalleOT(this.id_ot, this.id_serv, detalleData).toPromise();
+      console.log('Detalle actualizado exitosamente.');
+  
+      // Usa Promise.all para obtener los resultados antes de cargar datos adicionales
+      const [divisionResult, countXEstadoResult] = await Promise.all([
+        this.divisionCount(),
+        this.obtenerCountXEstado()
+      ]);
+  
+      // Ahora tienes los resultados resueltos y puedes usarlos
+      console.log('Resultado de divisionCount:', divisionResult);
+      console.log('Resultado de obtenerCountXEstado:', countXEstadoResult);
+  
+      // Carga datos y verifica condiciones después de obtener los resultados
+      this.cargarDatosYVerificarCondiciones();
+    } catch (error) {
+      console.error('Error durante anotherAction:', error);
     }
   }
+  
+  
+// Función para cargar datos y verificar condiciones
+cargarDatosYVerificarCondiciones() {
+  Promise.all([this.divisionCount(), this.obtenerCountXEstado()])
+    .then(() => {
+      if (this.division === 100 && this.datatotal !== 0) {
+        console.log(this.divisionCount());
+        console.log(this.obtenerCountXEstado());
+        this.openModal(this.id_ot);
+        this.detalleOTService.updateDetalleOTByDigito(this.id_ot, this.id_serv, 1).subscribe({
+          next: () => {
+            console.log('Detalle updated successfully');
+          },
+        });
 
-  anotherAction() {
-    // Datos que se envían para la actualización, cambiando d_estado a 1
-    const detalleData: DetalleOT = {
-      id_ot: this.id_ot,
-      id_serv: this.id_serv,
-      fecha_detalle: this.form.get('fecha_detalle')?.value,
-      desc_detalle: this.form.get('desc_detalle')?.value,
-      rut_usuario: this.form.get('rut_usuario')?.value,
-      d_estado: 1
-    };
-
-    this.detalleOTService.updateDetalleOT(this.id_ot, this.id_serv, detalleData).subscribe(
-      (data) => {
-        console.log(data);
-      },
-      (error) => {
-        console.error('Error al cargar los detalles:', error);
+      
+      } else if (this.division !== 100 && this.datatotal !== 0) {
+        console.log("Orden de trabajo en proceso");
+        
+        Swal.fire({
+          title: '¡Tarea Completada!',
+          html: `<p>Has completado un <strong>${this.datatotal}</strong> de <strong>${this.datatotal2}</strong> órdenes de trabajo.</p>`,
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          background: '#f9f9f9',
+          color: '#333',
+          confirmButtonColor: '#3085d6'
+        });
       }
-    );
-
-    this.d_estado = 1;
-
-    this.obtenerCountTotal();
-    this.obtenerCountXEstado();
-
-console.log(typeof(this.datatotal));
-console.log(typeof(this.datatotal2));
-
-this.divisionCount();
-
-if (this.division == 100){
-
-  this.updateOrder();
-  this.router.navigate(['/']);
-  console.log("Orden de trabajo completada");
-
-}else{
-  console.log("Orden de trabajo en proceso");
+    })
+    .catch(error => {
+      console.error("Error al cargar datos:", error);
+    });
 }
 
+
+public async createorupdateSolicitud(id_ot:number | null, id_estado_ot:number| null): Promise<Solicitud> {
+
+
+
+
+  const solicitudData: Solicitud = {
+    id_ot: id_ot ?? 0, // Ensure id_ot is not null
+    desc_sol: this.form.get('desc_sol')?.value,
+    id_estado_ot: 4, // Ensure id_estado_ot is not null
+    isView: false,
+    fecha_emision: new Date(),
+    fecha_plazo: this.form.get('fecha_plazo')?.value,
+
+  };
+  
+  console.log('Solicitud data:')
+  console.log()
+  console.log(JSON.stringify(solicitudData, null, 2));
+
+  
+      return new Promise((resolve, reject) => {
+        this.solicitudService.saveSolicitud(solicitudData).subscribe({
+          next: (response: any) => {
+            console.log('Response from server:', response);
+
+            // Asegúrate de que la respuesta tiene la estructura esperada
+            const newSolicitud = response?.solicitud; // Accede al objeto 'solicitud'
+
+            if (newSolicitud) {
+              this.newSolicitudId = newSolicitud?.id_sol; // Accede a la propiedad 'id_sol'
+
+              if (this.newSolicitudId) {
+                console.log('New solicitud ID:', this.newSolicitudId);
+              } else {
+                console.warn('No solicitud ID found in response');
+              }
+
+              resolve(newSolicitud); // Devuelve la solicitud creada
+            } else {
+              console.warn('Solicitud object not found in response');
+              reject(new Error('Solicitud object not found in response'));
+            }
+          },
+          error: (error) => {
+            console.error('Error creating solicitud:', error);
+            reject(error);
+          }
+        });
+      });
+    }
+
+ estadoUpdated(id_ot: number | null ,estadoId: number | null) {
+    // Lógica para manejar la actualización del estado en el componente padre
+    this.createorupdateSolicitud(id_ot , estadoId);
+    this._orderService.updateOrderState(id_ot ?? 0, estadoId ?? 0).subscribe(
+      () => {
+        console.log('Estado actualizado');
+
+      },
+      (error) => {
+        console.error('Error actualizando el estado', error);
+      }
+    );
     
   }
+
+
+  updateSolicitudOnLoadWhileCreate(id_ot: number): void {
+
+    this.solicitudService.getSolByOt(id_ot).subscribe((data: Solicitud[]) => {
+      this.solicitudes = data.reverse();
+      console.log(this.solicitudes);
+      
   
+   this.solicitudService.updateSolicitudByFechaEmision(this.solicitudes[0].id_sol!, new Date).subscribe({
+      next: () => {
+        console.log('Solicitud updated successfully');
+      },
+    });   
+  })
+  
+  }
+
+
+  updateSolicitudOnCreated(id_ot: number): void {
+
+    this.solicitudService.getSolByOt(id_ot).subscribe((data: Solicitud[]) => {
+      this.solicitudes = data.reverse();
+      console.log(this.solicitudes);
+      
+  
+    this.solicitudService.updateSolicitudByFechaTermino(this.solicitudes[1].id_sol!, new Date).subscribe({
+      next: () => {
+        console.log('Solicitud updated successfully');
+      },
+    }); })  }
+
+public confirmUpdate(id_ot: number): void {
+  // Realiza la actualización solo si el usuario confirma
+this.id_serv = Number(this.aRouter.snapshot.paramMap.get('id_serv'));
+  console.log(this.division);
+  this.detalleOTService.updateDetalleOTByDigito(id_ot, this.id_serv, 1).subscribe({
+    next: () => {
+      console.log('Detalle updated successfully');
+    },
+  });
+  this.updateOrder();
+  console.log("Orden de trabajo completada");
+  this.updateSolicitudOnLoad(id_ot)
+
+
+  Swal.fire({
+    title: '¡Orden de trabajo completada!',
+    html: `<p>Has completado un <strong>${this.datatotal}</strong> de <strong>${this.datatotal2}</strong> órdenes de trabajo.</p>`,
+    icon: 'success',
+    confirmButtonText: 'Aceptar',
+    background: '#f9f9f9',
+    color: '#333',
+    confirmButtonColor: '#3085d6'
+  });
+
+
+  
+  this.estadoUpdated(id_ot, 4);
+  this.updateSolicitudOnLoadWhileCreate(id_ot)
+  this.updateSolicitudOnCreated(id_ot)
+  this.closeModal();  // Cierra el modal después de actualizar
+   
+}
+
+public closeModal(): void {
+  this.isModalOpen = false;
+}
 
   obtenerCountXEstado(): Promise<number> {
     return new Promise<number>((resolve, reject) => {
-      this.detalleOTService.getCountDetalleOTByEstado(this.id_ot, this.d_estado).subscribe(
+      this.detalleOTService.getCountDetalleOTByEstado(this.id_ot, 1).subscribe(
         (datatotal) => {
           console.log("count");
           console.log(datatotal);
           this.datatotal = datatotal;
           resolve(datatotal);
+
         },
         (error) => {
           console.error('Error al cargar los detalles:', error);
@@ -446,14 +666,19 @@ updateSolicitudOnLoad(id_ot: number): void {
 
 })
 
+
+
 }
 
 
 divisionCount(): number {
+  console.log(this.datatotal2);
+  console.log(this.datatotal);
   this.division = this.datatotal / this.datatotal2 * 100;
   console.log(this.division);
   console.log(typeof(this.datatotal));
   return this.division;
+
 
 }
 
@@ -463,6 +688,7 @@ divisionCount(): number {
     const urlSegments = window.location.pathname.split('/');
     return Number(urlSegments[urlSegments.length - 1]); // Asegúrate de que este índice sea correcto
   }
+
 
 
   

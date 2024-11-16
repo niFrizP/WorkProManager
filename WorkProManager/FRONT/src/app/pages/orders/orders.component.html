@@ -83,7 +83,9 @@
         <th class="border p-2">Rut Cliente</th>
         <th class="border p-2">Estado</th>
         <th class="border p-2">Usuario</th>
-        <th class="border p-2">Rut Usuario</th>
+        <th class="border p-2">Estado ot</th>
+        <th class="border p-2">Esta visto</th>
+        <th class="border p-2">Fecha de plazo</th>
 
       </tr>
     </thead>
@@ -106,7 +108,13 @@
         <span *ngIf="!newOrder.VistaSolicitud.isview">
           ✅
         </span>
+
         <td>
+          <app-cronometro [fechaPlazo]="newOrder.VistaSolicitud.fecha_plazo | date:'yyyy-MM-ddTHH:mm:ss'"></app-cronometro>
+        </td>
+
+        <td>
+          
           <button [routerLink]="['/edit-order', newOrder.id_ot]">✏️</button>
 <button (click)="newOrder.id_ot !== undefined ? deleting(newOrder.id_ot) : null">🗑️</button>        </td>
       </tr>

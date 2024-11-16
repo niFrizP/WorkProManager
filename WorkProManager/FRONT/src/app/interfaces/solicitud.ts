@@ -8,4 +8,6 @@ export interface Solicitud {
     fecha_emision?: Date | undefined;
     fecha_termino?: Date | undefined;
     fecha_plazo?: Date | undefined;
+    rut_remitente?: number | null;
+    rut_receptor?: number | null;
 }

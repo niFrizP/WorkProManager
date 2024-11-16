@@ -6,7 +6,9 @@ const query_1 = require("../controllers/query");
 const order_1 = require("../controllers/order");
 const router = (0, express_1.Router)();
 router.post('/getorderbyid', order_1.getOrdersByUsuarioOrder); // Ruta para obtener las órdenes con joins
+router.get('/grafico', query_1.getOrdersByEstadoEnTiempoGrafico); // Ruta para obtener las órdenes con joins
 router.post('/getUser1', query_1.getOrdersByEstadoByUser_1);
+router.post('/getorderbyidenproceso', order_1.getOrdersByUsuarioOrderEnProceso); // Ruta para obtener las órdenes con joins
 router.post('/getUser2', query_1.getOrdersByEstadoByUser_2);
 router.post('/getUser3', query_1.getOrdersByEstadoByUser_3);
 router.post('/getUser4', query_1.getOrdersByEstadoByUser_4);

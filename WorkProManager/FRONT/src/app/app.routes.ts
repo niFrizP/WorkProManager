@@ -16,6 +16,8 @@ import path from 'path';
 import { CotizacionComponent } from './pages/cotizacion/cotizacion.component';
 import { NgModule } from '@angular/core';
 import { AuthRolGuard } from './auth-rol.guard';
+import { CreateUsuarioComponent } from './pages/create-usuario/create-usuario.component';
+import { EditUsuarioComponent } from './pages/edit-usuario/edit-usuario.component';
 import { AuthGuard } from './auth.guard';
 import { CanActivate } from '@angular/router';
 import { AuthService } from './services/auth.service';
@@ -29,10 +31,12 @@ export const routes: Routes = [
   { path: 'header', component: HeaderComponent }, // Ruta a 'header'
   { path: 'profile', component: ProfileComponent }, // Ruta a 'profile'
   { path: 'usuarios', component: UsuariosComponent }, // Ruta a 'usuarios'
+  { path: 'usuarios/create-usuario', component: CreateUsuarioComponent}, // Ruta a 'create-usuario'
   { path: 'edit-order/:id_ot', component: EditOrderComponent}, // Ruta a 'edit-order'
   { path: 'reportes', component: ReportesComponent, canActivate:[AuthRolGuard], data:{requiredRoles: [1,2, 3]}}, // Ruta a 'reportes'
   { path: 'reportes/createReport/:id', component: CreateReportComponent},
   { path: 'reportes/createReport/:id/:id_serv', component: DetalleComponent},
+  { path: 'edit-usuario/:rut_usuario', component: EditUsuarioComponent}, // Ruta a 'aprobaciones-tick'
   { path: '**', redirectTo: '/login' }, // Maneja rutas no encontradas
 
 ];

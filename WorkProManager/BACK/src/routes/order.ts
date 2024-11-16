@@ -1,6 +1,6 @@
 // WorkProManager/BACK/src/routes/order.ts
 import { Router } from 'express';
-import {  getOrder, getOrders, postOrder, updateOrder, countOrdersNotification, getSolicitudesFromView, deleteOrder, createSolicitudView} from '../controllers/order';
+import {  getOrder, getOrders, postOrder, updateOrder, countOrdersNotification, getSolicitudesFromView, deleteOrder, createSolicitudView, getOrdersEliminadas} from '../controllers/order';
 import { Sequelize } from 'sequelize';
 import sequelize from '../db/connection';
 import db from '../db/connection';
@@ -12,6 +12,7 @@ router.get('/', getOrders); // Ruta para obtener las órdenes con joins
 router.get('/count', createSolicitudView)
 router.get('/solicitudes', getSolicitudesFromView);
 router.get('/countOrderN', countOrdersNotification); // Para obtener una orden específica por ID
+router.get('/eliminadas', getOrdersEliminadas)
 
 router.get('/:id', getOrder); // Para obtener una orden específica por ID
 

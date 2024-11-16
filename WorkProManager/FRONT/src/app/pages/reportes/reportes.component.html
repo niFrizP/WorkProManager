@@ -79,6 +79,7 @@
     <thead>
       <tr>
         <th class="border p-2">Fecha de entrega</th>
+        <th class="border p-2">Tiempo</th>
         <th class="border p-2">Equipo</th>
         <th class="border p-2">OT ID</th>
         <th class="border p-2">Descripción</th>
@@ -86,13 +87,22 @@
         <th class="border p-2">Rut Cliente</th>
         <th class="border p-2">Estado</th>
         <th class="border p-2">Usuario</th>
+        <th class="border p-2">cronometro</th>
+
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
       [ngClass]="{ 'text-red-600': newOrder.VistaSolicitud.isview }">
         
+
+      
+
         <td>{{ newOrder.fec_entrega }}</td>
+        <td>{{ newOrder.VistaSolicitud.fecha_plazo }}</td>
+        <!-- src/app/components/cronometro/cronometro.component.html -->
+
+
         <td>{{ newOrder.num_equipo }}</td>
         <td>{{ newOrder.id_ot }}</td>
         <td>{{ newOrder.descripcion }}</td>
@@ -101,6 +111,9 @@
         <td> 
           {{ newOrder.EstadoOT.nom_estado_ot }}</td>
         <td>{{ newOrder.Usuario.nom_usu }}</td>
+        <td>
+          <app-cronometro [fechaPlazo]="newOrder.VistaSolicitud.fecha_plazo | date:'yyyy-MM-ddTHH:mm:ss'"></app-cronometro>
+        </td>
         <td><span *ngIf="newOrder.VistaSolicitud.isview">
           ⚠️ 
         </span>

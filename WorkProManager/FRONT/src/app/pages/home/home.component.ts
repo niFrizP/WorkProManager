@@ -9,6 +9,7 @@ import { AuthInterceptor } from '../../services/auth_interceptor.service';
 import { QueryService } from '../../services/query';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
+import { GraficoxMesComponent } from '../../components/graficox-mes/graficox-mes.component';
 
 @Component({
   standalone: true,
@@ -17,7 +18,7 @@ import { BrowserModule } from '@angular/platform-browser';
     useClass: AuthInterceptor,
     multi: true,
   },],
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, GraficoxMesComponent],
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
@@ -103,39 +104,19 @@ this.showDashboard = false; // Controla si mostrar los dashboards
       },
     });
 
-    setTimeout(() => {this.getOrdersByEstado1(this.rut_usuario),   this.getOrdersByEstado2(this.rut_usuario),
-      this.getOrdersByEstado3(this.rut_usuario),    this.getOrdersByEstado4(this.rut_usuario);
+   
 
-
-
-   }, 2002);
 
 
 
     this.obtenerOrdenesValidas();
     this.obtenerOrdenesValidasTotal();
     this.obtenerConteoOrdenesEliminadasGeneral() 
-
-    this
-
-    this.obtenerConteoOrdenesActivasByUser()
-    this.obtenerConteoOrdenesEliminadasByUser()
     this.isLoading = false;
   }
 
 
-  getOrdersByEstado1(rut_usuario: number): void {
-    console.log(rut_usuario)
-    this.queryService.getOrdersByEstadoByUser1(rut_usuario).subscribe(
-      (data) => {
-        this.ordersCount1 = data[0].total;
-        console.log(this.ordersCount1);
-      },
-      (error) => {
-        console.error('Error al obtener las órdenes:', error);
-      }
-    );
-  }
+
 
   getOrdersByEstado2(rut_usuario: number): void {
     this.queryService.getOrdersByEstadoByUser2(rut_usuario).subscribe(
@@ -268,76 +249,7 @@ this.showDashboard = false; // Controla si mostrar los dashboards
     );
   }
 
-  obtenerConteoOrdenes() {
-    this.queryService.getCountOrdenes(this.startDate, this.endDate).subscribe(
-      (data) => {
-        this.ordenesCount = data[0].total; // Accede al primer objeto y la propiedad 'total'
-        console.log('Total de órdenes:', this.ordenesCount);
-        this.showDashboard = true; // Muestra el dashboard después de obtener las órdenes
-        console.log(this.showDashboard);
-      },
-      (error) => {
-        console.error('Error al obtener el conteo de órdenes:', error);
-      }
-    );
-  }
-
-  obtenerConteoOrdenesTotalByUser() {
-    console.log(this.rut_usuario)
-    
-    this.queryService.getCountOrdenesTotalByUser(this.startDate, this.endDate, this.rut_usuario).subscribe(
-      (data) => {
-        console.log(data);
-        this.ordenesCountByUsuario = data[0].total; // Accede al primer objeto y la propiedad 'total'
-        console.log('Total de órdenes:', this.ordenesCountByUsuario);
-      },
-      (error) => {
-        console.error('Error al obtener el conteo de órdenes:', error);
-      }
-    );
-  }
-  
-
-  obtenerConteoOrdenesActivasByUser() {
-    this.queryService.getCountOrdenesByUser(this.startDate, this.endDate, this.rut_usuario).subscribe(
-      (data) => {
-        this.ordenesActivas = data[0].total; // Accede al primer objeto y la propiedad 'total'
-        console.log('Total de órdenes:', this.ordenesActivas);
-      },
-      (error) => {
-        console.error('Error al obtener el conteo de órdenes:', error);
-      }
-    );
-  }
-
-  obtenerConteoOrdenesEliminadasByUser() {
-
-    
-
-    this.queryService.getCountOrdenesEliminadasByUser(this.startDate, this.endDate, this.rut_usuario).subscribe(
-      (data) => {
-        this.countbyUser = data[0].total; // Accede al primer objeto y la propiedad 'total'
-        console.log('Total de órdenes:', this.countbyUser);
-      },
-      (error) => {
-        console.error('Error al obtener el conteo de órdenes:', error);
-      }
-    );
-  }
-
-
-  obtenerConteoOrdenesActivas() {
-    this.queryService.getCountOrdenesActivas(this.startDate, this.endDate).subscribe(
-      (data) => {
-        this.ordenesActivas = data[0].total; // Accede al primer objeto y la propiedad 'total'
-        console.log('Total de órdenes:', this.ordenesActivas);
-      },
-      (error) => {
-        console.error('Error al obtener el conteo de órdenes:', error);
-      }
-    );
-  }
-
+ 
 
   obtenerConteoOrdenesEliminadas() {
     this.queryService.getCountOrdenesEliminadas(this.startDate, this.endDate).subscribe(

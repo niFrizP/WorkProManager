@@ -21,10 +21,11 @@ import { Equipo } from '../../interfaces/equipo';
 import { OrdereliminadaService } from '../../services/ordereliminada.service';
 import { AuthService } from '../../services/auth.service';
 import { QueryService } from '../../services/query';
+import { CronometroComponent } from '../../components/cronometro/cronometro.component';
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule],
+  imports: [CommonModule, NgxPaginationModule,CronometroComponent, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css'],
 })
