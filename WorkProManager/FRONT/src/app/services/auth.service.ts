@@ -23,10 +23,11 @@ export class AuthService {
   }
   private myAppUrl: string;
   private myApiUrl: string;
-  private userId: number = 0;
+  public userId: number = 0;
   private userRole: number = 0;
   private rolId: number = 0;
   private userRoleSubject = new BehaviorSubject<number | null>(null);
+  private userSubject = new BehaviorSubject<number | null>(null);
   userRole$ = this.userRoleSubject.asObservable(); // Observable que expone el rol del usuario
   
 
@@ -94,12 +95,16 @@ export class AuthService {
     this.setRolId(id_rol);
     if (typeof window !== 'undefined') {
       localStorage.setItem('userRole', id_rol.toString());
+      localStorage.setItem('userId', rut_usuario.toString());
     }
   }
 
   setUserId(rut_usuario: number): void {
     this.userId = rut_usuario;
+    this.userSubject.next(rut_usuario); // Notifica el cambio de rol
+
     console.log('Usuario:', this.userId);
+    
   }
 
   setRolId(id_rol: number): void {
@@ -126,7 +131,13 @@ export class AuthService {
     return null;
   }
 
-  
+  public getIdLocal(): number | null {
+    if (typeof window !== 'undefined') {
+      const rut_usuario = localStorage.getItem('userId');
+      return rut_usuario ? Number(rut_usuario) : null;
+    }
+    return null;
+  }
   
 
   getRolId(): number | null {

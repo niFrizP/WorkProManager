@@ -1,4 +1,4 @@
-import { Component, OnInit, ɵɵqueryRefresh } from '@angular/core';
+import { Component, NgModule, OnInit, ɵɵqueryRefresh } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -24,13 +24,17 @@ import { EstadoOT } from '../../interfaces/estadoot';
 import { EstadoOTService } from '../../services/estado_ot.service';
 import { AuthService } from '../../services/auth.service';
 import { SolicitudService } from '../../services/solicitud.service';
+import { TimerService } from '../../services/timer.service';
 import { Solicitud } from '../../interfaces/solicitud';
-import { animate, trigger, state, style, transition } from '@angular/animations';
+import { CronometroComponent } from '../../components/cronometro/cronometro.component';
+import { QueryService } from '../../services/query';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+
 
 @Component({
   selector: 'app-reportes',
   standalone: true,
-  imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ReactiveFormsModule, RouterModule, CronometroComponent],
   templateUrl: './reportes.component.html',
   styleUrls: ['./reportes.component.css'],
   animations: [
@@ -87,8 +91,11 @@ export class ReportesComponent implements OnInit {
   servicios: Servicio[] = [];
   selectedMonth: number = 0;
   selectedEstadoName = '';
+  selectedFechaPlazo: Date | null = null;
   selectedYear: number = 0;
   selectedEquipo: string = '';
+  tiempoRestante: string = '';
+  private intervalo: any;
   id_estado_ot: number = 0;
   selectedStatus: string = 'todas';
   selectedUsuario: string = 'todos';
@@ -110,9 +117,11 @@ export class ReportesComponent implements OnInit {
   estados: EstadoOT[] = [];
   itemsPerPage = 10;
   newSolicitudId: number | null = null;
+  
   id_ot: number = 0; // Declare the id_ot property
   public isModalOpen: boolean = false
-
+  rut_usuario: number = 0;
+  idRol: number | null = 0;
 
   years = [2024, 2023, 2022]; // Asegúrate de rellenar con los años disponibles
 
@@ -132,7 +141,9 @@ export class ReportesComponent implements OnInit {
     public authService: AuthService,
     private fb: FormBuilder,
     private solicitudService: SolicitudService,
-
+    private timerService: TimerService,
+    private queryService: QueryService,
+    
 
   )
 
@@ -158,15 +169,47 @@ export class ReportesComponent implements OnInit {
   
 
   ngOnInit(): void {
+    this.rut_usuario = this.authService.getUserId() ?? 0
+    this.idRol = this.authService.getRolId() ?? 0
     this.loadOrders();
     this.loadEstados();
     this.loadUsers();
     this.loadServicios();
-    
+    this.actualizarTiempoRestante();
+    this.filterOrders();
+
+
    
   }
 
-  
+
+
+  iniciarCronometro() {
+    this.actualizarTiempoRestante(); // Muestra el tiempo inicial inmediatamente
+    this.intervalo = setInterval(() => this.actualizarTiempoRestante(), 1000);
+  }
+
+  actualizarTiempoRestante() {
+    const ahora = new Date().getTime();
+    const diferencia = this.newOrders[0].VistaSolicitud.fecha_plazo.getTime() - ahora;
+
+    if (diferencia > 0) {
+      const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+      const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+      const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+
+      this.tiempoRestante = `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+    } else {
+      this.tiempoRestante = '¡Tiempo terminado!';
+      clearInterval(this.intervalo); // Detiene el cronómetro cuando llega a cero
+    }
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.intervalo); // Limpia el intervalo si el componente se destruye
+  }
+
 
   filterOrdersByServicio(servicio: string) {
     this.selectedServicio = servicio;
@@ -183,6 +226,11 @@ export class ReportesComponent implements OnInit {
   }
   filterOrdersByUsuario(usuario: string) {
     this.selectedUsuario = usuario;
+    this.filterOrders();
+  }
+
+  filterOrdersByDate(date: Date | null) {
+    this.selectedFechaPlazo = date;
     this.filterOrders();
   }
 
@@ -232,17 +280,6 @@ export class ReportesComponent implements OnInit {
     this.filterOrders();
   }
 
-  toggleMenu(id_ot: number | undefined): void {
-    console.log("ID de la orden:", id_ot);
-    if (id_ot === undefined) {
-      console.log("No existe una orden con un id válido.");
-      return;
-    }
-    
-    // Si `isMenuOpen` ya es el `id_ot` actual, ciérralo; de lo contrario, ábrelo
-    this.isMenuOpen = this.isMenuOpen === id_ot ? undefined : id_ot;
-    console.log("Estado de isMenuOpen:", this.isMenuOpen);
-  }
 
   public openModal(id_ot:number): void {
     this.updateSolicitudOnLoad(id_ot)
@@ -381,6 +418,26 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
   }
   
   loadOrders(): void {
+
+    if(this.idRol == 2){
+
+      this.queryService.getOrdersByUsuarioProgreso(this.rut_usuario).subscribe(
+        (data: newOrder[]) => {
+          this.newOrders = data;
+
+          this.filteredOrders = this.newOrders; // Inicializar filteredOrders
+          this.sortOrders(this.newOrders);
+          console.log(this.newOrders.map(newOrder => newOrder.EstadoOT.nom_estado_ot));
+
+          
+        },
+        (error) => {
+          console.error('Error fetching orders', error);
+        }
+      );
+
+    }else{
+    
     this.orderService.getlistnewOrders().subscribe(
       (data: newOrder[]) => {
         this.newOrders = data;
@@ -394,6 +451,7 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
       }
     );
   }
+}
 
   sortOrders(newOrders: any[]): any[] {
     return newOrders.sort((a, b) => {
@@ -407,6 +465,7 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
       return 0;  // Si ambos tienen el mismo valor en isview, no cambiamos el orden
     });
   }
+  
 
   filterOrders() {
     this.filteredOrders = this.newOrders
@@ -417,6 +476,8 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
       .filter(newOrder => !this.selectedDate || new Date(newOrder.fec_entrega).toDateString() === this.selectedDate?.toDateString())
       .filter(newOrder => !this.searchEquipo || newOrder.Equipo.mod_equipo.toString().toLowerCase().includes(this.searchEquipo.toString().toLowerCase()))
       .filter(newOrder => this.selectedUsuario === 'todos' || newOrder.Usuario.nom_usu.toLowerCase() === this.selectedUsuario.toLowerCase())// Filtro de usuario
+      .filter(newOrder => !this.selectedFechaPlazo || new Date(newOrder.VistaSolicitud.fecha_plazo).toDateString() === this.selectedFechaPlazo?.toDateString())
+      .sort((a, b) => new Date(b.VistaSolicitud.fecha_plazo).getTime() - new Date(a.VistaSolicitud.fecha_plazo).getTime());
       this.filteredOrders = this.sortOrders(this.filteredOrders);
 
   }

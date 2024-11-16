@@ -98,4 +98,15 @@ getOrdersByUsuario(rut_usuario: number): Observable<any> {
   // Realiza una solicitud POST sin headers
   return this.http.post<any>(`${this.myAppUrl}${this.myApiUrl}getorderbyid`, body);
 }
+
+getOrdersByUsuarioProgreso(rut_usuario: number): Observable<any> {
+  const body = { rut_usuario };
+
+  // Realiza una solicitud POST sin headers
+  return this.http.post<any>(`${this.myAppUrl}${this.myApiUrl}getorderbyidenproceso`, body);
 }
+
+getOrdersByEstadoEnTiempo(): Observable<any> {
+  // Realiza una solicitud POST a la API
+  return this.http.get<any>(`${this.myAppUrl}${this.myApiUrl}grafico`);
+} }

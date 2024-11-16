@@ -41,6 +41,12 @@ const Solicitud = db.define('Solicitud', {
     },
     fecha_plazo: {
         type: DataTypes.DATE
+    },
+    rut_remitente: {
+        type: DataTypes.INTEGER
+    },
+    rut_receptor: {
+        type: DataTypes.INTEGER
     }
   
 }, {

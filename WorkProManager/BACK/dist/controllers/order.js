@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersByUsuarioOrder = exports.createSolicitudView = exports.getSolicitudesFromView = exports.countOrdersNotification = exports.getOrders = void 0;
+exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersByUsuarioOrderEnProceso = exports.getOrdersEliminadas = exports.getOrdersByUsuarioOrder = exports.createSolicitudView = exports.getSolicitudesFromView = exports.countOrdersNotification = exports.getOrders = void 0;
 const orders_1 = __importDefault(require("../models/orders"));
 const equipo_1 = __importDefault(require("../models/equipo"));
 const cliente_1 = __importDefault(require("../models/cliente"));
@@ -46,7 +46,7 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     required: true
                 },
                 { model: vistamin_1.default,
-                    attributes: ['isview', 'fecha_emision'],
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
                     required: true
                 },
             ],
@@ -88,7 +88,7 @@ const countOrdersNotification = (req, res) => __awaiter(void 0, void 0, void 0, 
                 },
                 {
                     model: vistamin_1.default,
-                    attributes: ['isview', 'fecha_emision'],
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
                     required: true,
                     where: {
                         isview: true,
@@ -118,7 +118,7 @@ const getSolicitudesFromView = (req, res) => __awaiter(void 0, void 0, void 0, f
     }
     catch (error) {
         console.error('Error al obtener solicitudes desde la vista:', error);
-        res.status(500).json({ message: 'Error al obtener solicitudes desde la vista', error: error.message });
+        res.status(500).json({ message: 'Error al obtener solicitudes desde la vista', error });
     }
 });
 exports.getSolicitudesFromView = getSolicitudesFromView;
@@ -127,7 +127,7 @@ const createSolicitudView = (req, res) => __awaiter(void 0, void 0, void 0, func
         // Consulta SQL para crear la vista
         const createViewQuery = `
             CREATE OR REPLACE VIEW vista_solicitudes_min_fecha AS
-            SELECT id_sol, id_ot, fecha_emision, isview
+            SELECT id_sol, id_ot, fecha_emision, isview, fecha_plazo, rut_remitente, rut_receptor
             FROM solicitud s1
             WHERE fecha_emision = (
                 SELECT MIN(fecha_emision)
@@ -141,7 +141,7 @@ const createSolicitudView = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
     catch (error) {
         console.error('Error al crear la vista:', error);
-        res.status(500).json({ message: 'Error al crear la vista', error: error.message });
+        res.status(500).json({ message: 'Error al crear la vista', error });
     }
 });
 exports.createSolicitudView = createSolicitudView;
@@ -168,12 +168,17 @@ const getOrdersByUsuarioOrder = (req, res) => __awaiter(void 0, void 0, void 0, 
                     model: estado_ot_1.default,
                     attributes: ['nom_estado_ot'],
                     required: true
-                }
+                },
+                { model: vistamin_1.default,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
+                    required: true
+                },
             ], where: {
-                rut_usuario: req.body.rut_usuario
+                rut_usuario: req.body.rut_usuario,
+                id_estado_ot: { [sequelize_1.Op.in]: [1, 2] }, // Filtrar donde el estado no sea 5 ni 6
             }
         });
-        console.log('Consulta de órdenes:', JSON.stringify(listOrders, null, 2)); // Log de la consulta
+        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
         res.json(listOrders);
     }
     catch (error) {
@@ -184,6 +189,100 @@ const getOrdersByUsuarioOrder = (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.getOrdersByUsuarioOrder = getOrdersByUsuarioOrder;
+const getOrdersEliminadas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Determinar el filtro dinámico para `rut_usuario`
+        const filters = {
+            id_estado_ot: { [sequelize_1.Op.in]: [6] }, // Filtrar estado específico
+        };
+        if (req.body.rut_usuario) {
+            filters.rut_usuario = req.body.rut_usuario;
+        }
+        const listOrders = yield orders_1.default.findAll({
+            include: [
+                {
+                    model: cliente_1.default,
+                    attributes: ['nom_cli', 'ap_cli'],
+                    required: true,
+                },
+                {
+                    model: usuario_1.default,
+                    attributes: ['nom_usu', 'ap_usu'],
+                    required: true,
+                },
+                {
+                    model: equipo_1.default,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true,
+                },
+                {
+                    model: estado_ot_1.default,
+                    attributes: ['nom_estado_ot'],
+                    required: true,
+                },
+                {
+                    model: vistamin_1.default,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
+                    required: true,
+                },
+            ],
+            where: filters, // Aplica el filtro dinámico
+        });
+        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
+        res.json(listOrders);
+    }
+    catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders',
+        });
+    }
+});
+exports.getOrdersEliminadas = getOrdersEliminadas;
+const getOrdersByUsuarioOrderEnProceso = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const listOrders = yield orders_1.default.findAll({
+            include: [
+                {
+                    model: cliente_1.default,
+                    attributes: ['nom_cli', 'ap_cli'],
+                    required: true
+                },
+                {
+                    model: usuario_1.default,
+                    attributes: ['nom_usu', 'ap_usu'],
+                    required: true
+                },
+                {
+                    model: equipo_1.default,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true
+                },
+                {
+                    model: estado_ot_1.default,
+                    attributes: ['nom_estado_ot'],
+                    required: true
+                },
+                { model: vistamin_1.default,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
+                    required: true
+                },
+            ], where: {
+                rut_usuario: req.body.rut_usuario,
+                id_estado_ot: { [sequelize_1.Op.in]: [3, 4] }, // Filtrar donde el estado no sea 5 ni 6
+            }
+        });
+        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
+        res.json(listOrders);
+    }
+    catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders',
+        });
+    }
+});
+exports.getOrdersByUsuarioOrderEnProceso = getOrdersByUsuarioOrderEnProceso;
 const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {

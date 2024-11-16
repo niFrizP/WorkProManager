@@ -3,7 +3,6 @@ import Order from '../models/orders';
 import Equipo from '../models/equipo';
 import Cliente from '../models/cliente';
 import Usuario from '../models/usuario';
-import Servicio from '../models/servicio';
 import EstadoOT from '../models/estado_ot';
 import { Op, Sequelize } from 'sequelize';
 import sequelize from '../db/connection';
@@ -176,6 +175,41 @@ export const getOrdersByEstadoEnTiempo = async (req: Request, res: Response) => 
     res.status(500).send('Error al obtener los datos');
   }
 };
+
+export const getOrdersByEstadoEnTiempoGrafico = async (req: Request, res: Response) => {
+  try {
+    // Definir la expresión de fecha para agrupar por mes/año
+    const monthYearFormat = sequelize.fn('DATE_FORMAT', sequelize.col('fec_entrega'), '%Y-%m');
+
+    const ordersCount = await Order.findAll({
+      attributes: [
+        [monthYearFormat, 'monthYear'], // Agrupar por año y mes
+        [sequelize.fn('COUNT', sequelize.col('id_ot')), 'total'], // Contar las órdenes por mes
+      ],
+      where: {
+        id_estado_ot: {
+          [Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
+        },
+        fec_entrega: {
+          [Op.between]: [
+            sequelize.fn('DATE_SUB', sequelize.fn('NOW'), sequelize.literal('INTERVAL 12 MONTH')), // Fecha de hace 12 meses
+            sequelize.fn('NOW'), // Fecha actual
+          ],
+        },
+      },
+      group: [monthYearFormat], // Agrupar por mes y año
+      order: [[monthYearFormat, 'ASC']], // Ordenar por mes/año
+    });
+
+    // Enviar los datos como respuesta
+    res.json(ordersCount);
+  } catch (error) {
+    // Mejor manejo de errores con el mensaje completo
+    console.error('Error al obtener los datos:', error);
+    res.status(500).send('Error al obtener los datos: ' + error);
+  }
+};
+
 
 
 export const getOrdersByEstadoTotalEnTiempo = async (req: Request, res: Response) => {
@@ -545,7 +579,6 @@ export const getOrder = async (req: Request, res: Response) => {
                 { model: Equipo },
                 { model: Cliente },
                 { model: Usuario },
-                { model: Servicio },
                 { model: EstadoOT }
             ]
         });

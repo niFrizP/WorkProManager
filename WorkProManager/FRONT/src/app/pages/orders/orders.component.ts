@@ -23,11 +23,11 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { AuthService } from '../../services/auth.service';
 import { QueryService } from '../../services/query';
 import { PdfGeneratorService } from '../../services/pdf-generator.service';
-
+import { CronometroComponent } from '../../components/cronometro/cronometro.component';
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule],
+  imports: [CommonModule, NgxPaginationModule,CronometroComponent, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css'],
   animations: [

@@ -73,6 +73,8 @@ export class CotizacionComponent {
     operacion: string = 'Agregar ';
     newOrderId: number | null = null; // Variable para almacenar el ID de la nueva orden
   selectedServicePrecio: any;
+  rut_remitente: number | null = 0;
+  rut_receptor: number | null = 0;
   
   
   
@@ -112,6 +114,8 @@ export class CotizacionComponent {
         servicios: this.fb.array([this.fb.group({
           id_serv: [null, Validators.required],
         })]),
+        rut_receptor: [null, Validators.required],
+        rut_remitente: [null, Validators.required],
         desc_sol: ['', Validators.required],
         isSubmitting: [false] // Add this line
   
@@ -128,7 +132,11 @@ export class CotizacionComponent {
       this.cargarTipoEquipo();
       this.cargarServicios();
       this.cargarUsuarios();
+      console.log(this.authService.getRolIdLocal());
       this.cargarMarcas();
+     this.rut_remitente = this.authService.getIdLocal()
+      console.log('User ID:', this['userId']);
+    
 
 
       
@@ -225,6 +233,8 @@ export class CotizacionComponent {
           id_estado_ot: this.form.get('id_estado')?.value,
           isView: false,
           fecha_emision: new Date(),
+          rut_remitente: this.rut_remitente,
+          rut_receptor: this.form.get('rut_usuario')?.value
           
 
         };

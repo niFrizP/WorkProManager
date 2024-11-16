@@ -22,6 +22,7 @@ router.get('/', order_1.getOrders); // Ruta para obtener las órdenes con joins
 router.get('/count', order_1.createSolicitudView);
 router.get('/solicitudes', order_1.getSolicitudesFromView);
 router.get('/countOrderN', order_1.countOrdersNotification); // Para obtener una orden específica por ID
+router.get('/eliminadas', order_1.getOrdersEliminadas);
 router.get('/:id', order_1.getOrder); // Para obtener una orden específica por ID
 router.put('/:id', order_1.updateOrder); // Para actualizar una orden por ID
 router.post('/', order_1.postOrder); // Para crear una nueva orden

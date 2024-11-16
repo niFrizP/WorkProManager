@@ -1,7 +1,7 @@
 // WorkProManager/BACK/src/routes/order.ts
 import { Router } from 'express';
-import {  getOrder,getOrdersCosto,getOrdersByEstadoByUser_1,getOrdersByEstadoByUser_2,getOrdersByEstadoByUser_3,getOrdersByEstadoByUser_4 ,getOrdersEstadoSum, getOrdersByEstadoTotalEnTiempo, getOrdersByEstadoEliminadaByUser,getOrdersByEstadoEnTiempo, getOrdersByEstadoTotalByUser, getOrdersByEstadoByUser, countOrdersByDate,getOrdersByEstadoEliminada, getOrdersByEstado, getOrdersByYear ,getOrdersFromLast7DaysExcludingWeekends ,getOrdersByMonthAndYear ,getOrdersByEstadoByUser_5,getOrdersByUsuario, postOrder, updateOrder, deleteOrder, getOrdersByFecha, getOrdersByEstadoTotal } from '../controllers/query';
-import {  getOrdersByUsuarioOrder} from '../controllers/order';
+import {  getOrder,getOrdersCosto,getOrdersByEstadoByUser_1,getOrdersByEstadoByUser_2,getOrdersByEstadoByUser_3,getOrdersByEstadoByUser_4 ,getOrdersEstadoSum, getOrdersByEstadoTotalEnTiempo, getOrdersByEstadoEliminadaByUser,getOrdersByEstadoEnTiempo, getOrdersByEstadoTotalByUser, getOrdersByEstadoByUser, countOrdersByDate,getOrdersByEstadoEliminada, getOrdersByEstado, getOrdersByYear ,getOrdersFromLast7DaysExcludingWeekends ,getOrdersByMonthAndYear ,getOrdersByEstadoByUser_5,getOrdersByUsuario, postOrder, updateOrder, deleteOrder, getOrdersByFecha, getOrdersByEstadoTotal, getOrdersByEstadoEnTiempoGrafico } from '../controllers/query';
+import {  getOrdersByUsuarioOrder, getOrdersByUsuarioOrderEnProceso} from '../controllers/order';
 import sequelize from '../db/connection';
 import db from '../db/connection';
 import Order from '../models/orders';
@@ -10,7 +10,11 @@ const router = Router();
 
 router.post('/getorderbyid', getOrdersByUsuarioOrder); // Ruta para obtener las órdenes con joins
 
+router.get('/grafico', getOrdersByEstadoEnTiempoGrafico ); // Ruta para obtener las órdenes con joins
+
 router.post('/getUser1', getOrdersByEstadoByUser_1)
+
+router.post('/getorderbyidenproceso', getOrdersByUsuarioOrderEnProceso); // Ruta para obtener las órdenes con joins
 
 router.post('/getUser2', getOrdersByEstadoByUser_2)
 
