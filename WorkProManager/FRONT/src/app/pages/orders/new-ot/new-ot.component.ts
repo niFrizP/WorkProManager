@@ -106,16 +106,13 @@ selectedServicePrecio: any;
       servicios: this.fb.array([this.fb.group({
         id_serv: [null, Validators.required],
       })]),
-      isSubmitting: [false] // Add this line
-
       
     });
     
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
 
-
- 
-  
+    this.isSubmitting = false;
+    this.loading = false;
 
   }
 
@@ -123,23 +120,33 @@ selectedServicePrecio: any;
     this.cargarTipoEquipo();
 
     this.form = this.fb.group({
+      // Datos Básicos
+      fecha: ['', Validators.required],
+      descripcion: ['', [Validators.required, Validators.minLength(10)]],
+      //Cliente
       nombre: ['', [Validators.required, Validators.minLength(2)]],
       apellido: ['', [Validators.required, Validators.minLength(2)]],
       rut_cliente: ['', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
       d_veri_cli: ['', [Validators.required, Validators.pattern(/^[0-9kK]$/)]],
       correo: ['', [Validators.required, Validators.email]],
       celular: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+
+      //Equipo
       tipo_equipo: ['', Validators.required],
       mod_equipo: ['', Validators.required],
       id_marca: ['', Validators.required],
       num_equipo: ['', Validators.required],
-      id_tipo: [null, Validators.required],
+      id_tipo: ['', Validators.required],
       fec_fabric: ['', Validators.required],
+      //Servicio
       id_serv: ['', Validators.required],
-      descripcion: ['', [Validators.required, Validators.minLength(10)]],
-      fecha: ['', Validators.required],
+      //Usuario
       id_usuario: ['', Validators.required],
+      rut_usuario: ['', Validators.required],
+      //Estado
       id_estado: [2, Validators.required],
+      //Descripcion solicitud
+      desc_sol: ['', Validators.required]
     });
     this.cargarServicios();
     this.cargarUsuarios();
@@ -158,61 +165,6 @@ selectedServicePrecio: any;
     const field = this.form.get(fieldName);
     return field ? (field.invalid && (field.dirty || field.touched)) : false;
   }
-
-
-
-  async addProduct(): Promise<void> {
-    Object.keys(this.form.controls).forEach(key => {
-      const control = this.form.get(key);
-      control?.markAsTouched();
-    });
-
-    if (this.form.invalid) {
-      alert('Por Favor, complete todos los campos requeridos correctamente');
-      return;
-    }
-
-    if (this.serviciosSeleccionados.length === 0) {
-      alert('Debe seleccionar al menos un servicio');
-      return;
-    }
-
-    this.loading = true;
-
-    if (this.isSubmitting) return; // Si ya se está enviando, no hacer nada
-    this.isSubmitting = true; // Desactivar el botón
-
-
-    try {
-      // 1. Create or update cliente
-      const cliente = await this.createOrUpdateCliente();
-
-      // 2. Create or update equipo
-      const equipo = await this.createOrUpdateEquipo();
-
-      // 3. Create or update order
-      const order = await this.createOrUpdateOrder();
-
-      // Log the JSON representation of the order
-      const solicitud = await this.createorupdateSolicitud();
-
-
-      const detalleOT = await this.createOrUpdateDetalleOT();
-
-      console.log('New order ID:', this.newOrderId);
-      console.log('Order:', JSON.stringify(order, null, 2));  
-
-
-
-      this.loading = false;
-      this.router.navigate(['/']);
-    } catch (error) {
-      console.error('Error al crear la orden:', error);
-      this.loading = false;
-      // Handle error (e.g., show error message to user)
-    }
-  }
-
 
   private async createorupdateSolicitud(): Promise<Solicitud> {
     const solicitudData: Solicitud = {
@@ -258,10 +210,15 @@ selectedServicePrecio: any;
         });
       }
 
-  onServicioChange(event: any) {
-    event.preventDefault();
-    const servicioId = event.target.value;
-    this.servicioSeleccionado = servicioId ? parseInt(servicioId) : null;
+  onServicioChange(event: Event) {
+    const servicioId = (event.target as HTMLSelectElement).value;
+    if (servicioId) {
+      const servicio = this.servicios.find(s => s.id_serv === +servicioId);
+      if (servicio) {
+        this.serviciosSeleccionados.push(servicio);
+        this.form.patchValue({ id_serv: servicioId });
+      }
+    }
   }
 
   agregarServicio(event: Event) {
@@ -332,17 +289,83 @@ selectedServicePrecio: any;
     }
 }
 
-onSubmit(event: Event) {
-  event.preventDefault();
-  this.isSubmitting = true;
+  async onSubmit(event: Event): Promise<void> {
+    event.preventDefault();
 
-  // Simula un proceso de guardado (esto puede ser una llamada a tu servicio)
-  setTimeout(() => {
-    this.isSubmitting = false;
-    this.addProduct()
-    // Aquí puedes agregar lógica para manejar la respuesta de tu API
-  }, 2000);
-}
+    if (this.isSubmitting) {
+      return;
+    }
+
+    Object.keys(this.form.controls).forEach(key => {
+      const control = this.form.get(key);
+      control?.markAsTouched();
+    });
+
+    console.log('Form Values:', this.form.value);
+    console.log('Form Valid:', this.form.valid);
+    console.log('Form Errors:', this.getFormValidationErrors());
+
+    if (this.form.invalid) {
+      this.mostrarErroresFormulario();
+      return;
+    }
+
+    if (this.serviciosSeleccionados.length === 0) {
+      alert('Debe seleccionar al menos un servicio');
+      return;
+    }
+
+    try {
+      this.isSubmitting = true;
+      this.loading = true;
+  
+      // Crear o actualizar los datos en orden
+      const cliente = await this.createOrUpdateCliente();
+      const equipo = await this.createOrUpdateEquipo();
+      const order = await this.createOrUpdateOrder();
+      const solicitud = await this.createorupdateSolicitud();
+      const detalleOT = await this.createOrUpdateDetalleOT();
+  
+      console.log('Orden creada exitosamente:', {
+        cliente,
+        equipo,
+        order,
+        solicitud,
+        detalleOT
+      });
+  
+      // Redirigir al usuario
+      this.router.navigate(['/']);
+    } catch (error) {
+      console.error('Error al crear la orden:', error);
+      alert('Ocurrió un error al guardar la orden. Por favor, intente nuevamente.');
+    } finally {
+      this.isSubmitting = false;
+      this.loading = false;
+    }
+  }
+
+  private getFormValidationErrors() {
+    const errors: any = {};
+    Object.keys(this.form.controls).forEach(key => {
+      const control = this.form.get(key);
+      if (control?.errors) {
+        errors[key] = control.errors;
+      }
+    });
+    return errors;
+  }
+
+  private mostrarErroresFormulario() {
+    let mensajeError = 'Por favor, complete los siguientes campos:\n';
+    Object.keys(this.form.controls).forEach(key => {
+      const control = this.form.get(key);
+      if (control?.errors) {
+        mensajeError += `- ${key}\n`;
+      }
+    });
+    alert(mensajeError);
+  }
   
   private async createOrUpdateEquipo(): Promise<Equipo> {
     const equipoData: Equipo = {

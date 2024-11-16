@@ -22,7 +22,6 @@ import { OrdereliminadaService } from '../../services/ordereliminada.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { AuthService } from '../../services/auth.service';
 import { QueryService } from '../../services/query';
-import { PdfGeneratorComponent } from '../pdf-generator/pdf-generator.component';
 import { PdfGeneratorService } from '../../services/pdf-generator.service';
 
 @Component({
@@ -333,18 +332,16 @@ sortOrders(newOrders: any[]): any[] {
   }
 
   generatePDF(order: newOrder): void {
-    const fileName = `orden_de_trabajo_${order.id_ot}.pdf`;
-    const pdfContent = `
-      <h1>Orden de Trabajo</h1>
-      <p><strong>ID:</strong> ${order.id_ot}</p>
-      <p><strong>Descripción:</strong> ${order.descripcion}</p>
-      <p><strong>Estado:</strong> ${order.EstadoOT.nom_estado_ot}</p>
-      <p><strong>Cliente:</strong> ${order.rut_cliente}</p>
-      <p><strong>Fecha de entrega:</strong> ${order.fec_entrega}</p>
-      <p><strong>Equipo:</strong> ${order.Equipo.mod_equipo}</p>
-    `;
-  
-    this.pdfGeneratorService.generatePDFContent(pdfContent, fileName);
+    try {
+      if (!order || !order.Equipo.mod_equipo) {
+        throw new Error('Datos de orden incompletos');
+      }
+      
+      const fileName = `OT_${order.id_ot}.pdf`;
+      this.pdfGeneratorService.generatePDFContent(order, fileName, true); // Convertir a string si es necesario
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+    }
   }
 
   onPageChange(page: number): void {

@@ -51,15 +51,13 @@ import { animate, trigger, state, style, transition } from '@angular/animations'
 })
 export class ReportesComponent implements OnInit {
 
-  menuAbierto: { [key: string]: boolean } = {
-    filtrosGenerales: false,
-    filtroEstado: false,
-    filtroUsuario: false,
-    filtroServicio: false,
-    filtroFecha: false,
-    filtrosCliente: false,
-    filtroEquipo: false
-  };
+  isFiltrosOpen = false;
+  isEstadoOpen = false;
+  isUsuarioOpen = false;
+  isServicioOpen = false;
+  isFechaOpen = false;
+  isClienteOpen = false;
+  isEquipoOpen = false;
 
   numericError: string = '';  // Variable para almacenar el mensaje de error
   isSubmenuOpen: number | null = null; // Controla la visibilidad del submenú
@@ -187,8 +185,6 @@ export class ReportesComponent implements OnInit {
     this.selectedUsuario = usuario;
     this.filterOrders();
   }
-
-  
 
   // Actualiza el formulario cuando cambia la selección
   public onUserChange(event: Event, id_ot: number): void {
@@ -518,6 +514,26 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
 
   onPageChange(page: number): void {
     this.page = page;
+  }
+
+  isEstadoModalOpen: boolean = false;
+  selectedOtId: number | null = null;
+
+  openEstadoModal (otId: number) {
+    this.isEstadoModalOpen = true;
+    this.selectedOtId = otId;
+  }
+
+  closeEstadoModal () {
+    this.isEstadoModalOpen = false;
+    this.selectedOtId = null;
+  }
+
+  confirmChangeEstado(otId: number) {
+    if (this.selectedEstadoID) {
+      this.estadoUpdated(otId, this.selectedEstadoID);
+      this.closeEstadoModal();
+    }
   }
 
  
