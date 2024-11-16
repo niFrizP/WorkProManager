@@ -18,7 +18,7 @@ import { GraficoxMesComponent } from '../../components/graficox-mes/graficox-mes
     useClass: AuthInterceptor,
     multi: true,
   },],
-  imports: [FormsModule, CommonModule, GraficoxMesComponent],
+  imports: [FormsModule, CommonModule],
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']

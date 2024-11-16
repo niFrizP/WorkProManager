@@ -179,7 +179,7 @@
     
       <div>
         <label for="servicio">Selecciona un Servicio:</label>
-        <select id="id_serv" formControlName="id_serv" (change)="onServicioChange($event)">
+        <select id="id_serv" title="Selecciona un Servicio" formControlName="id_serv" (change)="onServicioChange($event)">
           <option value="">Seleccione un servicio</option>
           <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">
             {{ servicio.nom_serv }}
@@ -191,7 +191,7 @@
     
         <fieldset>
           <div>
-           <button (click)="agregarServicio($event)" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
+           <button type="button" (click)="agregarServicio($event)" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
              Añadir Servicio
            </button>
          </div>
@@ -216,7 +216,7 @@
         
         <div>
           <label for="usuarios">Selecciona un Usuario:</label>
-          <select id="rut_usuario" formControlName="rut_usuario" (change)="onUserChange($event)">
+          <select id="rut_usuario" formControlName="rut_usuario" title="Selecciona un Usuario" (change)="onUserChange($event)">
             <option value="">Seleccione un usuario</option>
             <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
               {{ usuario.nom_usu }} {{usuario.ap_usu}}
