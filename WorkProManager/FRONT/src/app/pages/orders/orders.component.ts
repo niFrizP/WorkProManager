@@ -22,6 +22,7 @@ import { OrdereliminadaService } from '../../services/ordereliminada.service';
 import { AuthService } from '../../services/auth.service';
 import { QueryService } from '../../services/query';
 import { CronometroComponent } from '../../components/cronometro/cronometro.component';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 @Component({
   selector: 'app-orders',
   standalone: true,

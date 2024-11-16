@@ -28,6 +28,7 @@ import { TimerService } from '../../services/timer.service';
 import { Solicitud } from '../../interfaces/solicitud';
 import { CronometroComponent } from '../../components/cronometro/cronometro.component';
 import { QueryService } from '../../services/query';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 
 @Component({
@@ -287,17 +288,6 @@ export class ReportesComponent implements OnInit {
     this.filterOrders();
   }
 
-  toggleMenu(id_ot: number | undefined): void {
-    console.log("ID de la orden:", id_ot);
-    if (id_ot === undefined) {
-      console.log("No existe una orden con un id válido.");
-      return;
-    }
-    
-    // Si `isMenuOpen` ya es el `id_ot` actual, ciérralo; de lo contrario, ábrelo
-    this.isMenuOpen = this.isMenuOpen === id_ot ? undefined : id_ot;
-    console.log("Estado de isMenuOpen:", this.isMenuOpen);
-  }
 
   public openModal(id_ot:number): void {
     this.updateSolicitudOnLoad(id_ot)
