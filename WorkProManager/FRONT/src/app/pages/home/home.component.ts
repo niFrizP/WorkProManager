@@ -41,15 +41,11 @@ export class HomeComponent implements OnInit {
   ordersByDay: newOrder[] = [];
   ordersByEstadoSum: newOrder[] = [];
 
-
   ordersCount1: number = 0;
   ordersCount2: number = 0;
   ordersCount3: number = 0;
   ordersCount4: number = 0;
   ordersCount5: number = 0;
-
-
-
 
   countTotalActivas: number = 0;
   countTotal: number = 0;
@@ -70,18 +66,18 @@ export class HomeComponent implements OnInit {
     this.authService.getUserRole()
     this.ordenesCount = 0; // Establece un valor inicial si aún no has obtenido los datos
     this.ordenesCountByUsuario = 0; // Establece un valor inicial si aún no has obtenido los datos
-  this.ordenesActivas = 0; 
-this.ordenesEliminadas = 0;
-this.countTotalActivas = 0;
-this.countTotal = 0;
-this.countEliminadas = 0;
-this.countbyUser = 0;
+    this.ordenesActivas = 0; 
+    this.ordenesEliminadas = 0;
+    this.countTotalActivas = 0;
+    this.countTotal = 0;
+    this.countEliminadas = 0;
+    this.countbyUser = 0;
 
-this.ordersCount1 = 0;
-this.ordersCount2 = 0;
-this.ordersCount3 = 0;
-this.ordersCount4 = 0;
-this.ordersCount5 = 0;
+    this.ordersCount1 = 0;
+    this.ordersCount2 = 0;
+    this.ordersCount3 = 0;
+    this.ordersCount4 = 0;
+    this.ordersCount5 = 0;
 
 
 this.showDashboard = false; // Controla si mostrar los dashboards
@@ -278,8 +274,6 @@ this.showDashboard = false; // Controla si mostrar los dashboards
 
     this.router.navigate(['/login']);
   }
-  
-
 
 
 

@@ -27,7 +27,12 @@ export class ModalComponent implements OnInit, OnChanges {
       id_sol: [null],
       id_ot: [null],
       desc_sol: [''],
-      id_estado_ot: [null]
+      id_estado_ot: [null],
+      fecha_vista: [null],
+      fecha_emision: [null],
+      fecha_termino: [null],
+      fecha_plazo: [null]
+
     });
   }
 

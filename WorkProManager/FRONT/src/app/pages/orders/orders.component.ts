@@ -19,10 +19,11 @@ import { Cliente } from '../../interfaces/cliente';
 import { Servicio } from '../../interfaces/servicio';
 import { Equipo } from '../../interfaces/equipo';
 import { OrdereliminadaService } from '../../services/ordereliminada.service';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 import { AuthService } from '../../services/auth.service';
 import { QueryService } from '../../services/query';
+import { PdfGeneratorService } from '../../services/pdf-generator.service';
 import { CronometroComponent } from '../../components/cronometro/cronometro.component';
-import { animate, state, style, transition, trigger } from '@angular/animations';
 @Component({
   selector: 'app-orders',
   standalone: true,
@@ -118,7 +119,8 @@ export class OrdersComponent implements OnInit {
     private clienteService: ClienteService,
     private detalleOTService: DetalleOTService,
     private servicioService: ServicioService,
-    public authService: AuthService
+    public authService: AuthService,
+    private pdfGeneratorService: PdfGeneratorService
   ) {}
 
   ngOnInit(): void {
@@ -250,7 +252,7 @@ sortOrders(newOrders: any[]): any[] {
 
   filterOrders() {
     this.filteredOrders = this.newOrders
-      .filter(newOrder => this.selectedStatus === 'todas' || newOrder.EstadoOT.nom_estado_ot.toLowerCase() === this.selectedStatus)
+      .filter(newOrder => this.selectedStatus === 'todas' || newOrder.EstadoOT.nom_estado_ot.toLowerCase() === this.selectedStatus.toLowerCase())
       .filter(newOrder => this.selectedMonth === 0 || new Date(newOrder.fec_entrega).getMonth() + 1 === this.selectedMonth)
       .filter(newOrder => this.selectedYear === 0 || new Date(newOrder.fec_entrega).getFullYear() === this.selectedYear)
       .filter(newOrder => !this.searchRutCliente || newOrder.rut_cliente.toString().toLowerCase().includes(this.searchRutCliente.toLowerCase()))
@@ -329,15 +331,18 @@ sortOrders(newOrders: any[]): any[] {
     }
   }
 
-
-
-     
-
-  
-  
-
-  
-  
+  generatePDF(order: newOrder): void {
+    try {
+      if (!order || !order.Equipo.mod_equipo) {
+        throw new Error('Datos de orden incompletos');
+      }
+      
+      const fileName = `OT_${order.id_ot}.pdf`;
+      this.pdfGeneratorService.generatePDFContent(order, fileName, true); // Convertir a string si es necesario
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+    }
+  }
 
   onPageChange(page: number): void {
     this.page = page;

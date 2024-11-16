@@ -9,7 +9,7 @@
         detalles requeridos.
       </p>
 
-      <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
+      <form class="space-y-6" [formGroup]="form" (ngSubmit)="onSubmit($event)">
 
         <div class="mt-4">
           <label for="fecha">Fecha de Entrega:</label>
@@ -116,8 +116,10 @@
               type="text"
               id="mod_equipo"
               formControlName="mod_equipo"
+              placeholder="Ingrese modelo del equipo"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
             />
+            <div *ngIf="isFieldInvalid('mod_equipo')" class="text-red-500 text-sm">Ingrese modelo del equipo</div>
           </div>
 
           <div>
@@ -177,12 +179,15 @@
     
       <div>
         <label for="servicio">Selecciona un Servicio:</label>
-        <select id="servicio" [(ngModel)]="servicioSeleccionado" (change)="onServicioChange($event)">
+        <select id="id_serv" formControlName="id_serv" (change)="onServicioChange($event)">
           <option value="">Seleccione un servicio</option>
           <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">
             {{ servicio.nom_serv }}
           </option>
         </select>
+        <div *ngIf="isFieldInvalid('id_serv')" class="text-red-500 text-sm">
+          Debe Seleccionar al menos un servicio
+        </div>
     
         <fieldset>
           <div>
@@ -213,10 +218,13 @@
           <label for="usuarios">Selecciona un Usuario:</label>
           <select id="rut_usuario" formControlName="rut_usuario" (change)="onUserChange($event)">
             <option value="">Seleccione un usuario</option>
-            <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario" formControlName="usuario.rut_usuario">
+            <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
               {{ usuario.nom_usu }} {{usuario.ap_usu}}
             </option>
           </select>
+          <div *ngIf="isFieldInvalid('rut_usuario')" class="text-red-500 text-sm">
+            Debe Seleccionar un usuario
+          </div>
         </div>
         
         <div *ngIf="selectedUsuarioName !== null">
@@ -245,9 +253,11 @@
       <!-- Botón para enviar el formulario -->
       <div class="flex justify-end mt-4">
         <button
-          type="submit"
-          class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
-          >
+        type = "button"
+        (click)="onSubmit($event)"
+        [disabled]="isSubmitting"
+        class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
+        >
         {{ isSubmitting ? 'Guardando...' : 'Guardar Orden de Trabajo' }} 
       </button>
       </div>

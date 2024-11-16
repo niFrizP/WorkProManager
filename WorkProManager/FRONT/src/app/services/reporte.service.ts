@@ -40,4 +40,8 @@ export class ReporteService {
   updateReporte(idreporte: number, reporte: Reporte): Observable<void> {
     return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${idreporte}`, reporte);
   }
+
+  createReporte(reporte: any): Observable<any> {
+    return this.http.post(this.myApiUrl, reporte);
+  }
 }
