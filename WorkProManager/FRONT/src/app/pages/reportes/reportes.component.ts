@@ -117,6 +117,8 @@ export class ReportesComponent implements OnInit {
   estados: EstadoOT[] = [];
   itemsPerPage = 10;
   newSolicitudId: number | null = null;
+  rut_receptor: number = 0;
+
   
   id_ot: number = 0; // Declare the id_ot property
   public isModalOpen: boolean = false
@@ -150,6 +152,8 @@ export class ReportesComponent implements OnInit {
   
   {  this.form = this.fb.group({
     id_estado_ot: this.selectedEstadoID,
+    rut_receptor: this.rut_receptor,
+    rut_remitente: this.rut_receptor,
     desc_sol: [''],
     fecha_plazo: [null],
 
@@ -159,6 +163,7 @@ export class ReportesComponent implements OnInit {
     id_sol: [null],
     id_ot: [null],
     desc_sol: [''],
+    rut_receptor: [null],
     id_estado_ot: [null],
     fecha_plazo: [null],
   });
@@ -177,7 +182,6 @@ export class ReportesComponent implements OnInit {
     this.loadServicios();
     this.actualizarTiempoRestante();
     this.filterOrders();
-
 
    
   }
@@ -297,7 +301,6 @@ export class ReportesComponent implements OnInit {
     const userRut = this.authService.getUserId(); // Obtén el `rut_usuario` desde `authService`
     return this.usuarios.filter(usuario => usuario.rut_usuario === userRut);
   }
-
 
   loadUsers(): void {
     this.usuarioService.getListUsuarios().subscribe(
@@ -580,7 +583,35 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
   isEstadoModalOpen: boolean = false;
   selectedOtId: number | null = null;
 
+  getSolicitud(otId: number): Promise<Solicitud> {
+    return new Promise((resolve, reject) => {
+      this.solicitudService.getSolByOt(otId).subscribe(
+        (data: Solicitud[]) => {
+          this.solicitudes = data;
+          this.rut_receptor = this.solicitudes[0].rut_receptor ?? 0;
+          console.log(this.rut_receptor);
+
+          this.form.patchValue({
+            rut_receptor : this.rut_receptor,
+            rut_remitente: this.rut_usuario,
+          });
+
+        },
+        (error) => {
+          console.error('Error fetching orders', error);
+          reject(error);
+        }
+      );
+    });
+  }
+
   openEstadoModal (otId: number) {
+    this.updateSolicitudOnLoad(otId)
+    this.getSolicitud(otId);
+
+    
+
+    
     this.isEstadoModalOpen = true;
     this.selectedOtId = otId;
   }
@@ -621,6 +652,7 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
   public async createorupdateSolicitud(id_ot:number | null, id_estado_ot:number| null): Promise<Solicitud> {
 
 
+   
 
 
     const solicitudData: Solicitud = {
@@ -630,6 +662,8 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
       isView: false,
       fecha_emision: new Date(),
       fecha_plazo: this.form.get('fecha_plazo')?.value,
+      rut_receptor: this.form.get('rut_receptor')?.value,
+      rut_remitente: this.form.get('rut_remitente')?.value,
 
     };
     

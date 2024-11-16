@@ -74,7 +74,7 @@ export class EditOrderComponent implements OnInit {
   rut_remitente: number | null = 0;
   rut_receptorActual: number | null = 0;
   rut_receptor: number | null = 0;
-  
+  soli : number | null = 0;
 
 
 
@@ -157,10 +157,9 @@ export class EditOrderComponent implements OnInit {
     this.rut_remitente = this.authService.getIdLocal()
     console.log(this.rut_remitente);
     this.rut_receptorActual = this.authService.getIdLocal()
-
-
-    
-
+    console.log(this.updateeee() );
+    this.soli = this.updateeee() || 0;
+    console.log(this.soli);
     
 
     if (this.id_ot !== 0) {
@@ -169,6 +168,22 @@ export class EditOrderComponent implements OnInit {
     }
   }
   
+  updateeee() {
+ 
+    this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
+      this.solicitudes = data.reverse();
+      console.log(this.solicitudes);}
+    )
+    if(this.solicitudes.length < 0 && this.solicitudes[0].id_estado_ot == 1) {
+     return 0;
+    }
+
+    console.log(this.solicitudes[0].id_sol);
+    return this.solicitudes[0].rut_remitente;
+
+
+}
+
   private log(){
     console.log(this.id_ot);
   }
@@ -268,6 +283,8 @@ export class EditOrderComponent implements OnInit {
 
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
 
+    
+    this.soli = this.updateeee() || 0;
 
     const solicitudData: Solicitud = {
       id_ot: this.id_ot,
@@ -276,6 +293,7 @@ export class EditOrderComponent implements OnInit {
       isView: false,
       fecha_emision: new Date(),
       rut_remitente: this.rut_receptorActual,
+      rut_receptor: this.soli
     };
     
     console.log('Solicitud data:')
@@ -286,6 +304,7 @@ export class EditOrderComponent implements OnInit {
         console.log('Solicitud updated successfully');
       }
     });
+    
   
     
         return new Promise((resolve, reject) => {
@@ -321,18 +340,28 @@ export class EditOrderComponent implements OnInit {
 
 
       updateSolicitudOnLoad() {
+
+        
+
         this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
 
         this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
           this.solicitudes = data.reverse();
           console.log(this.solicitudes);
 
-          if(this.rut_receptorActual != this.solicitudes[0].rut_receptor) {
-            console.log("No es el receptor");
-
-          }else
-
           
+
+          if(this.solicitudes.length !== 1) {
+            console.log('Solicitud encontrada:', this.solicitudes[0]);
+            console.log('Solicitud ID:', this.solicitudes[0].id_sol);
+            console.log('Solicitud estado:', this.solicitudes[0].id_estado_ot);
+            console.log('Solicitud fecha:', this.solicitudes[0].fecha_emision);
+            console.log('Solicitud fecha:', this.solicitudes[0].fecha_vista);
+            console.log('Solicitud fecha:', this.solicitudes[0].fecha_termino);
+            console.log('Solicitud fecha:', this.solicitudes[0].isView);
+            console.log('Solicitud fecha:', this.solicitudes[0].rut_receptor);
+            console.log('Solicitud fecha:', this.solicitudes[0].rut_remitente);
+          }else
     
        this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, true).subscribe({
           next: () => {

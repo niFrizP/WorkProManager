@@ -51,18 +51,8 @@
                 </div>
               </div>
 
-              <!-- Botones para obtener las órdenes -->
-              <button *ngIf="authService.getUserRole() === 1"
-                (click)="obtenerConteoOrdenes(); obtenerConteoOrdenesActivas(); obtenerConteoOrdenesEliminadas()"
-                class="mt-4 bg-blue-500 text-white py-2 px-4 rounded-md">
-                Obtener Ordenes
-              </button>
-
-              <button *ngIf="authService.getUserRole() === 2 || authService.getUserRole() === 3"
-                (click)="obtenerConteoOrdenesTotalByUser(); obtenerConteoOrdenesActivasByUser(); obtenerConteoOrdenesEliminadasByUser()"
-                class="mt-4 bg-blue-500 text-white py-2 px-4 rounded-md">
-                Obtener Ordenes
-              </button>
+            
+           
             </div>
           </div>
 
@@ -84,34 +74,6 @@
             </div>
           </div>
 
-          <!-- Fila de selección de estado de órdenes -->
-          <div class="flex flex-wrap px-6 py-6 space-x-6" *ngIf="authService.getUserRole() === 2">
-            <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
-              <p class="uppercase text-sm font-semibold text-gray-500">Ordenes de trabajo por cotizar.</p>
-              <h5 class="font-bold">{{ ordersCount1 }}</h5>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
-              <p class="uppercase text-sm font-semibold text-gray-500">Desarrollo de servicios.</p>
-              <h5 class="font-bold">{{ ordersCount2 }}</h5>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
-              <p class="uppercase text-sm font-semibold text-gray-500">Esperando aprobación.</p>
-              <h5 class="font-bold">{{ ordersCount3 }}</h5>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
-              <p class="uppercase text-sm font-semibold text-gray-500">Servicios completados, esperando aprobación.</p>
-              <h5 class="font-bold">{{ ordersCount4 }}</h5>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
-              <p class="uppercase text-sm font-semibold text-gray-500">Orden de trabajo completadas</p>
-              <h5 class="font-bold">{{ ordersCount5 }}</h5>
-            </div>
-          </div>
-        </div>
 
     </div>
   </div>

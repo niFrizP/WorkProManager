@@ -132,7 +132,6 @@ selectedServicePrecio: any;
       celular: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
 
       //Equipo
-      tipo_equipo: ['', Validators.required],
       mod_equipo: ['', Validators.required],
       id_marca: ['', Validators.required],
       num_equipo: ['', Validators.required],
@@ -141,7 +140,6 @@ selectedServicePrecio: any;
       //Servicio
       id_serv: ['', Validators.required],
       //Usuario
-      id_usuario: ['', Validators.required],
       rut_usuario: ['', Validators.required],
       //Estado
       id_estado: [2, Validators.required],

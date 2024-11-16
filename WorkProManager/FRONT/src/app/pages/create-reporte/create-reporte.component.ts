@@ -26,6 +26,7 @@ import { response } from 'express';
 import { SolicitudService } from '../../services/solicitud.service';
 import { Solicitud } from '../../interfaces/solicitud';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { AuthService } from '../../services/auth.service';
 
 
 @Component({
@@ -81,6 +82,7 @@ export class CreateReportComponent implements OnInit {
   page = 1;
   solicitudes:Solicitud[] = [];
   itemsPerPage = 10;
+  rut_receptorActual: Number = 0; // Cambiar por el rut del usuario actual
 
   years = [2024, 2023, 2022]; // Asegúrate de rellenar con los años disponibles
   isModalOpen = true;
@@ -104,7 +106,8 @@ export class CreateReportComponent implements OnInit {
     private detalleOTService: DetalleOTService,
     private servicioService: ServicioService,
     private reporteService: ReporteService,
-    private solicitudService: SolicitudService
+    private solicitudService: SolicitudService,
+    private auth:AuthService
   ) {
 
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
@@ -112,7 +115,7 @@ export class CreateReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+        this.rut_receptorActual = this.auth.getIdLocal() ?? 0;
         this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
         this.updateSolicitudOnLoad();
 
@@ -136,11 +139,19 @@ export class CreateReportComponent implements OnInit {
 
   }
 
+  
+
   updateSolicitudOnLoad() {
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
     this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
       this.solicitudes = data.reverse();
       console.log(this.solicitudes);
+
+      if(this.rut_receptorActual != this.solicitudes[0].rut_receptor) {
+        console.log("No es el receptor");
+
+      }else
+
 
    this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, true).subscribe({
       next: () => {
