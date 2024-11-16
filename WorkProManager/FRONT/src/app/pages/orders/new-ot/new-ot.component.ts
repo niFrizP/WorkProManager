@@ -36,7 +36,7 @@ import { SidebarComponent } from '../../../components/sidebar/sidebar.component'
   standalone: true,
   imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule],
   templateUrl: './new-ot.component.html',
-  // styleUrls: ['./new-ot.component.css']
+  styleUrls: ['./new-ot.component.css']
 })
 export class NewOtComponent implements OnInit {
 [x: string]: any;
@@ -123,12 +123,12 @@ selectedServicePrecio: any;
     this.cargarTipoEquipo();
 
     this.form = this.fb.group({
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
-      rut_cliente: ['', Validators.required],
-      d_veri_cli: ['', [Validators.required, Validators.maxLength(1)]],
+      nombre: ['', [Validators.required, Validators.minLength(2)]],
+      apellido: ['', [Validators.required, Validators.minLength(2)]],
+      rut_cliente: ['', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
+      d_veri_cli: ['', [Validators.required, Validators.pattern(/^[0-9kK]$/)]],
       correo: ['', [Validators.required, Validators.email]],
-      celular: ['', Validators.required],
+      celular: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
       tipo_equipo: ['', Validators.required],
       mod_equipo: ['', Validators.required],
       id_marca: ['', Validators.required],
@@ -136,7 +136,7 @@ selectedServicePrecio: any;
       id_tipo: [null, Validators.required],
       fec_fabric: ['', Validators.required],
       id_serv: ['', Validators.required],
-      descripcion: ['', Validators.required],
+      descripcion: ['', [Validators.required, Validators.minLength(10)]],
       fecha: ['', Validators.required],
       id_usuario: ['', Validators.required],
       id_estado: [2, Validators.required],
@@ -154,9 +154,29 @@ selectedServicePrecio: any;
     }
   }
 
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.form.get(fieldName);
+    return field ? (field.invalid && (field.dirty || field.touched)) : false;
+  }
+
 
 
   async addProduct(): Promise<void> {
+    Object.keys(this.form.controls).forEach(key => {
+      const control = this.form.get(key);
+      control?.markAsTouched();
+    });
+
+    if (this.form.invalid) {
+      alert('Por Favor, complete todos los campos requeridos correctamente');
+      return;
+    }
+
+    if (this.serviciosSeleccionados.length === 0) {
+      alert('Debe seleccionar al menos un servicio');
+      return;
+    }
+
     this.loading = true;
 
     if (this.isSubmitting) return; // Si ya se está enviando, no hacer nada
@@ -187,7 +207,7 @@ selectedServicePrecio: any;
       this.loading = false;
       this.router.navigate(['/']);
     } catch (error) {
-      console.error('Error creating order:', error);
+      console.error('Error al crear la orden:', error);
       this.loading = false;
       // Handle error (e.g., show error message to user)
     }

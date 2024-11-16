@@ -36,8 +36,37 @@ import { QueryService } from '../../services/query';
   imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ReactiveFormsModule, RouterModule, CronometroComponent],
   templateUrl: './reportes.component.html',
   styleUrls: ['./reportes.component.css'],
+  animations: [
+    trigger('slideInOut',[
+      state('true', style({
+        height: '*',
+        opacity: 1,
+        overflow: 'hidden'
+      })),
+      state('false', style({
+        height: '0',
+        opacity: 0,
+        overflow: 'hidden'
+      })),
+      transition('true <=> false', animate('300ms ease-in-out'))
+    ])
+  ],
 })
 export class ReportesComponent implements OnInit {
+
+  menuAbierto: { [key: string]: boolean } = {
+    filtrosGenerales: false,
+    filtroEstado: false,
+    filtroUsuario: false,
+    filtroServicio: false,
+    filtroFecha: false,
+    filtrosCliente: false,
+    filtroEquipo: false
+  };
+
+  toggleMenu(menu: string): void{
+    this.menuAbierto[menu] = !this.menuAbierto[menu];
+  }
 
   numericError: string = '';  // Variable para almacenar el mensaje de error
   isSubmenuOpen: number | null = null; // Controla la visibilidad del submenú
