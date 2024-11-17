@@ -642,6 +642,7 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
 
       }
     });  
+
     this.createorupdateSolicitud(id_ot , estadoId);
     
     this.router.navigate(['/reportes']).then(() => {
@@ -693,6 +694,8 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
 
   public async createorupdateSolicitud(id_ot:number | null, id_estado_ot:number| null): Promise<Solicitud> {
 
+
+    
 
     this.soli = this.updateeee() || 0;
 
