@@ -105,6 +105,9 @@ export class ReportesComponent implements OnInit {
   solicitudes: Solicitud[] = [];
   searchRutCliente: string = '';
   searchEquipo: string = '';
+  conseguirUsuarioReceptor: number = 0;
+  conseguirUsuarioRemisor: number = 0;
+  solicitudesInvertidas: Solicitud[] = [];
   searchUsuario: string = '';
   searchServicio: string = '';
   filteredOrders: newOrder[] = []; // Cambiado a newOrder[]
@@ -117,6 +120,7 @@ export class ReportesComponent implements OnInit {
   estados: EstadoOT[] = [];
   itemsPerPage = 10;
   newSolicitudId: number | null = null;
+  soli: number  | null = null;
   rut_receptor: number = 0;
 
   
@@ -182,6 +186,8 @@ export class ReportesComponent implements OnInit {
     this.loadServicios();
     this.actualizarTiempoRestante();
     this.filterOrders();
+    this.soli = this.updateeee() || 0;
+
 
    
   }
@@ -320,6 +326,8 @@ export class ReportesComponent implements OnInit {
       console.log(this.solicitudes);
       
 
+      if(this.solicitudes[0].isView == false && this.solicitudes[0].id_estado_ot == 2 || this.solicitudes[0].id_estado_ot == 4 || this.solicitudes[0].id_estado_ot == 5){
+
    this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, true).subscribe({
       next: () => {
         console.log('Solicitud updated successfully');
@@ -332,18 +340,8 @@ export class ReportesComponent implements OnInit {
         console.log('Solicitud updated successfully');
       },
     });   
+  }else;
     
-    this.solicitudService.updateSolicitudByFechaTermino(this.solicitudes[1].id_sol!, new Date).subscribe({
-      next: () => {
-        console.log('Solicitud updated successfully');
-        console.log(this.solicitudes[1].id_sol);
-      },
-      error: (error) => {
-        console.error('Error al cargar los detalles:', error);
-        console.log(this.solicitudes[1].id_sol);
-
-      }
-    });  
 
   })
   
@@ -628,31 +626,76 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
     }
   }
 
+  
  
 
   estadoUpdated(id_ot: number | null ,estadoId: number | null) {
     // Lógica para manejar la actualización del estado en el componente padre
-    this.createorupdateSolicitud(id_ot , estadoId);
-    this.orderService.updateOrderState(id_ot ?? 0, estadoId ?? 0).subscribe(
-      () => {
-        console.log('Estado actualizado');
-        this.loadOrders();
-
+    this.solicitudService.updateSolicitudByFechaTermino(this.solicitudes[0].id_sol!, new Date).subscribe({
+      next: () => {
+        console.log('Solicitud updated successfully');
+        console.log(this.solicitudes[0].id_sol);
       },
-      (error) => {
-        console.error('Error actualizando el estado', error);
+      error: (error) => {
+        console.error('Error al cargar los detalles:', error);
+        console.log(this.solicitudes[0].id_sol);
+
       }
-    );
+    });  
+    this.createorupdateSolicitud(id_ot , estadoId);
+    
     this.router.navigate(['/reportes']).then(() => {
       window.location.reload();  // Recarga la página
     });
   }
 
+  
+
+  conseguirRolRemitente(rut_remitente: number): number | undefined {
+    let rol: number | undefined;
+    this.usuarioService.getUsuario(rut_remitente).subscribe((data: Usuario) => {
+      console.log(data);
+      rol = data.id_rol;
+    });
+    return rol;
+  }
+
+
+
+
+  updateeee() {
+ 
+    this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
+      this.solicitudes = data
+      this.solicitudesInvertidas = data.reverse();
+      console.log(this.solicitudes);}
+
+      
+    )
+
+
+  this.conseguirUsuarioReceptor = this.conseguirRolRemitente(this.solicitudesInvertidas[0].rut_receptor ?? 0) ?? 0;
+
+  this.conseguirUsuarioRemisor = this.conseguirRolRemitente(this.solicitudesInvertidas[0].rut_remitente ?? 0) ?? 0;
+  
+  if(this.authService.getRolId() != this.conseguirUsuarioRemisor){
+    return this.solicitudesInvertidas[0].rut_receptor ?? 0;}
+    else{
+      return this.solicitudesInvertidas[0].rut_remitente ?? 0;
+    }
+    
+
+  
+
+
+}
+
 
   public async createorupdateSolicitud(id_ot:number | null, id_estado_ot:number| null): Promise<Solicitud> {
 
 
-   
+    this.soli = this.updateeee() || 0;
+
 
 
     const solicitudData: Solicitud = {
@@ -663,7 +706,7 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
       fecha_emision: new Date(),
       fecha_plazo: this.form.get('fecha_plazo')?.value,
       rut_receptor: this.form.get('rut_receptor')?.value,
-      rut_remitente: this.form.get('rut_remitente')?.value,
+      rut_remitente: this.soli,
 
     };
     

@@ -44,6 +44,7 @@ export class EditOrderComponent implements OnInit {
     solicitudForm: FormGroup;  // Define el FormGroup para el formulario
 
   solicitudes: Solicitud[] = [];
+  solicitudesInvertidas: Solicitud[] = [];
   servicios: Servicio[] = []; // Inicialización como array vacío
   serviciosArray: FormArray<FormGroup> = new FormArray<FormGroup>([]);
   serviciosSeleccionados: any = []; // Cambia 'any' por el tipo adecuado
@@ -62,6 +63,8 @@ export class EditOrderComponent implements OnInit {
   formDetalleOT: FormGroup;
   loading: boolean = false;
   id_ot: number ;
+  conseguirUsuarioReceptor: number | null = 0;
+  conseguirUsuarioRemisor: number | null = 0;
   nuevoServicio: string = ''; // Variable para almacenar el nuevo servicio
   operacion: string = 'Agregar ';
   isSubmitting: boolean = false;
@@ -167,19 +170,40 @@ export class EditOrderComponent implements OnInit {
       
     }
   }
+
+  conseguirRolRemitente(rut_remitente: number): number | undefined {
+    let rol: number | undefined;
+    this.usuarioService.getUsuario(rut_remitente).subscribe((data: Usuario) => {
+      console.log(data);
+      rol = data.id_rol;
+    });
+    return rol;
+  }
+
   
   updateeee() {
  
     this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
-      this.solicitudes = data.reverse();
+      this.solicitudes = data
+      this.solicitudesInvertidas = data.reverse();
       console.log(this.solicitudes);}
-    )
-    if(this.solicitudes.length < 0 && this.solicitudes[0].id_estado_ot == 1) {
-     return 0;
-    }
 
-    console.log(this.solicitudes[0].id_sol);
-    return this.solicitudes[0].rut_remitente;
+      
+    )
+
+
+  this.conseguirUsuarioReceptor = this.conseguirRolRemitente(this.solicitudesInvertidas[0].rut_receptor ?? 0) ?? 0;
+
+  this.conseguirUsuarioRemisor = this.conseguirRolRemitente(this.solicitudesInvertidas[0].rut_remitente ?? 0) ?? 0;
+  
+  if(this.authService.getRolId() != this.conseguirUsuarioRemisor){
+    return this.solicitudesInvertidas[0].rut_receptor ?? 0;}
+    else{
+      return this.solicitudesInvertidas[0].rut_remitente ?? 0;
+    }
+    
+
+  
 
 
 }
@@ -345,24 +369,16 @@ export class EditOrderComponent implements OnInit {
 
         this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
 
-        this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
-          this.solicitudes = data.reverse();
-          console.log(this.solicitudes);
 
           
 
-          if(this.solicitudes.length !== 1) {
-            console.log('Solicitud encontrada:', this.solicitudes[0]);
-            console.log('Solicitud ID:', this.solicitudes[0].id_sol);
-            console.log('Solicitud estado:', this.solicitudes[0].id_estado_ot);
-            console.log('Solicitud fecha:', this.solicitudes[0].fecha_emision);
-            console.log('Solicitud fecha:', this.solicitudes[0].fecha_vista);
-            console.log('Solicitud fecha:', this.solicitudes[0].fecha_termino);
-            console.log('Solicitud fecha:', this.solicitudes[0].isView);
-            console.log('Solicitud fecha:', this.solicitudes[0].rut_receptor);
-            console.log('Solicitud fecha:', this.solicitudes[0].rut_remitente);
-          }else
-    
+        this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
+          this.solicitudes = data;
+          this.solicitudesInvertidas = data.reverse();
+          console.log(this.solicitudes[0].isView);
+
+        
+    if(this.solicitudes[0].isView == false) {
        this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, true).subscribe({
           next: () => {
             console.log('Solicitud updated successfully');
@@ -375,11 +391,25 @@ export class EditOrderComponent implements OnInit {
             console.log('Solicitud updated successfully');
           },
         });   
-
+ 
   
-        
+      }else(this.authService.getRolId() != 2   && this.solicitudesInvertidas[0].id_estado_ot == 2 && this.solicitudesInvertidas[0].isView == false);
+       {
+        this.solicitudService.updateSolicitudByView(this.solicitudesInvertidas[0].id_sol!, true).subscribe({
+          next: () => {
+            console.log('Solicitud updated successfully');
+          },
+        });   
 
-      })
+
+        this.solicitudService.updateSolicitudByFecha(this.solicitudesInvertidas[0].id_sol!, new Date).subscribe({
+          next: () => {
+            console.log('Solicitud updated successfully');
+          },
+        });   
+      }
+
+      });
       
     }
     
