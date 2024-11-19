@@ -73,4 +73,27 @@ Sigue estos pasos para montar el proyecto en tu entorno local:
    ```bash
    git clone https://github.com/niFrizP/WorkProManager.git
 
+2. **Dirigete al Directorio del Frontend**
+
+   ```bash
+   cd .WorkProManager/WorkProManager/FRONT
+
+4. **Levantar Frontend**
+
+   Corre en la terminal:
+
+   ```bash
+   npm install
+   ```
+   Luego levanta el servidor de desarrollo:
+
+   ```bash
+   ng serve
+   ```
+   Navega en tu browser favorito a `http://localhost:4200/`. 
+   La aplicación lee automaticamente tus cambios.
+
+3. **Levantar Backend**
+   ...
+
 **Si te gusta nuestro repositorio apoyanos con una estrellita :D :star: :arrow_up:.**
