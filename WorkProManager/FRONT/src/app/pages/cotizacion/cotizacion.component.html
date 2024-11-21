@@ -8,9 +8,9 @@
       <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
   
         <div class="mt-4">
-          <label for="fecha">Fecha de Entrega:</label>
-          <input type="date" id="fecha" formControlName="fecha" class="border border-gray-300 p-2 rounded" />
-        </div>
+  <label for="fecha">Fecha de Entrega:</label>
+  <input type="date" id="fecha" formControlName="fecha" class="border border-gray-300 p-2 rounded" [min]="fechaHoy" />
+</div>
   
   
        
@@ -228,7 +228,7 @@
                   formControlName="desc_sol"
                   rows="4"
                   class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-                  placeholder="Añade una descripción detallada de la Orden de Trabajo..."
+                  placeholder="Añade la descripción de la solicitud que realizarás al técnico..."
                 ></textarea>
               </div>
             

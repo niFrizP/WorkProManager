@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NewOtComponent } from './new-ot.component';
+import { CausaComponent } from './causa.component';
 
-describe('NewOtComponent', () => {
-  let component: NewOtComponent;
-  let fixture: ComponentFixture<NewOtComponent>;
+describe('CausaComponent', () => {
+  let component: CausaComponent;
+  let fixture: ComponentFixture<CausaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NewOtComponent]
+      imports: [CausaComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(NewOtComponent);
+    fixture = TestBed.createComponent(CausaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

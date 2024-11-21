@@ -25,8 +25,8 @@ export class MarcaService {
     return this.http.delete<void>(`${this.myAppUrl}${this.myApiUrl}${id_marca}`)
   }
 
-  saveMarca(marca: Marca): Observable<void> {
-    return this.http.post<void>(`${this.myAppUrl}${this.myApiUrl}`,marca)
+  saveMarca(marca: Marca): Observable<Marca> {
+    return this.http.post<Marca>(`${this.myAppUrl}${this.myApiUrl}`,marca)
   }
 
   getMarca(id_marca: number): Observable<Marca> {

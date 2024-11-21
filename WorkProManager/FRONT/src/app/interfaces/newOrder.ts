@@ -1,36 +1,44 @@
 export interface newOrder {
-  id_ot?: number;
-  num_equipo: number;
-  fec_creacion: Date;
-  fec_entrega: Date;
-  descripcion: String;
-  rut_usuario: number;
-  id_estado_ot: Number;
-  rut_cliente: number;
-  cliente: {
-          nom_cli: string;
-          ap_cli: string;
-          cel_cli: string;
-          d_veri_cli: string;
-      },
-      Usuario: {
-          nom_usu: string;
-          ap_usu: string;
-      },
-  Equipo: {
+    id_ot?: number;
+    num_equipo: number;
+    fec_creacion: Date;
+    fec_entrega: Date;
+    descripcion: string;
+    rut_usuario: number;
+    id_rechazo?: number; // Opcional
+    rut_cliente: number;
+    nombre_rechazo?: string;
+    cliente: {
+      nom_cli: string;
+      ap_cli: string;
+      cel_cli: string;
+      d_veri_cli: string;
+      email_cli: string; // Agregado según los datos
+    };
+    Usuario: {
+      nom_usu: string;
+      ap_usu: string;
+    };
+    Equipo: {
       mod_equipo: string;
       id_marca: number;
-      fecha_fab: Date;
-  },
-  EstadoOT: {
-      nom_estado_ot: string
-      },
-      VistaSolicitud: {
-            id_ot: number;
-            isview: boolean;
-            fecha_plazo: Date;
-        }
-}
+      id_tipo: number; // Agregado según los datos
+      fecha_fab?: Date; // Opcional, ya que no aparece en el JSON proporcionado
+    };
+    VistaSolicitud: {
+      id_ot?: number; // Opcional, ya que no aparece en todos los casos
+      isview: boolean;
+      fecha_emision: Date;
+      fecha_plazo: Date; // Opcional según los datos
+      fecha_termino?: Date; // Agregado según los datos
+      completada: boolean; // Agregado según los datos
+      id_estado_ot?: number; // Opcional según los datos
+      nom_estado_ot: string; // Opcional según los datos
+    };
+    fecha_rechazo?: Date;
+    observaciones?: string;
+  }
+  
 
 export interface orderEstado {
     id_ot: number;

@@ -1,111 +1,46 @@
-<div class="flex-3 ml-64 p-8">
-
-  
-  <p>{{id_ot}}</p>
+<div class="wpm-custom-gradient p-6 rounded-lg shadow-md border-yellow-400 border-8">
+  <div class="contenedor">
+    <div>
+      <h1 class="text-2xl font-bold text-center mb-4">Reportes</h1>
+    </div>
+  <p>{{ id_ot }}</p>
   <!-- home.component.html -->
-  <button (click)="openModal($event)">Abrir Modal</button>
+  <button (click)="openModal($event)" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mb-4">Abrir Modal</button>
 
   <!-- Solo se muestra el modal si isModalOpen es true -->
   <app-modal *ngIf="isModalOpen && id_ot !== null && id_ot !== 0" [id_ot]="id_ot" (closed)="closeModal()"></app-modal>
 
+  <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Reportes</h1>
 
-  <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
+  <div class="flex justify-between items-center mb-6">
+    <div class="flex space-x-4">
+     
 
-
-
-  <div class="flex justify-between items-center mb-4">
-    
-    <div>
-      <label for="filter" class="mr-2 font-medium">Todas las OT</label>
-      <select #filterSelect class="p-2 border rounded">
-        <option value="todas">Todas</option>
-        <option value="en solicitud">En solicitud</option>
-        <option value="pendiente">Pendiente</option>
-        <option value="finalizado">Finalizado</option>
-
-      </select>
-
-
-      <button [routerLink]="['/reportes/createReport/', id_ot, 0]">✏️</button>
-
-
-
-
-      <div>
-        <label for="filter" class="mr-2 font-medium">Todos los usuarios</label>
-        <select #filterSelect class="p-2 border rounded" [(ngModel)]="selectedUsuario">
-          <option value="todos">Todas</option>
-          <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu">{{ usuario.nom_usu }} {{usuario.ap_usu}}</option>
-        </select>
-      </div>
-      
-      <div>
-        <label for="monthSelect" class="mr-2 font-medium">Mes</label>
-        <select #monthSelect class="p-2 border rounded">
-          <option value="0">Todos</option>
-          <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
-        </select>
-
-        <label for="yearSelect" class="ml-4 mr-2 font-medium">Año</label>
-        <select #yearSelect class="p-2 border rounded">
-          <option value="0">Todos</option>
-          <option *ngFor="let year of years">{{ year }}</option>
-        </select>
-      </div>
-      <form class="search-form">
-        <input
-          type="text"
-          placeholder="Buscar por RUT Cliente"
-          [(ngModel)]="searchRutCliente"
-          class="search-input"
-          name="rut_cliente"
-        />
-        <button type="submit" class="search-btn">Buscar</button>
-      </form>
-
-      <form class="search-form">
-        <input
-          type="text"
-          placeholder="Buscar equipo por número de serie"
-          [(ngModel)]="searchEquipo"
-          class="search-input"
-          name="num_equipo"
-        />
-        <button type="submit" class="search-btn">Buscar</button>
-      </form>
-
-
-
-    </div>
-
-  </div>
-
-  <table class="w-full border-collapse">
+  <table class="w-full border-collapse shadow-md rounded-lg bg-white">
     <thead>
-      <tr>
-        <th class="border p-2">ID OT</th>
-        <th class="border p-2">ID Servicio</th>
-        <th class="border p-2">Fecha detalle</th>
-        <th class="border p-2">Descripción</th>
-        <th class="border p-2">Usuario</th>
-
+      <tr class="bg-gray-100 text-left text-sm text-gray-600">
+        <th class="border p-3 font-semibold">ID OT</th>
+        <th class="border p-3 font-semibold">ID Servicio</th>
+        <th class="border p-3 font-semibold">Fecha detalle</th>
+        <th class="border p-3 font-semibold">Descripción</th>
+        <th class="border p-3 font-semibold">Usuario</th>
+        <th class="border p-3 font-semibold">Acciones</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let detalleOT of filteredDetalles | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
-        <td>{{ detalleOT.id_ot }}</td>
-        <td>{{ detalleOT.id_serv }}</td>
-        <td>{{ detalleOT.fecha_detalle }}</td>
-        <td>{{ detalleOT.desc_detalle }}</td>
-        <td>{{ detalleOT.rut_usuario }}</td>
-        <td>
-          <button [routerLink]="['/reportes/createReport/', detalleOT.id_ot, detalleOT.id_serv]">✏️</button>
-          <button (click)="detalleOT.id_serv !== undefined ? deleting(detalleOT.id_ot,detalleOT.id_serv) : null">🗑️</button>        </td>
-
-
+      <tr *ngFor="let detalleOT of filteredDetalles | paginate: { itemsPerPage: itemsPerPage, currentPage: page }" class="hover:bg-gray-50">
+        <td class="border p-3">{{ detalleOT.id_ot }}</td>
+        <td class="border p-3">{{ detalleOT.id_serv }}</td>
+        <td class="border p-3">{{ detalleOT.fecha_detalle }}</td>
+        <td class="border p-3">{{ detalleOT.desc_detalle }}</td>
+        <td class="border p-3">{{ detalleOT.rut_usuario }}</td>
+        <td class="border p-3">
+          <button [routerLink]="['/reportes/createReport/', detalleOT.id_ot, detalleOT.id_serv]" class="bg-yellow-400 text-white px-3 py-2 rounded hover:bg-yellow-500">✏️</button>
+          <button *ngIf="detalleOT.d_estado == 1" (click)="confirmarDesmarcar(detalleOT.id_ot, detalleOT.id_serv)" class="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 ml-2">⭐</button>
+        </td>
       </tr>
     </tbody>
   </table>
 
-  <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  <pagination-controls (pageChange)="onPageChange($event)" class="mt-4"></pagination-controls>
 </div>

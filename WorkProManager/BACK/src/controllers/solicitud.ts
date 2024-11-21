@@ -46,11 +46,11 @@ export const deleteSolicitud = async (req: Request, res: Response) => {
 };
 
 export const postSolicitud = async (req: Request, res: Response) => {
-    const { desc_sol, id_estado_ot, id_ot, isView,fecha_emision,  fecha_vista, fecha_termino,rut_remitente, rut_receptor, fecha_plazo } = req.body; // Extrae el solicitud
+    const { desc_sol, id_estado_ot, id_ot, isView,fecha_emision, completada ,fecha_vista, fecha_termino, rut_usuario, fecha_plazo } = req.body; // Extrae el solicitud
 
     try {
         const newSolicitud = await Solicitud.create({
-            desc_sol,rut_receptor, rut_remitente, id_estado_ot, id_ot, isView, fecha_vista, fecha_termino, fecha_emision, fecha_plazo
+            desc_sol,rut_usuario, id_estado_ot, id_ot, isView, fecha_vista, fecha_termino, fecha_emision, fecha_plazo, completada
         });
 
         res.json({

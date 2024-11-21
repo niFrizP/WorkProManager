@@ -94,59 +94,111 @@
   <table class="w-full border-collapse">
     <thead>
       <tr>
-        <th class="border p-2">Fecha de entrega</th>
-        <th class="border p-2">Tiempo</th>
-        <th class="border p-2">Equipo</th>
-        <th class="border p-2">OT ID</th>
-        <th class="border p-2">Descripción</th>
-        <th class="border p-2">Equipo</th>
-        <th class="border p-2">Rut Cliente</th>
-        <th class="border p-2">Estado</th>
-        <th class="border p-2">Usuario</th>
-        <th class="border p-2">cronometro</th>
-
+        <th class="border p-2 text-center">Fecha de entrega</th>
+        <th class="border p-2 text-center">Número de serie</th>
+        <th class="border p-2 text-center">Número de orden</th>
+        <th class="border p-2 text-center">Modelo del equipo</th>
+        <th class="border p-2 text-center">Rut cliente</th>
+        <th class="border p-2 text-center">Estado</th>
+        <th class="border p-2 text-center">Usuario</th>
+        <th class="border p-2 text-center">Fecha de plazo</th>
+        <th class="border p-2 text-center">Solicitud Vista</th>
+        <th class="border p-2 text-center">Operaciones</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
-      [ngClass]="{ 'text-red-600': newOrder.VistaSolicitud.isview }">
-        
-
-      
-
-        <td>{{ newOrder.fec_entrega }}</td>
-        <td>{{ newOrder.VistaSolicitud.fecha_plazo }}</td>
-        <!-- src/app/components/cronometro/cronometro.component.html -->
-
-
-        <td>{{ newOrder.num_equipo }}</td>
-        <td>{{ newOrder.id_ot }}</td>
-        <td>{{ newOrder.descripcion }}</td>
-        <td>{{ newOrder.Equipo.mod_equipo }}</td>
-        <td>{{ newOrder.rut_cliente }}</td>
-        <td> 
-          {{ newOrder.EstadoOT.nom_estado_ot }}</td>
-        <td>{{ newOrder.Usuario.nom_usu }}</td>
-        <td>
-          <app-cronometro [fechaPlazo]="newOrder.VistaSolicitud.fecha_plazo | date:'yyyy-MM-ddTHH:mm:ss'"></app-cronometro>
+      <tr 
+        *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+        [ngClass]="{ 'text-red-600': newOrder.VistaSolicitud.isview == false }"
+        class="align-middle text-center"
+      >
+        <td class="border p-2">{{ newOrder.fec_entrega }}</td>
+        <td class="border p-2">{{ newOrder.num_equipo }}</td>
+        <td class="border p-2">{{ newOrder.id_ot }}</td>
+        <td class="border p-2">{{ newOrder.Equipo.mod_equipo }}</td>
+        <td class="border p-2">{{ newOrder.rut_cliente }}</td>
+        <td class="border p-2">{{ newOrder.VistaSolicitud.nom_estado_ot }}</td>
+        <td class="border p-2">{{ newOrder.Usuario.nom_usu }}</td>
+        <td class="border p-2">
+          <app-cronometro 
+            [fechaPlazo]="newOrder.VistaSolicitud.fecha_plazo | date:'yyyy-MM-ddTHH:mm:ss'"
+          ></app-cronometro>
         </td>
-        <td><span *ngIf="newOrder.VistaSolicitud.isview">
-          ⚠️ 
-        </span>
-        <span *ngIf="!newOrder.VistaSolicitud.isview">
-          ✅
-        </span></td>
-        <td>
+        <td class="border p-2">
+          <span *ngIf="newOrder.VistaSolicitud.isview">✅</span>
+          <span *ngIf="!newOrder.VistaSolicitud.isview">⚠️</span>
+        </td>
+        <td class="border p-2">
+          <button (click)="generatePDF(newOrder)" class="bg-blue-500 text-white p-1 rounded">🖨️</button>
+
           <button [routerLink]="['createReport/', newOrder.id_ot]">✏️</button>
           <div *ngIf="authService.getUserRole() === 3">
             <button *ngIf="newOrder.id_ot !== undefined" (click)="openEstadoModal(newOrder.id_ot)">📄</button>
+          </div>
+          <div>
+            <button class="bg-red-500 text-white p-2 rounded hover:bg-red-600" 
+                    (click)="openRejectionModal(newOrder.id_ot ?? 0)">
+              ❌
+            </button>
           </div>
         </td>
       </tr>
     </tbody>
   </table>
+  
 
   <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+
+
+  <!-- Modal de rechazo -->
+<div *ngIf="isRejectionModalOpen" class="modal-overlay">
+  <div class="modal-content" [formGroup]="rejectionForm">
+    <h2 class="text-xl font-bold mb-4">Elige la causa de rechazo</h2>
+
+    <!-- Selector de causa de rechazo -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-2">Causa de rechazo:</label>
+      <select 
+        formControlName="id_rechazo" 
+        #estadoSelect
+        class="w-full p-2 mb-4 border rounded"
+        (change)="onCausaChange($event, selectedOtId!)">
+        <option value="">Seleccione una causa</option>
+        <option *ngFor="let causa of causasRechazo" [value]="causa.id_rechazo">
+          {{ causa.nombre_rechazo }}
+        </option>
+      </select>
+    </div>
+
+    <!--Descripción-->
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-2">Descripción:</label>
+      <textarea 
+        id="observaciones"
+        [formGroup]="rejectionForm"
+        formControlName="observaciones"
+        class="w-full p-2 border rounded resize-none"
+        rows="3"
+        placeholder="Ingrese una descripción del cambio de estado...">
+      </textarea>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="flex justify-end gap-2">
+      <button 
+        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+        (click)="closeRejectionModal()">
+        Cancelar
+      </button>
+      <button 
+        class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+        type="submit"
+        (click)="confirmRejection(selectedOtId!)">
+        Confirmar
+      </button>
+    </div>
+  </div>
+</div>
 
   <div *ngIf="isEstadoModalOpen" class="modal-overlay">
     <div class="modal-content" [formGroup]="form">
@@ -155,12 +207,12 @@
       <!--Selector de nuevo estado-->
       <div class="mb-4">
         <label class="block text-sm font-medium mb-2">Estado: </label>
-        <select 
+        <select formControlName="id_estado_ot"
           #estadoSelect 
           class="w-full p-2 mb-4 border rounded"
           (change)="onUserChange($event, selectedOtId!)">
           <option value="">Seleccione un estado</option>
-          <option *ngFor="let estado of estados" [value]="estado.id_estado_ot">
+          <option *ngFor="let estado of estados" [value]="estado.id_estado_ot" formControlName="id_estado_ot">
             {{ estado.nom_estado_ot }}
           </option>
         </select>
@@ -183,6 +235,7 @@
       <div class="mb-4">
         <label class="block text-sm font-medium mb-2">Fecha Plazo:</label>
         <input 
+          [min]="fechaHoy"  
           type="date"
           [formGroup]="form"
           formControlName="fecha_plazo"
@@ -190,7 +243,7 @@
           class="w-full p-2 border rounded">
       </div>
 
-      <div class="mb-4" **ngIf="authService.getUserRole == 2">
+      <div class="mb-4" >
         <label class="block text-sm font-medium mb-2">Rut Receptor:</label>
         <input 
           type="number"
@@ -201,15 +254,9 @@
       </div>
 
 
-      <div class="mb-4" **ngIf="authService.getUserRole == 2">
-        <label class="block text-sm font-medium mb-2">Rut Receptor:</label>
-        <input 
-          type="number"
-          [formGroup]="form"
-          formControlName="rut_receptor"
-          placeholder="Añada una descripción"
-          class="w-full p-2 border rounded">
-      </div>
+
+
+
 
 
       <!--botones-->

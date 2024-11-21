@@ -55,13 +55,7 @@ Query.init({
             key: 'num_equipo'
         },    
     },
-    id_estado: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'estado_ot',
-            key: 'id_estado'
-        }
-    }
+
 }, {
     // Update the type to ModelOptions<Model<any, any>>
     sequelize: db,
@@ -76,6 +70,5 @@ Query.belongsTo(Cliente, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' }
 Query.belongsTo(Usuario, { foreignKey: 'rut_usuario', targetKey: 'rut_usuario' });
 Query.belongsTo(Servicio, { foreignKey: 'id_serv', targetKey: 'id_serv' });
 Query.belongsTo(Equipo, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
-Query.belongsTo(EstadoOT, { foreignKey: 'id_estado', targetKey: 'id_estado' });
 
 export default Query;

@@ -17,6 +17,12 @@ export class SidebarComponent implements OnInit {
   resources: any[] = [];
   array: any[] = [];
   contar: number = 0;
+  contarReportes: number = 0;
+  contarFinalizadas: number = 0;
+  contarRechazadas: number = 0;
+  contarTecnico: number = 0;
+  contarTecnicoReportes: number = 0;
+
 
   count: number = 0;
   constructor(public authService: AuthService, public cookieService: CookieManagementService , public orderService: OrderService) {
@@ -27,6 +33,11 @@ export class SidebarComponent implements OnInit {
     console.log('Sidebar Component Initialized');
 
     this.contarNotificaciones()
+    this.contarNotificacionesReportes() 
+    this.contarNotifiacionesFinalizadas()
+    this.contarNotificacionesRechazadas()
+    this.countOrderNotificationsCotizacionesByRut()
+    this.countOrderNotificacionesReportesByRut() 
 
     this.initializeResources();
 
@@ -39,6 +50,45 @@ export class SidebarComponent implements OnInit {
     }); 
     
   }
+
+
+  countOrderNotificacionesReportesByRut() {
+    const rut = this.authService.getIdLocal();
+    this.orderService.countOrderNotificationsReportesByRut(rut ?? 0).subscribe((data) => {
+      this.contarTecnicoReportes = data.count;
+      console.log('Conteo de notificaciones:', this.contarTecnicoReportes);
+    }
+    );
+  }
+
+  countOrderNotificationsCotizacionesByRut() {
+    const rut = this.authService.getIdLocal();
+    this.orderService.countOrderNotificationsCotizacionesByRut(rut ?? 0).subscribe((data) => {
+      this.contarTecnico = data.count;
+      console.log('Conteo de notificaciones:', this.count);
+    });
+  }
+
+  contarNotificacionesReportes() {
+    this.orderService.countOrderNotificationsReportes().subscribe((data) => {
+       this.contarReportes = data.count;
+       console.log('Conteo de notificaciones:', this.contar);
+     }); 
+    }
+
+    contarNotifiacionesFinalizadas() {
+      this.orderService.countOrderNotificationsFinalizadas().subscribe((data) => {
+        this.contarFinalizadas = data.count;
+        console.log('Conteo de notificaciones:', this.contarFinalizadas);
+      }); 
+    }
+
+    contarNotificacionesRechazadas() {
+      this.orderService.countOrderNotificationsRechazadas().subscribe((data) => {
+        this.contarRechazadas = data.count;
+        console.log('Conteo de notificaciones:', this.contarRechazadas);
+      });
+    }
   
 
   initializeResources() {
@@ -52,8 +102,11 @@ export class SidebarComponent implements OnInit {
       { name: 'Ordenes', link: './orders', icon: 'fas fa-box', requiredRoles: [1, 2, 3] },
       { name: 'Usuarios', link: './usuarios', icon: 'fas fa-user', requiredRoles: [1 ] },
       { name: 'Reportes', link: './reportes', icon: 'fas fa-chart-line', requiredRoles: [1, 2, 3] },
-      { name: 'Aprobaciones', link: './aprobaciones', icon: 'fas fa-check', requiredRoles: [1 ] },
       { name: 'Cotización', link: './cotizacion', icon: 'fas fa-dollar-sign', requiredRoles: [1, 3 ] },
+      {name: 'Marca', link: './marca', icon: 'fas fa-check', requiredRoles: [1] },
+      {name: 'Servicios', link: './servicios', icon: 'fas fa-check', requiredRoles: [1] },
+      {name: 'Eliminadas', link: './eliminadas', icon: 'fas fa-check', requiredRoles: [1, 3] },
+      {name: 'Causa', link: './causa', icon: 'fas fa-check', requiredRoles: [1] },
     ];
 
     // Filtra los recursos en función del rol del usuario

@@ -454,9 +454,14 @@ public async createorupdateSolicitud(id_ot:number | null, id_estado_ot:number| n
     id_estado_ot: 4, // Ensure id_estado_ot is not null
     isView: false,
     fecha_emision: new Date(),
-    fecha_plazo: this.form.get('fecha_plazo')?.value,
+    fecha_termino: null, 
+    completada: false,
+    fecha_plazo: new Date(Date.now() + 60 * 60 * 1000), // Fecha actual + 1 hora
+    
 
   };
+
+  
   
   console.log('Solicitud data:')
   console.log()
@@ -496,7 +501,6 @@ public async createorupdateSolicitud(id_ot:number | null, id_estado_ot:number| n
 
  estadoUpdated(id_ot: number | null ,estadoId: number | null) {
     // Lógica para manejar la actualización del estado en el componente padre
-    this.createorupdateSolicitud(id_ot , estadoId);
     this._orderService.updateOrderState(id_ot ?? 0, estadoId ?? 0).subscribe(
       () => {
         console.log('Estado actualizado');
@@ -534,7 +538,7 @@ public async createorupdateSolicitud(id_ot:number | null, id_estado_ot:number| n
       console.log(this.solicitudes);
       
   
-    this.solicitudService.updateSolicitudByFechaTermino(this.solicitudes[1].id_sol!, new Date).subscribe({
+    this.solicitudService.updateSolicitudByFechaTermino(this.solicitudes[0].id_sol!, new Date).subscribe({
       next: () => {
         console.log('Solicitud updated successfully');
       },
@@ -549,9 +553,10 @@ this.id_serv = Number(this.aRouter.snapshot.paramMap.get('id_serv'));
       console.log('Detalle updated successfully');
     },
   });
-  this.updateOrder();
+
+  this.updateSolicitudOnCreated(id_ot);
+  this.createorupdateSolicitud(id_ot, 4);
   console.log("Orden de trabajo completada");
-  this.updateSolicitudOnLoad(id_ot)
 
 
   Swal.fire({
@@ -562,14 +567,13 @@ this.id_serv = Number(this.aRouter.snapshot.paramMap.get('id_serv'));
     background: '#f9f9f9',
     color: '#333',
     confirmButtonColor: '#3085d6'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Redirigir a la página anterior
+      window.history.back();
+    }
   });
-
-
   
-  this.estadoUpdated(id_ot, 4);
-  this.updateSolicitudOnLoadWhileCreate(id_ot)
-  this.updateSolicitudOnCreated(id_ot)
-  this.closeModal();  // Cierra el modal después de actualizar
    
 }
 
@@ -615,19 +619,8 @@ return new Promise<number>((resolve, reject) => {
 updateOrder(): Promise<void> {
   return new Promise<void>((resolve, reject) => {
 
-    this._orderService.updateOrderState(this.id_ot, 4).subscribe(
-      (data) => {
-        console.log("updateOrder");
-        console.log(data);
-        resolve();
-      },
-      (error) => {
-        console.error('Error al cargar los detalles:', error);
-        reject();
-      }
-    );
+    
 
-    this.updateSolicitudOnLoad(this.id_ot)
     
   });
 }
@@ -652,17 +645,7 @@ updateSolicitudOnLoad(id_ot: number): void {
     },
   });   
   
-  this.solicitudService.updateSolicitudByFechaTermino(this.solicitudes[1].id_sol!, new Date).subscribe({
-    next: () => {
-      console.log('Solicitud updated successfully');
-      console.log(this.solicitudes[1].id_sol);
-    },
-    error: (error) => {
-      console.error('Error al cargar los detalles:', error);
-      console.log(this.solicitudes[1].id_sol);
-
-    }
-  });  
+  
 
 })
 

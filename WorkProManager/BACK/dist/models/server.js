@@ -27,6 +27,8 @@ const detalle_ot_1 = __importDefault(require("../routes/detalle_ot"));
 const usuario_eliminado_1 = __importDefault(require("../routes/usuario_eliminado"));
 const order_2 = __importDefault(require("../routes/order"));
 const query_1 = __importDefault(require("../routes/query"));
+const causa_rechazo_1 = __importDefault(require("../routes/causa_rechazo"));
+const detalle_causa_rechazo_1 = __importDefault(require("../routes/detalle_causa_rechazo"));
 const tipo_1 = __importDefault(require("../routes/tipo"));
 const login_1 = __importDefault(require("../routes/login"));
 const solicitud_1 = __importDefault(require("../routes/solicitud"));
@@ -37,7 +39,7 @@ class Server {
         this.app = (0, express_1.default)();
         this.app.use((0, cookie_parser_1.default)());
         this.app.use((0, cors_1.default)({
-            origin: 'http://localhost:4200', // Dirección del frontend
+            origin: ['http://localhost:4200', 'http://localhost:54351'], // Dirección del frontend
             credentials: true // Permite el envío de cookies
         }));
         this.port = process.env.PORT || '3001';
@@ -58,6 +60,18 @@ class Server {
                 msg: 'API Working'
             });
         });
+        this.app.use('/api/causa', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a login');
+            }
+            next();
+        }, causa_rechazo_1.default);
+        this.app.use('/api/detallecausa', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a login');
+            }
+            next();
+        }, detalle_causa_rechazo_1.default);
         this.app.use('/api/login', (req, res, next) => {
             if (req.method === 'POST') {
                 console.log('Acceso a login');

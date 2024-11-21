@@ -10,6 +10,7 @@ import { QueryService } from '../../services/query';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { GraficoxMesComponent } from '../../components/graficox-mes/graficox-mes.component';
+import { OrderService } from '../../services/order.service';
 
 @Component({
   standalone: true,
@@ -46,23 +47,29 @@ export class HomeComponent implements OnInit {
   ordersCount3: number = 0;
   ordersCount4: number = 0;
   ordersCount5: number = 0;
+  ordersCountEliminadas: number = 0;
 
   countTotalActivas: number = 0;
   countTotal: number = 0;
   countEliminadas: number = 0;
-
   countbyUser: number = 0;
+
+  ordersCount: number = 0;
+  ordersCounttecnico: number = 0;
+
+
 
 
   ordenesCountByUsuario: number = 0;
 
-  constructor(public authService:AuthService, private router:Router, private cookieService:CookieManagementService,private queryService:QueryService) {}
+  constructor(private orderservice:OrderService ,public authService:AuthService, private router:Router, private cookieService:CookieManagementService,private queryService:QueryService) {}
 
   ngOnInit(): void {
     setTimeout(() => {
        this.authService.getUserId()
       console.log(this.authService.getUserId())
     }, 2000);
+    this.rut_usuario = this.authService.getUserId() ?? 0;
     this.authService.getUserRole()
     this.ordenesCount = 0; // Establece un valor inicial si aún no has obtenido los datos
     this.ordenesCountByUsuario = 0; // Establece un valor inicial si aún no has obtenido los datos
@@ -72,12 +79,17 @@ export class HomeComponent implements OnInit {
     this.countTotal = 0;
     this.countEliminadas = 0;
     this.countbyUser = 0;
+    this.ordersCounttecnico = 0;
 
+    this.ordersCountEliminadas = 0;
     this.ordersCount1 = 0;
     this.ordersCount2 = 0;
     this.ordersCount3 = 0;
     this.ordersCount4 = 0;
     this.ordersCount5 = 0;
+    this.getOrdersCount()
+    this.getOrdersCountCerradas()
+    this.getOrdersCountPorRealizarTecnico()
 
 
 this.showDashboard = false; // Controla si mostrar los dashboards
@@ -113,50 +125,46 @@ this.showDashboard = false; // Controla si mostrar los dashboards
 
 
 
-
-  getOrdersByEstado2(rut_usuario: number): void {
-    this.queryService.getOrdersByEstadoByUser2(rut_usuario).subscribe(
-      (data) => {
-        this.ordersCount2 = data[0].total;
+    getOrdersCount(): void {
+    this.orderservice.getOrdersCountPorRealizar().subscribe(
+      (response) => {
+        console.log('Conteo de órdenes:', response.totalOrders);
+        this.ordersCount = response.totalOrders;  // Asigna el conteo al componente
       },
       (error) => {
-        console.error('Error al obtener las órdenes:', error);
+        console.error('Error al obtener el conteo de órdenes', error);
       }
     );
   }
 
-  getOrdersByEstado3(rut_usuario: number): void {
-    this.queryService.getOrdersByEstadoByUser3(rut_usuario).subscribe(
-      (data) => {
-        this.ordersCount3 = data[0].total;
+  getOrdersCountCerradas(): void {
+    this.orderservice.getOrdersCountCerradas().subscribe(
+      (response) => {
+        console.log('Conteo de órdenes:', response.totalOrders);
+        this.ordersCountEliminadas = response.totalOrders;  // Asigna el conteo al componente
       },
       (error) => {
-        console.error('Error al obtener las órdenes:', error);
+        console.error('Error al obtener el conteo de órdenes', error);
       }
     );
   }
 
-  getOrdersByEstado4(rut_usuario: number): void {
-    this.queryService.getOrdersByEstadoByUser4(rut_usuario).subscribe(
-      (data) => {
-        this.ordersCount4 = data[0].total;
-      },
-      (error) => {
-        console.error('Error al obtener las órdenes:', error);
-      }
-    );
-  }
 
-  getOrdersByEstado5(rut_usuario: number): void {
-    this.queryService.getOrdersByEstadoByUser5(rut_usuario).subscribe(
-      (data) => {
-        this.ordersCount5 = data[0].total;
+  getOrdersCountPorRealizarTecnico(): void {
+    const rut_usuario = this.authService.getIdLocal()
+    this.orderservice.getOrdersCountPorRealizarTecnico(rut_usuario ?? 0).subscribe(
+      (response) => {
+        console.log('Conteo de órdenes:', response.totalOrders);
+        this.ordersCounttecnico = response.totalOrders;  // Asigna el conteo al componente
       },
       (error) => {
-        console.error('Error al obtener las órdenes:', error);
+        console.error('Error al obtener el conteo de órdenes', error);
       }
     );
   }
+ 
+
+
 
   onFilterChange(filterType: string) {
     this.obtenerFechasPorFiltro(filterType);

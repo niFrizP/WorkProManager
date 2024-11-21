@@ -42,6 +42,8 @@ import { ModalComponent } from '../../components/modal/modal.component';
 })
 export class CotizacionComponent {
   isLoading = true; // Cambia el estado de carga cuando termine
+  fechaHoy: string = ''; // Variable para almacenar la fecha actual
+
 
   [x: string]: any;
   onServiceChange($event: Event) {
@@ -129,6 +131,9 @@ export class CotizacionComponent {
     }
   
     ngOnInit(): void {
+      setTimeout(() => {
+        this.router.navigate(['/cotizacion']);
+      }, 2000);
       this.cargarTipoEquipo();
       this.cargarServicios();
       this.cargarUsuarios();
@@ -136,6 +141,8 @@ export class CotizacionComponent {
       this.cargarMarcas();
      this.rut_remitente = this.authService.getIdLocal()
       console.log('User ID:', this['userId']);
+      const today = new Date();
+    this.fechaHoy = today.toISOString().split('T')[0];  // Obtiene solo la fecha sin la parte de la hora
     
 
 
@@ -165,7 +172,8 @@ export class CotizacionComponent {
     }
   
     
-  
+    
+
   
     async addProduct(): Promise<void> {
       this.loading = true;
@@ -201,6 +209,8 @@ export class CotizacionComponent {
       }
     }
   
+
+    
     onServicioChange(event: any) {
       const servicioId = event.target.value;
       this.servicioSeleccionado = servicioId ? parseInt(servicioId) : null;
@@ -230,13 +240,12 @@ export class CotizacionComponent {
         const solicitudData: Solicitud = {
           id_ot: this.newOrderId!,
           desc_sol: this.form.get('desc_sol')?.value,
-          id_estado_ot: this.form.get('id_estado')?.value,
+          id_estado_ot: 1,
           isView: false,
+          completada: false,
           fecha_emision: new Date(),
-          rut_remitente: this.rut_remitente,
-          rut_receptor: this.form.get('rut_usuario')?.value
-          
-
+          rut_usuario: this.form.get('rut_usuario')?.value,
+          fecha_plazo: new Date(Date.now() + 24 * 60 * 60 * 1000), // Fecha actual + 1 día
         };
         
         console.log('Solicitud data:')
@@ -383,7 +392,6 @@ export class CotizacionComponent {
       
       const orderData: Order = {
           num_equipo: this.form.get('num_equipo')?.value,
-          id_estado_ot: this.form.get('id_estado')?.value,
           fec_creacion: new Date(),
           fec_entrega: this.form.get('fecha')?.value,
           descripcion: this.form.get('descripcion')?.value,

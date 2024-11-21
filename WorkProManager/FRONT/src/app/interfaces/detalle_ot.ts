@@ -1,4 +1,3 @@
-import { Servicio } from "./servicio";
 
 export interface DetalleOT {
     id_ot: number;

@@ -7,6 +7,7 @@ import EstadoOT from './estado_ot'; // Importa el modelo EstadoOT
 import db from '../db/connection';
 import Solicitud from './solicitud';
 import VistaSolicitud from './vistamin';
+import VistaSolicitudTecnico from './vistatecnico';
 
 
 class Order extends Model {}
@@ -54,13 +55,7 @@ Order.init({
             key: 'num_equipo'
         }
     },
-    id_estado_ot: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'estado_ot',
-            key: 'id_estado_ot'
-        }
-    },
+
     
     
     
@@ -79,8 +74,8 @@ Order.belongsTo(Usuario, { foreignKey: 'rut_usuario', targetKey: 'rut_usuario' }
 Order.belongsTo(Solicitud, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.belongsTo(Equipo, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
 Order.hasMany(Order, { foreignKey: 'id_ot' });
-Order.belongsTo(EstadoOT, { foreignKey: 'id_estado_ot', targetKey: 'id_estado_ot' });
 Order.belongsTo(VistaSolicitud, { foreignKey: 'id_ot', targetKey: 'id_ot' });
+Order.belongsTo(VistaSolicitudTecnico, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.hasMany(Solicitud, { foreignKey: 'id_ot' }); // Cambiado a hasMany
 
 

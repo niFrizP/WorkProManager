@@ -9,6 +9,10 @@ import { EquipoService } from '../../services/equipo.service';
 import { ClienteService } from '../../services/cliente.service';
 import { Router } from '@angular/router';
 import { Usuario } from '../../interfaces/usuario';
+import { DetalleCausaRechazo } from '../../interfaces/detalle_causa_rechazo';
+import { CausaRechazo } from '../../interfaces/causa_rechazo';
+import { DetalleCausaRechazoService } from '../../services/detalle_causa_rechazo.service';
+import { CausaRechazoService } from '../../services/causa_rechazo.service';
 import { Equipo } from '../../interfaces/equipo';
 import { Cliente } from '../../interfaces/cliente';
 import { Servicio } from '../../interfaces/servicio';
@@ -18,7 +22,7 @@ import { newOrder } from '../../interfaces/newOrder';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DetalleOTService } from '../../services/detalle_ot.service';
 import { EstadoOT } from '../../interfaces/estadoot';
 import { EstadoOTService } from '../../services/estado_ot.service';
@@ -29,7 +33,8 @@ import { Solicitud } from '../../interfaces/solicitud';
 import { CronometroComponent } from '../../components/cronometro/cronometro.component';
 import { QueryService } from '../../services/query';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-
+import { DetalleOT } from '../../interfaces/detalle_ot';
+import { PdfGeneratorService } from '../../services/pdf-generator.service';
 
 @Component({
   selector: 'app-reportes',
@@ -62,7 +67,7 @@ export class ReportesComponent implements OnInit {
   isFechaOpen = false;
   isClienteOpen = false;
   isEquipoOpen = false;
-
+  rejectForm = FormGroup;
   numericError: string = '';  // Variable para almacenar el mensaje de error
   isSubmenuOpen: number | null = null; // Controla la visibilidad del submenú
 
@@ -82,7 +87,9 @@ export class ReportesComponent implements OnInit {
     { value: 11, name: 'Noviembre' },
     { value: 12, name: 'Diciembre' }
   ];
-
+  fechaHoy: string = '';
+  causasRechazo: CausaRechazo[] = [];
+  detalleCausaRechazo: DetalleCausaRechazo[] = [];
   orders: Order[] = [];
   newOrders: newOrder[] = [];
   usuarios: Usuario[] = [];
@@ -122,6 +129,8 @@ export class ReportesComponent implements OnInit {
   newSolicitudId: number | null = null;
   soli: number  | null = null;
   rut_receptor: number = 0;
+  isRejectionModalOpen = false;
+  rejectionForm: FormGroup;
 
   
   id_ot: number = 0; // Declare the id_ot property
@@ -149,14 +158,17 @@ export class ReportesComponent implements OnInit {
     private solicitudService: SolicitudService,
     private timerService: TimerService,
     private queryService: QueryService,
+    private causaRechazoService: CausaRechazoService,
+    private detalleCausaRechazoService: DetalleCausaRechazoService,
+    private pdfGeneratorService:PdfGeneratorService
     
 
   )
 
   
   {  this.form = this.fb.group({
-    id_estado_ot: this.selectedEstadoID,
-    rut_receptor: this.rut_receptor,
+    id_estado_ot: [null],
+    rut_receptor: [null],
     rut_remitente: this.rut_receptor,
     desc_sol: [''],
     fecha_plazo: [null],
@@ -172,6 +184,11 @@ export class ReportesComponent implements OnInit {
     fecha_plazo: [null],
   });
 
+  this.rejectionForm = this.fb.group({
+    id_rechazo: ['', Validators.required],
+    observaciones: [''],
+    fecha_rechazo: [new Date()],
+  });
 
 }
 
@@ -182,11 +199,19 @@ export class ReportesComponent implements OnInit {
     this.idRol = this.authService.getRolId() ?? 0
     this.loadOrders();
     this.loadEstados();
+    this.loadCausaRechazo();
     this.loadUsers();
     this.loadServicios();
     this.actualizarTiempoRestante();
     this.filterOrders();
-    this.soli = this.updateeee() || 0;
+
+    const hoy = new Date();
+    const dia = hoy.getDate().toString().padStart(2, '0');
+    const mes = (hoy.getMonth() + 1).toString().padStart(2, '0');
+    const anio = hoy.getFullYear();
+    
+    // Formatear la fecha en formato "yyyy-mm-dd"
+    this.fechaHoy = `${anio}-${mes}-${dia}`;
 
 
    
@@ -221,6 +246,35 @@ export class ReportesComponent implements OnInit {
   }
 
 
+  generatePDF(order: newOrder): void {
+    try {
+      if (!order || !order.Equipo.mod_equipo) {
+        throw new Error('Datos de orden incompletos');
+      }
+  
+      // Obtén los detalles de la orden y las solicitudes asociadas
+      this.detalleOTService.getListDetalleOTByOTId(order.id_ot ?? 0).subscribe({
+        next: (detalles: DetalleOT[]) => {
+          this.solicitudService.getSolByOt(order.id_ot ?? 0).subscribe({
+            next: (solicitudes: Solicitud[]) => {
+              const fileName = `OT_${order.id_ot}.pdf`;
+              // Genera el PDF con todos los datos
+              this.pdfGeneratorService.generatePDFContent(order, detalles, solicitudes, fileName);
+            },
+            error: (error) => {
+              console.error('Error al obtener solicitudes asociadas a la orden:');
+            },
+          });
+        },
+        error: (err) => {
+          console.error('Error al obtener detalles de la orden:', err);
+        },
+      });
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+    }
+  }
+
   filterOrdersByServicio(servicio: string) {
     this.selectedServicio = servicio;
     this.filterOrders();
@@ -252,11 +306,34 @@ export class ReportesComponent implements OnInit {
     
     if (selectedEstado) {
       this.selectedEstadoName = selectedEstado.nom_estado_ot;
-      this.selectedEstadoID = selectedEstado.id_estado_ot ?? null;
+      this.selectedEstadoID = selectedEstado.id_estado_ot ?? 0;
       console.log(this.selectedEstadoID);
       
       // Actualiza el valor en el formulario
-      this.form.patchValue({ id_estado_ot: this.selectedEstadoID });
+      console.log(this.form.value);
+      
+      // Emitir el evento al componente padre
+
+      this.openModal(id_ot);
+
+
+      // Cerrar el menú
+    }
+
+
+  }
+
+  public onCausaChange(event: Event, id_ot: number): void {
+
+    const selectedId = (event.target as HTMLSelectElement).value;
+    const selectedEstado = this.causasRechazo.find(causa => causa.id_rechazo?.toString() === selectedId);
+    
+    if (selectedEstado) {
+      this.selectedEstadoName = selectedEstado.nombre_rechazo;
+      this.selectedEstadoID = selectedEstado.id_rechazo ?? 0;
+      console.log(this.selectedEstadoID);
+      
+      // Actualiza el valor en el formulario
       console.log(this.form.value);
       
       // Emitir el evento al componente padre
@@ -291,10 +368,60 @@ export class ReportesComponent implements OnInit {
   }
 
 
+
+  openRejectionModal(otId: number): void {
+    console.log("abriendo...")
+    this.isRejectionModalOpen = true;
+    this.selectedOtId = otId;
+    console.log(this.isRejectionModalOpen);
+  }
+
+  closeRejectionModal(): void {
+    this.isRejectionModalOpen = false;
+    this.rejectionForm.reset();
+  }
+
+  createorupdateDetalleCausaRechazo(otId: number, selectedRejection: number): void {
+    const detalleCausaRechazo: DetalleCausaRechazo = {
+      id_ot: otId,
+      id_rechazo: selectedRejection,
+      observaciones: this.rejectionForm.value.observaciones,
+      fecha_rechazo: new Date(),
+
+    };
+
+    this.detalleCausaRechazoService.saveDetalleOT(detalleCausaRechazo).subscribe({
+      next: (response: any) => {
+        console.log('Response from server:', response);
+        this.loadOrders();
+      },
+      error: (error) => {
+        console.error('Error creating detalle causa rechazo:', error);
+      }
+    });
+  }
+
+  confirmRejection(otId: number): void {
+    if (this.rejectionForm.valid) {
+      const selectedRejection = this.rejectionForm.value.id_rechazo;
+      console.log(`Orden de trabajo ${otId} rechazada con causa ${selectedRejection}`);
+      this.createorupdateDetalleCausaRechazo(otId, selectedRejection);
+      // Aquí puedes agregar la lógica para enviar los datos al backend
+      this.createorupdateSolicitudEliminada(otId, 6);
+      this.closeRejectionModal();
+    } else {
+      alert('Por favor, selecciona una causa de rechazo.');
+    }
+  }
+
+
   public openModal(id_ot:number): void {
     this.updateSolicitudOnLoad(id_ot)
     this.id_ot = id_ot; // Asigna el `id_ot` a la propiedad `id_ot`
     this.isModalOpen = true;
+    const today = new Date();
+    this.fechaHoy = today.toISOString().split('T')[0];  // Obtiene solo la fecha sin la parte de la hora
+    
   }
   
   // Método para cerrar el modal
@@ -318,6 +445,18 @@ export class ReportesComponent implements OnInit {
       }
     );
   }
+
+  loadCausaRechazo(): void {
+    this.causaRechazoService.getListCausaRechazo().subscribe(
+      (data: CausaRechazo[]) => {
+        this.causasRechazo = data;
+      },
+      (error) => {
+        console.error('Error fetching users', error);
+      }
+    );
+  }
+
 
   updateSolicitudOnLoad(id_ot: number): void {
 
@@ -422,13 +561,13 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
 
     if(this.idRol == 2){
 
-      this.queryService.getOrdersByUsuarioProgreso(this.rut_usuario).subscribe(
+      this.orderService.gelistOrdersReporteTecnico(this.rut_usuario).subscribe(
         (data: newOrder[]) => {
           this.newOrders = data;
 
           this.filteredOrders = this.newOrders; // Inicializar filteredOrders
           this.sortOrders(this.newOrders);
-          console.log(this.newOrders.map(newOrder => newOrder.EstadoOT.nom_estado_ot));
+          console.log(this.newOrders.map(newOrder => newOrder.VistaSolicitud.nom_estado_ot));
 
           
         },
@@ -439,11 +578,11 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
 
     }else{
     
-    this.orderService.getlistnewOrders().subscribe(
+    this.orderService.getlistOrdersReporteGeneral().subscribe(
       (data: newOrder[]) => {
         this.newOrders = data;
         this.filteredOrders = this.newOrders; // Inicializar filteredOrders
-        console.log(this.newOrders.map(newOrder => newOrder.EstadoOT.nom_estado_ot));
+        console.log(this.newOrders.map(newOrder => newOrder.VistaSolicitud.nom_estado_ot));
         this.sortOrders(this.newOrders);
 
       },
@@ -458,10 +597,10 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
     return newOrders.sort((a, b) => {
       // Primero, las órdenes cuyo isview es true
       if (a.VistaSolicitud.isview && !b.VistaSolicitud.isview) {
-        return -1;
+        return 1;
       }
       if (!a.VistaSolicitud.isview && b.VistaSolicitud.isview) {
-        return 1;
+        return -1;
       }
       return 0;  // Si ambos tienen el mismo valor en isview, no cambiamos el orden
     });
@@ -470,7 +609,7 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
 
   filterOrders() {
     this.filteredOrders = this.newOrders
-      .filter(newOrder => this.selectedStatus === 'todas' || newOrder.EstadoOT.nom_estado_ot.toLowerCase() === this.selectedStatus)
+      .filter(newOrder => this.selectedStatus === 'todas' || newOrder.VistaSolicitud.nom_estado_ot.toLowerCase() === this.selectedStatus)
       .filter(newOrder => this.selectedMonth === 0 || new Date(newOrder.fec_entrega).getMonth() + 1 === this.selectedMonth)
       .filter(newOrder => this.selectedYear === 0 || new Date(newOrder.fec_entrega).getFullYear() === this.selectedYear)
       .filter(newOrder => !this.searchRutCliente || newOrder.rut_cliente.toString().toLowerCase().includes(this.searchRutCliente.toLowerCase()))
@@ -550,29 +689,9 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
     }
   }
 
-  updateOrder(id_ot:number): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this._orderService.updateOrderState(id_ot, 3).subscribe(
-        
-        (data) => {
-          console.log(id_ot);
-          console.log("updateOrder");
-          console.log(data);
-          resolve();
-        },
-        (error) => {
-          console.error('Error al cargar los detalles:', error);
-          reject();
-        }
-      );
-      
-    });
-  }
+ 
   
-  confirmOrderCompletion(id_ot: number): void| undefined {
-      this.updateOrder(id_ot)
-  
-}
+
 
   onPageChange(page: number): void {
     this.page = page;
@@ -586,7 +705,6 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
       this.solicitudService.getSolByOt(otId).subscribe(
         (data: Solicitud[]) => {
           this.solicitudes = data;
-          this.rut_receptor = this.solicitudes[0].rut_receptor ?? 0;
           console.log(this.rut_receptor);
 
           this.form.patchValue({
@@ -626,6 +744,7 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
     }
   }
 
+
   
  
 
@@ -643,11 +762,16 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
       }
     });  
 
-    this.createorupdateSolicitud(id_ot , estadoId);
-    
-    this.router.navigate(['/reportes']).then(() => {
-      window.location.reload();  // Recarga la página
+
+    this.createorupdateSolicitud(id_ot, estadoId).then((solicitud: Solicitud) => {
+      console.log('Solicitud actualizada:', solicitud);
+      this.loadOrders();
+    }).catch((error) => {
+      console.error('Error actualizando la solicitud:', error);
     });
+
+    
+
   }
 
   
@@ -675,41 +799,85 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
     )
 
 
-  this.conseguirUsuarioReceptor = this.conseguirRolRemitente(this.solicitudesInvertidas[0].rut_receptor ?? 0) ?? 0;
 
-  this.conseguirUsuarioRemisor = this.conseguirRolRemitente(this.solicitudesInvertidas[0].rut_remitente ?? 0) ?? 0;
-  
-  if(this.authService.getRolId() != this.conseguirUsuarioRemisor){
-    return this.solicitudesInvertidas[0].rut_receptor ?? 0;}
-    else{
-      return this.solicitudesInvertidas[0].rut_remitente ?? 0;
-    }
-    
-
-  
 
 
 }
+
+public async createorupdateSolicitudEliminada(id_ot:number | null, id_estado_ot:number| null): Promise<Solicitud> {
+
+
+  console.log('id_ot:', id_ot);
+  console.log('id_estado_ot:', id_estado_ot);
+
+
+
+  const solicitudData: Solicitud = {
+    id_ot: id_ot ?? 0, // Ensure id_ot is not null
+    desc_sol: this.form.get('desc_sol')?.value,
+    id_estado_ot: id_estado_ot ?? 0,
+    isView: false,
+    fecha_emision: new Date(),
+    fecha_plazo: null,
+    rut_usuario: null,
+    completada: false,
+
+  };
+  
+  console.log('Solicitud data:')
+  console.log()
+  console.log(JSON.stringify(solicitudData, null, 2));
+
+  
+      return new Promise((resolve, reject) => {
+        this.solicitudService.saveSolicitud(solicitudData).subscribe({
+          next: (response: any) => {
+            console.log('Response from server:', response);
+
+            // Asegúrate de que la respuesta tiene la estructura esperada
+            const newSolicitud = response?.solicitud; // Accede al objeto 'solicitud'
+
+            if (newSolicitud) {
+              this.newSolicitudId = newSolicitud?.id_sol; // Accede a la propiedad 'id_sol'
+
+              if (this.newSolicitudId) {
+                console.log('New solicitud ID:', this.newSolicitudId);
+              } else {
+                console.warn('No solicitud ID found in response');
+              }
+
+              resolve(newSolicitud); // Devuelve la solicitud creada
+            } else {
+              console.warn('Solicitud object not found in response');
+              reject(new Error('Solicitud object not found in response'));
+            }
+          },
+          error: (error) => {
+            console.error('Error creating solicitud:', error);
+            reject(error);
+          }
+        });
+      });
+    }
 
 
   public async createorupdateSolicitud(id_ot:number | null, id_estado_ot:number| null): Promise<Solicitud> {
 
 
-    
-
-    this.soli = this.updateeee() || 0;
+    console.log('id_ot:', id_ot);
+    console.log('id_estado_ot:', id_estado_ot);
 
 
 
     const solicitudData: Solicitud = {
       id_ot: id_ot ?? 0, // Ensure id_ot is not null
       desc_sol: this.form.get('desc_sol')?.value,
-      id_estado_ot: id_estado_ot ?? 0, // Ensure id_estado_ot is not null
+      id_estado_ot: this.form.get('id_estado_ot')?.value,
       isView: false,
       fecha_emision: new Date(),
       fecha_plazo: this.form.get('fecha_plazo')?.value,
-      rut_receptor: this.form.get('rut_receptor')?.value,
-      rut_remitente: this.soli,
+      completada: false,
+      rut_usuario: this.form.get('rut_receptor')?.value,
 
     };
     

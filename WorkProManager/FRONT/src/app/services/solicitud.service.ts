@@ -55,6 +55,11 @@ export class SolicitudService {
         const url = `${this.myAppUrl}${this.myApiUrl}${id_sol}`;
         return this.http.put<Date>(url, { fecha_termino });
     }
+
+    updateSolicitudByCompletada(id_sol: number, completada: boolean): Observable<boolean> {
+        const url = `${this.myAppUrl}${this.myApiUrl}${id_sol}`;
+        return this.http.put<boolean>(url, { completada });
+    }
     
 
     getSolByUser(id_user: number): Observable<Solicitud[]> {

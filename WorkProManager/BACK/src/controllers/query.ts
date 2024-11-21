@@ -16,9 +16,7 @@ export const getOrdersByEstadoByUser_1 = async (req: Request, res: Response) => 
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.in]: [1], // Filtrar donde el estado no sea 5 ni 6
-        },
+
         ...({
           fec_entrega: {
             [Op.gt]: sequelize.fn('NOW'),
@@ -44,9 +42,7 @@ export const getOrdersByEstadoByUser_2 = async (req: Request, res: Response) => 
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.in]: [2], // Filtrar donde el estado no sea 5 ni 6
-        },
+
         ...({
           fec_entrega: {
             [Op.gt]: sequelize.fn('NOW'),
@@ -72,9 +68,7 @@ export const getOrdersByEstadoByUser_3 = async (req: Request, res: Response) => 
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.in]: [3], // Filtrar donde el estado no sea 5 ni 6
-        },
+
         ...({
           fec_entrega: {
             [Op.gt]: sequelize.fn('NOW'),
@@ -100,9 +94,7 @@ export const getOrdersByEstadoByUser_4 = async (req: Request, res: Response) => 
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.in]: [4], // Filtrar donde el estado no sea 5 ni 6
-        },
+
         ...({
           fec_entrega: {
             [Op.gt]: sequelize.fn('NOW'),
@@ -128,9 +120,7 @@ export const getOrdersByEstadoByUser_5 = async (req: Request, res: Response) => 
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.in]: [5], // Filtrar donde el estado no sea 5 ni 6
-        },
+
         ...({
           fec_entrega: {
             [Op.gt]: sequelize.fn('NOW'),
@@ -157,9 +147,7 @@ export const getOrdersByEstadoEnTiempo = async (req: Request, res: Response) => 
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
-        },
+
         ...(startDate && endDate && {
           fec_entrega: {
             [Op.gt]: sequelize.fn('NOW'),
@@ -187,9 +175,7 @@ export const getOrdersByEstadoEnTiempoGrafico = async (req: Request, res: Respon
         [sequelize.fn('COUNT', sequelize.col('id_ot')), 'total'], // Contar las órdenes por mes
       ],
       where: {
-        id_estado_ot: {
-          [Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
-        },
+
         fec_entrega: {
           [Op.between]: [
             sequelize.fn('DATE_SUB', sequelize.fn('NOW'), sequelize.literal('INTERVAL 12 MONTH')), // Fecha de hace 12 meses
@@ -219,9 +205,7 @@ export const getOrdersByEstadoTotalEnTiempo = async (req: Request, res: Response
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.notIn]: [6], // Filtrar donde el estado no sea 6
-        },
+
         ...(startDate && endDate && {
           fec_entrega: {
             [Op.gt]: sequelize.fn('NOW'),
@@ -246,9 +230,7 @@ export const getOrdersByEstado = async (req: Request, res: Response) => {
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
-        },
+
         ...(startDate && endDate && {
           fec_entrega: {
             [Op.between]: [new Date(startDate), new Date(endDate)],
@@ -271,9 +253,7 @@ export const getOrdersByEstadoTotal = async (req: Request, res: Response) => {
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.notIn]: [6], // Filtrar donde el estado no sea 6
-        },
+
         ...(startDate && endDate && {
           fec_entrega: {
             [Op.between]: [new Date(startDate), new Date(endDate)],
@@ -297,9 +277,7 @@ export const getOrdersByEstadoEliminada = async (req: Request, res: Response) =>
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.in]: [6], // Filtrar donde el estado no sea 6
-        },
+
         ...(startDate && endDate && {
           fec_entrega: {
             [Op.between]: [new Date(startDate), new Date(endDate)],
@@ -322,9 +300,7 @@ export const getOrdersByEstadoTotalByUser = async (req: Request, res: Response) 
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.notIn]: [6], // Filtrar donde el estado no sea 6
-        },
+
         ...(startDate && endDate && {
           fec_entrega: {
             [Op.between]: [new Date(startDate), new Date(endDate)],
@@ -350,9 +326,7 @@ export const getOrdersByEstadoByUser = async (req: Request, res: Response) => {
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
-        },
+
         ...(startDate && endDate && {
           fec_entrega: {
             [Op.between]: [new Date(startDate), new Date(endDate)],
@@ -379,9 +353,7 @@ export const getOrdersByEstadoEliminadaByUser = async (req: Request, res: Respon
     const ordersCount = await Order.findAll({
       attributes: [[sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número total de órdenes
       where: {
-        id_estado_ot: {
-          [Op.in]: [6], // Filtrar donde el estado no sea 6
-        },
+
         ...(startDate && endDate && {
           fec_entrega: {
             [Op.between]: [new Date(startDate), new Date(endDate)],
@@ -449,13 +421,9 @@ export const getOrdersEstadoSum = async (req: Request, res: Response) => {
     try {
       const ordersCount = await Order.findAll({
         attributes: [
-          'id_estado_ot',
           [sequelize.fn('COUNT', sequelize.col('costo')), 'total_estado'] // Sumar el valor de id_estado_ot por usuario
         ],
-        group: ['id_estado_ot'], // Agrupar por usuario
-        where: {
-          id_estado_ot: 3
-        }
+
       });
   
       res.json(ordersCount);
@@ -579,7 +547,6 @@ export const getOrder = async (req: Request, res: Response) => {
                 { model: Equipo },
                 { model: Cliente },
                 { model: Usuario },
-                { model: EstadoOT }
             ]
         });
 
@@ -616,7 +583,7 @@ export const deleteOrder = async (req: Request, res: Response) => {
 }
 
 export const postOrder = async (req: Request, res: Response) => {
-    const { fecha, costo, descripcion, rut_cliente, rut_usuario, id_serv, num_equipo,id_estado_ot } = req.body;
+    const { fecha, costo, descripcion, rut_cliente, rut_usuario, id_serv, num_equipo } = req.body;
 
     try {
         const newOrder = await Order.create({
@@ -627,7 +594,6 @@ export const postOrder = async (req: Request, res: Response) => {
             rut_usuario, // Incluye rut_usuario
             id_serv,    // Incluye id_serv
             num_equipo,  // Incluye num_equipo
-            id_estado_ot
         });
 
         res.json({

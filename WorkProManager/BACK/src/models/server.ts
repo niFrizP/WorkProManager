@@ -13,6 +13,9 @@ import detalleOtRoutes from '../routes/detalle_ot';
 import routesUsuarioEliminado from '../routes/usuario_eliminado';
 import ordersCountByService from '../routes/order';
 import queryRoutes from '../routes/query';
+import causaRoutes from '../routes/causa_rechazo';
+import detallecausaroutes from '../routes/detalle_causa_rechazo';
+
 import routesTipo from '../routes/tipo';
 import routesLogin from '../routes/login';
 import bodyparser from 'body-parser';
@@ -31,7 +34,7 @@ class Server {
 
         this.app.use(cookieparser());
         this.app.use(cors({
-            origin: 'http://localhost:4200',   // Dirección del frontend
+            origin: ['http://localhost:4200','http://localhost:54351'],   // Dirección del frontend
             credentials: true                  // Permite el envío de cookies
         }));
         this.port = process.env.PORT || '3001';
@@ -59,7 +62,20 @@ class Server {
             });
         });
 
+        this.app.use('/api/causa', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a login');
+            }
+            next();
+        }, causaRoutes);
 
+        this.app.use('/api/detallecausa', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a login');
+            }
+            next();
+        }, detallecausaroutes);
+       
 
         this.app.use('/api/login', (req: Request, res: Response, next: Function) => {
             if (req.method === 'POST') {

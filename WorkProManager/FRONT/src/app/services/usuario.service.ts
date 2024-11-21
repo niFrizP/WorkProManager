@@ -43,6 +43,9 @@ export class UsuarioService {
     return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${rut_usuario}`, usuario);
   }
 
+  updateUsuarioRegular(rut_usuario: number): Observable<void> {
+    return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${rut_usuario}`, rut_usuario);
+  }
   
 
   login(rut_usuario: number, password: string): Observable<Usuario> {

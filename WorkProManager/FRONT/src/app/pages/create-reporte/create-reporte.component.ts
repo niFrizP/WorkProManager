@@ -130,6 +130,47 @@ export class CreateReportComponent implements OnInit {
 
   }
 
+  confirmarDesmarcar(id_ot: number, id_serv: number) {
+    const confirmation = window.confirm('¿Estás seguro que quieres eliminar el estado del servicio?');
+    if (confirmation) {
+      this.desmarcarEstado(id_ot, id_serv);
+    } else {
+      console.log('Eliminación cancelada');
+    }
+  }
+
+
+
+  desmarcarEstado(id_ot: number, id_serv: number): void {
+    this.detalleOTService.updateDetalleOTByDigito(id_ot, id_serv, 0).subscribe({
+      next: () => {
+        console.log('Estado updated successfully');
+        this.loadDetalles(this.id_ot);
+      },
+    });
+
+    this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
+      this.solicitudes = data.reverse();
+      console.log(this.solicitudes);
+      if(this.solicitudes[0].isView == true){
+        this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, false).subscribe({
+          next: () => {
+            console.log('Solicitud updated successfully');
+          },
+        }); 
+
+        if(this.solicitudes[0].id_estado_ot == 4){
+        this.solicitudService.deleteSolicitudes(this.solicitudes[0].id_sol!).subscribe({
+          next: () => {
+            console.log('Solicitud deleted successfully');
+          },
+        });}
+      }
+
+
+    })
+  }
+
   openModal(event:Event) {
 
     event.preventDefault(); // Esto evita que el botón haga submit del formulario
@@ -147,11 +188,9 @@ export class CreateReportComponent implements OnInit {
       this.solicitudes = data.reverse();
       console.log(this.solicitudes);
 
-      if(this.rut_receptorActual != this.solicitudes[0].rut_receptor) {
-        console.log("No es el receptor");
-
-      }else
-
+      
+      
+if(this.solicitudes[0].isView == false){
 
    this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, true).subscribe({
       next: () => {
@@ -165,7 +204,7 @@ export class CreateReportComponent implements OnInit {
         console.log('Solicitud updated successfully');
       },
     });   
-    
+  }
 
   })
 }

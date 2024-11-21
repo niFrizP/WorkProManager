@@ -2,6 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import db from '../db/connection';
 import Order from './orders';
 import EstadoOT from './estado_ot';
+import Usuario from './usuario';
 
 
 // Definición del modelo EstadoOT en lugar de Equipo
@@ -23,8 +24,8 @@ const Solicitud = db.define('Solicitud', {
     id_estado_ot: {
         type: DataTypes.INTEGER, // El tipo de dato es un entero
         references: {
-            model: 'estado_ot', // Se referencia al modelo EstadoOT
-            key: 'id_estado_ot' // La llave primaria de EstadoOT
+            model: 'estado_ot',
+            key: 'id_estado_ot'
         }
     },
     isView: {
@@ -42,11 +43,15 @@ const Solicitud = db.define('Solicitud', {
     fecha_plazo: {
         type: DataTypes.DATE
     },
-    rut_remitente: {
-        type: DataTypes.INTEGER
+    rut_usuario: {
+        type: DataTypes.STRING,
+        references: {
+            model: 'usuario',
+            key: 'rut_usuario'
+        }
     },
-    rut_receptor: {
-        type: DataTypes.INTEGER
+    completada: {
+        type: DataTypes.BOOLEAN
     }
   
 }, {
@@ -57,5 +62,6 @@ const Solicitud = db.define('Solicitud', {
 });
 
 Solicitud.belongsTo(EstadoOT, { foreignKey: 'id_estado_ot' });
+Solicitud.belongsTo(Usuario, { foreignKey: 'rut_usuario' });
 
 export default Solicitud;

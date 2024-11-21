@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import jsPDF from 'jspdf';
 import html12canvas from 'html2canvas';
+import { Solicitud } from '../../interfaces/solicitud';
+import { DetalleOT } from '../../interfaces/detalle_ot';
+import { newOrder } from '../../interfaces/newOrder';
 
 @Component({
   selector: 'app-pdf-generator',
@@ -12,28 +15,92 @@ import html12canvas from 'html2canvas';
 })
 export class PdfGeneratorComponent {
 
-  generatePDF() {
-    const data = document.getElementById('pdf-content') as HTMLElement;
-    html12canvas(data).then(canvas => {
-      const imgData = canvas.toDataURL('image/png');
+  generatePDFContent(
+    order: newOrder,
+    detalles: DetalleOT[],
+    solicitudes: Solicitud[], // Nuevo parámetro para las solicitudes
+    fileName: string
+  ): void {
+    try {
       const pdf = new jsPDF();
-      const imgWidth = 190;
-      const  pageHeight = pdf.internal.pageSize.height;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-
-      let position = 0;
-
-      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-      pdf.save('ordenes_de_trabajo.pdf');
-    });
+  
+      pdf.setFont('helvetica');
+  
+      // Título principal
+      pdf.setFontSize(20);
+      pdf.text('ORDEN DE TRABAJO', 105, 20, { align: 'center' });
+  
+      // Información general
+      pdf.setFontSize(12);
+      let currentY = 40; // Controla la posición vertical
+      pdf.text(`OT N°: ${order.id_ot}`, 15, currentY);
+      currentY += 8;
+      pdf.text(`Creada por: ${order.Usuario.nom_usu} ${order.Usuario.ap_usu}`, 15, currentY);
+      currentY += 8;
+      pdf.text(`Fecha de creación: ${new Date(order.fec_creacion).toLocaleDateString()}`, 15, currentY);
+      currentY += 8;
+      pdf.text(`Fecha de entrega: ${new Date(order.fec_entrega).toLocaleDateString()}`, 15, currentY);
+  
+      // Espacio entre secciones
+      currentY += 12;
+  
+      // Datos del cliente
+      pdf.setFontSize(14);
+      pdf.text('DATOS DEL CLIENTE', 15, currentY);
+      currentY += 8;
+      pdf.setFontSize(12);
+      pdf.text(`RUT: ${order.rut_cliente}-${order.cliente.d_veri_cli}`, 15, currentY);
+      currentY += 8;
+      pdf.text(`Nombre: ${order.cliente.nom_cli} ${order.cliente.ap_cli}`, 15, currentY);
+      currentY += 8;
+      pdf.text(`Celular: ${order.cliente.cel_cli}`, 15, currentY);
+  
+      // Espacio entre secciones
+      currentY += 12;
+  
+      // Datos del equipo
+      pdf.setFontSize(14);
+      pdf.text('DATOS DEL EQUIPO', 15, currentY);
+      currentY += 8;
+      pdf.setFontSize(12);
+      pdf.text(`Modelo: ${order.Equipo.mod_equipo}`, 15, currentY);
+      currentY += 8;
+      pdf.text(`N° Serie: ${order.num_equipo}`, 15, currentY);
+  
+      // Espacio entre secciones
+      currentY += 12;
+  
+      // Detalles de la orden
+      pdf.setFontSize(14);
+      pdf.text('DETALLES DE LA ORDEN', 15, currentY);
+      currentY += 8;
+      pdf.setFontSize(12);
+  
+      detalles.forEach((detalle, index) => {
+        const detalleStartY = currentY + index * 16; // Incremento suficiente para evitar solapamiento
+        pdf.text(`Servicio: ${detalle.Servicio?.nom_serv || 'N/A'}`, 15, detalleStartY);
+        pdf.text(`Descripción: ${detalle.desc_detalle}`, 15, detalleStartY + 6);
+      });
+  
+      // Espacio entre secciones
+      currentY += detalles.length * 16 + 12;
+  
+      // Solicitudes asociadas
+      pdf.setFontSize(14);
+      pdf.text('SOLICITUDES', 15, currentY);
+      currentY += 8;
+      pdf.setFontSize(12);
+  
+      solicitudes.forEach((solicitud, index) => {
+        const solicitudStartY = currentY + index * 12;
+        pdf.text(`ID Solicitud: ${solicitud.id_sol}`, 15, solicitudStartY);
+        pdf.text(`Descripción: ${solicitud.desc_sol}`, 15, solicitudStartY + 6);
+      });
+  
+      // Guardar archivo
+      pdf.save(fileName);
+    } catch (error) {
+      console.error('Error generando PDF:', error);
+    }
   }
 }

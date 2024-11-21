@@ -1,6 +1,6 @@
 // WorkProManager/BACK/src/routes/order.ts
 import { Router } from 'express';
-import {  getOrder, getOrders, postOrder, updateOrder, countOrdersNotification, getSolicitudesFromView, deleteOrder, createSolicitudView, getOrdersEliminadas} from '../controllers/order';
+import {  getOrder,getOrdersByTecnico, createLastSolicitudPerOrderView,getOrders_1,getOrdersFinalizadasCountByMonth,countOrdersNotificationRechazadas,countOrdersNotificationFinalizada,countOrdersNotificationReportes,countOrdersNotificationCotizacon,getOrdersRealizadasCountByMonth,getOrdersCountRealizadasTecnico,getOrdersCountPorRealizarTecnico,getOrdersCountTerminadas, getOrdersCountPorRealizar,getOrders,getOrdersCountByMonth,getOrdersCotizacionesTecnico,getOrdersReporteTecnico, getOrdersCotizacionesGeneral,getOrdersReporteGeneral,getOrders_2,getOrders_3,getOrdersCompletadas, getOrderssEliminadas ,postOrder, updateOrder, getSolicitudesFromView, deleteOrder, createSolicitudView, getOrdersEliminadas, getOrdersByRutUsuario1, getOrdersByRutUsuario2, getOrdersByRutUsuario3, countOrdersNotificationReportesByRut, countOrdersNotificationCotizacionesByRut} from '../controllers/order';
 import { Sequelize } from 'sequelize';
 import sequelize from '../db/connection';
 import db from '../db/connection';
@@ -8,10 +8,51 @@ import Order from '../models/orders';
 
 const router = Router();
 
-router.get('/', getOrders); // Ruta para obtener las órdenes con joins
+router.get('/', getOrders); // Ruta para obtener todas las ordenes
+router.get('/tecnico', getOrdersByTecnico)
+
+router.get('/vistatecnico', createLastSolicitudPerOrderView) //crea vista de ultima solicitud por orden
+
+router.get('/completass', getOrdersCompletadas)
+router.post('/reportestecnico', getOrdersReporteTecnico)
+router.get('/rechazadass', getOrderssEliminadas)
 router.get('/count', createSolicitudView)
+
+//rutas del home grafico
+router.get('/count12mesesa', getOrdersRealizadasCountByMonth)
+router.get('/count12meseseliminadas', getOrdersFinalizadasCountByMonth)
+
+
+//rutas de solicitudes general
+router.get('/countabiertas', getOrdersCountPorRealizar)
+router.get('/countcerradas', getOrdersCountTerminadas)
+
+//rutas de solicitud por usuario
+router.post('/cotizacionesabiertastecnico', getOrdersCountPorRealizarTecnico)
+
+
+
+router.get('/cotizacionesgeneral', getOrdersCotizacionesGeneral)
+router.post('/cotizacionestecnico', getOrdersCotizacionesTecnico)
+router.get('/getOrders1', getOrders_1 )
+router.get('/getOrders2', getOrders_2 )
+router.get('/getOrders3', getOrders_3 );
+router.get('/getOrdersByRutUsuario1', getOrdersByRutUsuario1 );
+router.get('/getOrdersByRutUsuario2', getOrdersByRutUsuario2 );
+router.get('/getOrdersByRutUsuario3', getOrdersByRutUsuario3 );
+
+router.get('/reportesGeneral', getOrdersReporteGeneral);
+
 router.get('/solicitudes', getSolicitudesFromView);
-router.get('/countOrderN', countOrdersNotification); // Para obtener una orden específica por ID
+
+router.get('/countOrderN', countOrdersNotificationCotizacon); // Para obtener una orden específica por ID
+router.get('/countOrderNReportes', countOrdersNotificationReportes); // Para obtener una orden específica por ID
+router.get('/countOrderNFinalizadas', countOrdersNotificationFinalizada); // Para obtener una orden específica por ID
+router.get('/countOrderNRechazadas', countOrdersNotificationRechazadas); // Para obtener una orden específica por ID
+
+router.post('/countOrderNReportesByRut', countOrdersNotificationReportesByRut);
+router.post('/countOrderNCotizacionesByRut', countOrdersNotificationCotizacionesByRut);
+
 router.get('/eliminadas', getOrdersEliminadas)
 
 router.get('/:id', getOrder); // Para obtener una orden específica por ID

@@ -78,6 +78,9 @@ export class EditOrderComponent implements OnInit {
   rut_receptorActual: number | null = 0;
   rut_receptor: number | null = 0;
   soli : number | null = 0;
+  cambiarSolicitud: number | null = 0;
+  rolid: number | null = 0;
+  userid: number | null = 0;
 
 
 
@@ -93,7 +96,7 @@ export class EditOrderComponent implements OnInit {
     private equipoService:EquipoService,
     private clienteService:ClienteService,
     private solicitudService:SolicitudService,
-    private authService: AuthService
+    public authService: AuthService
     
   ) {
 
@@ -101,7 +104,6 @@ export class EditOrderComponent implements OnInit {
       id_sol: [null],
       id_ot: [null],
       desc_sol: [''],
-      id_estado_ot: [null]
     });
 
     const orden_id = this.aRouter.snapshot.paramMap.get('id_ot');
@@ -110,7 +112,6 @@ export class EditOrderComponent implements OnInit {
     this.form = this.fb.group({
       id_ot: [null, Validators.required],
       num_equipo: [null, Validators.required],
-      id_estado: [2, Validators.required],
       costo: [null, Validators.required],
       fecha: [null, Validators.required],
       descripcion: ['', Validators.required],
@@ -145,6 +146,10 @@ export class EditOrderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    
+    this.rolid = this.authService.getRolIdLocal();
+    this.userid = this.authService.getIdLocal();
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
     this.serviciosSeleccionados = [];
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
@@ -161,8 +166,10 @@ export class EditOrderComponent implements OnInit {
     console.log(this.rut_remitente);
     this.rut_receptorActual = this.authService.getIdLocal()
     console.log(this.updateeee() );
-    this.soli = this.updateeee() || 0;
     console.log(this.soli);
+    console.log(this.postEstadoSoliciud());
+    console.log(this.cambiarSolicitud);
+    this.cambiarSolicitud = this.postEstadoSoliciud() ?? 0;
     
 
     if (this.id_ot !== 0) {
@@ -180,6 +187,14 @@ export class EditOrderComponent implements OnInit {
     return rol;
   }
 
+  postEstadoSoliciud():number | undefined{
+    if(this.authService.getRolIdLocal() == 2){
+      return this.cambiarSolicitud = 2;
+    }
+    else{
+      return this.cambiarSolicitud = 3;
+    }
+  }
   
   updateeee() {
  
@@ -192,15 +207,7 @@ export class EditOrderComponent implements OnInit {
     )
 
 
-  this.conseguirUsuarioReceptor = this.conseguirRolRemitente(this.solicitudesInvertidas[0].rut_receptor ?? 0) ?? 0;
-
-  this.conseguirUsuarioRemisor = this.conseguirRolRemitente(this.solicitudesInvertidas[0].rut_remitente ?? 0) ?? 0;
-  
-  if(this.authService.getRolId() != this.conseguirUsuarioRemisor){
-    return this.solicitudesInvertidas[0].rut_receptor ?? 0;}
-    else{
-      return this.solicitudesInvertidas[0].rut_remitente ?? 0;
-    }
+ 
     
 
   
@@ -308,16 +315,16 @@ export class EditOrderComponent implements OnInit {
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
 
     
-    this.soli = this.updateeee() || 0;
+
 
     const solicitudData: Solicitud = {
       id_ot: this.id_ot,
       desc_sol: this.form.get('desc_sol')?.value,
-      id_estado_ot: this.form.get('id_estado')?.value,
       isView: false,
       fecha_emision: new Date(),
-      rut_remitente: this.rut_receptorActual,
-      rut_receptor: this.soli
+      rut_usuario: this.form.get('rut_usuario')?.value,
+      completada: false,
+      id_estado_ot: this.cambiarSolicitud || 0,
     };
     
     console.log('Solicitud data:')
@@ -328,6 +335,14 @@ export class EditOrderComponent implements OnInit {
         console.log('Solicitud updated successfully');
       }
     });
+
+    this.solicitudService.updateSolicitudByCompletada(this.solicitudes[0].id_sol!, true).subscribe({
+      next: () => {
+        console.log('Solicitud updated successfully');
+      }
+    });
+
+
     
   
     
@@ -368,7 +383,8 @@ export class EditOrderComponent implements OnInit {
         
 
         this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
-
+        this.authService.getIdLocal();
+        this.authService.getRolIdLocal();
 
           
 
@@ -378,7 +394,7 @@ export class EditOrderComponent implements OnInit {
           console.log(this.solicitudes[0].isView);
 
         
-    if(this.solicitudes[0].isView == false) {
+    if(this.solicitudesInvertidas[0].isView == false){
        this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, true).subscribe({
           next: () => {
             console.log('Solicitud updated successfully');
@@ -393,24 +409,12 @@ export class EditOrderComponent implements OnInit {
         });   
  
   
-      }else(this.authService.getRolId() != 2   && this.solicitudesInvertidas[0].id_estado_ot == 2 && this.solicitudesInvertidas[0].isView == false);
-       {
-        this.solicitudService.updateSolicitudByView(this.solicitudesInvertidas[0].id_sol!, true).subscribe({
-          next: () => {
-            console.log('Solicitud updated successfully');
-          },
-        });   
-
-
-        this.solicitudService.updateSolicitudByFecha(this.solicitudesInvertidas[0].id_sol!, new Date).subscribe({
-          next: () => {
-            console.log('Solicitud updated successfully');
-          },
-        });   
-      }
-
-      });
+      }else(
+        console.log("Solicitud ya vista")
+      )
       
+      });
+    
     }
     
     
@@ -567,7 +571,6 @@ export class EditOrderComponent implements OnInit {
     const orderData: Order = {
         id_ot: this.id_ot,
         num_equipo: this.form.get('num_equipo')?.value,
-        id_estado_ot: this.form.get('id_estado')?.value,
         fec_creacion: new Date(),
         fec_entrega: this.form.get('fecha')?.value,
         descripcion: this.form.get('descripcion')?.value,
