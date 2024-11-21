@@ -20,7 +20,8 @@
               <span>{{ menuAbierto['filtroEstado'] ? '▼' : '▶' }}</span>
             </button>
             <div [@slideInOut]="menuAbierto['filtroEstado']" class="p-2">
-              <select #filterSelect class="w-full p-2 border rounded mt-2" (change)="filterOrdersByStatus(filterSelect.value)">
+              <label for="filterSelect" class="sr-only">Filtrar por estado</label>
+              <select id="filterSelect" #filterSelect class="w-full p-2 border rounded mt-2" (change)="filterOrdersByStatus(filterSelect.value)">
                 <option value="todas">Todas</option>
                 <option value="pendiente">Pendiente</option>
                 <option value="en proceso">En proceso</option>
