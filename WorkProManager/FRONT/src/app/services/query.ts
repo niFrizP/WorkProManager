@@ -109,4 +109,7 @@ getOrdersByUsuarioProgreso(rut_usuario: number): Observable<any> {
 getOrdersByEstadoEnTiempo(): Observable<any> {
   // Realiza una solicitud POST a la API
   return this.http.get<any>(`${this.myAppUrl}${this.myApiUrl}grafico`);
-} }
+} 
+
+
+}

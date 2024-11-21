@@ -44,6 +44,7 @@ export class EditOrderComponent implements OnInit {
     solicitudForm: FormGroup;  // Define el FormGroup para el formulario
 
   solicitudes: Solicitud[] = [];
+  solicitudesInvertidas: Solicitud[] = [];
   servicios: Servicio[] = []; // Inicialización como array vacío
   serviciosArray: FormArray<FormGroup> = new FormArray<FormGroup>([]);
   serviciosSeleccionados: any = []; // Cambia 'any' por el tipo adecuado
@@ -62,6 +63,8 @@ export class EditOrderComponent implements OnInit {
   formDetalleOT: FormGroup;
   loading: boolean = false;
   id_ot: number ;
+  conseguirUsuarioReceptor: number | null = 0;
+  conseguirUsuarioRemisor: number | null = 0;
   nuevoServicio: string = ''; // Variable para almacenar el nuevo servicio
   operacion: string = 'Agregar ';
   isSubmitting: boolean = false;
@@ -74,7 +77,10 @@ export class EditOrderComponent implements OnInit {
   rut_remitente: number | null = 0;
   rut_receptorActual: number | null = 0;
   rut_receptor: number | null = 0;
-  
+  soli : number | null = 0;
+  cambiarSolicitud: number | null = 0;
+  rolid: number | null = 0;
+  userid: number | null = 0;
 
 
 
@@ -90,7 +96,7 @@ export class EditOrderComponent implements OnInit {
     private equipoService:EquipoService,
     private clienteService:ClienteService,
     private solicitudService:SolicitudService,
-    private authService: AuthService
+    public authService: AuthService
     
   ) {
 
@@ -98,7 +104,6 @@ export class EditOrderComponent implements OnInit {
       id_sol: [null],
       id_ot: [null],
       desc_sol: [''],
-      id_estado_ot: [null]
     });
 
     const orden_id = this.aRouter.snapshot.paramMap.get('id_ot');
@@ -107,7 +112,6 @@ export class EditOrderComponent implements OnInit {
     this.form = this.fb.group({
       id_ot: [null, Validators.required],
       num_equipo: [null, Validators.required],
-      id_estado: [2, Validators.required],
       costo: [null, Validators.required],
       fecha: [null, Validators.required],
       descripcion: ['', Validators.required],
@@ -142,6 +146,10 @@ export class EditOrderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    
+    this.rolid = this.authService.getRolIdLocal();
+    this.userid = this.authService.getIdLocal();
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
     this.serviciosSeleccionados = [];
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
@@ -157,10 +165,11 @@ export class EditOrderComponent implements OnInit {
     this.rut_remitente = this.authService.getIdLocal()
     console.log(this.rut_remitente);
     this.rut_receptorActual = this.authService.getIdLocal()
-
-
-    
-
+    console.log(this.updateeee() );
+    console.log(this.soli);
+    console.log(this.postEstadoSoliciud());
+    console.log(this.cambiarSolicitud);
+    this.cambiarSolicitud = this.postEstadoSoliciud() ?? 0;
     
 
     if (this.id_ot !== 0) {
@@ -168,7 +177,44 @@ export class EditOrderComponent implements OnInit {
       
     }
   }
+
+  conseguirRolRemitente(rut_remitente: number): number | undefined {
+    let rol: number | undefined;
+    this.usuarioService.getUsuario(rut_remitente).subscribe((data: Usuario) => {
+      console.log(data);
+      rol = data.id_rol;
+    });
+    return rol;
+  }
+
+  postEstadoSoliciud():number | undefined{
+    if(this.authService.getRolIdLocal() == 2){
+      return this.cambiarSolicitud = 2;
+    }
+    else{
+      return this.cambiarSolicitud = 3;
+    }
+  }
   
+  updateeee() {
+ 
+    this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
+      this.solicitudes = data
+      this.solicitudesInvertidas = data.reverse();
+      console.log(this.solicitudes);}
+
+      
+    )
+
+
+ 
+    
+
+  
+
+
+}
+
   private log(){
     console.log(this.id_ot);
   }
@@ -268,14 +314,17 @@ export class EditOrderComponent implements OnInit {
 
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
 
+    
+
 
     const solicitudData: Solicitud = {
       id_ot: this.id_ot,
       desc_sol: this.form.get('desc_sol')?.value,
-      id_estado_ot: this.form.get('id_estado')?.value,
       isView: false,
       fecha_emision: new Date(),
-      rut_remitente: this.rut_receptorActual,
+      rut_usuario: this.form.get('rut_usuario')?.value,
+      completada: false,
+      id_estado_ot: this.cambiarSolicitud || 0,
     };
     
     console.log('Solicitud data:')
@@ -286,6 +335,15 @@ export class EditOrderComponent implements OnInit {
         console.log('Solicitud updated successfully');
       }
     });
+
+    this.solicitudService.updateSolicitudByCompletada(this.solicitudes[0].id_sol!, true).subscribe({
+      next: () => {
+        console.log('Solicitud updated successfully');
+      }
+    });
+
+
+    
   
     
         return new Promise((resolve, reject) => {
@@ -321,19 +379,22 @@ export class EditOrderComponent implements OnInit {
 
 
       updateSolicitudOnLoad() {
+
+        
+
         this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
-
-        this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
-          this.solicitudes = data.reverse();
-          console.log(this.solicitudes);
-
-          if(this.rut_receptorActual != this.solicitudes[0].rut_receptor) {
-            console.log("No es el receptor");
-
-          }else
+        this.authService.getIdLocal();
+        this.authService.getRolIdLocal();
 
           
-    
+
+        this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
+          this.solicitudes = data;
+          this.solicitudesInvertidas = data.reverse();
+          console.log(this.solicitudes[0].isView);
+
+        
+    if(this.solicitudesInvertidas[0].isView == false){
        this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, true).subscribe({
           next: () => {
             console.log('Solicitud updated successfully');
@@ -346,12 +407,14 @@ export class EditOrderComponent implements OnInit {
             console.log('Solicitud updated successfully');
           },
         });   
-
+ 
   
-        
-
-      })
+      }else(
+        console.log("Solicitud ya vista")
+      )
       
+      });
+    
     }
     
     
@@ -508,7 +571,6 @@ export class EditOrderComponent implements OnInit {
     const orderData: Order = {
         id_ot: this.id_ot,
         num_equipo: this.form.get('num_equipo')?.value,
-        id_estado_ot: this.form.get('id_estado')?.value,
         fec_creacion: new Date(),
         fec_entrega: this.form.get('fecha')?.value,
         descripcion: this.form.get('descripcion')?.value,

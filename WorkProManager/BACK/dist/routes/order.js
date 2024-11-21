@@ -18,10 +18,37 @@ const order_1 = require("../controllers/order");
 const connection_1 = __importDefault(require("../db/connection"));
 const orders_1 = __importDefault(require("../models/orders"));
 const router = (0, express_1.Router)();
-router.get('/', order_1.getOrders); // Ruta para obtener las órdenes con joins
+router.get('/', order_1.getOrders); // Ruta para obtener todas las ordenes
+router.get('/tecnico', order_1.getOrdersByTecnico);
+router.get('/vistatecnico', order_1.createLastSolicitudPerOrderView); //crea vista de ultima solicitud por orden
+router.get('/completass', order_1.getOrdersCompletadas);
+router.post('/reportestecnico', order_1.getOrdersReporteTecnico);
+router.get('/rechazadass', order_1.getOrderssEliminadas);
 router.get('/count', order_1.createSolicitudView);
+//rutas del home grafico
+router.get('/count12mesesa', order_1.getOrdersRealizadasCountByMonth);
+router.get('/count12meseseliminadas', order_1.getOrdersFinalizadasCountByMonth);
+//rutas de solicitudes general
+router.get('/countabiertas', order_1.getOrdersCountPorRealizar);
+router.get('/countcerradas', order_1.getOrdersCountTerminadas);
+//rutas de solicitud por usuario
+router.post('/cotizacionesabiertastecnico', order_1.getOrdersCountPorRealizarTecnico);
+router.get('/cotizacionesgeneral', order_1.getOrdersCotizacionesGeneral);
+router.post('/cotizacionestecnico', order_1.getOrdersCotizacionesTecnico);
+router.get('/getOrders1', order_1.getOrders_1);
+router.get('/getOrders2', order_1.getOrders_2);
+router.get('/getOrders3', order_1.getOrders_3);
+router.get('/getOrdersByRutUsuario1', order_1.getOrdersByRutUsuario1);
+router.get('/getOrdersByRutUsuario2', order_1.getOrdersByRutUsuario2);
+router.get('/getOrdersByRutUsuario3', order_1.getOrdersByRutUsuario3);
+router.get('/reportesGeneral', order_1.getOrdersReporteGeneral);
 router.get('/solicitudes', order_1.getSolicitudesFromView);
-router.get('/countOrderN', order_1.countOrdersNotification); // Para obtener una orden específica por ID
+router.get('/countOrderN', order_1.countOrdersNotificationCotizacon); // Para obtener una orden específica por ID
+router.get('/countOrderNReportes', order_1.countOrdersNotificationReportes); // Para obtener una orden específica por ID
+router.get('/countOrderNFinalizadas', order_1.countOrdersNotificationFinalizada); // Para obtener una orden específica por ID
+router.get('/countOrderNRechazadas', order_1.countOrdersNotificationRechazadas); // Para obtener una orden específica por ID
+router.post('/countOrderNReportesByRut', order_1.countOrdersNotificationReportesByRut);
+router.post('/countOrderNCotizacionesByRut', order_1.countOrdersNotificationCotizacionesByRut);
 router.get('/eliminadas', order_1.getOrdersEliminadas);
 router.get('/:id', order_1.getOrder); // Para obtener una orden específica por ID
 router.put('/:id', order_1.updateOrder); // Para actualizar una orden por ID

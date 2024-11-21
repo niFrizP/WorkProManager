@@ -21,12 +21,12 @@ export class ServicioService {
    return this.http.get<Servicio[]>(`${this.myAppUrl}${this.myApiUrl}`);
   }
 
-  deleteServicios(id_serv: number): Observable<void> {
-    return this.http.delete<void>(`${this.myAppUrl}${this.myApiUrl}${id_serv}`)
+  deleteServicios(id_serv: number): Observable<Servicio> {
+    return this.http.delete<Servicio>(`${this.myAppUrl}${this.myApiUrl}${id_serv}`)
   }
 
-  saveServicio(servicio: Servicio): Observable<void> {
-    return this.http.post<void>(`${this.myAppUrl}${this.myApiUrl}`,servicio)
+  saveServicio(servicio: Servicio): Observable<Servicio> {
+    return this.http.post<Servicio>(`${this.myAppUrl}${this.myApiUrl}`,servicio)
   }
 
   getServicio(id_serv: number): Observable<Servicio> {

@@ -17,16 +17,13 @@ const orders_1 = __importDefault(require("../models/orders"));
 const equipo_1 = __importDefault(require("../models/equipo"));
 const cliente_1 = __importDefault(require("../models/cliente"));
 const usuario_1 = __importDefault(require("../models/usuario"));
-const estado_ot_1 = __importDefault(require("../models/estado_ot"));
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
 const getOrdersByEstadoByUser_1 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.in]: [1], // Filtrar donde el estado no sea 5 ni 6
-                } }, ({
+            where: Object.assign({}, ({
                 fec_entrega: {
                     [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
                 },
@@ -47,9 +44,7 @@ const getOrdersByEstadoByUser_2 = (req, res) => __awaiter(void 0, void 0, void 0
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.in]: [2], // Filtrar donde el estado no sea 5 ni 6
-                } }, ({
+            where: Object.assign({}, ({
                 fec_entrega: {
                     [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
                 },
@@ -70,9 +65,7 @@ const getOrdersByEstadoByUser_3 = (req, res) => __awaiter(void 0, void 0, void 0
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.in]: [3], // Filtrar donde el estado no sea 5 ni 6
-                } }, ({
+            where: Object.assign({}, ({
                 fec_entrega: {
                     [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
                 },
@@ -93,9 +86,7 @@ const getOrdersByEstadoByUser_4 = (req, res) => __awaiter(void 0, void 0, void 0
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.in]: [4], // Filtrar donde el estado no sea 5 ni 6
-                } }, ({
+            where: Object.assign({}, ({
                 fec_entrega: {
                     [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
                 },
@@ -116,9 +107,7 @@ const getOrdersByEstadoByUser_5 = (req, res) => __awaiter(void 0, void 0, void 0
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.in]: [5], // Filtrar donde el estado no sea 5 ni 6
-                } }, ({
+            where: Object.assign({}, ({
                 fec_entrega: {
                     [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
                 },
@@ -140,9 +129,7 @@ const getOrdersByEstadoEnTiempo = (req, res) => __awaiter(void 0, void 0, void 0
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
-                } }, (startDate && endDate && {
+            where: Object.assign({}, (startDate && endDate && {
                 fec_entrega: {
                     [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
                     [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
@@ -167,9 +154,6 @@ const getOrdersByEstadoEnTiempoGrafico = (req, res) => __awaiter(void 0, void 0,
                 [connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total'], // Contar las órdenes por mes
             ],
             where: {
-                id_estado_ot: {
-                    [sequelize_1.Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
-                },
                 fec_entrega: {
                     [sequelize_1.Op.between]: [
                         connection_1.default.fn('DATE_SUB', connection_1.default.fn('NOW'), connection_1.default.literal('INTERVAL 12 MONTH')), // Fecha de hace 12 meses
@@ -195,9 +179,7 @@ const getOrdersByEstadoTotalEnTiempo = (req, res) => __awaiter(void 0, void 0, v
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.notIn]: [6], // Filtrar donde el estado no sea 6
-                } }, (startDate && endDate && {
+            where: Object.assign({}, (startDate && endDate && {
                 fec_entrega: {
                     [sequelize_1.Op.gt]: connection_1.default.fn('NOW'),
                     [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
@@ -217,9 +199,7 @@ const getOrdersByEstado = (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
-                } }, (startDate && endDate && {
+            where: Object.assign({}, (startDate && endDate && {
                 fec_entrega: {
                     [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
                 },
@@ -238,9 +218,7 @@ const getOrdersByEstadoTotal = (req, res) => __awaiter(void 0, void 0, void 0, f
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.notIn]: [6], // Filtrar donde el estado no sea 6
-                } }, (startDate && endDate && {
+            where: Object.assign({}, (startDate && endDate && {
                 fec_entrega: {
                     [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
                 },
@@ -259,9 +237,7 @@ const getOrdersByEstadoEliminada = (req, res) => __awaiter(void 0, void 0, void 
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.in]: [6], // Filtrar donde el estado no sea 6
-                } }, (startDate && endDate && {
+            where: Object.assign({}, (startDate && endDate && {
                 fec_entrega: {
                     [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
                 },
@@ -280,9 +256,7 @@ const getOrdersByEstadoTotalByUser = (req, res) => __awaiter(void 0, void 0, voi
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.notIn]: [6], // Filtrar donde el estado no sea 6
-                } }, (startDate && endDate && {
+            where: Object.assign({}, (startDate && endDate && {
                 fec_entrega: {
                     [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
                 },
@@ -304,9 +278,7 @@ const getOrdersByEstadoByUser = (req, res) => __awaiter(void 0, void 0, void 0, 
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.notIn]: [5, 6], // Filtrar donde el estado no sea 5 ni 6
-                } }, (startDate && endDate && {
+            where: Object.assign({}, (startDate && endDate && {
                 fec_entrega: {
                     [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
                 },
@@ -328,9 +300,7 @@ const getOrdersByEstadoEliminadaByUser = (req, res) => __awaiter(void 0, void 0,
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [[connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número total de órdenes
-            where: Object.assign({ id_estado_ot: {
-                    [sequelize_1.Op.in]: [6], // Filtrar donde el estado no sea 6
-                } }, (startDate && endDate && {
+            where: Object.assign({}, (startDate && endDate && {
                 fec_entrega: {
                     [sequelize_1.Op.between]: [new Date(startDate), new Date(endDate)],
                 },
@@ -393,13 +363,8 @@ const getOrdersEstadoSum = (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         const ordersCount = yield orders_1.default.findAll({
             attributes: [
-                'id_estado_ot',
                 [connection_1.default.fn('COUNT', connection_1.default.col('costo')), 'total_estado'] // Sumar el valor de id_estado_ot por usuario
             ],
-            group: ['id_estado_ot'], // Agrupar por usuario
-            where: {
-                id_estado_ot: 3
-            }
         });
         res.json(ordersCount);
     }
@@ -512,7 +477,6 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 { model: equipo_1.default },
                 { model: cliente_1.default },
                 { model: usuario_1.default },
-                { model: estado_ot_1.default }
             ]
         });
         if (order) {
@@ -549,7 +513,7 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.deleteOrder = deleteOrder;
 const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { fecha, costo, descripcion, rut_cliente, rut_usuario, id_serv, num_equipo, id_estado_ot } = req.body;
+    const { fecha, costo, descripcion, rut_cliente, rut_usuario, id_serv, num_equipo } = req.body;
     try {
         const newOrder = yield orders_1.default.create({
             fecha,
@@ -559,7 +523,6 @@ const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             rut_usuario, // Incluye rut_usuario
             id_serv, // Incluye id_serv
             num_equipo, // Incluye num_equipo
-            id_estado_ot
         });
         res.json({
             msg: 'La orden fue agregada con éxito!',

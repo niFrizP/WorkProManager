@@ -1,0 +1,119 @@
+.contenedor {
+    background-color: #f9f9f9; 
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);    
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+  }
+  
+  .wpm-custom-gradient {
+    background: linear-gradient(to right, #0046ad, #ffe600);
+    padding: auto;
+    margin-left: 290px;
+    margin-right: 30px;
+    border-radius: 8px;
+  }
+  
+  label {
+    font-weight: bold;
+    color: #333; /* Color del texto más oscuro */
+  }
+  
+  select {
+    margin-right: 10px; /* Espaciado entre selects */
+    padding: 8px; /* Espaciado interno */
+    border: 1px solid #ccc; /* Borde sutil */
+    border-radius: 4px; /* Bordes redondeados */
+    background-color: #fff; /* Fondo blanco */
+  }
+  
+  .search-input {
+    padding: 8px; /* Espaciado interno */
+    border: 1px solid #ccc; /* Borde sutil */
+    border-radius: 4px; /* Bordes redondeados */
+    margin-right: 10px; /* Espaciado entre el input y el botón */
+  }
+  
+  .search-btn {
+    padding: 8px 16px; /* Espaciado interno */
+    background-color: #007bff; /* Color de fondo azul */
+    color: white; /* Color de texto blanco */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambiar cursor al pasar */
+  }
+  
+  .search-btn:hover {
+    background-color: #0056b3; /* Color más oscuro al pasar el mouse */
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse; /* Sin espacios entre celdas */
+  }
+  
+  th {
+    background-color: #343a40; /* Fondo oscuro para encabezados */
+    color: white; /* Texto blanco */
+    padding: 10px; /* Espaciado interno */
+  }
+  
+  td {
+    padding: 10px; /* Espaciado interno */
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #f2f2f2; /* Alternar colores para filas */
+  }
+  
+  tbody tr:hover {
+    background-color: #e6f7ff; /* Color al pasar el mouse */
+  }
+  
+  /* Estilos básicos para el modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 300px;
+  }
+  
+  .modal-actions {
+    margin-top: 20px;
+  }
+  
+  button {
+    margin: 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  /* En tu archivo CSS o en el archivo de estilos global */
+  .bg-red-500 {
+    background-color: #ff0000; /* Fondo rojo */
+  }
+  
+  .text-white {
+    color: #ffffff; /* Texto blanco */
+  }
+  

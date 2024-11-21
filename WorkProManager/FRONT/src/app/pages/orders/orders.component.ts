@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { DetalleOTService } from '../../services/detalle_ot.service';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { CommonModule } from '@angular/common';
@@ -16,6 +16,8 @@ import { Order } from '../../interfaces/order';
 import { newOrder } from '../../interfaces/newOrder';
 import { Usuario } from '../../interfaces/usuario';
 import { Cliente } from '../../interfaces/cliente';
+import { DetalleCausaRechazo } from '../../interfaces/detalle_causa_rechazo';
+import { DetalleCausaRechazoService } from '../../services/detalle_causa_rechazo.service';
 import { Servicio } from '../../interfaces/servicio';
 import { Equipo } from '../../interfaces/equipo';
 import { OrdereliminadaService } from '../../services/ordereliminada.service';
@@ -24,6 +26,9 @@ import { AuthService } from '../../services/auth.service';
 import { QueryService } from '../../services/query';
 import { PdfGeneratorService } from '../../services/pdf-generator.service';
 import { CronometroComponent } from '../../components/cronometro/cronometro.component';
+import { DetalleOT } from '../../interfaces/detalle_ot';
+import { SolicitudService } from '../../services/solicitud.service';
+import { Solicitud } from '../../interfaces/solicitud';
 @Component({
   selector: 'app-orders',
   standalone: true,
@@ -48,6 +53,11 @@ import { CronometroComponent } from '../../components/cronometro/cronometro.comp
 })
 export class OrdersComponent implements OnInit {
 
+  rejectionForm: FormGroup;
+  isRejectionModalOpen = false;
+
+
+
   menuAbierto: { [key: string]: boolean } = {
     filtrosGenerales: false,
     filtroEstado: false,
@@ -58,6 +68,8 @@ export class OrdersComponent implements OnInit {
     filtroEquipo: false
   };
 
+  
+
   toggleMenu(menu: string): void{
     this.menuAbierto[menu] = !this.menuAbierto[menu];
     console.log(this.menuAbierto);
@@ -65,6 +77,8 @@ export class OrdersComponent implements OnInit {
 
   numericError: string = '';  // Variable para almacenar el mensaje de error
 
+
+  
 
   months = [
     { value: 1, name: 'Enero' },
@@ -94,7 +108,10 @@ export class OrdersComponent implements OnInit {
   selectedDate: Date | null = null;
   selectedServicio: string = 'todos';
   equipo: Equipo = {};
+  form: FormGroup;
   searchRutCliente: string = '';
+  newSolicitudId: number | null = null;
+  selectedOtId: number = 0;
   searchEquipo: string = '';
   searchUsuario: string = '';
   searchServicio: string = '';
@@ -120,8 +137,29 @@ export class OrdersComponent implements OnInit {
     private detalleOTService: DetalleOTService,
     private servicioService: ServicioService,
     public authService: AuthService,
-    private pdfGeneratorService: PdfGeneratorService
-  ) {}
+    private solicitud: SolicitudService,
+    private pdfGeneratorService: PdfGeneratorService,
+    private fb: FormBuilder,
+    private solictudService: SolicitudService,
+    private detalleCausaRechazoService: DetalleCausaRechazoService,
+
+  ) {
+
+    this.form = this.fb.group({
+      id_estado_ot: [null],
+      rut_receptor: [null],
+      desc_sol: [''],
+      fecha_plazo: [null],
+  
+    });
+
+    this.rejectionForm = this.fb.group({
+      id_rechazo: ['', Validators.required],
+      observaciones: [''],
+      fecha_rechazo: [new Date()],
+    });
+
+  }
 
   ngOnInit(): void {
 
@@ -201,28 +239,26 @@ export class OrdersComponent implements OnInit {
 
     if(this.rol_id == 2){
 
-      this.queryService.getOrdersByUsuario(this.rut_usuario).subscribe(
-        (data: newOrder[]) => {
-          this.newOrders = data;
-
-          this.filteredOrders = this.newOrders; // Inicializar filteredOrders
-          this.sortOrders(this.newOrders);
-          console.log(this.newOrders.map(newOrder => newOrder.EstadoOT.nom_estado_ot));
-
-          
-        },
-        (error) => {
-          console.error('Error fetching orders', error);
-        }
-      );
-
-    }else{
-    
-    this.orderService.getlistnewOrders().subscribe(
+     this.orderService.getOrdersListByTecnico(this.rut_usuario).subscribe(
       (data: newOrder[]) => {
         this.newOrders = data;
         this.filteredOrders = this.newOrders; // Inicializar filteredOrders
-        console.log(this.newOrders.map(newOrder => newOrder.EstadoOT.nom_estado_ot));
+        console.log(this.newOrders.map(newOrder => newOrder.VistaSolicitud.nom_estado_ot));
+        this.sortOrders(this.newOrders);
+
+      },
+      (error) => {
+        console.error('Error fetching orders', error);
+      }
+
+    );
+    } else {
+    
+    this.orderService.getListOrders().subscribe(
+      (data: newOrder[]) => {
+        this.newOrders = data;
+        this.filteredOrders = this.newOrders; // Inicializar filteredOrders
+        console.log(this.newOrders.map(newOrder => newOrder.VistaSolicitud.nom_estado_ot));
         this.sortOrders(this.newOrders);
 
       },
@@ -240,10 +276,10 @@ sortOrders(newOrders: any[]): any[] {
   return newOrders.sort((a, b) => {
     // Primero, las órdenes cuyo isview es true
     if (a.VistaSolicitud.isview && !b.VistaSolicitud.isview) {
-      return -1;
+      return 1;
     }
     if (!a.VistaSolicitud.isview && b.VistaSolicitud.isview) {
-      return 1;
+      return -1;
     }
     return 0;  // Si ambos tienen el mismo valor en isview, no cambiamos el orden
   });
@@ -252,7 +288,7 @@ sortOrders(newOrders: any[]): any[] {
 
   filterOrders() {
     this.filteredOrders = this.newOrders
-      .filter(newOrder => this.selectedStatus === 'todas' || newOrder.EstadoOT.nom_estado_ot.toLowerCase() === this.selectedStatus.toLowerCase())
+      .filter(newOrder => this.selectedStatus === 'todas' || newOrder.VistaSolicitud.nom_estado_ot.toLowerCase() === this.selectedStatus.toLowerCase())
       .filter(newOrder => this.selectedMonth === 0 || new Date(newOrder.fec_entrega).getMonth() + 1 === this.selectedMonth)
       .filter(newOrder => this.selectedYear === 0 || new Date(newOrder.fec_entrega).getFullYear() === this.selectedYear)
       .filter(newOrder => !this.searchRutCliente || newOrder.rut_cliente.toString().toLowerCase().includes(this.searchRutCliente.toLowerCase()))
@@ -293,6 +329,8 @@ sortOrders(newOrders: any[]): any[] {
       }
     );
   }
+
+  
 
   filterUsersByRut(): any[] {
     const userRut = this.authService.getUserId(); // Obtén el `rut_usuario` desde `authService`
@@ -336,11 +374,128 @@ sortOrders(newOrders: any[]): any[] {
       if (!order || !order.Equipo.mod_equipo) {
         throw new Error('Datos de orden incompletos');
       }
-      
-      const fileName = `OT_${order.id_ot}.pdf`;
-      this.pdfGeneratorService.generatePDFContent(order, fileName, true); // Convertir a string si es necesario
+  
+      // Obtén los detalles de la orden y las solicitudes asociadas
+      this.detalleOTService.getListDetalleOTByOTId(order.id_ot ?? 0).subscribe({
+        next: (detalles: DetalleOT[]) => {
+          this.solicitud.getSolByOt(order.id_ot ?? 0).subscribe({
+            next: (solicitudes: Solicitud[]) => {
+              const fileName = `OT_${order.id_ot}.pdf`;
+              // Genera el PDF con todos los datos
+              this.pdfGeneratorService.generatePDFContent(order, detalles, solicitudes, fileName);
+            },
+            error: (error) => {
+              console.error('Error al obtener solicitudes asociadas a la orden:');
+            },
+          });
+        },
+        error: (err) => {
+          console.error('Error al obtener detalles de la orden:', err);
+        },
+      });
     } catch (error) {
       console.error('Error al generar PDF:', error);
+    }
+  }
+  
+
+  openRejectionModal(otId: number): void {
+    console.log("abriendo...")
+    this.isRejectionModalOpen = true;
+    this.selectedOtId = otId;
+    console.log(this.isRejectionModalOpen);
+  }
+
+  closeRejectionModal(): void {
+    this.isRejectionModalOpen = false;
+    this.rejectionForm.reset();
+  }
+
+  createorupdateDetalleCausaRechazo(otId: number, selectedRejection: number): void {
+    const detalleCausaRechazo: DetalleCausaRechazo = {
+      id_ot: otId,
+      id_rechazo: selectedRejection,
+      observaciones: this.rejectionForm.value.observaciones,
+      fecha_rechazo: new Date(),
+
+    };
+
+    this.detalleCausaRechazoService.saveDetalleOT(detalleCausaRechazo).subscribe({
+      next: (response: any) => {
+        console.log('Response from server:', response);
+        this.loadOrders();
+      },
+      error: (error) => {
+        console.error('Error creating detalle causa rechazo:', error);
+      }
+    });
+  }
+
+  public async createorupdateSolicitudEliminada(id_ot:number | null, id_estado_ot:number| null): Promise<Solicitud> {
+
+
+    console.log('id_ot:', id_ot);
+    console.log('id_estado_ot:', id_estado_ot);
+  
+  
+  
+    const solicitudData: Solicitud = {
+      id_ot: id_ot ?? 0, // Ensure id_ot is not null
+      desc_sol: this.form.get('desc_sol')?.value,
+      id_estado_ot: id_estado_ot ?? 0,
+      isView: false,
+      fecha_emision: new Date(),
+      fecha_plazo: null,
+      completada: false,
+      rut_usuario: null
+    };
+    
+    console.log('Solicitud data:')
+    console.log()
+    console.log(JSON.stringify(solicitudData, null, 2));
+  
+    
+        return new Promise((resolve, reject) => {
+          this.solictudService.saveSolicitud(solicitudData).subscribe({
+            next: (response: any) => {
+              console.log('Response from server:', response);
+  
+              // Asegúrate de que la respuesta tiene la estructura esperada
+              const newSolicitud = response?.solicitud; // Accede al objeto 'solicitud'
+  
+              if (newSolicitud) {
+                this.newSolicitudId = newSolicitud?.id_sol; // Accede a la propiedad 'id_sol'
+  
+                if (this.newSolicitudId) {
+                  console.log('New solicitud ID:', this.newSolicitudId);
+                } else {
+                  console.warn('No solicitud ID found in response');
+                }
+  
+                resolve(newSolicitud); // Devuelve la solicitud creada
+              } else {
+                console.warn('Solicitud object not found in response');
+                reject(new Error('Solicitud object not found in response'));
+              }
+            },
+            error: (error) => {
+              console.error('Error creating solicitud:', error);
+              reject(error);
+            }
+          });
+        });
+      }
+
+  confirmRejection(otId: number): void {
+    if (this.rejectionForm.valid) {
+      const selectedRejection = this.rejectionForm.value.id_rechazo;
+      console.log(`Orden de trabajo ${otId} rechazada con causa ${selectedRejection}`);
+      this.createorupdateDetalleCausaRechazo(otId, selectedRejection);
+      // Aquí puedes agregar la lógica para enviar los datos al backend
+      this.createorupdateSolicitudEliminada(otId, 6);
+      this.closeRejectionModal();
+    } else {
+      alert('Por favor, selecciona una causa de rechazo.');
     }
   }
 

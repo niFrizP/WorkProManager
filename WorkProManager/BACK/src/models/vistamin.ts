@@ -19,18 +19,31 @@ VistaSolicitud.init(
       type: DataTypes.DATE,
       allowNull: false,
     },
+    completada: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
     isview: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
-    rut_remitente: {
+    rut_usuario: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    rut_receptor: {
-      type: DataTypes.STRING,
+    id_estado_ot: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
+    fecha_termino: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    fecha_vista: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    
     // Otros campos según tu vista
   },
   {

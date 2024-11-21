@@ -53,6 +53,10 @@ export class ModalComponent implements OnInit, OnChanges {
     });
   }
 
+
+ 
+
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['id_ot']) {
       console.log('id_ot changed:', changes['id_ot'].currentValue);

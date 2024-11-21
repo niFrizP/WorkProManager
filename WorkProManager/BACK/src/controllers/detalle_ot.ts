@@ -5,7 +5,9 @@ import Servicio from '../models/servicio';
 // Obtener todos los detalles de OT
 export const getDetallesOt = async (req: Request, res: Response) => {
     try {
-        const detallesOt = await Detalle_Ot.findAll();
+        const detallesOt = await Detalle_Ot.findAll({include: [{model: Servicio, attributes: ['nom_serv']}]
+        }
+        );
         res.json(detallesOt);
     } catch (error) {
         console.error('Error en getDetallesOt:', error);
@@ -16,7 +18,9 @@ export const getDetallesOt = async (req: Request, res: Response) => {
 export const getDetallesOtByOT = async (req: Request, res: Response) => {
     const { id_ot } = req.params;
     try {
-        const detallesOt = await Detalle_Ot.findAll({
+        const detallesOt = await Detalle_Ot.findAll({ include: [{model: Servicio,
+            attributes: ['nom_serv']
+        }],
             where: { id_ot }
         });
         res.json(detallesOt);

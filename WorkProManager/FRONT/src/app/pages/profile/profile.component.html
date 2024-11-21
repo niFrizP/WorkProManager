@@ -1,65 +1,89 @@
 <div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
   <div class="contenedor">
-            <!-- Profile Picture and Name -->
-            <div class="flex items-center space-x-6">
-              <img
-                src="#"
-                alt="Profile Image"
-                class="w-24 h-24 rounded-full"
-              />
+    <!-- Botón de edición -->
+    <div class="flex justify-end">
+      <button
+        (click)="toggleEditMode()"
+        class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600"
+      >
+        {{ isEditMode ? 'Cancelar' : 'Editar Perfil' }}
+      </button>
+    </div>
+
+    <!-- Profile Picture and Name -->
+    <div class="flex items-center space-x-6 mt-4">
+      <img
+        src="#"
+        alt="Profile Image"
+        class="w-24 h-24 rounded-full"
+      />
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800">{{ usuarioForm.get('nom_usu')?.value }}</h1>
+        <p class="text-gray-600">Usuario ID: {{ usuarioForm.get('rut_usuario')?.value }}</p>
+      </div>
+    </div>
+
+    <!-- Information Sections -->
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Basic Information -->
+      <div class="bg-blue-100 p-4 rounded-lg shadow-md">
+        <h2 class="text-lg font-semibold text-blue-700 mb-3">Información básica</h2>
+        <div *ngIf="!isEditMode; else editBasicInfo">
+          <p><strong>Nombre completo:</strong> {{ usuarioForm.get('nom_usu')?.value }}</p>
+          <p><strong>Correo electrónico:</strong> {{ usuarioForm.get('email_usu')?.value }}</p>
+          <p><strong>ID de Usuario:</strong> {{ usuarioForm.get('rut_usuario')?.value }}</p>
+        </div>
+        <ng-template #editBasicInfo>
+          <form [formGroup]="usuarioForm">
+            <div class="space-y-2">
               <div>
-                <h1 class="text-2xl font-bold text-gray-800">Nombre de usuario</h1>
-                <p class="text-gray-600">id usuario</p>
+                <label class="text-sm font-bold text-gray-600">Nombre completo:</label>
+                <input type="text" formControlName="nom_usu" class="border rounded-md w-full p-2" />
+              </div>
+              <div>
+                <label class="text-sm font-bold text-gray-600">Correo electrónico:</label>
+                <input type="email" formControlName="email_usu" class="border rounded-md w-full p-2" />
+              </div>
+              <div>
+                <label class="text-sm font-bold text-gray-600">ID de Usuario:</label>
+                <input type="text" formControlName="rut_usuario" class="border rounded-md w-full p-2" readonly />
               </div>
             </div>
-          
-            <!-- Information Sections -->
-            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Basic Information -->
-              <div class="bg-blue-100 p-4 rounded-lg shadow-md">
-                <h2 class="text-lg font-semibold text-blue-700 mb-3">Información básica</h2>
-                <div class="space-y-2">
-                  <div>
-                    <p class="text-sm font-bold text-gray-600">Nombre completo:</p>
-                    <p class="text-gray-700">USUARIO USUARIO</p>
-                  </div>
-                  <div>
-                    <p class="text-sm font-bold text-gray-600">Correo electrónico:</p>
-                    <p class="text-gray-700">CORREO USUARIO</p>
-                  </div>
-                  <div>
-                    <p class="text-sm font-bold text-gray-600">ID de Usuario:</p>
-                    <p class="text-gray-700">342451</p>
-                  </div>
-                </div>
+          </form>
+        </ng-template>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="bg-blue-100 p-4 rounded-lg shadow-md">
+        <h2 class="text-lg font-semibold text-blue-700 mb-3">Información de contacto</h2>
+        <div *ngIf="!isEditMode; else editContactInfo">
+          <p><strong>Número de teléfono:</strong> {{ usuarioForm.get('cel_usu')?.value }}</p>
+        </div>
+        <ng-template #editContactInfo>
+          <form [formGroup]="usuarioForm">
+            <div class="space-y-2">
+              <div>
+                <label class="text-sm font-bold text-gray-600">Número de teléfono:</label>
+                <input type="number" formControlName="cel_usu" class="border rounded-md w-full p-2" />
               </div>
-          
-              <!-- System Configuration -->
-              <div class="bg-blue-100 p-4 rounded-lg shadow-md">
-                <h2 class="text-lg font-semibold text-blue-700 mb-3">Informacion de contacto</h2>
-                <div class="space-y-2">
-                  <div>
-                    <p class="text-sm font-bold text-gray-600">Numero de telefono</p>
-                    <p class="text-gray-700">+56 9 1234 5678</p>
-                  </div>
-                </div>
-              </div>
-          
-              <div class="bg-blue-100 p-4 rounded-lg shadow-md">
-                <h2 class="text-lg font-semibold text-blue-700 mb-3">Ajustes del perfil</h2>
-                <div class="space-y-2">
-                    <div>
-                        <p class="text-blue-600"><a href="#">Cambiar contraseña</a></p>
-                        <p class="text-blue-600"><a href="#">Cambiar información de contacto</a></p>
-                        <p class="text-blue-600"><a href="#">Olvide mi contraseña</a></p>
-                    </div>
-                </div>
-              </div>
-                <div class="space-y-2">
-                  <div>
-                    <button [routerLink]="['/profile/edit-pf']" type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none"> Editar Perfil</button>
-                  </div>
-                </div>
             </div>
-          </div>          
+          </form>
+        </ng-template>
+      </div>
+
+      <!-- Profile Settings -->
+      <div class="bg-blue-100 p-4 rounded-lg shadow-md">
+        <h2 class="text-lg font-semibold text-blue-700 mb-3">Ajustes del perfil</h2>
+        <div class="space-y-2">
+          <button
+            *ngIf="isEditMode"
+            (click)="guardarCambios()"
+            class="px-6 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none"
+          >
+            Guardar Cambios
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

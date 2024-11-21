@@ -5,7 +5,6 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HeaderComponent } from './components/header/header.component';
 import { LoginComponent } from './pages/login/login.component';
 import { OrdersComponent } from './pages/orders/orders.component';
-import { NewOtComponent } from './pages/orders/new-ot/new-ot.component';
 import { UsuariosComponent } from './pages/usuarios/usuarios.component';
 import { CreateReportComponent } from './pages/create-reporte/create-reporte.component';
 import { AprobacionesTickComponent } from './pages/aprobaciones-tick/aprobaciones-tick.component';
@@ -21,6 +20,10 @@ import { EditUsuarioComponent } from './pages/edit-usuario/edit-usuario.componen
 import { AuthGuard } from './auth.guard';
 import { CanActivate } from '@angular/router';
 import { AuthService } from './services/auth.service';
+import { MarcasComponent } from './pages/marcas/marcas.component';
+import { ServicioComponent } from './pages/servicio/servicio.component';
+import { EliminadasComponent } from './pages/eliminadas/eliminadas.component';
+import { CausaComponent } from './pages/causa/causa.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' }, // Redirige a 'home' al inicio
@@ -28,7 +31,6 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent }, // Ruta a 'login'
   { path: 'home', component: HomeComponent, canActivate: [AuthRolGuard], data: { requiredRoles: [1,2, 3] } }, // Acepta roles 2 o 3
   { path: 'orders', component: OrdersComponent, canActivate:[AuthRolGuard], data: { requiredRoles: [1,2, 3] } }, // Ruta a 'orders'
-  { path: 'orders/new-ot', component: NewOtComponent}, // Ruta a 'new-ot'
   { path: 'header', component: HeaderComponent }, // Ruta a 'header'
   { path: 'profile', component: ProfileComponent }, // Ruta a 'profile'
   { path: 'usuarios', component: UsuariosComponent }, // Ruta a 'usuarios'
@@ -38,6 +40,11 @@ export const routes: Routes = [
   { path: 'reportes/createReport/:id', component: CreateReportComponent},
   { path: 'reportes/createReport/:id/:id_serv', component: DetalleComponent},
   { path: 'edit-usuario/:rut_usuario', component: EditUsuarioComponent}, // Ruta a 'aprobaciones-tick'
+  {path: 'marca', component: MarcasComponent, canActivate:[AuthRolGuard], data:{requiredRoles: [1]}}, // Ruta a 'aprobaciones-tick'
+  {path: 'servicios', component: ServicioComponent, canActivate:[AuthRolGuard], data:{requiredRoles: [1]}}, // Ruta a 'aprobaciones-tick'
+  {path: 'eliminadas', component: EliminadasComponent, canActivate:[AuthRolGuard], data:{requiredRoles: [1, 3]}}, // Ruta a 'aprobaciones-tick'
+  {path: 'causa', component: CausaComponent, canActivate:[AuthRolGuard], data:{requiredRoles: [1, 3]}}, // Ruta a 'aprobaciones-tick'
+
   { path: '**', redirectTo: '/login' }, // Maneja rutas no encontradas
 
 ];

@@ -5,6 +5,12 @@ export interface Order {
     fec_entrega: Date;
     descripcion: String;
     rut_usuario: number;
-    id_estado_ot: Number;
     rut_cliente: number;
 }
+
+export interface OrderMonthData {
+    year: number;
+    month: number;
+    totalOrders: number;
+  }
+  
