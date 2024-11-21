@@ -11,10 +11,6 @@ import rateLimit from 'express-rate-limit';
 
 const router = Router();
 
-
-
-
-
 router.post('/', async (req, res) => {
     const response = await login(req, res);
     if (response) {

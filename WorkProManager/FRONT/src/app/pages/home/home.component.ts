@@ -14,7 +14,7 @@ import { OrderService } from '../../services/order.service';
 
 @Component({
   standalone: true,
-  providers: [AuthService, CookieManagementService,{
+  providers: [AuthService, CookieManagementService, {
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,
     multi: true,
@@ -27,7 +27,7 @@ import { OrderService } from '../../services/order.service';
 export class HomeComponent implements OnInit {
   isLoading = true; // Estado de carga
   showDashboard = false; // Controla si mostrar los dashboards
-  startDate: string = '' 
+  startDate: string = ''
   rut_usuario: number = 0;
   endDate: string = '';
   ordenesCount: number | null = null;
@@ -62,18 +62,18 @@ export class HomeComponent implements OnInit {
 
   ordenesCountByUsuario: number = 0;
 
-  constructor(private orderservice:OrderService ,public authService:AuthService, private router:Router, private cookieService:CookieManagementService,private queryService:QueryService) {}
+  constructor(private orderservice: OrderService, public authService: AuthService, private router: Router, private cookieService: CookieManagementService, private queryService: QueryService) { }
 
   ngOnInit(): void {
     setTimeout(() => {
-       this.authService.getUserId()
+      this.authService.getUserId()
       console.log(this.authService.getUserId())
     }, 2000);
     this.rut_usuario = this.authService.getUserId() ?? 0;
     this.authService.getUserRole()
     this.ordenesCount = 0; // Establece un valor inicial si aún no has obtenido los datos
     this.ordenesCountByUsuario = 0; // Establece un valor inicial si aún no has obtenido los datos
-    this.ordenesActivas = 0; 
+    this.ordenesActivas = 0;
     this.ordenesEliminadas = 0;
     this.countTotalActivas = 0;
     this.countTotal = 0;
@@ -92,7 +92,7 @@ export class HomeComponent implements OnInit {
     this.getOrdersCountPorRealizarTecnico()
 
 
-this.showDashboard = false; // Controla si mostrar los dashboards
+    this.showDashboard = false; // Controla si mostrar los dashboards
 
     const accessToken = this.cookieService.getAccessToken();
     console.log('Access Token:', accessToken);
@@ -100,7 +100,7 @@ this.showDashboard = false; // Controla si mostrar los dashboards
     this.authService.verificarToken().subscribe({
       next: (data) => {
         // Guarda los datos de usuario
-        this.authService.saveUserData(data.rut_usuario, data.id_rol); 
+        this.authService.saveUserData(data.rut_usuario, data.id_rol);
         console.log('Usuario verificado:', data);
         this.rut_usuario = data.rut_usuario;
         console.log('Valor de this.rutUsuario:', this.rut_usuario); // Imprime `this.rutUsuario` en la consola
@@ -112,20 +112,20 @@ this.showDashboard = false; // Controla si mostrar los dashboards
       },
     });
 
-   
+
 
 
 
 
     this.obtenerOrdenesValidas();
     this.obtenerOrdenesValidasTotal();
-    this.obtenerConteoOrdenesEliminadasGeneral() 
+    this.obtenerConteoOrdenesEliminadasGeneral()
     this.isLoading = false;
   }
 
 
 
-    getOrdersCount(): void {
+  getOrdersCount(): void {
     this.orderservice.getOrdersCountPorRealizar().subscribe(
       (response) => {
         console.log('Conteo de órdenes:', response.totalOrders);
@@ -162,14 +162,14 @@ this.showDashboard = false; // Controla si mostrar los dashboards
       }
     );
   }
- 
+
 
 
 
   onFilterChange(filterType: string) {
     this.obtenerFechasPorFiltro(filterType);
   }
-  
+
   obtenerFechasPorFiltro(filterType: string) {
     const currentDate = new Date();
 
@@ -185,7 +185,7 @@ this.showDashboard = false; // Controla si mostrar los dashboards
         this.startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
           .toISOString()
           .split('T')[0]; // Primer día del mes en formato "YYYY-MM-DD"
-        
+
         this.endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
           .toISOString()
           .split('T')[0]; // Último día del mes en formato "YYYY-MM-DD"
@@ -196,7 +196,7 @@ this.showDashboard = false; // Controla si mostrar los dashboards
         this.startDate = new Date(currentDate.getFullYear(), 0, 1)
           .toISOString()
           .split('T')[0]; // Primer día del año en formato "YYYY-MM-DD"
-        
+
         this.endDate = new Date(currentDate.getFullYear(), 11, 31)
           .toISOString()
           .split('T')[0]; // Último día del año en formato "YYYY-MM-DD"
@@ -227,7 +227,7 @@ this.showDashboard = false; // Controla si mostrar los dashboards
       }
     );
   }
-  
+
   obtenerConteoOrdenesEliminadasGeneral() {
     this.queryService.getCountOrdenesEliminadas(this.startDate, this.endDate).subscribe(
       (data) => {
@@ -253,7 +253,7 @@ this.showDashboard = false; // Controla si mostrar los dashboards
     );
   }
 
- 
+
 
   obtenerConteoOrdenesEliminadas() {
     this.queryService.getCountOrdenesEliminadas(this.startDate, this.endDate).subscribe(
@@ -268,20 +268,22 @@ this.showDashboard = false; // Controla si mostrar los dashboards
   }
 
 
-  
 
-   async logout() {
+
+  async logout() {
     try {
       await this.authService.logout().toPromise();
+
       this.router.navigate(['/login']).then(() => {
-        window.location.reload();  // Recarga la página
+        localStorage.removeItem('token'); // Limpieza del token si lo usas para la autenticación
+        localStorage.removeItem('rut'); // Limpieza de rut
       });
     } catch (error) {
-      console.error(error);
+      console.error('Error al cerrar sesión:', error);
+      alert('Hubo un error al intentar cerrar sesión. Por favor, intente de nuevo.');
     }
-
-    this.router.navigate(['/login']);
   }
+
 
 
 

@@ -17,7 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-
+import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -29,10 +29,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     FormsModule,
     HeaderComponent,
     OrdersModule,
-    ModalComponent,
     NgxPaginationModule,
     CommonModule,
-    GraficoxMesComponent,
     MatCardModule,
     MatInputModule,
     MatSelectModule,
@@ -44,12 +42,10 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 })
 export class AppComponent implements OnInit {
   isAuthenticated: boolean = false;
+  isLoginPage: boolean = false;
   title = 'WorkProManager';
 
-  constructor(public authService:AuthService) {
-
-   
-}
+  constructor(public authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     console.log('App Component Initialized');
@@ -58,11 +54,18 @@ export class AppComponent implements OnInit {
     console.log(this.auth())
     this.isAuthenticated = this.authService.isAuth();
 
+    // Detecta cuando cambia la ruta
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.isLoginPage = event.url === '/login';
+      }
+    });
   }
-auth(){
-  this.authService.isAuth();
-  console.log(this.authService.isAuth())
-}
+
+  auth() {
+    this.authService.isAuth();
+    console.log(this.authService.isAuth())
+  }
 
 
 }

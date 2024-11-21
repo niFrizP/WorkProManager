@@ -1,26 +1,20 @@
 <div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
   <div class="contenedor">
-          <!-- Filtro por periodo de tiempo -->
-          <div class="flex flex-wrap px-6 py-6 space-x-6" *ngIf="authService.getUserRole() === 1 || authService.getUserRole() === 3">
-           
-          </div>
-    <div class="flex-3 ml-64 p-6">
-      <div class="flex flex-wrap px-6 py-6 space-x-6" *ngIf="authService.getUserRole() === 1 || authService.getUserRole() === 3">
-          <!-- Total de órdenes activas -->
-          <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
-            <p class="uppercase text-sm font-semibold text-gray-500">Ordenes de trabajo activas</p>
-            <h5 class="font-bold">{{ ordersCount }}</h5>
-          </div>
-          <!-- Total de órdenes por completar -->
-          <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
-            <p class="uppercase text-sm font-semibold text-gray-500">Ordenes de trabajo completadas</p>
-            <h5 class="font-bold">{{ ordersCountEliminadas }}</h5>
-          </div>
-
-
-          
-
-
+    <div *ngIf="authService.getUserId() as rut" class="text-left mb-4">
+      <p class="text-center">Bienvenido Usuario <br> RUT: {{ rut }}</p>
+    </div>
+    <!-- Filtro por periodo de tiempo -->
+    <div class="flex flex-wrap px-6 py-6 space-x-6"
+      *ngIf="authService.getUserRole() === 1 || authService.getUserRole() === 3">
+      <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
+        <p class="uppercase text-sm font-semibold text-gray-500">Ordenes de trabajo activas</p>
+        <h5 class="font-bold">{{ ordersCount }}</h5>
+      </div>
+      <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
+        <p class="uppercase text-sm font-semibold text-gray-500">Ordenes de trabajo completadas</p>
+        <h5 class="font-bold">{{ ordersCountEliminadas }}</h5>
+      </div>
+    </div>
   </div>
 
   <div class="flex flex-wrap px-6 py-6 space-x-6" *ngIf="authService.getUserRole() == 2">
@@ -28,6 +22,5 @@
       <p class="uppercase text-sm font-semibold text-gray-500">Ordenes de trabajo activas</p>
       <h5 class="font-bold">{{ ordersCounttecnico }}</h5>
     </div>
-    </div>
+  </div>
 </div>
-
