@@ -8,7 +8,7 @@ import Usuario from '../models/usuario';
 import { configDotenv } from 'dotenv';
 
 
-const sequelize = new Sequelize('ot_db', 'root', 'pelota50', {
+const sequelize = new Sequelize('ot_db', 'root', '7697', {
     host: 'localhost',
     dialect: 'mysql',
     
