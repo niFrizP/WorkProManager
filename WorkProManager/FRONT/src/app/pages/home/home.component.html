@@ -1,20 +1,23 @@
 <div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
   <div class="contenedor">
     <div *ngIf="authService.getUserId() as rut" class="text-left mb-4">
-      <p class="text-center">Bienvenido Usuario <br> RUT: {{ rut }}</p>
+      <h3 class="text-center text-xl font-medium">Bienvenido Usuario <br> RUT: {{ rut }}</h3>
     </div>
     <!-- Filtro por periodo de tiempo -->
-    <div class="flex flex-wrap px-6 py-6 space-x-6"
-      *ngIf="authService.getUserRole() === 1 || authService.getUserRole() === 3">
-      <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
-        <p class="uppercase text-sm font-semibold text-gray-500">Ordenes de trabajo activas</p>
-        <h5 class="font-bold">{{ ordersCount }}</h5>
+    <article>
+      <h3 class="text-balance text-2xl font-bold">Dashboard</h3>
+      <div class="flex flex-wrap px-6 py-6 space-x-6"
+        *ngIf="authService.getUserRole() === 1 || authService.getUserRole() === 3">
+        <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
+          <p class="uppercase text-sm font-semibold text-gray-500">Ordenes de trabajo activas</p>
+          <h5 class="font-bold">{{ ordersCount }}</h5>
+        </div>
+        <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
+          <p class="uppercase text-sm font-semibold text-gray-500">Ordenes de trabajo completadas</p>
+          <h5 class="font-bold">{{ ordersCountEliminadas }}</h5>
+        </div>
       </div>
-      <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
-        <p class="uppercase text-sm font-semibold text-gray-500">Ordenes de trabajo completadas</p>
-        <h5 class="font-bold">{{ ordersCountEliminadas }}</h5>
-      </div>
-    </div>
+    </article>
   </div>
 
   <div class="flex flex-wrap px-6 py-6 space-x-6" *ngIf="authService.getUserRole() == 2">
