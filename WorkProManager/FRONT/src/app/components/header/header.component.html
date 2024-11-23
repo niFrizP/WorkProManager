@@ -15,7 +15,6 @@
           <li *ngFor="let breadcrumb of breadcrumbs; let isLast = last">
             <a *ngIf="!isLast; else lastCrumb" href="#">{{ breadcrumb | titlecase }}</a>
             <ng-template #lastCrumb>
-              <span class="italic-text">{{ breadcrumb | titlecase }}</span>
             </ng-template>
             <span *ngIf="!isLast">/</span>
           </li>

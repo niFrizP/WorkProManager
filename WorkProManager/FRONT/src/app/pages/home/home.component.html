@@ -8,13 +8,23 @@
       <h3 class="text-balance text-2xl font-bold">Dashboard</h3>
       <div class="flex flex-wrap px-6 py-6 space-x-6"
         *ngIf="authService.getUserRole() === 1 || authService.getUserRole() === 3">
-        <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
-          <p class="uppercase text-sm font-semibold text-gray-500">Ordenes de trabajo activas</p>
-          <h5 class="font-bold">{{ ordersCount }}</h5>
+        <div class="tarjeta">
+          <div class="tarjeta__border"></div>
+          <div class="tarjeta_title__container">
+            <p class="tarjeta_title uppercase text-sm font-semibold text-white">Ordenes de trabajo activas</p>
+            <hr class="line"/>
+            <br>
+            <h5 class="list_text text-white font-bold">{{ ordersCount }}</h5>
+          </div>
         </div>
-        <div class="bg-white rounded-2xl shadow-xl p-4 w-1/4">
-          <p class="uppercase text-sm font-semibold text-gray-500">Ordenes de trabajo completadas</p>
-          <h5 class="font-bold">{{ ordersCountEliminadas }}</h5>
+        <div class="tarjeta">
+          <div class="tarjeta__border"></div>
+          <div class="tarjeta_title__container">
+            <p class="tarjeta_title uppercase text-sm font-semibold text-white">Ordenes de trabajo completadas</p>
+            <hr class="line"/>
+            <br>
+            <h5 class="list_text text-white font-bold">{{ ordersCountEliminadas }}</h5>
+          </div>
         </div>
       </div>
     </article>
