@@ -1,7 +1,5 @@
 <div class="bk-image min-h-screen bg-cover bg-center">
-
-  <!-- Solo muestra el sidebar y header si no estamos en la ruta /login -->
-  <ng-container *ngIf="!isLoginPage">
+  <ng-container *ngIf="!isPage"> <!-- Si no estamos en el login, muestra el resto -->
     <aside>
       <div>
         <app-sidebar></app-sidebar>
@@ -12,7 +10,7 @@
       <app-header></app-header>
     </header>
   </ng-container>
-  
+
   <!-- Main con router outlet -->
   <main>
     <router-outlet></router-outlet>

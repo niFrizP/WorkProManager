@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 import { environment } from '../environments/environment';
-import { Usuario } from '../interfaces/usuario';
+import { Usuario } from '../interfaces/usuario'; 
 import { CookieManagementService } from './cookie.service';
 import { UsuarioService } from './usuario.service';
 
@@ -13,7 +13,7 @@ import { UsuarioService } from './usuario.service';
   providedIn: 'root'
 })
 export class AuthService {
-  
+
 
   private isAuthenticated = false; // Cambia esto según el estado real de autenticación
 
@@ -29,7 +29,7 @@ export class AuthService {
   private userRoleSubject = new BehaviorSubject<number | null>(null);
   private userSubject = new BehaviorSubject<number | null>(null);
   userRole$ = this.userRoleSubject.asObservable(); // Observable que expone el rol del usuario
-  
+
 
   constructor(
     private http: HttpClient,
@@ -44,7 +44,7 @@ export class AuthService {
   iniciarSesion(credentials: any) {
     return this.http.post(`${this.myAppUrl}${this.myApiUrl}`, credentials, { withCredentials: true });
     this.isAuthenticated = true;
-}
+  }
 
 
 
@@ -63,16 +63,20 @@ export class AuthService {
 
   isAuth(): boolean {
     if (this.verificarToken()) {
-    return  true;
-  }else{
-    return  false;
+      return true;
+    } else {
+      return false;
+    }
   }
-}
 
   verificarToken(): Observable<{ rut_usuario: number; id_rol: number }> {
     const token = this.cookieService.getAccessToken();
     if (!token) {
-      throw new Error('No hay token disponible');
+      return of({ rut_usuario: 0, id_rol: 0 }).pipe(
+        tap(() => {
+          throw new Error('No hay token disponible');
+        })
+      );
     }
 
     return this.http.get<{ rut_usuario: number; id_rol: number }>(
@@ -90,7 +94,7 @@ export class AuthService {
     return this.userRole;
   }
 
-  saveUserData(rut_usuario: number, id_rol: number ): void {
+  saveUserData(rut_usuario: number, id_rol: number): void {
     this.setUserId(rut_usuario);
     this.setRolId(id_rol);
     if (typeof window !== 'undefined') {
@@ -104,7 +108,7 @@ export class AuthService {
     this.userSubject.next(rut_usuario); // Notifica el cambio de rol
 
     console.log('Usuario:', this.userId);
-    
+
   }
 
   setRolId(id_rol: number): void {
@@ -138,7 +142,7 @@ export class AuthService {
     }
     return null;
   }
-  
+
 
   getRolId(): number | null {
     console.log('Rol:', this.rolId);
@@ -152,11 +156,11 @@ export class AuthService {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('userRole');
     }
-  }  
+  }
 
   logout() {
 
-    
+
     this.clearUserData();
     return this.http.post(`${this.myAppUrl}${this.myApiUrl}/logout`, null, { withCredentials: true });
 

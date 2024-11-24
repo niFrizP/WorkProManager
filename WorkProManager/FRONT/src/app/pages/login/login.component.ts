@@ -20,14 +20,14 @@ export class LoginComponent {
   login_contra: string = '';
   loginError: string = '';
   usuario: Usuario[] = [];
-  showErrorModal: boolean = false;
-  errorMessages: string = '';
+  showErrorModal: boolean = false; // Muestra el modal de error 
+  errorMessages: string = ''; // Mensaje de error
 
 
   constructor(private http: HttpClient,
     private usuarioService: UsuarioService,
-    private router: Router,
-    private authService: AuthService
+    private router: Router, 
+    private authService: AuthService 
   ) { }
 
   onSubmit() {
@@ -45,17 +45,20 @@ export class LoginComponent {
         });
 
       },
+      /* Manejo de errores */
+      // Si el error es 401, muestra un mensaje de credenciales incorrectas 
+      // Si no, muestra un mensaje de error genérico
       (error) => {
-        this.showErrorModal = true;
+        this.showErrorModal = true; // Muestra el modal de error
         this.errorMessages =
           error.status === 401
             ? 'Usuario o contraseña incorrectos'
             : 'Error al iniciar sesión';
-        this.loginError = error;
-        console.log(this.loginError);
+        this.loginError = error; // Guarda el error
+        console.log(this.loginError); // Imprime el error en la consola
       }
     );
-
+    // Verifica el token del usuario
     this.authService.verificarToken().subscribe({
       next: (data) => {
         // Guarda los datos de usuario
@@ -67,7 +70,8 @@ export class LoginComponent {
       },
     });
   }
+  // Cierra el modal de error
   closeErrorModal() {
-    this.showErrorModal = false;
+    this.showErrorModal = false; // Oculta el modal de error
   }
 }

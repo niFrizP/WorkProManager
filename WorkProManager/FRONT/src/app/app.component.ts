@@ -42,7 +42,7 @@ import { Router, NavigationEnd } from '@angular/router';
 })
 export class AppComponent implements OnInit {
   isAuthenticated: boolean = false;
-  isLoginPage: boolean = false;
+  isPage: boolean = false;
   title = 'WorkProManager';
 
   constructor(public authService: AuthService, private router: Router) { }
@@ -55,9 +55,10 @@ export class AppComponent implements OnInit {
     this.isAuthenticated = this.authService.isAuth();
 
     // Detecta cuando cambia la ruta
+    const Pages = ['/', '/login',];
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        this.isLoginPage = event.url === '/login';
+        this.isPage = Pages.includes(event.url);
       }
     });
   }
