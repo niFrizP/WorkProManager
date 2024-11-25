@@ -19,7 +19,7 @@
             </button>
             <div [@slideInOut]="menuAbierto['filtroEstado']" class="p-2">
               <label for="filterSelect" class="sr-only">Filtrar por estado</label>
-              <select id="filterSelect" #filterSelect class="w-full p-2 border rounded mt-2"
+              <select id="filterSelect" #filterSelect class="w-full p-2 border rounded mt-2" 
                 (change)="filterOrdersByStatus(filterSelect.value)">
                 <option value="todas">Todas</option>
                 <option value="pendiente">Pendiente</option>
