@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 import { environment } from '../environments/environment';
-import { Usuario } from '../interfaces/usuario'; 
+import { Usuario } from '../interfaces/usuario';
 import { CookieManagementService } from './cookie.service';
 import { UsuarioService } from './usuario.service';
 
@@ -29,7 +29,24 @@ export class AuthService {
   private userRoleSubject = new BehaviorSubject<number | null>(null);
   private userSubject = new BehaviorSubject<number | null>(null);
   userRole$ = this.userRoleSubject.asObservable(); // Observable que expone el rol del usuario
+  private userName: string = ''; // Variable para almacenar el nombre del usuario
+  private userNameSubject = new BehaviorSubject<string | null>(null); // Subject para notificar cambios en el nombre del usuario
 
+  userName$ = this.userNameSubject.asObservable(); // Observable que expone el nombre del usuario
+
+  // Metodo para obtener el nombre del usuario
+  saveUserName(name: string): void {
+    this.userName = name;
+    this.userNameSubject.next(name); // Notifica el cambio de nombre
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('userName', name); // Guarda el nombre en el localStorage
+    }
+  }
+
+  // Metodo para obtener el nombre del usuario
+  getUserName(): string {
+    return this.userName;
+  }
 
   constructor(
     private http: HttpClient,
@@ -42,10 +59,14 @@ export class AuthService {
   }
 
   iniciarSesion(credentials: any) {
-    return this.http.post(`${this.myAppUrl}${this.myApiUrl}`, credentials, { withCredentials: true });
-    this.isAuthenticated = true;
+    return this.http.post<any>(`${this.myAppUrl}${this.myApiUrl}`, credentials, { withCredentials: true }).pipe(
+      tap((response) => {
+        // Almacenar el nombre de usuario recibido desde el backend
+        this.userName = response.nom_usu;
+        this.saveUserData(response.rut_usuario, response.id_rol);
+      })
+    );
   }
-
 
 
   setToken(token: string) {
