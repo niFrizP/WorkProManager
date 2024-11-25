@@ -1,13 +1,10 @@
-<div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
+<div class="wpm-custom-gradient p-6 rounded-lg shadow-md md:flex-row flex-col">
   <div class="contenedor">
-    <div *ngIf="authService.getUserId() as rut" class="text-left mb-4">
-      <p class="text-center">Bienvenido, usuario con RUT: {{ rut }}</p>
-      <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
-    </div>
-
+    <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
     <!-- Filtros -->
     <div class="mb-4">
-      <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center" (click)="toggleMenu('filtrosGenerales')">
+      <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center"
+        (click)="toggleMenu('filtrosGenerales')">
         <span>Filtros</span>
         <span>{{ menuAbierto['filtrosGenerales'] ? '▼' : '▶' }}</span>
       </button>
@@ -15,13 +12,15 @@
         <div class="grid grid-cols-1 gap-4 mt-2">
           <!-- Filtro por estado -->
           <div class="mb-4">
-            <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center" (click)="toggleMenu('filtroEstado')">
+            <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center"
+              (click)="toggleMenu('filtroEstado')">
               <span>Filtrar por estado</span>
               <span>{{ menuAbierto['filtroEstado'] ? '▼' : '▶' }}</span>
             </button>
             <div [@slideInOut]="menuAbierto['filtroEstado']" class="p-2">
               <label for="filterSelect" class="sr-only">Filtrar por estado</label>
-              <select id="filterSelect" #filterSelect class="w-full p-2 border rounded mt-2" (change)="filterOrdersByStatus(filterSelect.value)">
+              <select id="filterSelect" #filterSelect class="w-full p-2 border rounded mt-2" 
+                (change)="filterOrdersByStatus(filterSelect.value)">
                 <option value="todas">Todas</option>
                 <option value="pendiente">Pendiente</option>
                 <option value="en proceso">En proceso</option>
@@ -32,7 +31,6 @@
               </select>
             </div>
           </div>
-          <!-- Otros filtros... -->
         </div>
       </div>
     </div>
@@ -48,17 +46,14 @@
           <th class="border p-2">Rut Cliente</th>
           <th class="border p-2">Estado</th>
           <th class="border p-2">Usuario</th>
-          <th class="border p-2">Fecha Plazo</th>
-          <th class="border p-2">Solicitud Vista</th>
-          <th class="border p-2">Operaciones</th>
+          <th class="border p-2">Tiempo restante</th>
+          <th class="border p-2">Vista</th>
+          <th class="border p-2">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr
-          *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
-          [ngClass]="{ 'text-red-600': newOrder.VistaSolicitud.isview == false }"
-          class="hover:bg-gray-100"
-        >
+        <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+          [ngClass]="{ 'text-red-600': newOrder.VistaSolicitud.isview == false }" class="hover:bg-gray-100">
           <td class="border p-2">{{ newOrder.fec_entrega }}</td>
           <td class="border p-2">{{ newOrder.num_equipo }}</td>
           <td class="border p-2">{{ newOrder.id_ot }}</td>
@@ -67,16 +62,18 @@
           <td class="border p-2">{{ newOrder.VistaSolicitud.nom_estado_ot }}</td>
           <td class="border p-2">{{ newOrder.Usuario.nom_usu }}</td>
           <td class="border p-2">
-            <app-cronometro [fechaPlazo]="newOrder.VistaSolicitud.fecha_plazo | date:'yyyy-MM-ddTHH:mm:ss'"></app-cronometro>
+            <app-cronometro
+              [fechaPlazo]="newOrder.VistaSolicitud.fecha_plazo | date:'yyyy-MM-ddTHH:mm:ss'"></app-cronometro>
           </td>
           <td class="border p-2">
-            <span *ngIf="newOrder.VistaSolicitud.isview">✅</span>
-            <span *ngIf="!newOrder.VistaSolicitud.isview">⚠️</span>
+            <span *ngIf="newOrder.VistaSolicitud.isview"><i class="fa-solid fa-eye"></i></span>
+            <span *ngIf="!newOrder.VistaSolicitud.isview"><i class="fa-solid fa-eye-slash"></i></span>
           </td>
           <td class="border p-2 flex justify-center gap-2">
-            <button [routerLink]="['/edit-order', newOrder.id_ot]" class="bg-yellow-500 text-white p-1 rounded">✏️</button>
-            <button (click)="generatePDF(newOrder)" class="bg-blue-500 text-white p-1 rounded">🖨️</button>
-
+            <button [routerLink]="['/edit-order', newOrder.id_ot]" class="bg-yellow-500 text-white p-1 rounded"
+              title="Editar Orden"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button (click)="generatePDF(newOrder)" class="bg-blue-500 text-white p-1 rounded" title="Descargar PDF"><i
+                class="fa-solid fa-circle-down"></i></button>
           </td>
         </tr>
       </tbody>
