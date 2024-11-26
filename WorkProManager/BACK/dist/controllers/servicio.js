@@ -14,8 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateServicio = exports.postServicio = exports.deleteServicio = exports.getServicio = exports.getServicios = void 0;
 const servicio_1 = __importDefault(require("../models/servicio")); // Asegúrate de tener el modelo de Servicio importado
+const vista_count_ot_por_servicio_1 = __importDefault(require("../models/vista_count_ot_por_servicio"));
 const getServicios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const listServicios = yield servicio_1.default.findAll();
+    const listServicios = yield servicio_1.default.findAll({ include: [{ model: vista_count_ot_por_servicio_1.default }] });
     res.json(listServicios);
 });
 exports.getServicios = getServicios;

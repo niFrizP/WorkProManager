@@ -34,17 +34,21 @@ import { SolicitudService } from '../../services/solicitud.service';
 // Components
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { ModalComponent } from '../../components/modal/modal.component';
+import Swal from 'sweetalert2';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
 
 @Component({
   selector: 'app-cotizacion',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule, ModalComponent],
+  imports: [RouterLink,MatSnackBarModule, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule, ModalComponent],
   templateUrl: './cotizacion.component.html',
   styleUrl: './cotizacion.component.css'
 })
 export class CotizacionComponent {
   isLoading = true; // Cambia el estado de carga cuando termine
   fechaHoy: string = ''; // Variable para almacenar la fecha actual
+  ordenCreada: boolean = false; // Add this line
 
 
   [x: string]: any;
@@ -80,7 +84,8 @@ export class CotizacionComponent {
   selectedServicePrecio: any;
   rut_remitente: number | null = 0;
   rut_receptor: number | null = 0;
-  
+  alertVisible: boolean = false;
+  servicioAEliminar: any = null;
   
   
     constructor(
@@ -179,37 +184,54 @@ export class CotizacionComponent {
   
     async addProduct(): Promise<void> {
       this.loading = true;
-  
+    
       try {
-        // 1. Create or update cliente
+        // Lógica para crear cliente, equipo, orden, etc.
         const cliente = await this.createOrUpdateCliente();
-  
-        // 2. Create or update equipo
         const equipo = await this.createOrUpdateEquipo();
-  
-        // 3. Create or update order
         const order = await this.createOrUpdateOrder();
-  
-        // Log the JSON representation of the order
-  
-  
         const detalleOT = await this.createOrUpdateDetalleOT();
-
         const solicitud = await this.createorupdateSolicitud();
-  
-
         const adjudicacion = await this.cretaorupdateadjudicacion();
+    
         console.log('New order ID:', this.newOrderId);
-        console.log('Order:', JSON.stringify(order, null, 2));  
-  
-  
-  
+    
+        // Mostrar SweetAlert2 al finalizar exitosamente
+        Swal.fire({
+          title: '¡Orden de trabajo creada!',
+          text: `Orden de trabajo con número ${this.newOrderId} fue creada con éxito.`,
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#3085d6'
+        });
+    
         this.loading = false;
-        this.router.navigate(['/']);
+        this.ordenCreada = true;
+    
+        // Redirigir después de aceptar el mensaje
+        Swal.fire({
+          title: '¡Orden de trabajo creada!',
+          text: `Orden de trabajo con número ${this.newOrderId} fue creada con éxito.`,
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#3085d6'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.router.navigate(['/']); // Redirige a la página principal
+          }
+        });
       } catch (error) {
         console.error('Error creating order:', error);
         this.loading = false;
-        // Handle error (e.g., show error message to user)
+    
+        // Manejar error con SweetAlert2
+        Swal.fire({
+          title: 'Error',
+          text: 'Ocurrió un error al crear la orden. Por favor, inténtalo de nuevo.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#d33'
+        });
       }
     }
   
@@ -264,55 +286,57 @@ export class CotizacionComponent {
       }
     }
   
+  
+  
     eliminarServicio(servicio: any) {
-      this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: { id_serv: any }) => s.id_serv !== servicio.id_serv);
-      }
-
-      private async createorupdateSolicitud(): Promise<Solicitud> {
-        const solicitudData: Solicitud = {
-          id_ot: this.newOrderId!,
-          desc_sol: this.form.get('desc_sol')?.value,
-          id_estado_ot: 1,
-          isView: false,
-          completada: false,
-          fecha_emision: new Date(),
-          fecha_plazo: new Date(Date.now() + 24 * 60 * 60 * 1000), // Fecha actual + 1 día
-        };
-        
-        console.log('Solicitud data:')
-        console.log(JSON.stringify(solicitudData, null, 1));
+      this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: any) => s !== servicio);
+    }
+  
+    private async createorupdateSolicitud(): Promise<Solicitud> {
+      const solicitudData: Solicitud = {
+        id_ot: this.newOrderId!,
+        desc_sol: this.form.get('desc_sol')?.value,
+        id_estado_ot: 1,
+        isView: false,
+        completada: false,
+        fecha_emision: new Date(),
+        fecha_plazo: new Date(Date.now() + 24 * 60 * 60 * 1000), // Fecha actual + 1 día
+      };
       
-        
-            return new Promise((resolve, reject) => {
-              this.solicitudService.saveSolicitud(solicitudData).subscribe({
-                next: (response: any) => {
-                  console.log('Response from server:', response);
+      console.log('Solicitud data:')
+      console.log(JSON.stringify(solicitudData, null, 1));
+    
       
-                  // Asegúrate de que la respuesta tiene la estructura esperada
-                  const newSolicitud = response?.solicitud; // Accede al objeto 'solicitud'
-      
-                  if (newSolicitud) {
-                    this.newSolicitudId = newSolicitud?.id_sol; // Accede a la propiedad 'id_sol'
-      
-                    if (this.newSolicitudId) {
-                      console.log('New solicitud ID:', this.newSolicitudId);
-                    } else {
-                      console.warn('No solicitud ID found in response');
-                    }
-      
-                    resolve(newSolicitud); // Devuelve la solicitud creada
+          return new Promise((resolve, reject) => {
+            this.solicitudService.saveSolicitud(solicitudData).subscribe({
+              next: (response: any) => {
+                console.log('Response from server:', response);
+    
+                // Asegúrate de que la respuesta tiene la estructura esperada
+                const newSolicitud = response?.solicitud; // Accede al objeto 'solicitud'
+    
+                if (newSolicitud) {
+                  this.newSolicitudId = newSolicitud?.id_sol; // Accede a la propiedad 'id_sol'
+    
+                  if (this.newSolicitudId) {
+                    console.log('New solicitud ID:', this.newSolicitudId);
                   } else {
-                    console.warn('Solicitud object not found in response');
-                    reject(new Error('Solicitud object not found in response'));
+                    console.warn('No solicitud ID found in response');
                   }
-                },
-                error: (error) => {
-                  console.error('Error creating solicitud:', error);
-                  reject(error);
+    
+                  resolve(newSolicitud); // Devuelve la solicitud creada
+                } else {
+                  console.warn('Solicitud object not found in response');
+                  reject(new Error('Solicitud object not found in response'));
                 }
-              });
+              },
+              error: (error) => {
+                console.error('Error creating solicitud:', error);
+                reject(error);
+              }
             });
-          }
+          });
+        }
         
     
 
@@ -665,8 +689,25 @@ export class CotizacionComponent {
       this.mostrarSelectServicio = !this.mostrarSelectServicio;
     }
   
+    mostrarAlertaEliminarServicio(servicio: any) {
+      this.servicioAEliminar = servicio;
+      this.alertVisible = true;
+    }
+  
+    confirmarEliminarServicio() {
+      this.eliminarServicio(this.servicioAEliminar);
+      this.alertVisible = false;
+      this.servicioAEliminar = null;
+    }
+  
+    cancelarEliminarServicio() {
+      this.alertVisible = false;
+      this.servicioAEliminar = null;
+    }
+  
+   
+  
   }
-  
-  
-  
-  
+
+
+

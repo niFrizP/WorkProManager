@@ -46,26 +46,16 @@
             class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
         {{contar}}
     </span>
-    <span *ngIf="item.name === 'Reportes' && contarReportes > 0 && authService.getUserRole() != 2"
-            class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-        {{contarReportes}}
-    </span>
-    <span *ngIf="item.name === 'Completas' && contarFinalizadas > 0 && authService.getUserRole() != 2"
-            class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-        {{contarFinalizadas}}
-    </span>
-    <span *ngIf="item.name === 'Eliminadas' && contarRechazadas > 0 && authService.getUserRole() != 2"
-            class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-        {{contarRechazadas}}
-    </span>
-    <span *ngIf="item.name === 'Ordenes' && contar > 0 && authService.getUserRole() === 2"
-            class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-        {{contarTecnico}}
-    </span>
-    <span *ngIf="item.name === 'Reportes' && contar > 0 && authService.getUserRole() === 2"
+    <span *ngIf="item.name === 'Ordenes' && contar > 0 && authService.getUserRole() == 2"
       class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
   {{contarTecnicoReportes}}
 </span>
+
+
+
+
+
+
     
           
         </a>

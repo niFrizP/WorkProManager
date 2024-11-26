@@ -54,6 +54,50 @@ export const getOrders = async (req: Request, res: Response) => {
     }
 };
 
+export const getOrdersCountbyViewsAdmin = async (req: Request, res: Response) => {
+    try {
+        // Realizando el conteo de órdenes donde isview = false
+        const countOrders = await Order.count({
+            include: [
+                {
+                    model: Cliente,
+                    attributes: ['nom_cli', 'ap_cli', 'd_veri_cli', 'cel_cli', 'email_cli'],
+                    required: true
+                },
+                {
+                    model: Equipo,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true
+                },
+                {
+                    model: VistaSolicitud,
+                    attributes: ['isview'], // Solo seleccionamos el campo 'isview' para aplicar el filtro
+                    required: true,
+                    where: {
+                        isview: false, // Filtramos las órdenes donde isview es false
+                        id_estado_ot: {
+                            [Op.in]: [2,4]
+                    }
+                }
+                },
+                {
+                    model: VistaUltimaAdjudicacion,
+                    attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
+                }
+            ],
+        });
+
+        // Devolvemos la cantidad de órdenes que cumplen con la condición
+        res.json({ count: countOrders });
+    } catch (error) {
+        console.error('Error fetching orders count:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders count',
+        });
+    }
+};
+
+
 export const getOrdersByTecnico = async (req: Request, res: Response) => {
     try {
         const listOrders = await Order.findAll({
@@ -77,7 +121,8 @@ export const getOrdersByTecnico = async (req: Request, res: Response) => {
                    {model: VistaUltimaAdjudicacion,
                     attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
                     where: {
-                        rut_usuario: req.body.rut_usuario
+                        rut_usuario: req.body.rut_usuario,
+                        
                     }
                    }
                 
@@ -95,6 +140,57 @@ export const getOrdersByTecnico = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+export const getOrdersCountByTecnicoByViewsTecnico = async (req: Request, res: Response) => {
+    try {
+        // Realizando el conteo de órdenes asignadas a un técnico específico
+        const countOrdersByTecnico = await Order.count({
+            include: [
+                {
+                    model: Cliente,
+                    attributes: ['nom_cli', 'ap_cli', 'd_veri_cli', 'cel_cli', 'email_cli'],
+                    required: true
+                },
+                {
+                    model: Equipo,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true
+                },
+                {
+                    model: VistaSolicitud,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'fecha_termino', 'fecha_vista', 'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
+                    required: true,
+                    where: {
+                        isview: false, // Filtramos las órdenes donde isview es false
+                        id_estado_ot: {
+                            [Op.in]: [1,3]
+                        },
+                    }
+                },
+                {
+                    model: VistaUltimaAdjudicacion,
+                    attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
+                    where: {
+                        rut_usuario: req.body.rut_usuario // Filtramos por el rut_usuario enviado en el cuerpo de la solicitud
+
+                    }
+                }
+            ],
+        });
+
+        // Devolvemos el conteo de las órdenes asignadas al técnico específico
+        res.json({ count: countOrdersByTecnico });
+    } catch (error) {
+        console.error('Error fetching orders count by tecnico:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders count by tecnico',
+        });
+    }
+};
+
+
+
 
 export const getOrdersCountPorRealizar = async (req: Request, res: Response) => {
     try {

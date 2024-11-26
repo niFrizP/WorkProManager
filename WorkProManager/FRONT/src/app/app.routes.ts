@@ -21,7 +21,6 @@ import { CanActivate } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { MarcasComponent } from './pages/marcas/marcas.component';
 import { ServicioComponent } from './pages/servicio/servicio.component';
-import { EliminadasComponent } from './pages/eliminadas/eliminadas.component';
 import { CausaComponent } from './pages/causa/causa.component';
 import { EditOrderGestorComponent } from './pages/edit-order-gestor/edit-order-gestor.component';
 
@@ -42,7 +41,6 @@ export const routes: Routes = [
   { path: 'edit-usuario/:rut_usuario', component: EditUsuarioComponent}, // Ruta a 'aprobaciones-tick'
   {path: 'marca', component: MarcasComponent, canActivate:[AuthRolGuard], data:{requiredRoles: [1]}}, // Ruta a 'aprobaciones-tick'
   {path: 'servicios', component: ServicioComponent, canActivate:[AuthRolGuard], data:{requiredRoles: [1]}}, // Ruta a 'aprobaciones-tick'
-  {path: 'eliminadas', component: EliminadasComponent, canActivate:[AuthRolGuard], data:{requiredRoles: [1, 3]}}, // Ruta a 'aprobaciones-tick'
   {path: 'causa', component: CausaComponent, canActivate:[AuthRolGuard], data:{requiredRoles: [1, 3]}}, // Ruta a 'aprobaciones-tick'
 
   { path: '**', redirectTo: '/login' }, // Maneja rutas no encontradas

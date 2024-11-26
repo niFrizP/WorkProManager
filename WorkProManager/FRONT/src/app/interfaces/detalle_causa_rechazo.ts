@@ -4,7 +4,7 @@ export interface DetalleCausaRechazo {
     fecha_rechazo?: Date;
     observaciones?: string;
     nombre_rechazo?: string;
-    CausaRechazo?: {
+    Causa_rechazo?: {
         nombre_rechazo: string;
     }
     count?: number;

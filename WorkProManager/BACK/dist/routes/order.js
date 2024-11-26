@@ -34,6 +34,8 @@ router.get('/countabiertas', order_1.getOrdersCountPorRealizar);
 router.get('/countcerradas', order_1.getOrdersCountTerminadas);
 //rutas de solicitud por usuario
 router.post('/cotizacionesabiertastecnico', order_1.getOrdersCountPorRealizarTecnico);
+router.get('/ordenesxadmin', order_1.getOrdersCountbyViewsAdmin);
+router.post('/ordenesxtecnico', order_1.getOrdersCountByTecnicoByViewsTecnico);
 router.get('/cotizacionesgeneral', order_1.getOrdersCotizacionesGeneral);
 router.post('/cotizacionestecnico', order_1.getOrdersCotizacionesTecnico);
 router.get('/reportesGeneral', order_1.getOrdersReporteGeneral);

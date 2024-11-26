@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 import Servicio from '../models/servicio'; // Asegúrate de tener el modelo de Servicio importado
+import vista_count_ot_por_servicio from '../models/vista_count_ot_por_servicio';
 
 export const getServicios = async (req: Request, res: Response) => {
-    const listServicios = await Servicio.findAll();
+    const listServicios = await Servicio.findAll(
+        {include: [{model: vista_count_ot_por_servicio}]}
+    );
     res.json(listServicios);
 };
 

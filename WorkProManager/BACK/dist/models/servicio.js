@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
+const vista_count_ot_por_servicio_1 = __importDefault(require("./vista_count_ot_por_servicio"));
 // Definición del modelo Servicio en lugar de EstadoOT
 const Servicio = connection_1.default.define('Servicio', {
     id_serv: {
@@ -21,4 +22,5 @@ const Servicio = connection_1.default.define('Servicio', {
     updatedAt: false // Desactiva el timestamp de actualización
 });
 Servicio.hasMany(Servicio, { foreignKey: 'id_serv' });
+Servicio.belongsTo(vista_count_ot_por_servicio_1.default, { foreignKey: 'id_serv', targetKey: 'id_serv' });
 exports.default = Servicio;

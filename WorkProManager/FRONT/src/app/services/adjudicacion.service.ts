@@ -27,6 +27,11 @@ export class AdjudicacionService {
     return this.http.post<void>(`${this.myAppUrl}${this.myApiUrl}`,adjudicacion)
   }
 
+  getListDetalleOTByOTId(id_ot: number): Observable<Adjudicacion[]> {
+    return this.http.get<Adjudicacion[]>(`${this.myAppUrl}${this.myApiUrl}/ot/${id_ot}`);
+}
+
+
   getAdjudicaciones(id_adjudicacion: number): Observable<Adjudicacion> {
     return this.http.get<Adjudicacion>(`${this.myAppUrl}${this.myApiUrl}${id_adjudicacion}`)
   }
