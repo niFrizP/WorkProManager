@@ -1,19 +1,10 @@
-import { NextFunction, Router } from 'express';
+import { Router } from 'express';
 import { login, verificarTokenn } from '../controllers/login';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config';
-import cookieparser from 'cookie-parser';
 import { Request, Response } from 'express';
-import { Jwt } from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import Usuario from '../models/usuario';
-import rateLimit from 'express-rate-limit';
 
 const router = Router();
-
-
-
-
 
 router.post('/', async (req, res) => {
     const response = await login(req, res);
@@ -47,7 +38,6 @@ router.post('/logout', (req, res) => {
     res.send({ message: 'Logged out successfully' });
 });
 
-// Ruta de verificación de token
 router.get('/verify', verificarTokenn, (req: Request, res: Response) => {
     // Responde solo con el `rut_usuario`
     res.json({ id_rol: (req as any).id_rol, rut_usuario: (req as any).rut_usuario });

@@ -35,11 +35,13 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
-                { model: vistamin_1.default,
+                {
+                    model: vistamin_1.default,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'fecha_termino', 'fecha_vista', 'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
                     required: true
                 },
-                { model: vistaultimousuario_1.default,
+                {
+                    model: vistaultimousuario_1.default,
                     attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
                 }
             ],
@@ -112,11 +114,13 @@ const getOrdersByTecnico = (req, res) => __awaiter(void 0, void 0, void 0, funct
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
-                { model: vistamin_1.default,
+                {
+                    model: vistamin_1.default,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'fecha_termino', 'fecha_vista', 'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
                     required: true
                 },
-                { model: vistaultimousuario_1.default,
+                {
+                    model: vistaultimousuario_1.default,
                     attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
                     where: {
                         rut_usuario: req.body.rut_usuario,
@@ -563,7 +567,8 @@ const getOrdersReporteGeneral = (req, res) => __awaiter(void 0, void 0, void 0, 
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
-                { model: vistamin_1.default,
+                {
+                    model: vistamin_1.default,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
@@ -599,7 +604,8 @@ const getOrdersReporteTecnico = (req, res) => __awaiter(void 0, void 0, void 0, 
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
-                { model: vistamin_1.default,
+                {
+                    model: vistamin_1.default,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
@@ -636,7 +642,8 @@ const getOrdersCotizacionesGeneral = (req, res) => __awaiter(void 0, void 0, voi
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
-                { model: vistamin_1.default,
+                {
+                    model: vistamin_1.default,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
@@ -672,7 +679,8 @@ const getOrdersCotizacionesTecnico = (req, res) => __awaiter(void 0, void 0, voi
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
-                { model: vistamin_1.default,
+                {
+                    model: vistamin_1.default,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
@@ -709,7 +717,8 @@ const getOrdersCompletadas = (req, res) => __awaiter(void 0, void 0, void 0, fun
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
-                { model: vistamin_1.default,
+                {
+                    model: vistamin_1.default,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
@@ -745,7 +754,8 @@ const getOrderssEliminadas = (req, res) => __awaiter(void 0, void 0, void 0, fun
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
-                { model: vistamin_1.default,
+                {
+                    model: vistamin_1.default,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
@@ -1090,7 +1100,8 @@ const getOrdersByUsuarioOrder = (req, res) => __awaiter(void 0, void 0, void 0, 
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
-                { model: vistamin_1.default,
+                {
+                    model: vistamin_1.default,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     required: true,
                     where: {
@@ -1162,7 +1173,8 @@ const getOrdersByUsuarioOrderEnProceso = (req, res) => __awaiter(void 0, void 0,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
-                { model: vistamin_1.default,
+                {
+                    model: vistamin_1.default,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
                     required: true,
                     where: {

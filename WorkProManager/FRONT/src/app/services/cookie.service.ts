@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class CookieManagementService {
   getAccessToken(): string | null {
-    return this.getCookie('access_token'); // Asegúrate de que este nombre coincida con el que usas
+    return this.getCookie('access_token'); 
   }
 
   public getCookie(name: string): string | null {

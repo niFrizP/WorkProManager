@@ -37,7 +37,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-edit-order',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule, ModalComponent],
+  imports: [ReactiveFormsModule, HttpClientModule, CommonModule, FormsModule, ModalComponent],
   templateUrl: './edit-order.component.html',
   styleUrls: ['./edit-order.component.css'] // Add this line
 })

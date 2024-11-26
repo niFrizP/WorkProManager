@@ -31,18 +31,20 @@ export const getOrders = async (req: Request, res: Response) => {
                     required: true
                 },
 
-                   { model: VistaSolicitud,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo','fecha_termino','fecha_vista' ,'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
+                {
+                    model: VistaSolicitud,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'fecha_termino', 'fecha_vista', 'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
                     required: true
-                   },
-                   {model: VistaUltimaAdjudicacion,
+                },
+                {
+                    model: VistaUltimaAdjudicacion,
                     attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
-                   }
-                
+                }
+
             ],
         });
 
-        
+
 
         console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
         res.json(listOrders);
@@ -114,22 +116,24 @@ export const getOrdersByTecnico = async (req: Request, res: Response) => {
                     required: true
                 },
 
-                   { model: VistaSolicitud,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo','fecha_termino','fecha_vista' ,'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
+                {
+                    model: VistaSolicitud,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'fecha_termino', 'fecha_vista', 'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
                     required: true
-                   },
-                   {model: VistaUltimaAdjudicacion,
+                },
+                {
+                    model: VistaUltimaAdjudicacion,
                     attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
                     where: {
                         rut_usuario: req.body.rut_usuario,
                         
                     }
-                   }
-                
+                }
+
             ],
         });
 
-        
+
 
         console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
         res.json(listOrders);
@@ -210,9 +214,9 @@ export const getOrdersCountPorRealizar = async (req: Request, res: Response) => 
                     model: VistaSolicitud,
                     attributes: [], // Y para VistaSolicitud
                     required: true,
-                    where:{
+                    where: {
                         id_estado_ot: {
-                            [Op.in]: [1,2,3,4]
+                            [Op.in]: [1, 2, 3, 4]
 
                         }
 
@@ -250,9 +254,9 @@ export const getOrdersCountPorRealizarTecnico = async (req: Request, res: Respon
                     model: VistaSolicitud,
                     attributes: [], // Y para VistaSolicitud
                     required: true,
-                    where:{
+                    where: {
                         id_estado_ot: {
-                            [Op.in]: [1,2,3]
+                            [Op.in]: [1, 2, 3]
 
                         },
                         rut_receptor: req.body.rut_usuario
@@ -290,7 +294,7 @@ export const getOrdersCountRealizadasTecnico = async (req: Request, res: Respons
                     model: VistaSolicitud,
                     attributes: [], // Y para VistaSolicitud
                     required: true,
-                    where:{
+                    where: {
                         id_estado_ot: {
                             [Op.in]: [4]
 
@@ -331,9 +335,9 @@ export const getOrdersCountPorRealizadasTecnico = async (req: Request, res: Resp
                     model: VistaSolicitud,
                     attributes: [], // Y para VistaSolicitud
                     required: true,
-                    where:{
+                    where: {
                         id_estado_ot: {
-                            [Op.in]: [1,2,3,4]
+                            [Op.in]: [1, 2, 3, 4]
 
                         },
                         rut_receptor: req.body.rut_usuario
@@ -372,9 +376,9 @@ export const getOrdersCountTerminadas = async (req: Request, res: Response) => {
                     model: VistaSolicitud,
                     attributes: [], // Y para VistaSolicitud
                     required: true,
-                    where:{
+                    where: {
                         id_estado_ot: {
-                            [Op.in]: [5,6]
+                            [Op.in]: [5, 6]
 
                         }
 
@@ -592,16 +596,17 @@ export const getOrdersReporteGeneral = async (req: Request, res: Response) => {
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
-                            [Op.in]: [3,4]
+                            [Op.in]: [3, 4]
                         }
                     },
                     required: true
-                   },
-                
+                },
+
             ],
         });
 
@@ -631,7 +636,8 @@ export const getOrdersReporteTecnico = async (req: Request, res: Response) => {
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
@@ -640,8 +646,8 @@ export const getOrdersReporteTecnico = async (req: Request, res: Response) => {
                         rut_receptor: req.body.rut_usuario
                     },
                     required: true
-                   },
-                
+                },
+
             ],
         });
 
@@ -671,16 +677,17 @@ export const getOrdersCotizacionesGeneral = async (req: Request, res: Response) 
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
-                            [Op.in]: [1,2]
+                            [Op.in]: [1, 2]
                         }
                     },
                     required: true
-                   },
-                
+                },
+
             ],
         });
 
@@ -710,17 +717,18 @@ export const getOrdersCotizacionesTecnico = async (req: Request, res: Response) 
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
-                            [Op.in]: [1,2]
+                            [Op.in]: [1, 2]
                         },
                         rut_receptor: req.body.rut_usuario
                     },
                     required: true
-                   },
-                
+                },
+
             ],
         });
 
@@ -753,7 +761,8 @@ export const getOrdersCompletadas = async (req: Request, res: Response) => {
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
@@ -761,8 +770,8 @@ export const getOrdersCompletadas = async (req: Request, res: Response) => {
                         }
                     },
                     required: true
-                   },
-                
+                },
+
             ],
         });
 
@@ -792,7 +801,8 @@ export const getOrderssEliminadas = async (req: Request, res: Response) => {
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
@@ -800,8 +810,8 @@ export const getOrderssEliminadas = async (req: Request, res: Response) => {
                         }
                     },
                     required: true
-                   },
-                
+                },
+
             ],
         });
 
@@ -844,7 +854,7 @@ export const countOrdersNotificationCotizacon = async (req: Request, res: Respon
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
                     where: {
                         isview: false,
-                        id_estado_ot: [1,2],
+                        id_estado_ot: [1, 2],
                     },
                     required: true,
 
@@ -883,7 +893,7 @@ export const countOrdersNotificationReportes = async (req: Request, res: Respons
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
                     where: {
                         isview: false,
-                        id_estado_ot: [3,4],
+                        id_estado_ot: [3, 4],
                     },
                     required: true,
 
@@ -922,7 +932,7 @@ export const countOrdersNotificationCotizacionesByRut = async (req: Request, res
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
                     where: {
                         isview: false,
-                        id_estado_ot: [1,2],
+                        id_estado_ot: [1, 2],
                         rut_receptor: req.body.rut_usuario,
                     },
                     required: true,
@@ -962,7 +972,7 @@ export const countOrdersNotificationReportesByRut = async (req: Request, res: Re
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
                     where: {
                         isview: false,
-                        id_estado_ot: [3,4],
+                        id_estado_ot: [3, 4],
                         rut_receptor: req.body.rut_usuario,
                     },
                     required: true,
@@ -1171,15 +1181,16 @@ export const getOrdersByUsuarioOrder = async (req: Request, res: Response) => {
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     required: true,
                     where:
                     {
                         rut_receptor: req.body.rut_usuario
                     },
-                   },
-            
+                },
+
             ]
         });
 
@@ -1252,15 +1263,16 @@ export const getOrdersByUsuarioOrderEnProceso = async (req: Request, res: Respon
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
                     required: true,
                     where: {
-                        id_estado_ot: [2,3,4], // Filtrar por estado
+                        id_estado_ot: [2, 3, 4], // Filtrar por estado
                         rut_receptor: [222],
                     },
-                   },
-                
+                },
+
             ]
         });
 
@@ -1281,8 +1293,8 @@ export const getOrder = async (req: Request, res: Response) => {
             include: [
                 { model: Equipo },
                 { model: Cliente },
-                { model: VistaSolicitud},
-                { model: VistaUltimaAdjudicacion}
+                { model: VistaSolicitud },
+                { model: VistaUltimaAdjudicacion }
             ]
         });
 
@@ -1373,6 +1385,5 @@ export const updateOrder = async (req: Request, res: Response) => {
         });
     }
 };
-
 
 

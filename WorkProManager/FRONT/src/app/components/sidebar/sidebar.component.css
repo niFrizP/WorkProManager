@@ -1,8 +1,11 @@
+
 .sidebar {
   width: 12rem;
   height: 100vh;
   background-color: #2221b8;
   color: #ffe217;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .main-content {

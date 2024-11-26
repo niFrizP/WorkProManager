@@ -43,7 +43,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
   standalone: true,
   imports: [RouterLink,MatSnackBarModule, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule, ModalComponent],
   templateUrl: './cotizacion.component.html',
-  styleUrl: './cotizacion.component.css'
+  styleUrls: ['./cotizacion.component.css']
 })
 export class CotizacionComponent {
   isLoading = true; // Cambia el estado de carga cuando termine
@@ -106,81 +106,77 @@ export class CotizacionComponent {
       
     ) {
       this.form = this.fb.group({
-        num_equipo: [null, Validators.required],
-        id_estado: [1, Validators.required],
+        //fecha entrega
         fecha: [null, Validators.required],
-        id_tipo: [null, Validators.required],
-        descripcion: ['', Validators.required],
-        rut_cliente: [null, Validators.required],
-        rut_usuario: [null, Validators.required],
-        nombre: ['', Validators.required],
-        apellido: ['', Validators.required],
-        celular: [null, Validators.required],
-        correo: ['', Validators.required],
-        tipo_equipo: ['', Validators.required],
+        // descripcion de orden de trabajo
+        descripcion: ['', [Validators.required, Validators.minLength(10)]],
+        //detalle cliente
+        nombre: ['', [Validators.required, Validators.pattern('^[a-zA-ZáéíóúñÁÉÍÓÚÑ ]+$')]],
+        apellido: ['', [Validators.required, Validators.pattern('^[a-zA-ZáéíóúñÁÉÍÓÚÑ ]+$')]],
+        rut_cliente: [null, [Validators.required, Validators.pattern('^[0-9]{7,8}$')]],
+        d_veri_cli: ['', [Validators.required, Validators.maxLength(1), Validators.pattern('^[0-9kK]$')]],
+        correo: ['', [Validators.required, Validators.email]],
+        celular: [null, [Validators.required, Validators.pattern('^[0-9]{9}$')]],
+        //detalle equipo
         mod_equipo: ['', Validators.required],
-        fec_fabric: ['', Validators.required],
         id_marca: [null, Validators.required],
-        d_veri_cli: ['', Validators.required],
-        servicios: this.fb.array([this.fb.group({
-          id_serv: [null, Validators.required],
-        })]),
+        tipo_equipo: ['', Validators.required],
+        num_equipo: [null, Validators.required],
+        fec_fabric: ['', Validators.required],
+        //servicio
+        servicios: this.fb.array([this.fb.group({id_serv: [null, Validators.required],})]),
+        //usuario
+        rut_usuario: [null, [Validators.required, Validators.pattern('^[0-9]{7,8}$')]],
+        //descripción tecnico
+        desc_sol: ['', [Validators.required, Validators.minLength(10)]],
+
+        id_tipo: [null, Validators.required],
+        id_estado: [1, Validators.required],
         rut_receptor: [null, Validators.required],
         rut_remitente: [null, Validators.required],
-        desc_sol: ['', Validators.required],
         isSubmitting: [false] // Add this line
-  
-        
       });
-      
       this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
-  
-  
-  
     }
   
     ngOnInit(): void {
-
-      this.cargarTipoEquipo();
-      this.cargarServicios();
-      this.cargarUsuarios();
-      console.log(this.authService.getRolIdLocal());
-      this.cargarMarcas();
-     this.rut_remitente = this.authService.getIdLocal()
-      console.log('User ID:', this['userId']);
-      const today = new Date();
-    this.fechaHoy = today.toISOString().split('T')[0];  // Obtiene solo la fecha sin la parte de la hora
-    
+        // Redirige a la página de cotización después de 2 segundos
 
 
-      
-    this.authService.verificarToken().subscribe({
-      next: (data) => {
-        // Guarda los datos de usuario
-        this.authService.saveUserData(data.rut_usuario, data.id_rol);
-        console.log('Usuario verificado:', data);
-      },
-      error: (err) => {
-        console.error('Error al verificar el token:', err);
-      },
-    });
+        // Carga de datos iniciales
+        this.cargarTipoEquipo();
+        this.cargarServicios();
+        this.cargarUsuarios();
+        this.cargarMarcas();
 
+        // Configuración de datos del usuario
+        this.rut_remitente = this.authService.getIdLocal();
+        console.log('User ID:', this['userId']);
 
-      this.isLoading = false; // Cambia el estado de carga cuando termine
+        // Establece la fecha actual
+        const today = new Date();
+        this.fechaHoy = today.toISOString().split('T')[0];  // Obtiene solo la fecha sin la parte de la hora
 
-  
-  
-      
-  
-      if (this.id_ot !== 0) {
-        this.operacion = 'Editar ';
-        
-      }
+        // Verificación del token de usuario
+        this.authService.verificarToken().subscribe({
+            next: (data) => {
+                // Guarda los datos de usuario
+                this.authService.saveUserData(data.rut_usuario, data.id_rol);
+                console.log('Usuario verificado:', data);
+            },
+            error: (err) => {
+                console.error('Error al verificar el token:', err);
+            },
+        });
+
+        // Cambia el estado de carga cuando termine
+        this.isLoading = false;
+
+        // Configura la operación según el ID de la orden de trabajo
+        if (this.id_ot !== 0) {
+            this.operacion = 'Editar ';
+        }
     }
-  
-    
-    
-
   
     async addProduct(): Promise<void> {
       this.loading = true;
@@ -264,7 +260,7 @@ export class CotizacionComponent {
         });
       });
     }
-    
+  
     onServicioChange(event: any) {
       const servicioId = event.target.value;
       this.servicioSeleccionado = servicioId ? parseInt(servicioId) : null;
@@ -275,12 +271,10 @@ export class CotizacionComponent {
       if (this.servicioSeleccionado) {
         // Encontrar el servicio completo según el ID
         const servicio = this.servicios.find(serv => serv.id_serv === this.servicioSeleccionado);
-  
         // Verificar si ya ha sido agregado
         if (servicio && !this.serviciosSeleccionados.includes(servicio)) {
           this.serviciosSeleccionados.push(servicio);
         }
-  
         // Limpiar la selección para permitir agregar otro servicio
         this.servicioSeleccionado = null;
       }
@@ -389,9 +383,7 @@ export class CotizacionComponent {
           throw error;
       }
   }
-  
-  
-    
+
     private async createOrUpdateEquipo(): Promise<Equipo> {
       const equipoData: Equipo = {
         num_equipo: this.form.get('num_equipo')?.value,
@@ -402,9 +394,7 @@ export class CotizacionComponent {
       };
     
       console.log('Equipo data:', JSON.stringify(equipoData, null, 2));
-  
-  
-      
+
       try {
         // Attempt to get the existing client
         const existingEquipo = await this.equipoService.getEquipo(equipoData.num_equipo!).toPromise().catch((error) => {
@@ -440,8 +430,6 @@ export class CotizacionComponent {
         throw error;
     }
   }
-    // ... (resto del código sin cambios)
-  
   
     private async createOrUpdateOrder(): Promise<Order> {
       
@@ -557,9 +545,6 @@ export class CotizacionComponent {
     }
   }
   
-  
-   
-  
     cargarServicios() {
       this.servicioService.getListServicios().subscribe({
         next: (data: Servicio[]) => {
@@ -573,10 +558,6 @@ export class CotizacionComponent {
         }
       });
     }
-    
-  
-    
-  
   
     serviceID(event: Event) {
       const selectedId = (event.target as HTMLSelectElement).value;
@@ -589,8 +570,6 @@ export class CotizacionComponent {
         this.selectedServiceID = null;
       }
     }
-  
-  
   
     cargarUsuarios() {
       this.usuarioService.getListUsuarios().subscribe({
@@ -680,10 +659,6 @@ export class CotizacionComponent {
   
       }
     }
-  
-  
-  
-  
      // Nueva función para mostrar/ocultar el select de servicios
      toggleSelectServicio(): void {
       this.mostrarSelectServicio = !this.mostrarSelectServicio;
