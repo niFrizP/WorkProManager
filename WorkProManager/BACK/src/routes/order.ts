@@ -1,6 +1,6 @@
 // WorkProManager/BACK/src/routes/order.ts
 import { Router } from 'express';
-import {  getOrder,getOrdersByTecnico, getSolicitudesFromViewUsuario, createLastAdjucacionPerUsuario,getOrdersFinalizadasCountByMonth,countOrdersNotificationRechazadas,countOrdersNotificationFinalizada,countOrdersNotificationReportes,countOrdersNotificationCotizacon,getOrdersRealizadasCountByMonth,getOrdersCountRealizadasTecnico,getOrdersCountPorRealizarTecnico,getOrdersCountTerminadas, getOrdersCountPorRealizar,getOrders,getOrdersCountByMonth,getOrdersCotizacionesTecnico,getOrdersReporteTecnico, getOrdersCotizacionesGeneral,getOrdersReporteGeneral,getOrdersCompletadas, getOrderssEliminadas ,postOrder, updateOrder, getSolicitudesFromView, deleteOrder, createSolicitudView, getOrdersEliminadas, countOrdersNotificationReportesByRut, countOrdersNotificationCotizacionesByRut} from '../controllers/order';
+import {  getOrder,getOrdersByTecnico,getOrdersCountbyViewsAdmin,getOrdersCountByTecnicoByViewsTecnico, getSolicitudesFromViewUsuario, createLastAdjucacionPerUsuario,getOrdersFinalizadasCountByMonth,countOrdersNotificationRechazadas,countOrdersNotificationFinalizada,countOrdersNotificationReportes,countOrdersNotificationCotizacon,getOrdersRealizadasCountByMonth,getOrdersCountRealizadasTecnico,getOrdersCountPorRealizarTecnico,getOrdersCountTerminadas, getOrdersCountPorRealizar,getOrders,getOrdersCountByMonth,getOrdersCotizacionesTecnico,getOrdersReporteTecnico, getOrdersCotizacionesGeneral,getOrdersReporteGeneral,getOrdersCompletadas, getOrderssEliminadas ,postOrder, updateOrder, getSolicitudesFromView, deleteOrder, createSolicitudView, getOrdersEliminadas, countOrdersNotificationReportesByRut, countOrdersNotificationCotizacionesByRut} from '../controllers/order';
 import { Sequelize } from 'sequelize';
 import sequelize from '../db/connection';
 import db from '../db/connection';
@@ -31,6 +31,8 @@ router.get('/countcerradas', getOrdersCountTerminadas)
 //rutas de solicitud por usuario
 router.post('/cotizacionesabiertastecnico', getOrdersCountPorRealizarTecnico)
 
+router.get('/ordenesxadmin', getOrdersCountbyViewsAdmin)
+router.post('/ordenesxtecnico', getOrdersCountByTecnicoByViewsTecnico)
 
 
 router.get('/cotizacionesgeneral', getOrdersCotizacionesGeneral)

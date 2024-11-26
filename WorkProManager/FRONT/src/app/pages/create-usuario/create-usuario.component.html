@@ -1,130 +1,67 @@
-<div class="flex-1 justify-center px-72 py-6">
-    <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-      <!-- Leyenda de descripción -->
-      <p class="text-md text-gray-600 mb-4">
-        Completa el siguiente formulario para crear un nuevo usuario.
-      </p>
-      
-      <form class="space-y-6" [formGroup]="userForm" (ngSubmit)="onSubmit()">
-        <p class="text-2xl font-semibold text-gray-700">Formulario de creación de usuario</p>
-  
-        <fieldset class="border border-gray-200 p-4 rounded-lg">
-          <legend class="text-lg font-semibold">Información Personal</legend>
-  
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label for="rut_usuario" class="block text-sm font-medium text-gray-700">RUT Usuario</label>
-              <input
-                type="number"
-                id="rut_usuario"
-                formControlName="rut_usuario"
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Ingrese RUT"
-              />
-            </div>
-  
-            <div>
-              <label for="d_veri_usu" class="block text-sm font-medium text-gray-700">Dígito Verificador</label>
-              <input
-                type="text"
-                id="d_veri_usu"
-                formControlName="d_veri_usu"
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Ingrese dígito verificador"
-              />
-            </div>
-          </div>
-  
-          <div class="mt-4 grid grid-cols-2 gap-4">
-            <div>
-              <label for="nom_usu" class="block text-sm font-medium text-gray-700">Nombre</label>
-              <input
-                type="text"
-                id="nom_usu"
-                formControlName="nom_usu"
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Ingrese nombre"
-              />
-            </div>
-  
-            <div>
-              <label for="ap_usu" class="block text-sm font-medium text-gray-700">Apellido</label>
-              <input
-                type="text"
-                id="ap_usu"
-                formControlName="ap_usu"
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Ingrese apellido"
-              />
-            </div>
-          </div>
-        </fieldset>
-  
-        <fieldset class="border border-gray-200 p-4 rounded-lg">
-          <legend class="text-lg font-semibold">Información de Contacto</legend>
-  
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label for="email_usu" class="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                id="email_usu"
-                formControlName="email_usu"
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Ingrese email"
-              />
-            </div>
-  
-            <div>
-              <label for="cel_usu" class="block text-sm font-medium text-gray-700">Celular</label>
-              <input
-                type="tel"
-                id="cel_usu"
-                formControlName="cel_usu"
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Ingrese celular"
-              />
-            </div>
-          </div>
-        </fieldset>
-  
-        <fieldset class="border border-gray-200 p-4 rounded-lg">
-          <legend class="text-lg font-semibold">Información de Cuenta</legend>
-  
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              formControlName="password"
-              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Ingrese contraseña"
-            />
-          </div>
-  
-          <div class="mt-4">
-            <label for="id_rol" class="block text-sm font-medium text-gray-700">Rol</label>
-            <select
-              id="id_rol"
-              formControlName="id_rol"
-              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="" disabled selected>Seleccione un rol</option>
-              <option value="1">Administrador</option>
-              <option value="2">Técnico</option>
-              <option value="3">Gestor</option>
-            </select>
-          </div>
-        </fieldset>
-  
-        <button
-          type="submit"
-          click="onSubmit()"
-          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center justify-center"
-        >
-          <i class="fas fa-user-plus mr-2"></i>
-          Crear Usuario
-        </button>
-      </form>
+<div class="wpm-custom-gradient p-6 sm:p-4 lg:p-8 rounded-lg shadow-md">
+    <div class="contenedor px-4 sm:px-6 lg:px-8">
+        <div class="main max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+            <p class="text-md text-gray-600 mb-4">
+                Completa el siguiente formulario para crear un nuevo usuario.
+            </p>
+            <form class="space-y-6 sm:space-y-4 lg:space-y-8" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+                <p class="text-2xl font-semibold text-gray-700">Formulario de creación de usuario</p>
+                <fieldset class="border border-gray-200 p-4 rounded-lg">
+                    <legend class="text-lg font-semibold">Información Personal</legend>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label for="rut_usuario" class="block text-sm font-medium text-gray-700">RUT Usuario</label>
+                            <input type="number" id="rut_usuario" formControlName="rut_usuario" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 input-width" placeholder="Ingrese RUT" />
+                        </div>
+                        <div>
+                            <label for="d_veri_usu" class="block text-sm font-medium text-gray-700">Dígito Verificador</label>
+                            <input type="text" id="d_veri_usu" formControlName="d_veri_usu" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 input-width" placeholder="Ingrese dígito verificador" />
+                        </div>
+                        <div>
+                            <label for="nom_usu" class="block text-sm font-medium text-gray-700">Nombre</label>
+                            <input type="text" id="nom_usu" formControlName="nom_usu" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 input-width" placeholder="Ingrese nombre" />
+                        </div>
+                        <div>
+                            <label for="ap_usu" class="block text-sm font-medium text-gray-700">Apellido</label>
+                            <input type="text" id="ap_usu" formControlName="ap_usu" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 input-width" placeholder="Ingrese apellido" />
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="border border-gray-200 p-4 rounded-lg">
+                    <legend class="text-lg font-semibold">Información de Contacto</legend>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label for="email_usu" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="email_usu" formControlName="email_usu" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 input-width" placeholder="Ingrese email" />
+                        </div>
+                        <div>
+                            <label for="cel_usu" class="block text-sm font-medium text-gray-700">Celular</label>
+                            <input type="tel" id="cel_usu" formControlName="cel_usu" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 input-width" placeholder="Ingrese celular" />
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="border border-gray-200 p-4 rounded-lg">
+                    <legend class="text-lg font-semibold">Información de Cuenta</legend>
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                        <input type="password" id="password" formControlName="password" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 input-width" placeholder="Ingrese contraseña" />
+                    </div>
+                    <div class="mt-4">
+                        <label for="id_rol" class="block text-sm font-medium text-gray-700">Rol</label>
+                        <select id="id_rol" formControlName="id_rol" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 input-width">
+                            <option value="" disabled selected>Seleccione un rol</option>
+                            <option value="1">Administrador</option>
+                            <option value="2">Técnico</option>
+                            <option value="3">Gestor</option>
+                        </select>
+                    </div>
+                </fieldset>
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 text-sm sm:text-base lg:text-lg">
+                        Crear Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-  </div>
+</div>

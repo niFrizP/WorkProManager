@@ -93,6 +93,7 @@ export const getDetallesOtByOT = async (req: Request, res: Response) => {
     const { id_ot } = req.params;
     try {
         const solicitud = await Solicitud.findAll({
+            include: [{ all: true }],
             where: { id_ot }
         });
         res.json(solicitud);

@@ -10,7 +10,6 @@ import { CreateReportComponent } from './pages/create-reporte/create-reporte.com
 import { AprobacionesTickComponent } from './pages/aprobaciones-tick/aprobaciones-tick.component';
 import { EditOrderComponent } from './pages/edit-order/edit-order.component';
 import { DetalleComponent } from './pages/detalle/detalle.component';
-import path from 'path';
 import { CotizacionComponent } from './pages/cotizacion/cotizacion.component';
 import { NgModule } from '@angular/core';
 import { AuthRolGuard } from './auth-rol.guard';

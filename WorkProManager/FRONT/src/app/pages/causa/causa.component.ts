@@ -72,7 +72,6 @@ export class CausaComponent {
             (causa) => {
               console.log('Marca guardada', causa);
               this.loadcausas(); // Actualiza la lista de marcas
-              this.getCountForCausa(causa);
             },
             (error) => {
               console.error('Error al guardar marca', error);
@@ -90,14 +89,7 @@ export class CausaComponent {
           (data: CausaRechazo[]) => {
             this.causas = data;
     
-            // Por cada causa, obtenemos el count de detalle_causa_rechazo
-            this.causas.forEach(causa => {
-              if (causa.id_rechazo) {
-                this.getCountDetalles(causa.id_rechazo);
 
-              }
-            });
-    
             console.log(this.causas);
           },
           (error) => {
@@ -110,6 +102,11 @@ export class CausaComponent {
         return new Promise((resolve, reject) => {
           const causa: CausaRechazo = {
             nombre_rechazo: this.causaForm.value.nombre_rechazo,
+            isactiva: true,
+            vista_count_ot_por_rechazo: {
+              id_rechazo: 0,
+              total_ot: 0
+            }
           };
           
           
@@ -141,23 +138,14 @@ export class CausaComponent {
         if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
           this.causaservice.getCausaRechazo(causa).subscribe(
             (causas: CausaRechazo) => {
-              this.causaservice.savecausaRechazo(causas).subscribe(
-                () => {
-                  console.log('Orden registrada como eliminada', );
-                  this.causaservice.deletecausaRechazo(causa).subscribe(
-                    () => {
-                      console.log('Orden eliminada');
-                      this.loadcausas(); // Actualizar la lista de órdenes
-                    },
-                    (error) => {
-                      console.error('Error eliminando la orden', error);
-                      alert('Hubo un error al intentar eliminar la orden.');
-                    }
-                  );
+              this.causaservice.deshabilitarCausaRechazo(causa, false).subscribe(
+                (causa) => {
+                  console.log('Marca eliminada', causa);
+                  this.loadcausas(); // Actualiza la lista de marcas
                 },
                 (error) => {
-                  console.error('Error registrando la orden eliminada', error);
-                  alert('Hubo un error al registrar la orden eliminada.');
+                  console.error('Error al eliminar la marca', error);
+                  alert('No se pudo eliminar la marca.');
                 }
               );
             },
@@ -170,30 +158,8 @@ export class CausaComponent {
       }
 
 
-      getCountForCausa(causa: CausaRechazo): void {
-        this.detalleCausaRechazoService.countRechazos(causa.id_rechazo!).subscribe(
-            (count: number) => {
-                causa.count = count;
-            },
-            (error) => {
-                console.error(`Error fetching count for id_rechazo ${causa.id_rechazo}`, error);
-            }
-        );
-    }
+     
     
-    getCountDetalles(id_rechazo: number): void {
-      this.detalleCausaRechazoService.countRechazos(id_rechazo).subscribe(
-        (count) => {
-          const causa = this.causas.find(c => c.id_rechazo === id_rechazo);
-          if (causa) {
-            causa.count = count;  // Asigna el count de detalles
-          }
-        },
-        (error) => {
-          console.error('Error al obtener el conteo de detalles', error);
-        }
-      );
-    }
       
       
     }

@@ -439,6 +439,11 @@ cargarDatosYVerificarCondiciones() {
           background: '#f9f9f9',
           color: '#333',
           confirmButtonColor: '#3085d6'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Redirigir a la página anterior
+            window.history.back();
+          }
         });
       }
     })

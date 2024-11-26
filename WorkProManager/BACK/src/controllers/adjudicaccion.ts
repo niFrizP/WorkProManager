@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
 import adjudicacion from '../models/adjudicaccion';
+import { Where } from 'sequelize/types/utils';
+import { where } from 'sequelize';
+import Usuario from '../models/usuario';
 
 export const getAdjudicaciones = async (req: Request, res: Response) => {
     try {
@@ -12,6 +15,32 @@ export const getAdjudicaciones = async (req: Request, res: Response) => {
         });
     }
 }
+
+export const getAdjudicacionesByOT = async (req: Request, res: Response) => {
+    try {
+        const listMarcas = await adjudicacion.findAll(
+
+            {
+                include: [
+                    {
+                        model: Usuario,
+                    }
+                ],
+                where: {
+                    id_ot: req.params.id_ot
+                }
+            }
+           
+        );
+        res.json(listMarcas);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al obtener las marcas, contacta con soporte'
+        });
+    }
+}
+
 
 export const getAdjudicacion = async (req: Request, res: Response) => {
     const { id_adjudicacion } = req.params;

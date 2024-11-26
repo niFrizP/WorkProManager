@@ -37,11 +37,14 @@ import { Adjudicacion } from '../../interfaces/adjudicacion';
 import { MatIconAnchor } from '@angular/material/button';
 import { AdjudicacionService } from '../../services/adjudicacion.service';
 import { MatIcon } from '@angular/material/icon';
+import { PdfGeneratorEliminadasService } from '../../services/pdf-generator-eliminadas.service';
+
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, MatIcon, NgxPaginationModule, CronometroComponent, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, MatIcon ,NgxPaginationModule,CronometroComponent, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ReactiveFormsModule],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css'],
   animations: [
@@ -74,7 +77,7 @@ export class OrdersComponent implements OnInit {
   isModalOpenFinalizado: boolean = false; // Muestra el modal
   isClienteOpen = false;
   isEquipoOpen = false;
-  showFilters = false;
+  showFilters = false; // Set to false by default
 
 
 
@@ -121,6 +124,7 @@ export class OrdersComponent implements OnInit {
   clientes: Cliente[] = [];
   servicios: Servicio[] = [];
   solicitudes: Solicitud[] = [];
+  adjuducaciones: Adjudicacion[] = [];
   estados: EstadoOT[] = [];
   causasRechazo: CausaRechazo[] = [];
   adjudicacionData: Adjudicacion[] = []
@@ -184,8 +188,9 @@ export class OrdersComponent implements OnInit {
     private solictudService: SolicitudService,
     private detalleCausaRechazoService: DetalleCausaRechazoService,
     private causaRechazoService: CausaRechazoService,
-    private estadoOTService: EstadoOTService,
-    private adjudicacionService: AdjudicacionService
+    private estadoOTService:EstadoOTService,
+    private adjudicacionService: AdjudicacionService,
+    private pdfGeneratorEliminadasService:PdfGeneratorEliminadasService
 
   ) {
 
@@ -303,9 +308,7 @@ export class OrdersComponent implements OnInit {
     this.filterOrders();
   }
 
-  filterOrdersByRutCliente() {
-    this.filterOrders();
-  }
+ 
 
   filterOrdersByStatus(status: string) {
     this.selectedStatus = status;
@@ -325,14 +328,7 @@ export class OrdersComponent implements OnInit {
 
 
 
-  filterOrdersByEquipo() {
-    this.filterOrders();
-  }
-
-
-  filterOrdersByRutUsuario(searchUsuario: string) {
-    this.filterOrders();
-  }
+  
 
 
   showSolicitudModal(orderId: number) {
@@ -725,44 +721,55 @@ export class OrdersComponent implements OnInit {
       // Cerrar el menú
     }
 
-  }
 
-  filterOrders() {
-    this.filteredOrders = this.newOrders
-      .filter(newOrder =>
-        this.selectedStatus === 'todas' ||
-        (newOrder.VistaSolicitud?.nom_estado_ot?.toLowerCase() === this.selectedStatus.toLowerCase())
-      )
-      .filter(newOrder =>
-        this.selectedMonth === 0 ||
-        (newOrder.fec_entrega && new Date(newOrder.fec_entrega).getMonth() + 1 === this.selectedMonth)
-      )
-      .filter(newOrder =>
-        this.selectedYear === 0 ||
-        (newOrder.fec_entrega && new Date(newOrder.fec_entrega).getFullYear() === this.selectedYear)
-      )
-      .filter(newOrder =>
-        !this.searchRutCliente ||
-        (newOrder.rut_cliente && newOrder.rut_cliente.toString().toLowerCase().includes(this.searchRutCliente.toLowerCase()))
-      )
-      .filter(newOrder =>
-        !this.selectedDate ||
-        (newOrder.fec_entrega && new Date(newOrder.fec_entrega).toDateString() === this.selectedDate?.toDateString())
-      )
-      .filter(newOrder =>
-        !this.searchEquipo ||
-        (newOrder.Equipo?.mod_equipo && newOrder.Equipo.mod_equipo.toString().toLowerCase().includes(this.searchEquipo.toLowerCase()))
-      )
-      .filter(newOrder =>
-        !this.searchUsuario ||
-        (newOrder.VistaUltimaAdjudicacion?.rut_usuario && newOrder.VistaUltimaAdjudicacion?.rut_usuario.toString().toLowerCase().includes(this.searchUsuario.toLowerCase()))
-      )
-      .filter(newOrder =>
-        this.selectedServicio === 'todos' ||
-        (newOrder.VistaSolicitud?.nom_estado_ot?.toLowerCase() === this.selectedServicio.toLowerCase())
-      );
-    this.filteredOrders = this.sortOrders(this.filteredOrders);
-  }
+}
+
+
+filterOrders() {
+  this.filteredOrders = this.newOrders
+    .filter(newOrder => 
+      this.selectedStatus === 'todas' || 
+      (newOrder.VistaSolicitud?.nom_estado_ot?.toLowerCase() === this.selectedStatus.toLowerCase())
+    )
+    .filter(newOrder => 
+      this.selectedMonth === 0 || 
+      (newOrder.fec_entrega && new Date(newOrder.fec_entrega).getMonth() + 1 === this.selectedMonth)
+    )
+    .filter(newOrder => 
+      this.selectedYear === 0 || 
+      (newOrder.fec_entrega && new Date(newOrder.fec_entrega).getFullYear() === this.selectedYear)
+    )
+    .filter(newOrder => 
+      !this.searchRutCliente || 
+      (newOrder.rut_cliente && newOrder.rut_cliente.toString().toLowerCase().includes(this.searchRutCliente.toLowerCase()))
+    )
+    .filter(newOrder => 
+      !this.selectedDate || 
+      (newOrder.fec_entrega && new Date(newOrder.fec_entrega).toDateString() === this.selectedDate?.toDateString())
+    )
+    .filter(newOrder => 
+      !this.searchEquipo || 
+      (newOrder.Equipo?.mod_equipo && newOrder.Equipo.mod_equipo.toString().toLowerCase().includes(this.searchEquipo.toLowerCase()))
+    )
+    .filter(newOrder => 
+      !this.searchUsuario || 
+      (newOrder.VistaUltimaAdjudicacion?.rut_usuario && newOrder.VistaUltimaAdjudicacion?.rut_usuario.toString().toLowerCase().includes(this.searchUsuario.toLowerCase()))
+    )
+    .filter(newOrder => 
+      this.selectedServicio === 'todos' || 
+      (newOrder.VistaSolicitud?.nom_estado_ot?.toLowerCase() === this.selectedServicio.toLowerCase())
+    );
+  this.filteredOrders = this.sortOrders(this.filteredOrders);
+}
+
+sortOrdersByDueDate(): void {
+  this.filteredOrders.sort((a, b) => {
+    const dateA = new Date(a.VistaSolicitud?.fecha_plazo ?? '').getTime();
+    const dateB = new Date(b.VistaSolicitud?.fecha_plazo ?? '').getTime();
+    return dateA - dateB;
+  });
+}
+
 
   filterUsers() {
     this.filteredUsers = this.usuarios
@@ -857,7 +864,56 @@ export class OrdersComponent implements OnInit {
     }
   }
 
-  public openModal(id_ot: number): void {
+  generatePDFDeleted(order: newOrder): void {
+    try {
+      if (!order || !order.Equipo?.mod_equipo) {
+        throw new Error('Datos de orden incompletos');
+      }
+  
+      // Obtén los detalles de la orden y las solicitudes asociadas
+      this.detalleOTService.getListDetalleOTByOTId(order.id_ot ?? 0).subscribe({
+        next: (detalles: DetalleOT[]) => {
+          this.solicitud.getSolByOt(order.id_ot ?? 0).subscribe({
+            next: (solicitudes: Solicitud[]) => {
+              this.detalleCausaRechazoService.getListDetalleOTByOTId(order.id_ot ?? 0).subscribe({
+                next: (detalleCausaRechazo: DetalleCausaRechazo[]) => {
+                  this.adjudicacionService.getListDetalleOTByOTId(order.id_ot ?? 0).subscribe({
+                    next: (adjudicaciones: Adjudicacion[]) => {
+
+                  
+
+
+              const fileName = `OT_${order.id_ot}.pdf`;
+              // Genera el PDF con todos los datos
+              this.pdfGeneratorEliminadasService.generatePDFContent(order, detalles, solicitudes,detalleCausaRechazo, adjudicaciones, fileName);
+            },
+            error: (error) => {
+              console.error('Error al obtener adjudicaciones asociadas a la orden:');
+            },
+          });
+        },
+            error: (error) => {
+              console.error('Error al obtener los detalles eliminados asociadas a la orden:');
+            },
+          });
+        },
+
+            error: (error) => {
+              console.error('Error al obtener solicitudes asociadas a la orden:');
+            },
+          });
+        },
+        error: (err) => {
+          console.error('Error al obtener detalles de la orden:', err);
+        },
+      });
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+    }
+  }
+
+
+  public openModal(id_ot:number): void {
     this.updateSolicitudOnLoad(id_ot)
     this.id_ot = id_ot; // Asigna el `id_ot` a la propiedad `id_ot`
     this.isModalOpen = true;
@@ -983,7 +1039,7 @@ export class OrdersComponent implements OnInit {
     this.selectedStatus = state;
     this.filterOrders();
   }
-
+  
   onStateChange(event: Event): void {
     const selectedState = (event.target as HTMLSelectElement).value;
     this.filterOrdersByState(selectedState);
@@ -993,28 +1049,52 @@ export class OrdersComponent implements OnInit {
     const searchUsuario = (event.target as HTMLSelectElement).value;
     this.filterOrdersByRutUsuario(searchUsuario);
   }
-
-  onClientSearch(event: Event): void {
-    const inputElement = event.target as HTMLInputElement;
-    const rutCliente = inputElement.value;
-    if (rutCliente) {
-      // Lógica para filtrar las órdenes o clientes por RUT
-      this.filteredOrders = this.orders.filter(order => order.rut_cliente.toString().includes(rutCliente));
-    } else {
-      // Si no hay RUT, se muestran todas las órdenes
-      this.filteredOrders = this.orders;
-    }
+  
+  onMonthChange(event: Event): void {
+    const selectedMonth = parseInt((event.target as HTMLSelectElement).value, 10);
+    this.filterOrdersByMonthYear(selectedMonth, this.selectedYear);
   }
-  onEquipmentSearch(event: Event): void {
-    const inputElement = event.target as HTMLInputElement;
-    const numSerie = inputElement.value;
-    if (numSerie) {
-      // Lógica para filtrar las órdenes o equipos por número de serie
-      this.filteredOrders = this.orders.filter(order => order.rut_cliente.toString().includes(numSerie));
-    } else {
-      // Si no hay número de serie, se muestran todas las órdenes
-      this.filteredOrders = this.orders;
-    }
+
+  onYearChange(event: Event): void {
+    const selectedYear = parseInt((event.target as HTMLSelectElement).value, 10);
+    this.filterOrdersByMonthYear(this.selectedMonth, selectedYear);
+  }
+
+  filterOrdersByRutCliente(searchRutCliente: string) {
+    this.searchRutCliente = searchRutCliente;
+    this.filterOrders();
+  }
+
+
+
+  onClientChange(event: Event): void {
+    const searchRutCliente = (event.target as HTMLInputElement).value;
+    this.filterOrdersByRutCliente(searchRutCliente);
+  }
+
+  onEquipmentChange(event: Event): void {
+    const searchEquipo = (event.target as HTMLInputElement).value;
+    this.filterOrdersByEquipo(searchEquipo);
+  }
+
+  filterOrdersByRutUsuario(searchRutUsuario: string) {
+    this.searchUsuario = searchRutUsuario;
+    this.filterOrders();
+  }
+
+  filterOrdersByEquipo(searchEquipo: string) {
+    this.searchEquipo = searchEquipo;
+    this.filterOrders();
+  }
+
+  onRutUsuarioChange(event: Event): void {
+    const searchRutUsuario = (event.target as HTMLInputElement).value;
+    this.filterOrdersByRutUsuario(searchRutUsuario);
+  }
+
+  onEquipmentSerialChange(event: Event): void {
+    const searchEquipo = (event.target as HTMLInputElement).value;
+    this.filterOrdersByEquipo(searchEquipo);
   }
   
 }
