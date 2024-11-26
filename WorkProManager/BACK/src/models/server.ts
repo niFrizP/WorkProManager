@@ -81,7 +81,7 @@ class Server {
     routes() {
 
 
-        
+
         this.app.get('/', (req: Request, res: Response) => {
             res.json({
                 msg: 'API Working'
@@ -106,7 +106,7 @@ class Server {
             }
             next();
         }, detallecausaroutes);
-       
+
 
         this.app.use('/api/login', (req: Request, res: Response, next: Function) => {
             if (req.method === 'POST') {
@@ -114,7 +114,7 @@ class Server {
             }
             next();
         }, routesLogin);
-       
+
 
         this.app.use('/api/solicitud', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
@@ -150,7 +150,7 @@ class Server {
             }
             next();
         }, routesClient);
-    
+
         this.app.use('/api/orders', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a órdenes');
@@ -164,21 +164,21 @@ class Server {
             }
             next();
         }, ordersCountByService);
-    
+
         this.app.use('/api/usuario', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a usuarios');
             }
             next();
         }, routesUsuario);
-    
+
         this.app.use('/api/servicio', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a servicios');
             }
             next();
         }, routesServicio);
-    
+
         this.app.use('/api/estado_ot', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a estado de órdenes de trabajo');
@@ -192,7 +192,7 @@ class Server {
             }
             next();
         }, routesTipo);
-    
+
         this.app.use('/api/equipo', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a equipos');
@@ -220,7 +220,7 @@ class Server {
                 console.log('Acceso a marcas');
             }
             next();
-        }, routesMarca);  
+        }, routesMarca);
 
 
         this.app.use('/api/usuarioEliminado', (req: Request, res: Response, next: Function) => {
@@ -230,11 +230,12 @@ class Server {
             next();
         }, routesUsuarioEliminado);
 
-     
+
     }
 
     middlewares() {
-        this.app.use(cors({ origin: "http://localhost:4200", credentials: true
+        this.app.use(cors({
+            origin: "http://localhost:4200", credentials: true
         }));
         this.app.use(express.json());
         this.app.use(bodyparser.urlencoded({ extended: true }));
