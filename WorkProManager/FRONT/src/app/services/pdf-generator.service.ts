@@ -23,19 +23,7 @@ export class PdfGeneratorService {
 
       // Fuente personalizada
       pdf.setFont('IBMPlexSans-Regular', 'normal');
-      const pageHeight = pdf.internal.pageSize.height;
-      const margin = 10;
-      let currentY = 20;
 
-      // Estilo general
-      const primaryColor = '#0046ad'; // Azul
-      const secondaryColor = '#ffe600'; // Amarillo
-      const font = 'IBMPlexSans-Regular';
-
-      // Fuente personalizada
-      pdf.setFont('IBMPlexSans-Regular', 'normal');
-
-      // Encabezado: Logo y título
       // Encabezado: Logo y título
       const logoUrl = 'https://i.imgur.com/kTQg9EM.png';
       pdf.addImage(logoUrl, 'PNG', 10, 10, 40, 15); // Ajustar proporción del logo
@@ -45,7 +33,6 @@ export class PdfGeneratorService {
       pdf.text('ORDEN DE TRABAJO', 80, 20); // Alinear con el logo
       pdf.setFontSize(12);
 
-      currentY += 25; // Ajustar espacio debajo del encabezado
       currentY += 25; // Ajustar espacio debajo del encabezado
 
       const addNewPage = () => {
@@ -148,7 +135,6 @@ export class PdfGeneratorService {
         pdf.rect(10, currentY + 7, 190, 36); // Rectángulo principal
 
         // Líneas internas
-        const lineYPositions = [currentY + 7, currentY + 12, currentY + 18, currentY + 24, currentY + 30];
         lineYPositions.forEach((lineY) => {
           pdf.line(10, lineY, 200, lineY); // Líneas horizontales
         });

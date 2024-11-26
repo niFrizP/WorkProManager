@@ -39,7 +39,6 @@ import { AdjudicacionService } from '../../services/adjudicacion.service';
 import { MatIcon } from '@angular/material/icon';
 import { PdfGeneratorEliminadasService } from '../../services/pdf-generator-eliminadas.service';
 
-import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-orders',
