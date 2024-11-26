@@ -19,7 +19,7 @@ export class CronometroComponent implements OnInit, OnDestroy {
     if (this.fechaPlazo) {
       this.iniciarCronometro();
     } else {
-      this.tiempoRestante = 'Fecha no disponible';
+      this.tiempoRestante = 'Sin fecha de plazo definida';
     }
   }
 
@@ -49,8 +49,7 @@ export class CronometroComponent implements OnInit, OnDestroy {
     const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
     const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-    const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
 
-    return `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+    return `${dias}d ${horas}h ${minutos}m`;
   }
 }

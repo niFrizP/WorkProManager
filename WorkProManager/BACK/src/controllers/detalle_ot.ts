@@ -51,7 +51,7 @@ export const getDetalleOt = async (req: Request, res: Response) => {
 
 // Crear un nuevo detalle de OT
 export const postDetalleOt = async (req: Request, res: Response) => {
-    const { id_ot, id_serv, fecha_detalle, desc_detalle, rut_usuario, d_estado } = req.body;
+    const { id_ot, id_serv, fecha_detalle, desc_detalle, d_estado } = req.body;
 
     try {
         const newDetalleOt = await Detalle_Ot.create({
@@ -59,7 +59,6 @@ export const postDetalleOt = async (req: Request, res: Response) => {
             id_serv,
             fecha_detalle,
             desc_detalle,
-            rut_usuario,
             d_estado
         });
 
@@ -76,7 +75,7 @@ export const postDetalleOt = async (req: Request, res: Response) => {
 // Actualizar un detalle de OT
 export const updateDetalleOt = async (req: Request, res: Response) => {
     const { id_ot, id_serv } = req.params;
-    const { fecha_detalle, desc_detalle, rut_usuario, d_estado } = req.body;
+    const { fecha_detalle, desc_detalle, d_estado } = req.body;
 
     try {
         const detalleOt = await Detalle_Ot.findOne({
@@ -89,7 +88,6 @@ export const updateDetalleOt = async (req: Request, res: Response) => {
                 id_serv,
                 fecha_detalle,
                 desc_detalle,
-                rut_usuario,
                 d_estado
             });
             res.json({ message: 'Detalle de OT actualizado con éxito' });

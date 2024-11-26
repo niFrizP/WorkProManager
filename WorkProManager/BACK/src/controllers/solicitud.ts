@@ -46,11 +46,11 @@ export const deleteSolicitud = async (req: Request, res: Response) => {
 };
 
 export const postSolicitud = async (req: Request, res: Response) => {
-    const { desc_sol, id_estado_ot, id_ot, isView,fecha_emision, completada ,fecha_vista, fecha_termino, rut_usuario, fecha_plazo } = req.body; // Extrae el solicitud
+    const { desc_sol, id_estado_ot, id_ot, isView,fecha_emision, completada ,fecha_vista, fecha_termino, fecha_plazo } = req.body; // Extrae el solicitud
 
     try {
         const newSolicitud = await Solicitud.create({
-            desc_sol,rut_usuario, id_estado_ot, id_ot, isView, fecha_vista, fecha_termino, fecha_emision, fecha_plazo, completada
+            desc_sol, id_estado_ot, id_ot, isView, fecha_vista, fecha_termino, fecha_emision, fecha_plazo, completada
         });
 
         res.json({
@@ -93,6 +93,7 @@ export const getDetallesOtByOT = async (req: Request, res: Response) => {
     const { id_ot } = req.params;
     try {
         const solicitud = await Solicitud.findAll({
+            include: [{ all: true }],
             where: { id_ot }
         });
         res.json(solicitud);

@@ -12,6 +12,7 @@ import Solicitud from '../models/solicitud';
 import VistaSolicitud from '../models/vistamin';
 import Sequelize from 'sequelize';
 import VistaSolicitudTecnico from '../models/vistatecnico';
+import VistaUltimaAdjudicacion from '../models/vistaultimousuario';
 
 
 export const getOrders = async (req: Request, res: Response) => {
@@ -23,26 +24,27 @@ export const getOrders = async (req: Request, res: Response) => {
                     attributes: ['nom_cli', 'ap_cli', 'd_veri_cli', 'cel_cli', 'email_cli'],
                     required: true
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
 
-                   { model: VistaSolicitud,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo','fecha_termino','fecha_vista' ,'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
+                {
+                    model: VistaSolicitud,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'fecha_termino', 'fecha_vista', 'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
                     required: true
-                   },
-                
+                },
+                {
+                    model: VistaUltimaAdjudicacion,
+                    attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
+                }
+
             ],
         });
 
-        
+
 
         console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
         res.json(listOrders);
@@ -53,6 +55,50 @@ export const getOrders = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const getOrdersCountbyViewsAdmin = async (req: Request, res: Response) => {
+    try {
+        // Realizando el conteo de órdenes donde isview = false
+        const countOrders = await Order.count({
+            include: [
+                {
+                    model: Cliente,
+                    attributes: ['nom_cli', 'ap_cli', 'd_veri_cli', 'cel_cli', 'email_cli'],
+                    required: true
+                },
+                {
+                    model: Equipo,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true
+                },
+                {
+                    model: VistaSolicitud,
+                    attributes: ['isview'], // Solo seleccionamos el campo 'isview' para aplicar el filtro
+                    required: true,
+                    where: {
+                        isview: false, // Filtramos las órdenes donde isview es false
+                        id_estado_ot: {
+                            [Op.in]: [2,4]
+                    }
+                }
+                },
+                {
+                    model: VistaUltimaAdjudicacion,
+                    attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
+                }
+            ],
+        });
+
+        // Devolvemos la cantidad de órdenes que cumplen con la condición
+        res.json({ count: countOrders });
+    } catch (error) {
+        console.error('Error fetching orders count:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders count',
+        });
+    }
+};
+
 
 export const getOrdersByTecnico = async (req: Request, res: Response) => {
     try {
@@ -63,26 +109,31 @@ export const getOrdersByTecnico = async (req: Request, res: Response) => {
                     attributes: ['nom_cli', 'ap_cli', 'd_veri_cli', 'cel_cli', 'email_cli'],
                     required: true
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
 
-                   { model: VistaSolicitudTecnico,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo','fecha_termino','fecha_vista' ,'completada', 'id_estado_ot', 'nom_estado_ot', 'rut_usuario'],
+                {
+                    model: VistaSolicitud,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'fecha_termino', 'fecha_vista', 'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
                     required: true
-                   },
-                
+                },
+                {
+                    model: VistaUltimaAdjudicacion,
+                    attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
+                    where: {
+                        rut_usuario: req.body.rut_usuario,
+                        
+                    }
+                }
+
             ],
         });
 
-        
+
 
         console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
         res.json(listOrders);
@@ -93,6 +144,57 @@ export const getOrdersByTecnico = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+export const getOrdersCountByTecnicoByViewsTecnico = async (req: Request, res: Response) => {
+    try {
+        // Realizando el conteo de órdenes asignadas a un técnico específico
+        const countOrdersByTecnico = await Order.count({
+            include: [
+                {
+                    model: Cliente,
+                    attributes: ['nom_cli', 'ap_cli', 'd_veri_cli', 'cel_cli', 'email_cli'],
+                    required: true
+                },
+                {
+                    model: Equipo,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true
+                },
+                {
+                    model: VistaSolicitud,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'fecha_termino', 'fecha_vista', 'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
+                    required: true,
+                    where: {
+                        isview: false, // Filtramos las órdenes donde isview es false
+                        id_estado_ot: {
+                            [Op.in]: [1,3]
+                        },
+                    }
+                },
+                {
+                    model: VistaUltimaAdjudicacion,
+                    attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
+                    where: {
+                        rut_usuario: req.body.rut_usuario // Filtramos por el rut_usuario enviado en el cuerpo de la solicitud
+
+                    }
+                }
+            ],
+        });
+
+        // Devolvemos el conteo de las órdenes asignadas al técnico específico
+        res.json({ count: countOrdersByTecnico });
+    } catch (error) {
+        console.error('Error fetching orders count by tecnico:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders count by tecnico',
+        });
+    }
+};
+
+
+
 
 export const getOrdersCountPorRealizar = async (req: Request, res: Response) => {
     try {
@@ -104,11 +206,6 @@ export const getOrdersCountPorRealizar = async (req: Request, res: Response) => 
                     required: true,
                 },
                 {
-                    model: Usuario,
-                    attributes: [], // Lo mismo aquí
-                    required: true,
-                },
-                {
                     model: Equipo,
                     attributes: [], // Igual para Equipo
                     required: true,
@@ -117,9 +214,9 @@ export const getOrdersCountPorRealizar = async (req: Request, res: Response) => 
                     model: VistaSolicitud,
                     attributes: [], // Y para VistaSolicitud
                     required: true,
-                    where:{
+                    where: {
                         id_estado_ot: {
-                            [Op.in]: [1,2,3,4]
+                            [Op.in]: [1, 2, 3, 4]
 
                         }
 
@@ -147,11 +244,7 @@ export const getOrdersCountPorRealizarTecnico = async (req: Request, res: Respon
                     attributes: [], // No necesitas devolver columnas aquí para el conteo
                     required: true,
                 },
-                {
-                    model: Usuario,
-                    attributes: [], // Lo mismo aquí
-                    required: true,
-                },
+
                 {
                     model: Equipo,
                     attributes: [], // Igual para Equipo
@@ -161,9 +254,9 @@ export const getOrdersCountPorRealizarTecnico = async (req: Request, res: Respon
                     model: VistaSolicitud,
                     attributes: [], // Y para VistaSolicitud
                     required: true,
-                    where:{
+                    where: {
                         id_estado_ot: {
-                            [Op.in]: [1,2,3]
+                            [Op.in]: [1, 2, 3]
 
                         },
                         rut_receptor: req.body.rut_usuario
@@ -193,11 +286,6 @@ export const getOrdersCountRealizadasTecnico = async (req: Request, res: Respons
                     required: true,
                 },
                 {
-                    model: Usuario,
-                    attributes: [], // Lo mismo aquí
-                    required: true,
-                },
-                {
                     model: Equipo,
                     attributes: [], // Igual para Equipo
                     required: true,
@@ -206,7 +294,7 @@ export const getOrdersCountRealizadasTecnico = async (req: Request, res: Respons
                     model: VistaSolicitud,
                     attributes: [], // Y para VistaSolicitud
                     required: true,
-                    where:{
+                    where: {
                         id_estado_ot: {
                             [Op.in]: [4]
 
@@ -237,11 +325,7 @@ export const getOrdersCountPorRealizadasTecnico = async (req: Request, res: Resp
                     attributes: [], // No necesitas devolver columnas aquí para el conteo
                     required: true,
                 },
-                {
-                    model: Usuario,
-                    attributes: [], // Lo mismo aquí
-                    required: true,
-                },
+
                 {
                     model: Equipo,
                     attributes: [], // Igual para Equipo
@@ -251,9 +335,9 @@ export const getOrdersCountPorRealizadasTecnico = async (req: Request, res: Resp
                     model: VistaSolicitud,
                     attributes: [], // Y para VistaSolicitud
                     required: true,
-                    where:{
+                    where: {
                         id_estado_ot: {
-                            [Op.in]: [1,2,3,4]
+                            [Op.in]: [1, 2, 3, 4]
 
                         },
                         rut_receptor: req.body.rut_usuario
@@ -282,11 +366,7 @@ export const getOrdersCountTerminadas = async (req: Request, res: Response) => {
                     attributes: [], // No necesitas devolver columnas aquí para el conteo
                     required: true,
                 },
-                {
-                    model: Usuario,
-                    attributes: [], // Lo mismo aquí
-                    required: true,
-                },
+
                 {
                     model: Equipo,
                     attributes: [], // Igual para Equipo
@@ -296,9 +376,9 @@ export const getOrdersCountTerminadas = async (req: Request, res: Response) => {
                     model: VistaSolicitud,
                     attributes: [], // Y para VistaSolicitud
                     required: true,
-                    where:{
+                    where: {
                         id_estado_ot: {
-                            [Op.in]: [5,6]
+                            [Op.in]: [5, 6]
 
                         }
 
@@ -509,27 +589,24 @@ export const getOrdersReporteGeneral = async (req: Request, res: Response) => {
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
-                            [Op.in]: [3,4]
+                            [Op.in]: [3, 4]
                         }
                     },
                     required: true
-                   },
-                
+                },
+
             ],
         });
 
@@ -552,18 +629,15 @@ export const getOrdersReporteTecnico = async (req: Request, res: Response) => {
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
@@ -572,8 +646,8 @@ export const getOrdersReporteTecnico = async (req: Request, res: Response) => {
                         rut_receptor: req.body.rut_usuario
                     },
                     required: true
-                   },
-                
+                },
+
             ],
         });
 
@@ -596,27 +670,24 @@ export const getOrdersCotizacionesGeneral = async (req: Request, res: Response) 
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
-                            [Op.in]: [1,2]
+                            [Op.in]: [1, 2]
                         }
                     },
                     required: true
-                   },
-                
+                },
+
             ],
         });
 
@@ -639,28 +710,25 @@ export const getOrdersCotizacionesTecnico = async (req: Request, res: Response) 
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
-                            [Op.in]: [1,2]
+                            [Op.in]: [1, 2]
                         },
                         rut_receptor: req.body.rut_usuario
                     },
                     required: true
-                   },
-                
+                },
+
             ],
         });
 
@@ -686,18 +754,15 @@ export const getOrdersCompletadas = async (req: Request, res: Response) => {
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
@@ -705,8 +770,8 @@ export const getOrdersCompletadas = async (req: Request, res: Response) => {
                         }
                     },
                     required: true
-                   },
-                
+                },
+
             ],
         });
 
@@ -731,17 +796,13 @@ export const getOrderssEliminadas = async (req: Request, res: Response) => {
                     required: true
                 },
                 {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
-                {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     where: {
                         id_estado_ot: {
@@ -749,8 +810,8 @@ export const getOrderssEliminadas = async (req: Request, res: Response) => {
                         }
                     },
                     required: true
-                   },
-                
+                },
+
             ],
         });
 
@@ -764,266 +825,13 @@ export const getOrderssEliminadas = async (req: Request, res: Response) => {
     }
 };
 
-export const getOrdersByRutUsuario1 = async (req: Request, res: Response) => {
-    try {
-        // Obtén el filtro de rut_usuario desde el cuerpo de la solicitud
-        const { rut_usuario } = req.body;
 
-        const listOrders = await Order.findAll({
-            include: [
-                {
-                    model: Cliente,
-                    attributes: ['nom_cli', 'ap_cli'],
-                    required: true,
-                },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu', 'rut_usuario'],
-                    required: true,
-                    where: rut_usuario ? { rut_usuario: rut_usuario } : undefined, // Aplica el filtro solo si rut_usuario está presente
-                },
-                {
-                    model: Equipo,
-                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
-                    required: true,
-                },
 
-                {
-                    model: VistaSolicitud,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
-                    required: true,
-                    where: {
-                        id_estado_ot: [1], // Filtra solo órdenes con id_estado_ot igual a 1
-                    },
-                },
-            ],
-        });
 
-        console.log('Consulta de órdenes filtradas por rut_usuario:', JSON.stringify(listOrders, null, 2));
-        res.json(listOrders);
-    } catch (error) {
-        console.error('Error fetching orders by rut_usuario:', error);
-        res.status(500).json({
-            msg: 'Error fetching orders by rut_usuario',
-        });
-    }
-};
 
-export const getOrdersByRutUsuario2 = async (req: Request, res: Response) => {
-    try {
-        // Obtén el filtro de rut_usuario desde el cuerpo de la solicitud
-        const { rut_usuario } = req.body;
 
-        const listOrders = await Order.findAll({
-            include: [
-                {
-                    model: Cliente,
-                    attributes: ['nom_cli', 'ap_cli'],
-                    required: true,
-                },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu', 'rut_usuario'],
-                    required: true,
-                    where: rut_usuario ? { rut_usuario: rut_usuario } : undefined, // Aplica el filtro solo si rut_usuario está presente
-                },
-                {
-                    model: Equipo,
-                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
-                    required: true,
-                },
 
-                {
-                    model: VistaSolicitud,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
-                    required: true,
-                    where: {
-                        id_estado_ot: [2,3,4], // Filtra solo órdenes con id_estado_ot igual a 1
-                    },
-                },
-            ],
-        });
 
-        console.log('Consulta de órdenes filtradas por rut_usuario:', JSON.stringify(listOrders, null, 2));
-        res.json(listOrders);
-    } catch (error) {
-        console.error('Error fetching orders by rut_usuario:', error);
-        res.status(500).json({
-            msg: 'Error fetching orders by rut_usuario',
-        });
-    }
-};
-
-export const getOrdersByRutUsuario3 = async (req: Request, res: Response) => {
-    try {
-        // Obtén el filtro de rut_usuario desde el cuerpo de la solicitud
-        const { rut_usuario } = req.body;
-
-        const listOrders = await Order.findAll({
-            include: [
-                {
-                    model: Cliente,
-                    attributes: ['nom_cli', 'ap_cli'],
-                    required: true,
-                },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu', 'rut_usuario'],
-                    required: true,
-                    where: rut_usuario ? { rut_usuario: rut_usuario } : undefined, // Aplica el filtro solo si rut_usuario está presente
-                },
-                {
-                    model: Equipo,
-                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
-                    required: true,
-                },
-
-                {
-                    model: VistaSolicitud,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
-                    required: true,
-                    where: {
-                        id_estado_ot: [5,6], // Filtra solo órdenes con id_estado_ot igual a 1
-                    },
-                },
-            ],
-        });
-
-        console.log('Consulta de órdenes filtradas por rut_usuario:', JSON.stringify(listOrders, null, 2));
-        res.json(listOrders);
-    } catch (error) {
-        console.error('Error fetching orders by rut_usuario:', error);
-        res.status(500).json({
-            msg: 'Error fetching orders by rut_usuario',
-        });
-    }
-};
-
-export const getOrders_1 = async (req: Request, res: Response) => {
-    try {
-        // Obtén el filtro de rut_usuario desde los parámetros de consulta
-        const { rut_usuario } = req.query;
-
-        const listOrders = await Order.findAll({
-            include: [
-                {
-                    model: Cliente,
-                    attributes: ['nom_cli', 'ap_cli'],
-                    required: true,
-                },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu', 'rut_usuario'],
-                    required: true,
-                    where: rut_usuario ? { rut_usuario: rut_usuario } : undefined, // Filtra solo si rut_usuario está presente
-                },
-                {
-                    model: Equipo,
-                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
-                    required: true,
-                },
-                {
-                    model: VistaSolicitud,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
-                    required: true,
-                    where: {
-                        id_estado_ot: [1],
-                    },
-                },
-            ],
-        });
-
-        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
-        res.json(listOrders);
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-        res.status(500).json({
-            msg: 'Error fetching orders',
-        });
-    }
-};
-
-export const getOrders_2 = async (req: Request, res: Response) => {
-    try {
-        const listOrders = await Order.findAll({
-            include: [
-                {
-                    model: Cliente,
-                    attributes: ['nom_cli', 'ap_cli'],
-                    required: true
-                },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
-                {
-                    model: Equipo,
-                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
-                    required: true
-                },
-
-                   { model: VistaSolicitud,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
-                    required: true,
-                    where: {
-                        id_estado_ot: [2,3,4]
-                    }
-                   },
-                
-            ],
-        });
-
-        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
-        res.json(listOrders);
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-        res.status(500).json({
-            msg: 'Error fetching orders',
-        });
-    }
-};
-
-export const getOrders_3 = async (req: Request, res: Response) => {
-    try {
-        const listOrders = await Order.findAll({
-            include: [
-                {
-                    model: Cliente,
-                    attributes: ['nom_cli', 'ap_cli'],
-                    required: true
-                },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
-                {
-                    model: Equipo,
-                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
-                    required: true
-                },
-
-                   { model: VistaSolicitud,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
-                    required: true,
-                    where: {
-                        id_estado_ot: [5, 6]
-                    }
-                   },
-                
-            ],
-        });
-
-        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
-        res.json(listOrders);
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-        res.status(500).json({
-            msg: 'Error fetching orders',
-        });
-    }
-};
 
 export const countOrdersNotificationCotizacon = async (req: Request, res: Response) => {
     try {
@@ -1034,11 +842,7 @@ export const countOrdersNotificationCotizacon = async (req: Request, res: Respon
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true,
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true,
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
@@ -1050,7 +854,7 @@ export const countOrdersNotificationCotizacon = async (req: Request, res: Respon
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
                     where: {
                         isview: false,
-                        id_estado_ot: [1,2],
+                        id_estado_ot: [1, 2],
                     },
                     required: true,
 
@@ -1077,11 +881,7 @@ export const countOrdersNotificationReportes = async (req: Request, res: Respons
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true,
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true,
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
@@ -1093,7 +893,7 @@ export const countOrdersNotificationReportes = async (req: Request, res: Respons
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
                     where: {
                         isview: false,
-                        id_estado_ot: [3,4],
+                        id_estado_ot: [3, 4],
                     },
                     required: true,
 
@@ -1120,11 +920,7 @@ export const countOrdersNotificationCotizacionesByRut = async (req: Request, res
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true,
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true,
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
@@ -1136,7 +932,7 @@ export const countOrdersNotificationCotizacionesByRut = async (req: Request, res
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
                     where: {
                         isview: false,
-                        id_estado_ot: [1,2],
+                        id_estado_ot: [1, 2],
                         rut_receptor: req.body.rut_usuario,
                     },
                     required: true,
@@ -1164,11 +960,7 @@ export const countOrdersNotificationReportesByRut = async (req: Request, res: Re
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true,
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true,
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
@@ -1180,7 +972,7 @@ export const countOrdersNotificationReportesByRut = async (req: Request, res: Re
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
                     where: {
                         isview: false,
-                        id_estado_ot: [3,4],
+                        id_estado_ot: [3, 4],
                         rut_receptor: req.body.rut_usuario,
                     },
                     required: true,
@@ -1208,11 +1000,7 @@ export const countOrdersNotificationFinalizada = async (req: Request, res: Respo
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true,
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true,
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
@@ -1251,11 +1039,7 @@ export const countOrdersNotificationRechazadas = async (req: Request, res: Respo
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true,
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true,
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
@@ -1300,32 +1084,48 @@ export const getSolicitudesFromView = async (req: Request, res: Response) => {
     }
 };
 
-export const createLastSolicitudPerOrderView = async (req: Request, res: Response) => {
+
+export const getSolicitudesFromViewUsuario = async (req: Request, res: Response) => {
+    try {
+        // Consultar todos los datos desde la vista
+        const solicitudesFromView = await sequelize.query('SELECT * FROM vista_ultima_adjudicacion', {
+            type: QueryTypes.SELECT,  // Especificamos que esperamos resultados de tipo SELECT
+        });
+
+        // Enviar los resultados al cliente
+        res.json(solicitudesFromView);
+    } catch (error) {
+        console.error('Error al obtener solicitudes desde la vista:', error);
+        res.status(500).json({ message: 'Error al obtener solicitudes desde la vista', error });
+    }
+};
+
+export const createLastAdjucacionPerUsuario = async (req: Request, res: Response) => {
     try {
         // Consulta SQL para crear la vista
         const createViewQuery = `
-            CREATE OR REPLACE VIEW vista_ultima_solicitud_por_orden AS
-            SELECT 
-                s1.id_sol,
-                s1.id_ot,
-                s1.desc_sol,
-                s1.fecha_emision,
-                s1.fecha_plazo,
-                s1.fecha_termino,
-                s1.fecha_vista,
-                s1.isView,
-                s1.completada,
-                s1.rut_usuario,
-                s1.id_estado_ot,
-                (SELECT nom_estado_ot FROM estado_ot WHERE id_estado_ot = s1.id_estado_ot) AS nom_estado_ot
-            FROM solicitud s1
-            WHERE s1.rut_usuario IS NOT NULL
-              AND s1.fecha_emision = (
-                SELECT MAX(s2.fecha_emision)
-                FROM solicitud s2
-                WHERE s2.id_ot = s1.id_ot
-                  AND s2.rut_usuario IS NOT NULL
-            );
+           CREATE OR REPLACE VIEW vista_ultima_adjudicacion AS
+SELECT 
+    s1.id_adjudicacion,
+    s1.rut_usuario,
+    s1.id_ot,
+    s1.fecha_adjudicacion,
+    (SELECT nom_usu FROM usuario WHERE rut_usuario = s1.rut_usuario) AS nom_usu,
+    (SELECT ap_usu FROM usuario WHERE rut_usuario = s1.rut_usuario) AS ap_usu
+FROM adjudicacion s1
+WHERE s1.rut_usuario IS NOT NULL
+  AND NOT EXISTS (
+      SELECT 1 
+      FROM adjudicacion s2
+      WHERE s2.id_ot = s1.id_ot
+        AND s2.rut_usuario IS NOT NULL
+        AND (
+            s2.fecha_adjudicacion > s1.fecha_adjudicacion OR 
+            (s2.fecha_adjudicacion = s1.fecha_adjudicacion AND s2.id_adjudicacion > s1.id_adjudicacion)
+        )
+  );
+
+
         `;
 
         // Ejecutar la consulta para crear la vista
@@ -1345,7 +1145,7 @@ export const createSolicitudView = async (req: Request, res: Response) => {
         // Consulta SQL para crear la vista
         const createViewQuery = `
             CREATE OR REPLACE VIEW vista_solicitudes_min_fecha AS
-            SELECT id_sol, id_ot, fecha_emision, isview, fecha_plazo,fecha_termino, rut_usuario, id_estado_ot,completada,fecha_vista,
+            SELECT id_sol, id_ot, fecha_emision, isview, fecha_plazo,fecha_termino, id_estado_ot,completada,fecha_vista,
             (SELECT nom_estado_ot FROM estado_ot WHERE id_estado_ot = s1.id_estado_ot) AS nom_estado_ot
             FROM solicitud s1
             WHERE fecha_emision = (
@@ -1374,26 +1174,23 @@ export const getOrdersByUsuarioOrder = async (req: Request, res: Response) => {
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot', 'nom_estado_ot'],
                     required: true,
                     where:
                     {
                         rut_receptor: req.body.rut_usuario
                     },
-                   },
-            
+                },
+
             ]
         });
 
@@ -1424,11 +1221,7 @@ export const getOrdersEliminadas = async (req: Request, res: Response) => {
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true,
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true,
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
@@ -1463,26 +1256,23 @@ export const getOrdersByUsuarioOrderEnProceso = async (req: Request, res: Respon
                     attributes: ['nom_cli', 'ap_cli'],
                     required: true
                 },
-                {
-                    model: Usuario,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
+
                 {
                     model: Equipo,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
 
-                   { model: VistaSolicitud,
+                {
+                    model: VistaSolicitud,
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor'],
                     required: true,
                     where: {
-                        id_estado_ot: [2,3,4], // Filtrar por estado
+                        id_estado_ot: [2, 3, 4], // Filtrar por estado
                         rut_receptor: [222],
                     },
-                   },
-                
+                },
+
             ]
         });
 
@@ -1503,8 +1293,8 @@ export const getOrder = async (req: Request, res: Response) => {
             include: [
                 { model: Equipo },
                 { model: Cliente },
-                { model: Usuario },
-                { model: VistaSolicitud}
+                { model: VistaSolicitud },
+                { model: VistaUltimaAdjudicacion }
             ]
         });
 
@@ -1541,7 +1331,7 @@ export const deleteOrder = async (req: Request, res: Response) => {
 }
 
 export const postOrder = async (req: Request, res: Response) => {
-    const { fec_creacion, fec_entrega, descripcion, rut_cliente, rut_usuario, num_equipo } = req.body;
+    const { fec_creacion, fec_entrega, descripcion, rut_cliente, num_equipo } = req.body;
 
     try {
         const newOrder = await Order.create({
@@ -1549,7 +1339,6 @@ export const postOrder = async (req: Request, res: Response) => {
             fec_entrega,
             descripcion,
             rut_cliente, // Incluye id_cliente en la creación
-            rut_usuario, // Incluye rut_usuario
             num_equipo,  // Incluye num_equipo
         });
 
@@ -1567,7 +1356,7 @@ export const postOrder = async (req: Request, res: Response) => {
 
 export const updateOrder = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { fec_creacion, fec_entrega, descripcion, rut_cliente, rut_usuario, num_equipo } = req.body; // Obtener los campos del cuerpo de la solicitud
+    const { fec_creacion, fec_entrega, descripcion, rut_cliente, num_equipo } = req.body; // Obtener los campos del cuerpo de la solicitud
 
     try {
         const order = await Order.findByPk(id); // Buscar la orden por ID
@@ -1579,7 +1368,6 @@ export const updateOrder = async (req: Request, res: Response) => {
                 fec_entrega,
                 descripcion,
                 rut_cliente,
-                rut_usuario,
                 num_equipo,
             }); // Actualiza todos los campos proporcionados
             res.json({
@@ -1597,6 +1385,5 @@ export const updateOrder = async (req: Request, res: Response) => {
         });
     }
 };
-
 
 

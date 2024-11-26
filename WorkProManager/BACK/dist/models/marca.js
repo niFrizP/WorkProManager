@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
+const vista_count_marca_1 = __importDefault(require("./vista_count_marca"));
 const Marca = connection_1.default.define('Marca', {
     id_marca: {
         type: sequelize_1.DataTypes.INTEGER,
@@ -20,4 +21,5 @@ const Marca = connection_1.default.define('Marca', {
     createdAt: false,
     updatedAt: false
 });
+Marca.belongsTo(vista_count_marca_1.default, { foreignKey: 'id_marca', targetKey: 'id_marca' });
 exports.default = Marca;

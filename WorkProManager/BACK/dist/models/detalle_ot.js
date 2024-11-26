@@ -25,13 +25,6 @@ const Detalle_Ot = connection_1.default.define('detalle_ot', {
     desc_detalle: {
         type: sequelize_1.DataTypes.STRING
     },
-    rut_usuario: {
-        type: sequelize_1.DataTypes.INTEGER,
-        references: {
-            model: 'usuario',
-            key: 'rut_usuario'
-        }
-    },
     d_estado: {
         type: sequelize_1.DataTypes.INTEGER
     }

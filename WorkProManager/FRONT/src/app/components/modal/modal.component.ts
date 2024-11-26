@@ -53,9 +53,17 @@ export class ModalComponent implements OnInit, OnChanges {
     });
   }
 
+  getFormattedDate(date: Date | string | null | undefined): string {
+    if (!date) {
+      return 'Fecha no identificada';
+    }
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString('es-ES');
+  }
 
- 
-
+  getDescription(desc: string | null | undefined): string {
+    return desc ? desc : 'Sin descripción';
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['id_ot']) {

@@ -19,8 +19,9 @@ const connection_1 = __importDefault(require("../db/connection"));
 const orders_1 = __importDefault(require("../models/orders"));
 const router = (0, express_1.Router)();
 router.get('/', order_1.getOrders); // Ruta para obtener todas las ordenes
-router.get('/tecnico', order_1.getOrdersByTecnico);
-router.get('/vistatecnico', order_1.createLastSolicitudPerOrderView); //crea vista de ultima solicitud por orden
+router.post('/tecnico', order_1.getOrdersByTecnico);
+router.get('/vistausuario', order_1.createLastAdjucacionPerUsuario); //crea vista de ultima solicitud por orden
+router.get('/vervistausuario', order_1.getSolicitudesFromViewUsuario);
 router.get('/completass', order_1.getOrdersCompletadas);
 router.post('/reportestecnico', order_1.getOrdersReporteTecnico);
 router.get('/rechazadass', order_1.getOrderssEliminadas);
@@ -33,14 +34,10 @@ router.get('/countabiertas', order_1.getOrdersCountPorRealizar);
 router.get('/countcerradas', order_1.getOrdersCountTerminadas);
 //rutas de solicitud por usuario
 router.post('/cotizacionesabiertastecnico', order_1.getOrdersCountPorRealizarTecnico);
+router.get('/ordenesxadmin', order_1.getOrdersCountbyViewsAdmin);
+router.post('/ordenesxtecnico', order_1.getOrdersCountByTecnicoByViewsTecnico);
 router.get('/cotizacionesgeneral', order_1.getOrdersCotizacionesGeneral);
 router.post('/cotizacionestecnico', order_1.getOrdersCotizacionesTecnico);
-router.get('/getOrders1', order_1.getOrders_1);
-router.get('/getOrders2', order_1.getOrders_2);
-router.get('/getOrders3', order_1.getOrders_3);
-router.get('/getOrdersByRutUsuario1', order_1.getOrdersByRutUsuario1);
-router.get('/getOrdersByRutUsuario2', order_1.getOrdersByRutUsuario2);
-router.get('/getOrdersByRutUsuario3', order_1.getOrdersByRutUsuario3);
 router.get('/reportesGeneral', order_1.getOrdersReporteGeneral);
 router.get('/solicitudes', order_1.getSolicitudesFromView);
 router.get('/countOrderN', order_1.countOrdersNotificationCotizacon); // Para obtener una orden específica por ID
@@ -61,19 +58,6 @@ router.get('/count-by-status', (req, res) => __awaiter(void 0, void 0, void 0, f
             group: ['estado'], // Agrupar por el campo 'estado'
         });
         res.json(ordersCount);
-    }
-    catch (error) {
-        console.error(error);
-        res.status(500).send('Error al obtener los datos');
-    }
-}));
-router.get('/ordersByUsuario', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const ordersByUsuario = yield orders_1.default.findAll({
-            attributes: ['rut_usuario', [connection_1.default.fn('COUNT', connection_1.default.col('id_ot')), 'total']], // Contar el número de órdenes por usuario
-            group: ['rut_usuario'], // Agrupar por el campo 'rut_usuario'
-        });
-        res.json(ordersByUsuario);
     }
     catch (error) {
         console.error(error);

@@ -43,13 +43,6 @@ const Solicitud = db.define('Solicitud', {
     fecha_plazo: {
         type: DataTypes.DATE
     },
-    rut_usuario: {
-        type: DataTypes.STRING,
-        references: {
-            model: 'usuario',
-            key: 'rut_usuario'
-        }
-    },
     completada: {
         type: DataTypes.BOOLEAN
     }
@@ -62,6 +55,5 @@ const Solicitud = db.define('Solicitud', {
 });
 
 Solicitud.belongsTo(EstadoOT, { foreignKey: 'id_estado_ot' });
-Solicitud.belongsTo(Usuario, { foreignKey: 'rut_usuario' });
 
 export default Solicitud;

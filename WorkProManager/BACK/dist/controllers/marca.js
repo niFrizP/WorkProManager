@@ -14,9 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateMarca = exports.postMarca = exports.deleteMarca = exports.getMarca = exports.getMarcas = void 0;
 const marca_1 = __importDefault(require("../models/marca"));
+const vista_count_marca_1 = __importDefault(require("../models/vista_count_marca"));
 const getMarcas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const listMarcas = yield marca_1.default.findAll();
+        const listMarcas = yield marca_1.default.findAll({ include: [{ model: vista_count_marca_1.default }] });
         res.json(listMarcas);
     }
     catch (error) {

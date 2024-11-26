@@ -14,6 +14,7 @@ import { Marca } from '../../interfaces/marca';
 import { Equipo } from '../../interfaces/equipo';
 import { Tipo } from '../../interfaces/tipo';
 import { Cliente } from '../../interfaces/cliente';
+import { Adjudicacion } from '../../interfaces/adjudicacion';
 import { DetalleOT } from '../../interfaces/detalle_ot';
 import { Solicitud } from '../../interfaces/solicitud';
 
@@ -23,20 +24,32 @@ import { ServicioService } from '../../services/servicio.service';
 import { UsuarioService } from '../../services/usuario.service';
 import { MarcaService } from '../../services/marca.service';
 import { ClienteService } from '../../services/cliente.service';
+import { AdjudicacionService } from '../../services/adjudicacion.service';
 import { EquipoService } from '../../services/equipo.service';
 import { TipoService } from '../../services/tipo';
 import { DetalleOTService } from '../../services/detalle_ot.service';
 import { AuthService } from '../../services/auth.service';
 import { SolicitudService } from '../../services/solicitud.service';
 
+// Components
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { ModalComponent } from '../../components/modal/modal.component';
+import Swal from 'sweetalert2';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
+
 @Component({
   selector: 'app-cotizacion',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, FormsModule],
+  imports: [RouterLink,MatSnackBarModule, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule, ModalComponent],
   templateUrl: './cotizacion.component.html',
   styleUrls: ['./cotizacion.component.css']
 })
-export class CotizacionComponent implements OnInit {
+export class CotizacionComponent {
+  isLoading = true; // Cambia el estado de carga cuando termine
+  fechaHoy: string = ''; // Variable para almacenar la fecha actual
+  ordenCreada: boolean = false; // Add this line
+
 
   [x: string]: any;
   onServiceChange($event: Event) {
@@ -58,6 +71,7 @@ export class CotizacionComponent implements OnInit {
     servicioSeleccionado: number | null = null;
     selectedTipoNombre: string | null = null;
     selectedServiceID: number | null = null;
+    adjudicacionData: Adjudicacion[] = [];
     selectedUsuarioID: number | null = null;  // Add this line
     form: FormGroup;
     solicitudData: Solicitud[] = []
@@ -67,12 +81,11 @@ export class CotizacionComponent implements OnInit {
     nuevoServicio: string = ''; // Variable para almacenar el nuevo servicio
     operacion: string = 'Agregar ';
     newOrderId: number | null = null; // Variable para almacenar el ID de la nueva orden
-    selectedServicePrecio: any;
-    rut_remitente: number | null = 0;
-    rut_receptor: number | null = 0;
-    isLoading = true; // Cambia el estado de carga cuando termine
-    fechaHoy: string = ''; // Variable para almacenar la fecha actual
-  
+  selectedServicePrecio: any;
+  rut_remitente: number | null = 0;
+  rut_receptor: number | null = 0;
+  alertVisible: boolean = false;
+  servicioAEliminar: any = null;
   
   
     constructor(
@@ -88,7 +101,8 @@ export class CotizacionComponent implements OnInit {
       private clienteService:ClienteService,
       private tipoService:TipoService,
       private solicitudService:SolicitudService, 
-      private authService: AuthService,
+      private authService: AuthService, 
+      private adjudicacionService: AdjudicacionService
       
     ) {
       this.form = this.fb.group({
@@ -166,39 +180,85 @@ export class CotizacionComponent implements OnInit {
   
     async addProduct(): Promise<void> {
       this.loading = true;
-  
+    
       try {
-        // 1. Create or update cliente
+        // Lógica para crear cliente, equipo, orden, etc.
         const cliente = await this.createOrUpdateCliente();
-        // 2. Create or update equipo
         const equipo = await this.createOrUpdateEquipo();
-        // 3. Create or update order
         const order = await this.createOrUpdateOrder();
-        // Log the JSON representation of the order
         const detalleOT = await this.createOrUpdateDetalleOT();
         const solicitud = await this.createorupdateSolicitud();
-  
+        const adjudicacion = await this.cretaorupdateadjudicacion();
+    
         console.log('New order ID:', this.newOrderId);
-        console.log('Order:', JSON.stringify(order, null, 2));
-
+    
+        // Mostrar SweetAlert2 al finalizar exitosamente
+        Swal.fire({
+          title: '¡Orden de trabajo creada!',
+          text: `Orden de trabajo con número ${this.newOrderId} fue creada con éxito.`,
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#3085d6'
+        });
+    
         this.loading = false;
-        this.router.navigate(['/']);
+        this.ordenCreada = true;
+    
+        // Redirigir después de aceptar el mensaje
+        Swal.fire({
+          title: '¡Orden de trabajo creada!',
+          text: `Orden de trabajo con número ${this.newOrderId} fue creada con éxito.`,
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#3085d6'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.router.navigate(['/']); // Redirige a la página principal
+          }
+        });
       } catch (error) {
         console.error('Error creating order:', error);
         this.loading = false;
-        // Handle error (e.g., show error message to user)
+    
+        // Manejar error con SweetAlert2
+        Swal.fire({
+          title: 'Error',
+          text: 'Ocurrió un error al crear la orden. Por favor, inténtalo de nuevo.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#d33'
+        });
       }
-
-      if (this.form.invalid) {
-        this.form.markAllAsTouched();
-        return;
-      }
-
-      if (this.form.valid) {
-        console.log('Formulario enviado con exito', this.form.value);
-      } else {
-        console.log('Formulario inválido');
-      }
+    }
+  
+    cretaorupdateadjudicacion(): Promise<void> {
+      const adjudicacionData: Adjudicacion = {
+        id_ot: this.newOrderId!,
+        rut_usuario: this.form.get('rut_usuario')?.value,
+        fecha_adjudicacion: new Date()
+      };
+      return new Promise((resolve, reject) => {
+        this.adjudicacionService.saveAdjudicaciones(adjudicacionData).subscribe({
+          next: (response: any) => {
+            console.log('Response from server:', response);
+  
+            // Asegúrate de que la respuesta tiene la estructura esperada
+            const newAdjudicacion = response?.adjudicacion; // Accede al objeto 'adjudicacion'
+  
+            if (newAdjudicacion) {
+              console.log('New adjudicacion created:', newAdjudicacion);
+              resolve(); // Devuelve la adjudicación creada
+            } else {
+              console.warn('Adjudicacion object not found in response');
+              reject(new Error('Adjudicacion object not found in response'));
+            }
+          },
+          error: (error) => {
+            console.error('Error creating adjudicacion:', error);
+            reject(error);
+          }
+        });
+      });
     }
   
     onServicioChange(event: any) {
@@ -220,56 +280,61 @@ export class CotizacionComponent implements OnInit {
       }
     }
   
+  
+  
     eliminarServicio(servicio: any) {
-      this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: { id_serv: any }) => s.id_serv !== servicio.id_serv);
-      }
-
-      private async createorupdateSolicitud(): Promise<Solicitud> {
-        const solicitudData: Solicitud = {
-          id_ot: this.newOrderId!,
-          desc_sol: this.form.get('desc_sol')?.value,
-          id_estado_ot: 1,
-          isView: false,
-          completada: false,
-          fecha_emision: new Date(),
-          rut_usuario: this.form.get('rut_usuario')?.value,
-          fecha_plazo: new Date(Date.now() + 24 * 60 * 60 * 1000), // Fecha actual + 1 día
-        };
-        
-        console.log('Solicitud data:')
-        console.log(JSON.stringify(solicitudData, null, 1));
+      this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: any) => s !== servicio);
+    }
+  
+    private async createorupdateSolicitud(): Promise<Solicitud> {
+      const solicitudData: Solicitud = {
+        id_ot: this.newOrderId!,
+        desc_sol: this.form.get('desc_sol')?.value,
+        id_estado_ot: 1,
+        isView: false,
+        completada: false,
+        fecha_emision: new Date(),
+        fecha_plazo: new Date(Date.now() + 24 * 60 * 60 * 1000), // Fecha actual + 1 día
+      };
       
-        
-            return new Promise((resolve, reject) => {
-              this.solicitudService.saveSolicitud(solicitudData).subscribe({
-                next: (response: any) => {
-                  console.log('Response from server:', response);
+      console.log('Solicitud data:')
+      console.log(JSON.stringify(solicitudData, null, 1));
+    
       
-                  // Asegúrate de que la respuesta tiene la estructura esperada
-                  const newSolicitud = response?.solicitud; // Accede al objeto 'solicitud'
-      
-                  if (newSolicitud) {
-                    this.newSolicitudId = newSolicitud?.id_sol; // Accede a la propiedad 'id_sol'
-      
-                    if (this.newSolicitudId) {
-                      console.log('New solicitud ID:', this.newSolicitudId);
-                    } else {
-                      console.warn('No solicitud ID found in response');
-                    }
-      
-                    resolve(newSolicitud); // Devuelve la solicitud creada
+          return new Promise((resolve, reject) => {
+            this.solicitudService.saveSolicitud(solicitudData).subscribe({
+              next: (response: any) => {
+                console.log('Response from server:', response);
+    
+                // Asegúrate de que la respuesta tiene la estructura esperada
+                const newSolicitud = response?.solicitud; // Accede al objeto 'solicitud'
+    
+                if (newSolicitud) {
+                  this.newSolicitudId = newSolicitud?.id_sol; // Accede a la propiedad 'id_sol'
+    
+                  if (this.newSolicitudId) {
+                    console.log('New solicitud ID:', this.newSolicitudId);
                   } else {
-                    console.warn('Solicitud object not found in response');
-                    reject(new Error('Solicitud object not found in response'));
+                    console.warn('No solicitud ID found in response');
                   }
-                },
-                error: (error) => {
-                  console.error('Error creating solicitud:', error);
-                  reject(error);
+    
+                  resolve(newSolicitud); // Devuelve la solicitud creada
+                } else {
+                  console.warn('Solicitud object not found in response');
+                  reject(new Error('Solicitud object not found in response'));
                 }
-              });
+              },
+              error: (error) => {
+                console.error('Error creating solicitud:', error);
+                reject(error);
+              }
             });
-          }
+          });
+        }
+        
+    
+
+        
   
     private async createOrUpdateCliente(): Promise<Cliente> {
       const clienteData: Cliente = {
@@ -373,7 +438,6 @@ export class CotizacionComponent implements OnInit {
           fec_creacion: new Date(),
           fec_entrega: this.form.get('fecha')?.value,
           descripcion: this.form.get('descripcion')?.value,
-          rut_usuario: this.form.get('rut_usuario')?.value,
           rut_cliente: this.form.get('rut_cliente')?.value,
       };
   
@@ -437,7 +501,6 @@ export class CotizacionComponent implements OnInit {
       fecha_detalle: new Date(),
       desc_detalle: servicio.nom_serv!,
       d_estado: 0,
-      rut_usuario: this.form.get('rut_usuario')?.value,
     }));
   
     console.log('DetalleOT data:', JSON.stringify(detalleOTData, null, 2));
@@ -600,4 +663,26 @@ export class CotizacionComponent implements OnInit {
      toggleSelectServicio(): void {
       this.mostrarSelectServicio = !this.mostrarSelectServicio;
     }
+  
+    mostrarAlertaEliminarServicio(servicio: any) {
+      this.servicioAEliminar = servicio;
+      this.alertVisible = true;
+    }
+  
+    confirmarEliminarServicio() {
+      this.eliminarServicio(this.servicioAEliminar);
+      this.alertVisible = false;
+      this.servicioAEliminar = null;
+    }
+  
+    cancelarEliminarServicio() {
+      this.alertVisible = false;
+      this.servicioAEliminar = null;
+    }
+  
+   
+  
   }
+
+
+

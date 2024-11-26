@@ -31,13 +31,15 @@ import { DetalleOTService } from '../../services/detalle_ot.service';
 import { error } from 'console';
 import { Solicitud } from '../../interfaces/solicitud';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { Tipo } from '../../interfaces/tipo';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-edit-order',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule, ModalComponent],
+  imports: [ReactiveFormsModule, HttpClientModule, CommonModule, FormsModule, ModalComponent],
   templateUrl: './edit-order.component.html',
-  // styleUrls: ['./new-ot.component.css']
+  styleUrls: ['./edit-order.component.css'] // Add this line
 })
 export class EditOrderComponent implements OnInit {
   mostrarSelectServicio: boolean = false; 
@@ -78,9 +80,16 @@ export class EditOrderComponent implements OnInit {
   rut_receptorActual: number | null = 0;
   rut_receptor: number | null = 0;
   soli : number | null = 0;
+  fechaHoy: string = ''; // Variable para almacenar la fecha actual
   cambiarSolicitud: number | null = 0;
   rolid: number | null = 0;
   userid: number | null = 0;
+  selectedTipoNombre: string | null = null;
+  alertVisible: boolean = false; // Add this line
+  servicioAEliminar: any = null; // Add this line
+  tipos: Tipo[] = [];
+  ordenCreada: boolean = false;
+  
 
 
 
@@ -153,8 +162,8 @@ export class EditOrderComponent implements OnInit {
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
     this.serviciosSeleccionados = [];
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
-    this.updateSolicitudOnLoad()
     this.loadOrder(this.id_ot);
+    this.updateSolicitudOnLoad()
     this.loadDetalle(this.id_ot);
     console.log(this.id_ot);
     this.form.patchValue({ rut_usuario: this.form.get('rut_usuario')?.value });
@@ -175,6 +184,21 @@ export class EditOrderComponent implements OnInit {
     if (this.id_ot !== 0) {
       this.operacion = 'Editar ';
       
+    }
+  }
+
+  onTipoChange(event: Event) {
+    const selectedId = (event.target as HTMLSelectElement).value;
+    const selectedUser = this.tipos.find(tipo => tipo.id_tipo?.toString() === selectedId);
+    
+    // Comprobar si el usuario seleccionado existe antes de acceder a su precio
+    if (selectedUser) {
+      this.selectedTipoNombre = selectedUser.nom_tipo // Usa la propiedad precio o lo que necesites
+     
+    } else {
+      this.selectedTipoNombre = null// Usa la propiedad precio o lo que necesites
+
+
     }
   }
 
@@ -228,20 +252,19 @@ export class EditOrderComponent implements OnInit {
           fecha_creacion: data.fec_creacion,
           fecha: data.fec_entrega,
           descripcion: data.descripcion,
-          apellido: data.cliente.ap_cli,
-          tipo_equipo: data.Equipo.mod_equipo,
-          celular: data.cliente.cel_cli,
-          correo: data.cliente.nom_cli,
-          d_veri_cli: data.cliente.d_veri_cli,
-          ap_usu: data.Usuario.ap_usu,
-          nom_usu: data.Usuario.nom_usu, // Cambia esto si el nombre no está directamente en 'Usuario'
+          apellido: data.cliente?.ap_cli ?? '',
+          tipo_equipo: data.Equipo?.mod_equipo ?? '',
+          celular: data.cliente?.cel_cli,
+          correo: data.cliente?.nom_cli,
+          d_veri_cli: data.cliente?.d_veri_cli,
+          ap_usu: data.VistaUltimaAdjudicacion?.ap_usu,
+          nom_usu: data.VistaUltimaAdjudicacion?.nom_usu, // Cambia esto si el nombre no está directamente en 'Usuario'
           rut_cliente: data.rut_cliente,
-          nombre: data.cliente.nom_cli,
-          mod_equipo: data.Equipo.mod_equipo, // Asegúrate de que esta propiedad exista
+          nombre: data.cliente?.nom_cli,
+          mod_equipo: data.Equipo?.mod_equipo, // Asegúrate de que esta propiedad exista
           num_equipo: data.num_equipo, // Asegúrate de que esta propiedad exista
-          fec_fabric: data.Equipo.fecha_fab,
-          id_marca: data.Equipo.id_marca,
-          rut_usuario: data.rut_usuario,// Cambia esto si el ID de usuario no está directamente en 'Usuario'
+          fec_fabric: data.Equipo?.fecha_fab,
+          id_marca: data.Equipo?.id_marca,
           servicios: this.fb.array([this.fb.group({
             id_serv: [null, Validators.required],
           })])
@@ -299,7 +322,6 @@ export class EditOrderComponent implements OnInit {
 
   openModal(event:Event) {
 
-    event.preventDefault(); // Esto evita que el botón haga submit del formulario
     this.isModalOpen = true;
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
     console.log('Abriendo modal con id_ot:', this.id_ot);  // Verifica que el id_ot se pasa al abrir el modal
@@ -324,7 +346,7 @@ export class EditOrderComponent implements OnInit {
       fecha_emision: new Date(),
       rut_usuario: this.form.get('rut_usuario')?.value,
       completada: false,
-      id_estado_ot: this.cambiarSolicitud || 0,
+      id_estado_ot: 2,
     };
     
     console.log('Solicitud data:')
@@ -446,23 +468,42 @@ export class EditOrderComponent implements OnInit {
 
       const id = this.form.get('id_ot')?.value; // Asegúrate de obtener el ID de la orden de trabajo (ot)
 
-      // Utiliza updateOrder en lugar de saveOrder
-
+      Swal.fire({
+        title: 'La cotización fue agregada con éxito!',
+        text: `La cotización correspondiente al número de OT ${id} fue creada con éxito.`,
+        icon: 'success',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#3085d6'
+      });
+  
       this.loading = false;
-      this.router.navigate(['/']);
+      this.ordenCreada = true;
+  
+      // Redirigir después de aceptar el mensaje
+      Swal.fire({
+        title: 'La cotización fue agregada con éxito!',
+        text: `La cotización correspondiente al número de OT ${id} fue creada con éxito.`,
+        icon: 'success',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#3085d6'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/']); // Redirige a la página principal
+        }
+      });
     } catch (error) {
       console.error('Error creating order:', error);
       this.loading = false;
-      // Handle error (e.g., show error message to user)
+  
+      // Manejar error con SweetAlert2
+      Swal.fire({
+        title: 'Error',
+        text: 'Ocurrió un error al crear la orden. Por favor, inténtalo de nuevo.',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d33'
+      });
     }
-
-    setTimeout(() => {
-      // Lógica de éxito o error aquí
-      console.log(this.orderDetails);
-      console.log("Orden de trabajo guardada");
-      this.isSubmitting = false; // Rehabilitar el botón después de completar
-    }, 2000); // Simulación de un retraso de 2 segundos
-
   }
 
   private async createOrUpdateCliente(): Promise<Cliente> {
@@ -563,18 +604,17 @@ export class EditOrderComponent implements OnInit {
 }
   // ... (resto del código sin cambios)
 
-  private async createOrUpdateOrder(): Promise<Order> {
+  private async createOrUpdateOrder(): Promise<newOrder> {
     // Usar this.id_ot en lugar de obtenerlo del formulario
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
 
 
-    const orderData: Order = {
+    const orderData: newOrder = {
         id_ot: this.id_ot,
         num_equipo: this.form.get('num_equipo')?.value,
         fec_creacion: new Date(),
         fec_entrega: this.form.get('fecha')?.value,
         descripcion: this.form.get('descripcion')?.value,
-        rut_usuario: this.form.get('rut_usuario')?.value,
         rut_cliente: this.form.get('rut_cliente')?.value,
     };
 
@@ -725,11 +765,27 @@ export class EditOrderComponent implements OnInit {
   }
 
   eliminarServicio(event: Event, servicio: any) {
+    event.preventDefault(); // Add this line
     console.log(servicio);
     this.deleteDetalleOT(this.id_ot, servicio.id_serv);
-
     this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: { id_serv: any }) => s.id_serv !== servicio.id_serv);
-    }
+  }
+
+  mostrarAlertaEliminarServicio(servicio: any) { // Add this method
+    this.servicioAEliminar = servicio;
+    this.alertVisible = true;
+  }
+
+  confirmarEliminarServicio() { // Add this method
+    this.eliminarServicio(new Event('click'), this.servicioAEliminar);
+    this.alertVisible = false;
+    this.servicioAEliminar = null;
+  }
+
+  cancelarEliminarServicio() { // Add this method
+    this.alertVisible = false;
+    this.servicioAEliminar = null;
+  }
 
   deleteDetalleOT(id_ot: number, id_serv: number) {
     this.detalleOTService.deleteDetalleOT(id_ot, id_serv).subscribe({

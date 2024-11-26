@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 import Marca from '../models/marca';
+import vista_count_marca from '../models/vista_count_marca';
 
 export const getMarcas = async (req: Request, res: Response) => {
     try {
-        const listMarcas = await Marca.findAll();
+        const listMarcas = await Marca.findAll({include: [{model: vista_count_marca}]});
         res.json(listMarcas);
     } catch (error) {
         console.log(error);
