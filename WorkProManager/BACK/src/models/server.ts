@@ -1,12 +1,5 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import cookieparser from 'cookie-parser';
-import session from 'express-session';  // Importamos express-session
-import bodyparser from 'body-parser';
-import dotenv from 'dotenv'; // Importación de dotenv
-import socketIO from 'socket.io'; // Importación de socket.io
-import http from 'http'; // Importación de http
-// Importación de rutas
 import routesOrder from '../routes/order';
 import routesClient from '../routes/cliente';
 import routesUsuario from '../routes/usuario';
@@ -23,56 +16,38 @@ import queryRoutes from '../routes/query';
 import causaRoutes from '../routes/causa_rechazo';
 import detallecausaroutes from '../routes/detalle_causa_rechazo';
 import adjudicacionRoutes from '../routes/adjudicacion';
+
 import routesTipo from '../routes/tipo';
 import routesLogin from '../routes/login';
+import bodyparser from 'body-parser';
 import routerSolicitud from '../routes/solicitud';
-import db from '../db/connection';
+import cookieparser from 'cookie-parser';
+
+import db from '../db/connection'; // Asegúrate de que aquí importas initModels
 
 class Server {
+    
     public app: Application;
     private port: string;
-    private role: string;
-    private io: socketIO.Server;
-    private httpServer: http.Server;
 
     constructor() {
-        // Carga las variables de entorno
-        dotenv.config();
         this.app = express();
-        this.port = process.env.PORT || '3001'; // Puerto por defecto
 
-        this.middlewares(); // Configuración de middlewares
-        this.routes();        // Configuración de rutas
-        this.dbConnect(); // Conexión a la base de datos
-        this.listen(); // Iniciar el servidor
-        this.role = this.assignRole(this.port); // Asignar rol al servidor según el puerto
-        this.httpServer = new http.Server(this.app);
-        this.io = new socketIO.Server(this.httpServer);
+        this.app.use(cookieparser());
+        this.app.use(cors({
+            origin: ['http://localhost:4200','http://localhost:54351'],   // Dirección del frontend
+            credentials: true                  // Permite el envío de cookies
+        }));
+        this.port = process.env.PORT || '3001';
+        const JWT_SECRET = process.env.JWT_SECRET;
 
-        this.configureSockets(); // Configurar sockets
+        this.middlewares();
+        this.routes();
+        this.dbConnect();
+        this.listen();
     }
 
-    /**
-     * Configura los sockets para el servidor.
-     */
-    private configureSockets() {
-        this.io.on('connection', (socket: socketIO.Socket) => {
-            console.log('Cliente conectado');
-            socket.on('Tarea Asignada:', (data) => {
-                console.log('Tarea asignada:', data);
-                this.io.emit('Tarea-actualizada:', data);
-            });
-
-            socket.on('disconnect', () => {
-                console.log('Cliente desconectado');
-            });
-        });
-    }
-
-    /**
-     * Inicia el servidor en el puerto especificado.
-     */
-    public listen() {
+    listen() {
         this.app.listen(this.port, () => {
             console.log(`Aplicación corriendo en el puerto ${this.port}`);
         });
@@ -81,7 +56,7 @@ class Server {
     routes() {
 
 
-
+        
         this.app.get('/', (req: Request, res: Response) => {
             res.json({
                 msg: 'API Working'
@@ -94,19 +69,21 @@ class Server {
             }
             next();
         }, causaRoutes);
+
         this.app.use('/api/adjudicacion', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a login');
             }
             next();
         }, adjudicacionRoutes);
+
         this.app.use('/api/detallecausa', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a login');
             }
             next();
         }, detallecausaroutes);
-
+       
 
         this.app.use('/api/login', (req: Request, res: Response, next: Function) => {
             if (req.method === 'POST') {
@@ -114,7 +91,7 @@ class Server {
             }
             next();
         }, routesLogin);
-
+       
 
         this.app.use('/api/solicitud', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
@@ -150,7 +127,7 @@ class Server {
             }
             next();
         }, routesClient);
-
+    
         this.app.use('/api/orders', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a órdenes');
@@ -164,21 +141,21 @@ class Server {
             }
             next();
         }, ordersCountByService);
-
+    
         this.app.use('/api/usuario', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a usuarios');
             }
             next();
         }, routesUsuario);
-
+    
         this.app.use('/api/servicio', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a servicios');
             }
             next();
         }, routesServicio);
-
+    
         this.app.use('/api/estado_ot', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a estado de órdenes de trabajo');
@@ -192,7 +169,7 @@ class Server {
             }
             next();
         }, routesTipo);
-
+    
         this.app.use('/api/equipo', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a equipos');
@@ -220,7 +197,7 @@ class Server {
                 console.log('Acceso a marcas');
             }
             next();
-        }, routesMarca);
+        }, routesMarca);  
 
 
         this.app.use('/api/usuarioEliminado', (req: Request, res: Response, next: Function) => {
@@ -230,27 +207,24 @@ class Server {
             next();
         }, routesUsuarioEliminado);
 
-
+     
     }
 
     middlewares() {
-        this.app.use(cors({
-            origin: "http://localhost:4200", credentials: true
+        this.app.use(cors({ origin: "http://localhost:4200", credentials: true
         }));
         this.app.use(express.json());
-        this.app.use(bodyparser.urlencoded({ extended: true }));
     }
 
-    /**
-     * Conexión a la base de datos y autenticación.
-     */
     async dbConnect() {
         try {
             await db.authenticate();
             console.log('Base de datos conectada');
-            // Inicializar los modelos después de conectar a la base de datos (si aplica)
+
+            // Inicializar los modelos después de conectar a la base de datos
+
         } catch (error) {
-            console.error('Error al conectarse a la base de datos:', error);
+            console.log('Error al conectarse a la base de datos:', error);
         }
     }
 }
