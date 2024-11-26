@@ -1,322 +1,168 @@
 <div class="wpm-custom-gradient p-6 sm:p-4 lg:p-8 rounded-lg shadow-md">
-    <div class="contenedor px-4 sm:px-6 lg:px-8">
-        <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-            <!-- Leyenda de descripción -->
-            <p class="text-md text-gray-600 mb-4">
-                Completa el siguiente formulario para crear una nueva Orden de Trabajo. Asegúrate de proporcionar todos los detalles requeridos.
-            </p>
+  <div class="contenedor px-4 sm:px-6 lg:px-8">
+    <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+      <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
+      <p class="text-md text-gray-600 mb-4">
+        Completa el siguiente formulario para {{ operacion }} una Orden de Trabajo. Asegúrate de proporcionar todos los
+        detalles requeridos.
+      </p>
 
-            <form class="space-y-6 sm:space-y-4 lg:space-y-8" [formGroup]="form" (ngSubmit)="addProduct()">
-                <div class="mt-4">
-                    <label for="fecha">Fecha de Entrega:</label>
-                    <input type="date" id="fecha" formControlName="fecha" class="border border-gray-300 p-2 rounded" [min]="fechaHoy" />
-                </div>
+      <!-- Formulario -->
+      <form class="space-y-6 sm:space-y-4 lg:space-y-8" [formGroup]="form" (ngSubmit)="addProduct()">
 
-                <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
-
-                <!-- Descripción de la OT -->
-                <div>
-                    <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
-                    <textarea
-                        id="descripcion"
-                        formControlName="descripcion"
-                        rows="4"
-                        class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 sm:rows-3 lg:rows-5"
-                        placeholder="Añade una descripción detallada de la Orden de Trabajo...">
-                    </textarea>
-                </div>
-
-                <!-- Detalle Cliente -->
-                <fieldset class="border border-gray-200 p-4 rounded-lg">
-                    <legend class="text-lg font-semibold">Detalle Cliente</legend>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div>
-                            <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-                            <input type="text" id="nombre" formControlName="nombre" title="Nombre del cliente" placeholder="Ingrese el nombre del cliente" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-                            <span *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('required')" class="text-red-500 text-sm">El nombre es obligatorio.</span>
-                            <span *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('pattern')" class="text-red-500 text-sm">Solo se permiten letras.</span>
-                        </div>
-                        <div>
-                            <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
-                            <input type="text" id="apellido" formControlName="apellido" title="Apellido del cliente" placeholder="Ingrese el apellido del cliente" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-                            <span *ngIf="form.get('apellido')?.touched && form.get('apellido')?.hasError('required')" class="text-red-500 text-sm">El apellido es obligatorio.</span>
-                            <span *ngIf="form.get('apellido')?.touched && form.get('apellido')?.hasError('pattern')" class="text-red-500 text-sm">Solo se permiten letras.</span>
-                        </div>
-                        <div>
-                            <label for="rut_cliente" class="block text-sm font-medium text-gray-700">Run</label>
-                            <input type="text" id="rut_cliente" formControlName="rut_cliente" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="11111111"/>
-                            <span *ngIf="form.get('rut_cliente')?.touched && form.get('rut_cliente')?.hasError('required')" class="text-red-500 text-sm">El rut es obligatorio.</span>
-                            <span *ngIf="form.get('rut_cliente')?.touched && form.get('rut_cliente')?.hasError('pattern')" class="text-red-500 text-sm">Solo se permiten numeros.</span>
-                        </div>
-                        <div class="w-16">
-                            <label for="d_veri_cli" class="block text-sm font-medium text-gray-700">DV</label>
-                            <input type="text" id="d_veri_cli" formControlName="d_veri_cli" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" maxlength="1" placeholder="K" />
-                            <span *ngIf="form.get('d_veri_cli')?.touched && form.get('d_veri_cli')?.hasError('required')" class="text-red-500 text-sm">Ingrese el digito verificador.</span>
-                        </div>
-                        <div>
-                            <label for="correo" class="block text-sm font-medium text-gray-700">Correo</label>
-                            <input type="email" id="correo" formControlName="correo" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="correo.ejemplo@gmail.com"/>
-                        </div>
-                        <div>
-                            <label for="celular" class="block text-sm font-medium text-gray-700">Teléfono</label>
-                            <input type="tel" id="celular" formControlName="celular" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="123456789"/>
-                            <span *ngIf="form.get('celular')?.touched && form.get('celular')?.hasError('required')" class="text-red-500 text-sm">Por favor ingrese un numero de celular.</span>
-                            <span *ngIf="form.get('celular')?.touched && form.get('celular')?.hasError('pattern')" class="text-red-500 text-sm">Solo se permiten numeros.</span>
-                        </div>
-                    </div>
-                </fieldset>
-
-                <!-- Detalle Equipo -->
-                <fieldset class="border border-gray-200 p-4 rounded-lg">
-                    <legend class="text-lg font-semibold">Detalle Equipo</legend>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div>
-                            <label for="mod_equipo" class="block text-sm font-medium text-gray-700">Modelo</label>
-                            <input type="text" id="mod_equipo" formControlName="mod_equipo" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="Ingrese modelo del equipo"/>
-                            <span *ngIf="form.get('mod_equipo')?.touched && form.get('mod_equipo')?.hasError('required')" class="text-red-500 text-sm">Por favor el modelo del equipo.</span>
-                        </div>
-                        <div>
-                            <label for="id_marca">Selecciona una marca:</label>
-                            <select id="id_marca" title="Selecciona una marca" formControlName="id_marca" (change)="onMarcaChange($event)">
-                                <option value="">Seleccione una marca</option>
-                                <option *ngFor="let marca of marcas" [value]="marca.id_marca">{{ marca.nom_marca }}</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="id_tipo">Selecciona el tipo de equipo:</label>
-                            <select id="id_tipo" title="Selecciona el tipo de equipo" formControlName="id_tipo" (change)="onTipoChange($event)">
-                                <option value="">Seleccione el tipo de equipo</option>
-                                <option *ngFor="let tipo of tipos" [value]="tipo.id_tipo">{{ tipo.nom_tipo }}</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="num_equipo" class="block text-sm font-medium text-gray-700">S/N</label>
-                            <input type="text" id="num_equipo" formControlName="num_equipo" title="Número de serie del equipo" placeholder="Ingrese el número de serie del equipo" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-                            <span *ngIf="form.get('num_equipo')?.touched && form.get('num_equipo')?.hasError('required')" class="text-red-500 text-sm">Por favor el S/N del equipo.</span>
-                        </div>
-                        <div>
-                            <label for="fec_fabric" class="block text-sm font-medium text-gray-700">Fecha de fabricación</label>
-                            <input type="date" id="fec_fabric" formControlName="fec_fabric" title="Fecha de fabricación del equipo" placeholder="Ingrese la fecha de fabricación" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-                        </div>
-                    </div>
-                </fieldset>
-
-                <!-- Sección de Servicios -->
-                <fieldset class="border border-gray-200 p-4 rounded-lg">
-                    <legend class="text-lg font-semibold">Servicios</legend>
-                    <div>
-                        <label for="id_serv">Selecciona un Servicio:</label>
-                        <select id="id_serv" formControlName="id_serv" (change)="onServicioChange($event)">
-                            <option value="">Seleccione un servicio</option>
-                            <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">{{ servicio.nom_serv }}</option>
-                        </select>
-                        <button type="button" (click)="agregarServicio($event)" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">Añadir Servicio</button>
-                    </div>
-
-                    <!-- Lista de servicios añadidos -->
-                    <div *ngIf="serviciosSeleccionados.length > 0">
-                        <h3>Servicios Añadidos:</h3>
-                        <ul>
-                            <li *ngFor="let servicio of serviciosSeleccionados">
-                                {{ servicio.nom_serv }}
-                                <button (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
-                            </li>
-                        </ul>
-                    </div>
-                </fieldset>
-
-                <!-- Usuario -->
-                <fieldset class="border border-gray-200 p-4 rounded-lg">
-                    <legend class="text-lg font-semibold">Usuario</legend>
-                    <div>
-                        <label for="usuarios">Selecciona un Usuario:</label>
-                        <select id="usuarios" formControlName="rut_usuario" (change)="onUserChange($event)">
-                            <option value="">Seleccione un usuario</option>
-                            <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">{{ usuario.nom_usu }} {{ usuario.ap_usu }}</option>
-                        </select>
-                    </div>
-                    <div *ngIf="selectedUsuarioName !== null">
-                        <p>Precio del usuario seleccionado: <strong>{{ selectedUsuarioName }} {{ selectedUsuarioSurname }}</strong></p>
-                    </div>
-                </fieldset>
-
-                <!-- Descripción de la OT -->
-                <fieldset>
-                    <div>
-                        <label for="desc_sol" class="block text-sm font-medium text-gray-700">Descripción</label>
-                        <textarea
-                            id="desc_sol"
-                            formControlName="desc_sol"
-                            rows="4"
-                            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 sm:rows-3 lg:rows-5"
-                            placeholder="Añade la descripción de la solicitud que realizarás al técnico...">
-                        </textarea>
-                    </div>
-                </fieldset>
-
-                <!-- Botón para enviar el formulario -->
-                <div class="flex justify-end">
-                    <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 text-sm sm:text-base lg:text-lg" [disabled]="form.get('isSubmitting')?.value">
-                        {{ form.get('isSubmitting')?.value ? 'Guardando...' : 'Guardar Orden de Trabajo' }}
-                    </button>
-                </div>
-            </form>
+        <!-- Fecha de Entrega -->
+        <div class="mt-4">
+          <label for="fecha" class="block text-sm font-medium text-gray-700">Fecha de Entrega:</label>
+          <input type="date" id="fecha" formControlName="fecha"
+            class="block w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-blue-500"
+            [min]="fechaHoy" />
         </div>
+
+        <!-- Descripción de la OT -->
+        <div>
+          <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+          <textarea id="descripcion" formControlName="descripcion" rows="4"
+            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+            placeholder="Añade una descripción detallada de la Orden de Trabajo..."></textarea>
+        </div>
+
+        <!-- Detalle Cliente -->
+        <fieldset class="border border-gray-200 p-4 rounded-lg">
+          <legend class="text-lg font-semibold">Detalle Cliente</legend>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+              <input type="text" id="nombre" formControlName="nombre" placeholder="Ingrese el nombre del cliente"
+                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
+              <span *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('required')" class="text-red-500 text-sm">El nombre es obligatorio.</span>
+              <span *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('pattern')" class="text-red-500 text-sm">Solo se permiten letras.</span>
+            </div>
+            <div>
+              <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
+              <input type="text" id="apellido" formControlName="apellido" placeholder="Ingrese el apellido del cliente"
+                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
+              <span *ngIf="form.get('apellido')?.touched && form.get('apellido')?.hasError('required')" class="text-red-500 text-sm">El apellido es obligatorio.</span>
+              <span *ngIf="form.get('apellido')?.touched && form.get('apellido')?.hasError('pattern')" class="text-red-500 text-sm">Solo se permiten letras.</span>
+            </div>
+            <div>
+              <label for="rut_cliente" class="block text-sm font-medium text-gray-700">Run</label>
+              <input type="text" id="rut_cliente" formControlName="rut_cliente"
+                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="11111111"/>
+              <span *ngIf="form.get('rut_cliente')?.touched && form.get('rut_cliente')?.hasError('required')" class="text-red-500 text-sm">El rut es obligatorio.</span>
+              <span *ngIf="form.get('rut_cliente')?.touched && form.get('rut_cliente')?.hasError('pattern')" class="text-red-500 text-sm">Solo se permiten numeros.</span>
+            </div>
+            <div class="w-16">
+              <label for="dv_cliente" class="block text-sm font-medium text-gray-700">DV</label>
+              <input type="text" id="dv_cliente" formControlName="d_veri_cli" maxlength="1" placeholder="K"
+                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
+              <span *ngIf="form.get('d_veri_cli')?.touched && form.get('d_veri_cli')?.hasError('required')" class="text-red-500 text-sm">Ingrese el digito verificador.</span>
+            </div>
+            <div>
+              <label for="correo" class="block text-sm font-medium text-gray-700">Correo</label>
+              <input type="email" id="correo" formControlName="correo"
+                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="correo.ejemplo@gmail.com"/>
+            </div>
+            <div>
+              <label for="celular" class="block text-sm font-medium text-gray-700">Teléfono</label>
+              <input type="tel" id="celular" formControlName="celular"
+                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="123456789"/>
+              <span *ngIf="form.get('celular')?.touched && form.get('celular')?.hasError('required')" class="text-red-500 text-sm">Por favor ingrese un numero de celular.</span>
+              <span *ngIf="form.get('celular')?.touched && form.get('celular')?.hasError('pattern')" class="text-red-500 text-sm">Solo se permiten numeros.</span>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Detalle Equipo -->
+        <fieldset class="border border-gray-200 p-4 rounded-lg">
+          <legend class="text-lg font-semibold">Detalle Equipo</legend>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label for="mod_equipo" class="block text-sm font-medium text-gray-700">Modelo</label>
+              <input type="text" id="mod_equipo" formControlName="mod_equipo"
+                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="Ingrese modelo del equipo"/>
+              <span *ngIf="form.get('mod_equipo')?.touched && form.get('mod_equipo')?.hasError('required')" class="text-red-500 text-sm">Por favor el modelo del equipo.</span>
+            </div>
+            <div>
+              <label for="marcas" class="block text-sm font-medium text-gray-700">Marca</label>
+              <select id="id_marca" formControlName="id_marca" (change)="onMarcaChange($event)"
+                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
+                <option *ngFor="let marca of marcas" [value]="marca.id_marca">{{ marca.nom_marca }}</option>
+              <span *ngIf="form.get('id_marca')?.touched && form.get('id_marca')?.hasError('required')" class="text-red-500 text-sm">Seleccione una marca.</span>
+              </select>
+            </div>
+            <div>
+              <label for="id_tipo" class="block text-sm font-medium text-gray-700">Tipo de Equipo</label>
+              <select id="id_tipo" formControlName="id_tipo" (change)="onTipoChange($event)"
+                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
+                <option *ngFor="let tipo of tipos" [value]="tipo.id_tipo">{{ tipo.nom_tipo }}</option>
+              <span *ngIf="form.get('id_tipo')?.touched && form.get('id_tipo')?.hasError('required')" class="text-red-500 text-sm">Seleccione un tipo de equipo.</span>
+              </select>
+            </div>
+            <div>
+              <label for="num_equipo" class="block text-sm font-medium text-gray-700">S/N</label>
+              <input type="text" id="num_equipo" formControlName="num_equipo"
+                placeholder="Ingrese el número de serie del equipo"
+                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
+              <span *ngIf="form.get('num_equipo')?.touched && form.get('num_equipo')?.hasError('required')" class="text-red-500 text-sm">Por favor el S/N del equipo.</span>
+            </div>
+            <div>
+              <label for="fec_fabric" class="block text-sm font-medium text-gray-700">Fecha de Fabricación</label>
+              <input type="date" id="fec_fabric" formControlName="fec_fabric"
+                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="Ingrese la fecha de fabricación"/>
+              <span *ngIf="form.get('fec_fabric')?.touched && form.get('fec_fabric')?.hasError('required')" class="text-red-500 text-sm">Por favor seleccione una fecha.</span>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Sección de Servicios -->
+        <fieldset class="border border-gray-200 p-4 rounded-lg">
+          <legend class="text-lg font-semibold">Servicios</legend>
+          <div>
+            <label for="id_serv" class="block text-sm font-medium text-gray-700">Selecciona un Servicio:</label>
+            <select id="id_serv" [(ngModel)]="servicioSeleccionado" (change)="onServicioChange($event)"
+              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
+              <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">{{ servicio.nom_serv }}</option>
+            <span *ngIf="form.get('id_serv')?.touched && form.get('id_serv')?.hasError('required')" class="text-red-500 text-sm">Por favor seleccione un servicio.</span>
+            </select>
+            <button type="button" (click)="agregarServicio($event)"
+              class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600 mt-4">Añadir Servicio</button>
+          </div>
+
+          <!-- Servicios Añadidos -->
+          <div *ngIf="serviciosSeleccionados.length > 0" class="mt-4">
+            <h3 class="font-semibold">Servicios Añadidos:</h3>
+            <ul>
+              <li *ngFor="let servicio of serviciosSeleccionados" class="flex items-center">
+                {{ servicio.nom_serv }}
+                <button (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
+              </li>
+            </ul>
+          </div>
+        </fieldset>
+
+        <!-- Usuario -->
+        <fieldset class="border border-gray-200 p-4 rounded-lg">
+          <legend class="text-lg font-semibold">Usuario</legend>
+          <div>
+            <label for="usuarios" class="block text-sm font-medium text-gray-700">Selecciona un Usuario:</label>
+            <select id="usuarios" formControlName="rut_usuario" (change)="onUserChange($event)"
+              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
+              <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">{{ usuario.nom_usu }} {{
+                usuario.ap_usu }}</option>
+            </select>
+          </div>
+          <div *ngIf="selectedUsuarioName !== null" class="mt-4">
+            <p>Usuario seleccionado: <strong>{{ selectedUsuarioName }} {{ selectedUsuarioSurname }}</strong></p>
+          </div>
+        </fieldset>
+
+        <!-- Botón para enviar -->
+        <div class="flex justify-end">
+          <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 text-sm sm:text-base lg:text-lg" [disabled]="form.get('isSubmitting')?.value">
+            {{ form.get('isSubmitting')?.value ? 'Guardando...' : 'Guardar Orden de Trabajo' }}
+          </button>
+        </div>
+      </form>
     </div>
-=======
-<div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
-  <div class="contenedor main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
-    <p class="text-md text-gray-600 mb-4">
-      Completa el siguiente formulario para {{ operacion }} una Orden de Trabajo. Asegúrate de proporcionar todos los
-      detalles requeridos.
-    </p>
-
-    <!-- Formulario -->
-    <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
-
-      <!-- Fecha de Entrega -->
-      <div class="mt-4">
-        <label for="fecha" class="block text-sm font-medium text-gray-700">Fecha de Entrega:</label>
-        <input type="date" id="fecha" formControlName="fecha"
-          class="block w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-blue-500"
-          [min]="fechaHoy" />
-      </div>
-
-      <!-- Descripción de la OT -->
-      <div>
-        <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
-        <textarea id="descripcion" formControlName="descripcion" rows="4"
-          class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-          placeholder="Añade una descripción detallada de la Orden de Trabajo..."></textarea>
-      </div>
-
-      <!-- Detalle Cliente -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
-        <legend class="text-lg font-semibold">Detalle Cliente</legend>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-            <input type="text" id="nombre" formControlName="nombre" placeholder="Ingrese el nombre del cliente"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-          </div>
-          <div>
-            <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
-            <input type="text" id="apellido" formControlName="apellido" placeholder="Ingrese el apellido del cliente"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-          </div>
-          <div>
-            <label for="rut_cliente" class="block text-sm font-medium text-gray-700">Run</label>
-            <input type="text" id="rut_cliente" formControlName="rut_cliente"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-          </div>
-          <div class="w-16">
-            <label for="dv_cliente" class="block text-sm font-medium text-gray-700">DV</label>
-            <input type="text" id="dv_cliente" formControlName="d_veri_cli" maxlength="1" placeholder="K"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-          </div>
-          <div>
-            <label for="correo" class="block text-sm font-medium text-gray-700">Correo</label>
-            <input type="email" id="correo" formControlName="correo"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-          </div>
-          <div>
-            <label for="celular" class="block text-sm font-medium text-gray-700">Teléfono</label>
-            <input type="tel" id="celular" formControlName="celular"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-          </div>
-        </div>
-      </fieldset>
-
-      <!-- Detalle Equipo -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
-        <legend class="text-lg font-semibold">Detalle Equipo</legend>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label for="mod_equipo" class="block text-sm font-medium text-gray-700">Modelo</label>
-            <input type="text" id="mod_equipo" formControlName="mod_equipo"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-          </div>
-          <div>
-            <label for="marcas" class="block text-sm font-medium text-gray-700">Marca</label>
-            <select id="id_marca" formControlName="id_marca" (change)="onMarcaChange($event)"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-              <option value="">Seleccione una marca</option>
-              <option *ngFor="let marca of marcas" [value]="marca.id_marca">{{ marca.nom_marca }}</option>
-            </select>
-          </div>
-          <div>
-            <label for="id_tipo" class="block text-sm font-medium text-gray-700">Tipo de Equipo</label>
-            <select id="id_tipo" formControlName="id_tipo" (change)="onTipoChange($event)"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-              <option value="">Seleccione el tipo de equipo</option>
-              <option *ngFor="let tipo of tipos" [value]="tipo.id_tipo">{{ tipo.nom_tipo }}</option>
-            </select>
-          </div>
-          <div>
-            <label for="num_equipo" class="block text-sm font-medium text-gray-700">S/N</label>
-            <input type="text" id="num_equipo" formControlName="num_equipo"
-              placeholder="Ingrese el número de serie del equipo"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-          </div>
-          <div>
-            <label for="fec_fabric" class="block text-sm font-medium text-gray-700">Fecha de Fabricación</label>
-            <input type="date" id="fec_fabric" formControlName="fec_fabric"
-              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
-          </div>
-        </div>
-      </fieldset>
-
-      <!-- Sección de Servicios -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
-        <legend class="text-lg font-semibold">Servicios</legend>
-        <div>
-          <label for="id_serv" class="block text-sm font-medium text-gray-700">Selecciona un Servicio:</label>
-          <select id="id_serv" [(ngModel)]="servicioSeleccionado" (change)="onServicioChange($event)"
-            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-            <option value="">Seleccione un servicio</option>
-            <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">{{ servicio.nom_serv }}</option>
-          </select>
-          <button type="button" (click)="agregarServicio($event)"
-            class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600 mt-4">Añadir Servicio</button>
-        </div>
-
-        <!-- Servicios Añadidos -->
-        <div *ngIf="serviciosSeleccionados.length > 0" class="mt-4">
-          <h3 class="font-semibold">Servicios Añadidos:</h3>
-          <ul>
-            <li *ngFor="let servicio of serviciosSeleccionados" class="flex items-center">
-              {{ servicio.nom_serv }}
-              <button (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
-            </li>
-          </ul>
-        </div>
-      </fieldset>
-
-      <!-- Usuario -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg">
-        <legend class="text-lg font-semibold">Usuario</legend>
-        <div>
-          <label for="usuarios" class="block text-sm font-medium text-gray-700">Selecciona un Usuario:</label>
-          <select id="usuarios" formControlName="rut_usuario" (change)="onUserChange($event)"
-            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-            <option value="">Seleccione un usuario</option>
-            <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">{{ usuario.nom_usu }} {{
-              usuario.ap_usu }}</option>
-          </select>
-        </div>
-        <div *ngIf="selectedUsuarioName !== null" class="mt-4">
-          <p>Usuario seleccionado: <strong>{{ selectedUsuarioName }} {{ selectedUsuarioSurname }}</strong></p>
-        </div>
-      </fieldset>
-
-      <!-- Botón para enviar -->
-      <div class="mt-6">
-        <button type="submit" class="bg-blue-500 text-white
- font-bold py-2 px-4 rounded hover:bg-blue-600" [disabled]="form.get('isSubmitting')?.value">
-          {{ form.get('isSubmitting')?.value ? 'Guardando...' : 'Guardar Orden de Trabajo' }}
-        </button>
-      </div>
-    </form>
   </div>
 </div>
