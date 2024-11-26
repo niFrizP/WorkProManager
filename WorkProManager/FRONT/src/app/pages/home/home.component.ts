@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { newOrder } from '../../interfaces/newOrder';
 import { AuthService } from '../../services/auth.service';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CookieManagementService } from '../../services/cookie.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -13,6 +13,8 @@ import { CommonModule } from '@angular/common';
 import { OrderService } from '../../services/order.service';
 import { ChartOptions, ChartType, ChartDataset } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
+import { UsuarioService } from '../../services/usuario.service';
+import { Usuario } from '../../interfaces/usuario';
 
 @Component({
   standalone: true,
@@ -32,6 +34,10 @@ export class HomeComponent implements OnInit {
   startDate: string = '';
   endDate: string = '';
   rut_usuario: number = 0;
+  usuarioForm: FormGroup;
+  rut_storage: number = 0;
+
+
 
   // Variables para conteos
   ordenesCount: number | null = null;
@@ -58,19 +64,43 @@ export class HomeComponent implements OnInit {
   ];
 
   constructor(
-    private orderService: OrderService, 
-    public authService: AuthService, 
-    private router: Router, 
-    private cookieService: CookieManagementService, 
-    private queryService: QueryService, 
-    private http: HttpClient
-  ) {}
+    private orderService: OrderService,
+    public authService: AuthService,
+    private router: Router,
+    private cookieService: CookieManagementService,
+    private queryService: QueryService,
+    private http: HttpClient,
+    private usuarioService: UsuarioService,
+    private fb: FormBuilder
+
+  ) {
+    this.usuarioForm = this.fb.group({
+      nom_usu: [''],
+      ap_usu: [''],
+      email_usu: [''],
+      cel_usu: [''],
+      password: [''],
+      rut_usuario: [{ value: '', disabled: true }]
+    });
+  }
 
   ngOnInit(): void {
     this.inicializarComponentes();
     this.verificarTokenUsuario();
     this.loadChartData();
   }
+
+  loadProfile(): void {
+    this.usuarioService.getUsuario(this.rut_storage).subscribe(
+      (data: Usuario) => {
+        this.usuarioForm.patchValue(data);
+      },
+      (error) => {
+        console.error('Error fetching usuario', error);
+      }
+    );
+  }
+
 
   inicializarComponentes(): void {
     this.rut_usuario = this.authService.getUserId() ?? 0;
@@ -203,12 +233,12 @@ export class HomeComponent implements OnInit {
   loadChartData(): void {
     const activeOrdersPromise = this.orderService.getOrdersCountPorRealizar().toPromise();
     const closedOrdersPromise = this.orderService.getOrdersCountCerradas().toPromise();
-  
+
     Promise.all([activeOrdersPromise, closedOrdersPromise])
       .then(([activeOrdersResponse, closedOrdersResponse]) => {
         const activeOrders = activeOrdersResponse.totalOrders || 0;
         const closedOrders = closedOrdersResponse.totalOrders || 0;
-  
+
         // Asignar datos al gráfico
         this.barChartData = [
           { data: [activeOrders], label: 'Órdenes Activas' },
