@@ -10,7 +10,7 @@ describe('PdfviewerComponent', () => {
     await TestBed.configureTestingModule({
       imports: [PdfviewerComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(PdfviewerComponent);
     component = fixture.componentInstance;

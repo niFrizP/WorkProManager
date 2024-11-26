@@ -8,7 +8,7 @@ import { OrderService } from '../../services/order.service';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
 })
@@ -25,7 +25,7 @@ export class SidebarComponent implements OnInit {
 
 
   count: number = 0;
-  constructor(public authService: AuthService, public cookieService: CookieManagementService , public orderService: OrderService) {
+  constructor(public authService: AuthService, public cookieService: CookieManagementService, public orderService: OrderService) {
     this.initializeResources();
   }
 
@@ -33,6 +33,10 @@ export class SidebarComponent implements OnInit {
     console.log('Sidebar Component Initialized');
 
     this.contarNotificaciones()
+    this.contarNotificacionesReportes()
+    this.contarNotifiacionesFinalizadas()
+    this.contarNotificacionesRechazadas()
+    this.countOrderNotificationsCotizacionesByRut()
     this.countOrderNotificacionesOrdersByRut()
 
     this.initializeResources();
@@ -40,11 +44,11 @@ export class SidebarComponent implements OnInit {
   }
 
   contarNotificaciones() {
-   this.orderService.countOrderNotifications().subscribe((data) => {
+    this.orderService.countOrderNotifications().subscribe((data) => {
       this.contar = data.count;
       console.log('Conteo de notificaciones:', this.contar);
-    }); 
-    
+    });
+
   }
 
 
@@ -67,25 +71,25 @@ export class SidebarComponent implements OnInit {
 
   contarNotificacionesReportes() {
     this.orderService.countOrderNotificationsReportes().subscribe((data) => {
-       this.contarReportes = data.count;
-       console.log('Conteo de notificaciones:', this.contar);
-     }); 
-    }
+      this.contarReportes = data.count;
+      console.log('Conteo de notificaciones:', this.contar);
+    });
+  }
 
-    contarNotifiacionesFinalizadas() {
-      this.orderService.countOrderNotificationsFinalizadas().subscribe((data) => {
-        this.contarFinalizadas = data.count;
-        console.log('Conteo de notificaciones:', this.contarFinalizadas);
-      }); 
-    }
+  contarNotifiacionesFinalizadas() {
+    this.orderService.countOrderNotificationsFinalizadas().subscribe((data) => {
+      this.contarFinalizadas = data.count;
+      console.log('Conteo de notificaciones:', this.contarFinalizadas);
+    });
+  }
 
-    contarNotificacionesRechazadas() {
-      this.orderService.countOrderNotificationsRechazadas().subscribe((data) => {
-        this.contarRechazadas = data.count;
-        console.log('Conteo de notificaciones:', this.contarRechazadas);
-      });
-    }
-  
+  contarNotificacionesRechazadas() {
+    this.orderService.countOrderNotificationsRechazadas().subscribe((data) => {
+      this.contarRechazadas = data.count;
+      console.log('Conteo de notificaciones:', this.contarRechazadas);
+    });
+  }
+
 
   initializeResources() {
     const userRole = this.authService.getRolIdLocal() // Obtén el rol del usuario actual
