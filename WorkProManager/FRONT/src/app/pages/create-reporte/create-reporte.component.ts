@@ -17,7 +17,7 @@ import { newOrder } from '../../interfaces/newOrder';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
-import { FormsModule } from '@angular/forms';
+import { FormGroup, FormsModule, FormBuilder, Validators } from '@angular/forms';
 import { DetalleOTService } from '../../services/detalle_ot.service';
 import { DetalleOT } from '../../interfaces/detalle_ot';
 import { error } from 'node:console';
@@ -32,12 +32,13 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-create-reporte',
   standalone: true,
-  imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ModalComponent],
+  imports: [CommonModule, NgxPaginationModule, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ModalComponent,],
   templateUrl: './create-reporte.component.html',
   styleUrls: ['./create-reporte.component.css'],
 })
 export class CreateReportComponent implements OnInit {
 
+  reporteForm: FormGroup;
 
   numericError: string = '';  // Variable para almacenar el mensaje de error
 
@@ -107,9 +108,18 @@ export class CreateReportComponent implements OnInit {
     private servicioService: ServicioService,
     private reporteService: ReporteService,
     private solicitudService: SolicitudService,
-    private auth:AuthService
+    private auth:AuthService,
+    private fb: FormBuilder
   ) {
 
+    this.reporteForm = this.fb.group({
+      titulo: ['', [Validators.required, Validators.minLength(3)]],
+      descripcion: ['', [Validators.required, Validators.maxLength(500)]],
+      usuario: ['', [Validators.required]],
+      servicio: ['', [Validators.required]],
+      fecha: ['', [Validators.required]]
+    });
+    
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
    
   }
@@ -286,14 +296,18 @@ if(this.solicitudes[0].isView == false){
   }
   
   onSubmit(): void {
-    this.reporteService.createReporte(this.nuevoReporte).subscribe(
-      response => {
-        console.log('Reporte Creado', response);
-      },
-      error => {
-        console.error('Errror creando el reporte', error);
-      }
-    );
+    if (this.reporteForm.valid) {
+      this.reporteService.createReporte(this.reporteForm.value).subscribe(
+        response => {
+          console.log('Reporte Creado', response);
+        },
+        error => {
+          console.error('Error creando el reporte', error);
+        }
+      );
+    } else {
+      console.error('Formulario inválido');
+    }
   }
 
   onPageChange(page: number): void {

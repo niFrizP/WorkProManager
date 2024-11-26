@@ -133,7 +133,6 @@ export class PdfGeneratorService {
 
         // Dibujar el recuadro para una solicitud
         pdf.rect(10, currentY + 7, 190, 36); // Rectángulo principal
-
         // Líneas internas
         lineYPositions.forEach((lineY) => {
           pdf.line(10, lineY, 200, lineY); // Líneas horizontales

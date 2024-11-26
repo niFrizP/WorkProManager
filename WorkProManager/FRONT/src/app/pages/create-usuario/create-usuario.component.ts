@@ -9,12 +9,13 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Usuario } from '../../interfaces/usuario';
 import { UsuarioService } from '../../services/usuario.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
   templateUrl: './create-usuario.component.html',
-  styles: ['create-usuario.component.css'],
-  imports: [ MatCardModule, MatInputModule ,MatSelectModule, MatButtonModule, MatSnackBarModule, ReactiveFormsModule ]
+  styleUrls: ['./create-usuario.component.css'],
+  imports: [ MatCardModule, MatInputModule ,MatSelectModule, MatButtonModule, MatSnackBarModule, ReactiveFormsModule, CommonModule ]
 })
 export class CreateUsuarioComponent implements OnInit {
   userForm: FormGroup;
@@ -27,13 +28,13 @@ export class CreateUsuarioComponent implements OnInit {
     private usuarioService: UsuarioService
   ) {
     this.userForm = this.fb.group({
-      rut_usuario: ['', [Validators.required]],
-      d_veri_usu: ['', [Validators.required, Validators.maxLength(1)]],
-      nom_usu: ['', [Validators.required]],
-      ap_usu: ['', [Validators.required]],
+      rut_usuario: ['', [Validators.required, Validators.pattern('^[0-9]{7,8}$')]],
+      d_veri_usu: ['', [Validators.required, Validators.maxLength(1), Validators.pattern('^[0-9kK]$')]],
+      nom_usu: ['', [Validators.required, Validators.pattern('^[a-zA-ZáéíóúñÁÉÍÓÚÑ ]+$')]],
+      ap_usu: ['', [Validators.required, Validators.pattern('^[a-zA-ZáéíóúñÁÉÍÓÚÑ ]+$')]],
       email_usu: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      cel_usu: ['', [Validators.required]],
+      cel_usu: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
       id_rol: ['', [Validators.required]]
     });
   }
@@ -45,6 +46,12 @@ export class CreateUsuarioComponent implements OnInit {
   }
 
   onSubmit(): void {
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
     if (this.userForm.valid) {
       this.createOrUpdateUsuario().then(
         (usuario) => {
