@@ -32,7 +32,7 @@ import { SolicitudService } from '../../services/solicitud.service';
 @Component({
   selector: 'app-cotizacion',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, FormsModule],
+  imports: [ReactiveFormsModule, HttpClientModule, CommonModule, FormsModule],
   templateUrl: './cotizacion.component.html',
   styleUrls: ['./cotizacion.component.css']
 })
@@ -601,3 +601,4 @@ export class CotizacionComponent implements OnInit {
       this.mostrarSelectServicio = !this.mostrarSelectServicio;
     }
   }
+
