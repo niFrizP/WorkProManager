@@ -35,7 +35,7 @@ import { ModalComponent } from '../../components/modal/modal.component';
 @Component({
   selector: 'app-edit-order',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule, ModalComponent],
+  imports: [ReactiveFormsModule, HttpClientModule, CommonModule, FormsModule, ModalComponent],
   templateUrl: './edit-order.component.html',
   // styleUrls: ['./new-ot.component.css']
 })

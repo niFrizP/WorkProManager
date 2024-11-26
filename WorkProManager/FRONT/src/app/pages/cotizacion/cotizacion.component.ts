@@ -36,7 +36,7 @@ import { ModalComponent } from '../../components/modal/modal.component';
 @Component({
   selector: 'app-cotizacion',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule, ModalComponent],
+  imports: [ReactiveFormsModule, HttpClientModule, CommonModule, FormsModule],
   templateUrl: './cotizacion.component.html',
   styleUrl: './cotizacion.component.css'
 })
@@ -627,15 +627,10 @@ export class CotizacionComponent {
   
       }
     }
-  
-  
-  
-  
      // Nueva función para mostrar/ocultar el select de servicios
      toggleSelectServicio(): void {
       this.mostrarSelectServicio = !this.mostrarSelectServicio;
     }
-  
   }
   
   

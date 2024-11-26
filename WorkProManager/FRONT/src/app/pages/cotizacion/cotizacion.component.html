@@ -1,15 +1,13 @@
 <div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
   <div class="contenedor main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
+    <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una cotización</p>
     <p class="text-md text-gray-600 mb-4">
-      Completa el siguiente formulario para {{ operacion }} una Orden de Trabajo. Asegúrate de proporcionar todos los
+      Completa el siguiente formulario para {{ operacion }} una cotización. Asegúrate de proporcionar todos los
       detalles requeridos.
     </p>
 
     <!-- Formulario -->
     <form class="space-y-6" [formGroup]="form" (ngSubmit)="addProduct()">
-
-      <!-- Fecha de Entrega -->
       <div class="mt-4">
         <label for="fecha" class="block text-sm font-medium text-gray-700">Fecha de Entrega:</label>
         <input type="date" id="fecha" formControlName="fecha"
@@ -121,7 +119,7 @@
           <ul>
             <li *ngFor="let servicio of serviciosSeleccionados" class="flex items-center">
               {{ servicio.nom_serv }}
-              <button (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
+              <button type="button" (click)="eliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
             </li>
           </ul>
         </div>
