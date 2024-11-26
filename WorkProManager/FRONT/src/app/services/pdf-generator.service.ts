@@ -23,17 +23,6 @@ export class PdfGeneratorService {
 
       // Fuente personalizada
       pdf.setFont('IBMPlexSans-Regular', 'normal');
-      const pageHeight = pdf.internal.pageSize.height;
-      const margin = 10;
-      let currentY = 20;
-
-      // Estilo general
-      const primaryColor = '#0046ad'; // Azul
-      const secondaryColor = '#ffe600'; // Amarillo
-      const font = 'IBMPlexSans-Regular';
-
-      // Fuente personalizada
-      pdf.setFont('IBMPlexSans-Regular', 'normal');
 
       // Encabezado: Logo y título
       // Encabezado: Logo y título
@@ -146,23 +135,6 @@ export class PdfGeneratorService {
 
         // Dibujar el recuadro para una solicitud
         pdf.rect(10, currentY + 7, 190, 36); // Rectángulo principal
-
-        // Líneas internas
-        const lineYPositions = [currentY + 7, currentY + 12, currentY + 18, currentY + 24, currentY + 30];
-        lineYPositions.forEach((lineY) => {
-          pdf.line(10, lineY, 200, lineY); // Líneas horizontales
-        });
-
-        // Datos dentro del recuadro
-        pdf.text(`ID Solicitud: ${solicitud.id_sol}`, 15, currentY + 11);
-        pdf.text(`Descripción: ${solicitud.desc_sol || 'N/A'}`, 15, currentY + 17);
-        pdf.text(`Estado: ${solicitud.id_estado_ot || 'N/A'}`, 15, currentY + 22);
-        pdf.text(`Fecha de vista: ${solicitud.fecha_vista || 'N/A'}`, 15, currentY + 28);
-        pdf.text(`Fecha de emisión: ${solicitud.fecha_emision || 'N/A'}`, 15, currentY + 35);
-        pdf.text(`Fecha de término: ${solicitud.fecha_termino || 'N/A'}`, 15, currentY + 40);
-
-        // Espaciado entre solicitudes
-        currentY += 38; // Altura del recuadro más margen
       });
 
       // Guardar archivo

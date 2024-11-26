@@ -39,6 +39,7 @@
               />
               <div *ngIf="userForm.get('d_veri_usu')?.touched && userForm.get('d_veri_usu')?.invalid" class="text-red-500 text-sm">
                 <span *ngIf="userForm.get('d_veri_usu')?.errors?.['required']">El digito verificador es obligatorio.</span>
+                <span *ngIf="userForm.get('d_veri_usu')?.errors?.['maxlength']">Solo se permite un carácter.</span>
               </div>
             </div>
           </div>
@@ -120,8 +121,9 @@
               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Ingrese contraseña"
             />
-            <div *ngIf="userForm.get('cel_usu')?.touched && userForm.get('cel_usu')?.invalid" class="text-red-500 text-sm">
-              <span *ngIf="userForm.get('cel_usu')?.errors?.['required']">Ingrese una contraseña valida.</span>
+            <div *ngIf="userForm.get('password')?.touched && userForm.get('password')?.invalid" class="text-red-500 text-sm">
+              <span *ngIf="userForm.get('password')?.errors?.['required']">Ingrese una contraseña valida.</span>
+              <span *ngIf="userForm.get('password')?.errors?.['maxlength']">Ingrese la cantidad mínima de caracteres.</span>
             </div>
           </div>
   

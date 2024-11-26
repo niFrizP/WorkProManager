@@ -44,5 +44,14 @@
         </div>
       </article>
     </article>
+
+    <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+      <canvas baseChart
+              [datasets]="barChartData"
+              [labels]="barChartLabels"
+              [options]="barChartOptions"
+              [legend]="barChartLegend">
+      </canvas>
+    </div>
   </div>
 </div>

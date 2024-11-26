@@ -11,6 +11,8 @@ import { AuthInterceptor } from '../../services/auth_interceptor.service';
 import { QueryService } from '../../services/query';
 import { CommonModule } from '@angular/common';
 import { OrderService } from '../../services/order.service';
+import { ChartOptions, ChartType, ChartDataset } from 'chart.js';
+import { NgChartsModule } from 'ng2-charts';
 
 @Component({
   standalone: true,
@@ -19,7 +21,7 @@ import { OrderService } from '../../services/order.service';
     useClass: AuthInterceptor,
     multi: true,
   },],
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, NgChartsModule],
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
@@ -42,6 +44,19 @@ export class HomeComponent implements OnInit {
   countTotal: number = 0;
   countEliminadas: number = 0;
 
+  public barChartOptions: ChartOptions = {
+    responsive: true,
+  };
+
+  public barChartLabels: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  public barChartType = 'bar';
+  public barChartLegend = true;
+
+  public barChartData: ChartDataset<'bar'>[] = [
+    { data: [], label: 'Órdenes Activas' },
+    { data: [], label: 'Órdenes Completadas' }
+  ];
+
   constructor(
     private orderService: OrderService, 
     public authService: AuthService, 
@@ -54,6 +69,7 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.inicializarComponentes();
     this.verificarTokenUsuario();
+    this.loadChartData();
   }
 
   inicializarComponentes(): void {
@@ -182,5 +198,25 @@ export class HomeComponent implements OnInit {
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }
+  }
+
+  loadChartData(): void {
+    const activeOrdersPromise = this.orderService.getOrdersCountPorRealizar().toPromise();
+    const closedOrdersPromise = this.orderService.getOrdersCountCerradas().toPromise();
+  
+    Promise.all([activeOrdersPromise, closedOrdersPromise])
+      .then(([activeOrdersResponse, closedOrdersResponse]) => {
+        const activeOrders = activeOrdersResponse.totalOrders || 0;
+        const closedOrders = closedOrdersResponse.totalOrders || 0;
+  
+        // Asignar datos al gráfico
+        this.barChartData = [
+          { data: [activeOrders], label: 'Órdenes Activas' },
+          { data: [closedOrders], label: 'Órdenes Cerradas' },
+        ];
+      })
+      .catch(error => {
+        console.error('Error al cargar datos para el gráfico', error);
+      });
   }
 }
