@@ -33,11 +33,7 @@ export class SidebarComponent implements OnInit {
     console.log('Sidebar Component Initialized');
 
     this.contarNotificaciones()
-    this.contarNotificacionesReportes() 
-    this.contarNotifiacionesFinalizadas()
-    this.contarNotificacionesRechazadas()
-    this.countOrderNotificationsCotizacionesByRut()
-    this.countOrderNotificacionesReportesByRut() 
+    this.countOrderNotificacionesOrdersByRut()
 
     this.initializeResources();
 
@@ -52,7 +48,7 @@ export class SidebarComponent implements OnInit {
   }
 
 
-  countOrderNotificacionesReportesByRut() {
+  countOrderNotificacionesOrdersByRut() {
     const rut = this.authService.getIdLocal();
     this.orderService.countOrderNotificationsReportesByRut(rut ?? 0).subscribe((data) => {
       this.contarTecnicoReportes = data.count;
@@ -104,7 +100,6 @@ export class SidebarComponent implements OnInit {
       { name: 'Cotización', link: './cotizacion', icon: 'fas fa-dollar-sign', requiredRoles: [1, 3 ] },
       {name: 'Marca', link: './marca', icon: 'fas fa-check', requiredRoles: [1] },
       {name: 'Servicios', link: './servicios', icon: 'fas fa-check', requiredRoles: [1] },
-      {name: 'Eliminadas', link: './eliminadas', icon: 'fas fa-check', requiredRoles: [1, 3] },
       {name: 'Causa', link: './causa', icon: 'fas fa-check', requiredRoles: [1] },
     ];
 

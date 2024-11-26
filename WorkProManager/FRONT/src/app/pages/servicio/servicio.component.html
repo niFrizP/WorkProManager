@@ -15,12 +15,14 @@
             <thead>
                 <tr class="col-start-auto">
                     <th class="border p-2">Nombre</th>
+                    <th class="border p-2">Total de servicios adjudicados a OT</th>
                     <th>Eliminar</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let servicio of servicios | paginate : { itemsPerPage: itemsPerPage, currentPage: page }">
                     <td>{{ servicio.nom_serv }}</td>
+                    <td>{{servicio.vista_count_ot_por_servicio?.total_ot ?? 0}}</td>
                     <td>
                         <button (click)="servicio.id_serv !== undefined ? deleteServicio(servicio.id_serv) : null">🗑️</button>
                     </td>

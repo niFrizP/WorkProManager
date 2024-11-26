@@ -1,164 +1,130 @@
-<div class="wpm-custom-gradient p-6 rounded-lg shadow-md md:flex-row flex-col">
-  <div class="contenedor">
+<div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
+  <div class="contenedor w-full">
     <div *ngIf="authService.getUserId() as rut">
-      <p>Bienvenido, usuario con RUT: {{ rut }}</p>
-      <h1 class="text-2xl font-bold text-center mb-4">Reportes</h1>
+      <h1 class="text-2xl font-bold text-center mb-4">Órdenes de trabajo</h1>
     </div>
 
-    <div class="flex justify-between items-center mb-4">
-      <div class="filtros">
-        <h2 class="text-xl font-semibold mb-4 cursor-pointer" (click)="isFiltrosOpen = !isFiltrosOpen">Filtros</h2>
-        <div *ngIf="isFiltrosOpen">
-          <!--filtro por estado-->
-          <div class="filtro">
-            <h3 (click)="isEstadoOpen = !isEstadoOpen">Filtrar por estado</h3>
-            <div *ngIf="isEstadoOpen">
-              <label for="statusSelect" class="sr-only">Filtrar por estado</label>
-              <select id="statusSelect" class="p2 border rounded" [(ngModel)]="selectedStatus"
-                (change)="filterOrdersByStatus(selectedStatus)">
-                <option value="todas">Todas</option>
-                <option value="pendiente">Pendiente</option>
-                <option value="en proceso">En proceso</option>
-                <option value="incompleto">incompleto</option>
-                <option value="completo">completo</option>
-                <option value="finalizado">finalizado</option>
-                <option value="rechazado">rechazado</option>
-              </select>
-            </div>
-          </div>
-
-          <!--filtro por usuario-->
-          <div class="filtro">
-            <h3 (click)="isUsuarioOpen = !isUsuarioOpen">Filtrar por usuario</h3>
-            <div *ngIf="isUsuarioOpen">
-              <label for="usuarioSelect" class="sr-only">Filtrar por usuario</label>
-              <select id="usuarioSelect" #filterSelect class="p2 border rounded" [(ngModel)]="selectedUsuario"
-                (change)="filterOrdersByUsuario(selectedUsuario)">
-                <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu"> {{ usuario.nom_usu}} {{
-                  usuario.ap_usu}}</option>
-              </select>
-            </div>
-          </div>
-
-          <!--filtro por fecha-->
-          <div class="filtro">
-            <h3 (click)="isFechaOpen = !isFechaOpen">Filtrar por Fecha</h3>
-            <div *ngIf="isFechaOpen">
-              <label for="monthSelect" class="mr-2 font-medium">Mes</label>
-              <select #monthSelect class="p-2 border rounded" title="Select Month"
-                (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)">
-                <option value="0">Todos</option>
-                <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
-              </select>
-              <label for="yearSelect" class="ml-4 mr-2 font-medium">Año</label>
-              <select #yearSelect class="p-2 border rounded" title="Select Year"
-                (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)">
-                <option value="0">Todos</option>
-                <option *ngFor="let year of years">{{ year }}</option>
-              </select>
-            </div>
-          </div>
-
-          <!--filtro por cliente-->
-          <div class="filtro">
-            <h3 (click)="isClienteOpen = !isClienteOpen">Filtrar por Cliente</h3>
-            <div *ngIf="isClienteOpen">
-              <form class="search-form" (submit)="filterOrdersByRutCliente()">
-                <input type="text" placeholder="Buscar por RUT Cliente" [(ngModel)]="searchRutCliente"
-                  (input)="filterOrdersByRutCliente()" class="search-input" name="rut_cliente" />
-                <button type="submit" class="search-btn">Buscar</button>
-              </form>
-            </div>
-          </div>
-
-          <!--filtro por equipo-->
-          <div class="filtro">
-            <h3 (click)="isEquipoOpen = !isEquipoOpen">Filtrar por Equipo</h3>
-            <div *ngIf="isEquipoOpen">
-              <form class="search-form" (submit)="filterOrdersByEquipo()">
-                <input type="text" placeholder="Buscar equipo por número de serie" [(ngModel)]="searchEquipo"
-                  (input)="filterOrdersByEquipo()" class="search-input" name="num_equipo" />
-                <button type="submit" class="search-btn">Buscar</button>
-              </form>
-              <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
-              <!-- Filtros -->
-              <div class="mb-4">
-                <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center"
-                  (click)="toggleMenu('filtrosGenerales')">
-                  <span>Filtros</span>
-                  <span>{{ menuAbierto['filtrosGenerales'] ? '▼' : '▶' }}</span>
-                </button>
-                <div [@slideInOut]="menuAbierto['filtrosGenerales']" class="p-4 border rounded bg-gray-50">
-                  <div class="grid grid-cols-1 gap-4 mt-2">
-                    <!-- Filtro por estado -->
-                    <div class="mb-4">
-                      <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center"
-                        (click)="toggleMenu('filtroEstado')">
-                        <span>Filtrar por estado</span>
-                        <span>{{ menuAbierto['filtroEstado'] ? '▼' : '▶' }}</span>
-                      </button>
-                      <div [@slideInOut]="menuAbierto['filtroEstado']" class="p-2">
-                        <label for="filterSelect" class="sr-only">Filtrar por estado</label>
-                        <select id="filterSelect" #filterSelect class="w-full p-2 border rounded mt-2"
-                          (change)="filterOrdersByStatus(filterSelect.value)">
-                          <option value="todas">Todas</option>
-                          <option value="pendiente">Pendiente</option>
-                          <option value="en proceso">En proceso</option>
-                          <option value="incompleto">Incompleto</option>
-                          <option value="completo">Completo</option>
-                          <option value="finalizado">Finalizado</option>
-                          <option value="rechazado">Rechazado</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
+  <div class="flex justify-between items-center mb-4">
+<div class="contenedor">
+            <button (click)="showFilters = !showFilters" class="bg-gray-500 text-white p-2 rounded mb-4 flex items-center">
+              <mat-icon>filter_list</mat-icon>
+              <span class="ml-2">{{ showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros' }}</span>
+            </button>
+            <div *ngIf="showFilters" class="filters-container p-4 border rounded">
+                <h2 class="filters-title text-lg font-semibold mb-4">Filtros</h2>
+                
+                <div class="filter-group mb-4">
+                    <h3 class="filter-header text-sm font-medium mb-2">Filtrar por estado</h3>
+                    <select class="filter-select w-full p-2 border rounded" (change)="onStateChange($event)">
+                        <option value="todas">Todas las ordenes de trabajo</option>
+                        <option value="pendiente">Pendiente de cotización</option>
+                        <option value="en proceso">Aprobación de la cotización</option>
+                        <option value="incompleto">En proceso</option>
+                        <option value="completo">Completada</option>
+                        <option value="finalizado">Finalizada</option>
+                        <option value="rechazado">Rechazada</option>
+                    </select>
                 </div>
-              </div>
-            </div>
 
-            <<<<<<< HEAD <table class="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th class="border p-2 text-center">Fecha de entrega</th>
-                  <th class="border p-2 text-center">Número de serie</th>
-                  <th class="border p-2 text-center">Número de orden</th>
-                  <th class="border p-2 text-center">Modelo del equipo</th>
-                  <th class="border p-2 text-center">Rut cliente</th>
-                  <th class="border p-2 text-center">Estado</th>
-                  <th class="border p-2 text-center">Usuario</th>
-                  <th class="border p-2 text-center">Usuario</th>
-                  <th class="border p-2 text-center">Fecha de plazo</th>
-                  <th class="border p-2 text-center">Solicitud Vista</th>
-                  <th class="border p-2 text-center">Operaciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
-                  [ngClass]="{ 'text-red-600': newOrder.VistaSolicitud?.isview == false }"
-                  class="align-middle text-center">
-                  <td class="border p-2">{{ newOrder.fec_entrega }}</td>
-                  <td class="border p-2">{{ newOrder.num_equipo }}</td>
-                  <td class="border p-2">{{ newOrder.id_ot }}</td>
-                  <td class="border p-2">{{ newOrder.Equipo?.mod_equipo }}</td>
-                  <td class="border p-2">{{ newOrder.rut_cliente }}</td>
-                  <td class="border p-2">{{ newOrder.VistaSolicitud?.nom_estado_ot }}</td>
-                  <td class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.rut_usuario }}</td>
-                  <td class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.nom_usu }}
-                    {{newOrder.VistaUltimaAdjudicacion?.ap_usu}}</td>
+                <div class="filter-group mb-4">
+                    <h3 class="filter-header text-sm font-medium mb-2">Filtrar por usuario</h3>
+                    <select class="filter-select w-full p-2 border rounded" (change)="onUserChangeFilter($event)">
+                        <option value="">Todos los usuarios</option>
+                        <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
+                          {{ usuario.nom_usu }} {{usuario.ap_usu}}
+                        </option>
+                    </select>
+                </div>
 
+                <div class="filter-group mb-4">
+                    <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Fecha</h3>
+                    <div class="date-filters flex space-x-4">
+                        <div class="date-filter">
+                            <label for="monthSelect" class="block text-sm font-medium mb-1">Mes</label>
+                            <select id="monthSelect" class="filter-select w-full p-2 border rounded" (change)="onMonthChange($event)">
+                                <option value="0">Todos</option>
+                                <option *ngFor="let month of months" [value]="month.value">
+                                  {{ month.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="date-filter">
+                            <label for="yearSelect" class="block text-sm font-medium mb-1">Año</label>
+                            <select id="yearSelect" class="filter-select w-full p-2 border rounded" (change)="onYearChange($event)">
+                                <option value="0">Todos</option>
+                                <option *ngFor="let year of years" [value]="year">
+                                  {{ year }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="filter-group mb-4">
+                    <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Cliente</h3>
+                    <input type="text" placeholder="Buscar por RUT Cliente" class="search-input w-full p-2 border rounded" (input)="onClientChange($event)" />
+                </div>
 
-                  <td class="border p-2">
-                    <app-cronometro
-                      [fechaPlazo]="newOrder.VistaSolicitud?.fecha_plazo | date:'yyyy-MM-ddTHH:mm:ss'"></app-cronometro>
+                <div class="filter-group mb-4">
+                    <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Usuario</h3>
+                    <input type="text" placeholder="Buscar por RUT Usuario" class="search-input w-full p-2 border rounded" (input)="onRutUsuarioChange($event)" />
+                </div>
+
+                <div class="filter-group mb-4">
+                    <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Equipo</h3>
+                    <input type="text" placeholder="Buscar equipo por número de serie" class="search-input w-full p-2 border rounded" (input)="onEquipmentSerialChange($event)" />
+                </div>
+
+  </div>
+
+  <table class="w-full border-collapse">
+    <thead>
+      <tr>
+        <th class="border p-2 text-center">Número de orden</th>
+        <th class="border p-2 text-center">Fecha de entrega</th>
+        <th class="border p-2 text-center">Número de serie del producto</th>
+        <th class="border p-2 text-center">Modelo del equipo</th>
+        <th class="border p-2 text-center">Rut del cliente</th>
+        <th class="border p-2 text-center">Estado de la OT</th>
+        <th *ngIf="authService.getUserRole() != 2" class="border p-2 text-center">Rut del técnico encargado</th>
+        <th *ngIf="authService.getUserRole() != 2" class="border p-2 text-center">Nombre del técnico encargado</th>
+        <th class="border p-2 text-center">Fecha de plazo</th>
+        <th class="border p-2 text-center">Solicitud Vista</th>
+        <th  class="border p-2 text-center">Operaciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr 
+        *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+        class="align-middle text-center"
+      >
+        <td class="border p-2">{{ newOrder.id_ot }}</td>
+        <td class="border p-2">{{ newOrder.fec_entrega | date:'MM/dd' }}</td>
+        <td class="border p-2">{{ newOrder.num_equipo }}</td>
+        <td class="border p-2">{{ newOrder.Equipo?.mod_equipo }}</td>
+        <td class="border p-2">{{ newOrder.rut_cliente }} - {{newOrder.cliente?.d_veri_cli}}</td>
+        <td class="border p-2">{{ newOrder.VistaSolicitud?.nom_estado_ot }}</td>
+        <td *ngIf="authService.getUserRole() != 2" class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.rut_usuario }}</td>
+        <td *ngIf="authService.getUserRole() != 2" class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.nom_usu }} {{newOrder.VistaUltimaAdjudicacion?.ap_usu}}</td>
+        
+
+        
+        <td class="border p-2">
+          <app-cronometro 
+            [fechaPlazo]="newOrder.VistaSolicitud?.fecha_plazo | date:'yyyy-MM-ddTHH:mm'"
+          ></app-cronometro>
+        </td>
+        <td class="border p-2">
+          <button mat-icon-button color="warn" [attr.aria-label]="newOrder.VistaSolicitud?.isview ? 'Vista activa' : 'Vista inactiva'">
+            <mat-icon>
+              {{ newOrder.VistaSolicitud?.isview ? 'visibility' : 'visibility_off' }}
+            </mat-icon>
+          </button>
                   </td>
-                  <td class="border p-2">
-                    <span *ngIf="newOrder.VistaSolicitud?.isview">✅</span>
-                    <span *ngIf="!newOrder.VistaSolicitud?.isview">⚠️</span>
-                  </td>
-                  <td class="border p-2">
-                    <button (click)="generatePDF(newOrder)" class="bg-blue-500 text-white p-1 rounded">🖨️</button>
+        <td class="border p-2">
+          <button *ngIf="newOrder.VistaSolicitud?.id_estado_ot != 6" (click)="generatePDF(newOrder)" class="bg-blue-500 text-white p-1 rounded">🖨️</button>
+          <button *ngIf="newOrder.VistaSolicitud?.id_estado_ot == 6" (click)="generatePDFDeleted(newOrder)" class="bg-blue-500 text-white p-1 rounded">🖨️</button>
+
 
                     <button *ngIf="authService.getUserRole() === 2 && newOrder.VistaSolicitud?.id_estado_ot == 1 "
                       [routerLink]="['/edit-order', newOrder.id_ot]"
@@ -199,7 +165,9 @@
               </table>
 
 
-              <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  <div class="flex justify-center mt-4">
+    <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previa" nextLabel="Siguiente"></pagination-controls>
+  </div>
 
 
           </div>

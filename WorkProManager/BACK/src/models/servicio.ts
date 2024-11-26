@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
 import Order from './orders';
+import vista_count_ot_por_servicio from './vista_count_ot_por_servicio';
 
 // Definición del modelo Servicio en lugar de EstadoOT
 const Servicio = db.define('Servicio', {
@@ -20,5 +21,7 @@ const Servicio = db.define('Servicio', {
 });
 
 Servicio.hasMany(Servicio, { foreignKey: 'id_serv' });
+Servicio.belongsTo( vista_count_ot_por_servicio, {foreignKey: 'id_serv', targetKey: 'id_serv' });
+
 
 export default Servicio;

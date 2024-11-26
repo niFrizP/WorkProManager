@@ -32,4 +32,12 @@ export class CausaRechazoService {
     deletecausaRechazo(id: number): Observable<CausaRechazo> {
         return this.http.delete<CausaRechazo>(`${this.myAppUrl}${this.myApiUrl}${id}`);
     }
+    deshabilitarCausaRechazo(id: number, isactivo: boolean): Observable<CausaRechazo> {
+        // El cuerpo del PUT es un objeto con la propiedad isactiva
+        const body = { isactiva: isactivo };
+    
+        // Realizamos el PUT con el ID y el cuerpo que contiene el nuevo estado de isactiva
+        return this.http.put<CausaRechazo>(`${this.myAppUrl}${this.myApiUrl}${id}`, body);
+      }
+
 }

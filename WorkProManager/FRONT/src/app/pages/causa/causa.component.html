@@ -15,14 +15,19 @@
             <thead>
                 <tr class="col-start-auto">
                     <th class="border p-2">Causa del rechazo</th>
+                    <th class="border p-2">Número de rechazos</th>
+
+
                     <th>Eliminar</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let causa of causas | paginate : { itemsPerPage: itemsPerPage, currentPage: page }">
                     <td>{{ causa.nombre_rechazo }}</td>
-                    <td>{{ causa.count || 0 }}</td> <!-- Mostrar el contador, por defecto 0 -->
 
+                    <td>
+                        <button> {{causa.vista_count_ot_por_rechazo?.total_ot ?? 0}} </button>
+                    </td>
                     <td>
                         <button (click)="causa.id_rechazo !== undefined ? deleteCausa(causa.id_rechazo) : null">🗑️</button>
                     </td>

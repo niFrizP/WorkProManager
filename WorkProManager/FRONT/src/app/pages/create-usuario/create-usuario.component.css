@@ -1,35 +1,243 @@
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+.wpm-custom-gradient {
+  background: linear-gradient(to right, #0046ad, #ffe600);
+  padding: auto;
+  margin-left: 290px;
+  margin-right: 30px;
+  border-radius: 8px;
+}
+
+.contenedor {
+  background-color: #f9f9f9; 
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);    
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+}
+
+select {
+  appearance: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 16px;
+  color: #333;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  background-color: #e0f7fa;
+}
+
+button {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+fieldset {
+  margin-bottom: 20px;
+  border-color: #007bff;
+}
+
+legend {
+  padding: 0 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #007bff;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+li:hover {
+  background-color: #e0f7fa;
+}
+
+li button {
+  background-color: transparent;
+  border: none;
+  color: #ff0000;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+li button:hover {
+  text-decoration: underline;
+  color: #d32f2f;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-end {
+  align-items: flex-end;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.relative {
+  position: relative;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.fill-current {
+  fill: currentColor;
+}
+
+.h-4 {
+  height: 1rem;
+}
+
+.w-4 {
+  width: 1rem;
+}
+
+.inset-y-0 {
+  top: 0;
+  bottom: 0;
+}
+
+.right-0 {
+  right: 0;
+}
+
+.items-center {
   align-items: center;
 }
-  
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
-  width: 300px;
+
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
-  
-.modal-actions {
-  margin-top: 20px;
+
+.text-gray-700 {
+  color: #4a5568;
 }
-  
-button {
-  margin: 5px;
+
+.bg-white {
+  background-color: #fff;
+}
+
+.appearance-none {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.alert {
+  background-color: #ffe600;
+  color: #0046ad;
+  border: 1px solid #0046ad;
   padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 10px;
 }
-  
-button:hover {
-  background-color: #f0f0f0;
+
+.alert p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.alert button {
+  background-color: transparent;
+  border: none;
+  color: #0046ad;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.alert button:hover {
+  text-decoration: underline;
+}
+
+.alert .flex {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.alert .flex button {
+  margin-left: 10px;
+}
+
+.alert {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.alert button {
+  background-color: transparent;
+  border: none;
+  color: #721c24;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.alert button:hover {
+  text-decoration: underline;
+}
+
+app-modal {
+  z-index: 1000; /* Add this line */
+  position: relative; /* Ensure the modal is positioned relative to its container */
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
 }

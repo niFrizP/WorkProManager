@@ -1,9 +1,16 @@
 import { Request, Response } from 'express';
 import CausaRechazo from '../models/causa_rechazo';
+import vista_count_ot_por_rechazo from '../models/ot_db.vista_count_ot_por_rechazo';
 
 export const getCausas = async (req: Request, res: Response) => {
     try {
-        const listMarcas = await CausaRechazo.findAll();
+        const listMarcas = await CausaRechazo.findAll(
+            {include: [{model: vista_count_ot_por_rechazo}],
+                where: {
+                    isactiva: true
+                }
+            }
+        );
         res.json(listMarcas);
     } catch (error) {
         console.log(error);
@@ -50,11 +57,12 @@ export const deleteCausa = async (req: Request, res: Response) => {
 }
 
 export const postCausa = async (req: Request, res: Response) => {
-    const { nombre_rechazo } = req.body; // Extrae el dato relevante
+    const { nombre_rechazo, isactive } = req.body; // Extrae el dato relevante
 
     try {
         const newMarca = await CausaRechazo.create({
-            nombre_rechazo
+            nombre_rechazo,
+            isactive
         });
 
         res.json({

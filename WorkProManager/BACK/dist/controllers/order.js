@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersByUsuarioOrderEnProceso = exports.getOrdersEliminadas = exports.getOrdersByUsuarioOrder = exports.createSolicitudView = exports.createLastAdjucacionPerUsuario = exports.getSolicitudesFromViewUsuario = exports.getSolicitudesFromView = exports.countOrdersNotificationRechazadas = exports.countOrdersNotificationFinalizada = exports.countOrdersNotificationReportesByRut = exports.countOrdersNotificationCotizacionesByRut = exports.countOrdersNotificationReportes = exports.countOrdersNotificationCotizacon = exports.getOrderssEliminadas = exports.getOrdersCompletadas = exports.getOrdersCotizacionesTecnico = exports.getOrdersCotizacionesGeneral = exports.getOrdersReporteTecnico = exports.getOrdersReporteGeneral = exports.getOrdersEliminadasCountByMonth = exports.getOrdersFinalizadasCountByMonth = exports.getOrdersRealizadasCountByMonth = exports.getOrdersCountByMonth = exports.getOrdersCountTerminadas = exports.getOrdersCountPorRealizadasTecnico = exports.getOrdersCountRealizadasTecnico = exports.getOrdersCountPorRealizarTecnico = exports.getOrdersCountPorRealizar = exports.getOrdersByTecnico = exports.getOrders = void 0;
+exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersByUsuarioOrderEnProceso = exports.getOrdersEliminadas = exports.getOrdersByUsuarioOrder = exports.createSolicitudView = exports.createLastAdjucacionPerUsuario = exports.getSolicitudesFromViewUsuario = exports.getSolicitudesFromView = exports.countOrdersNotificationRechazadas = exports.countOrdersNotificationFinalizada = exports.countOrdersNotificationReportesByRut = exports.countOrdersNotificationCotizacionesByRut = exports.countOrdersNotificationReportes = exports.countOrdersNotificationCotizacon = exports.getOrderssEliminadas = exports.getOrdersCompletadas = exports.getOrdersCotizacionesTecnico = exports.getOrdersCotizacionesGeneral = exports.getOrdersReporteTecnico = exports.getOrdersReporteGeneral = exports.getOrdersEliminadasCountByMonth = exports.getOrdersFinalizadasCountByMonth = exports.getOrdersRealizadasCountByMonth = exports.getOrdersCountByMonth = exports.getOrdersCountTerminadas = exports.getOrdersCountPorRealizadasTecnico = exports.getOrdersCountRealizadasTecnico = exports.getOrdersCountPorRealizarTecnico = exports.getOrdersCountPorRealizar = exports.getOrdersCountByTecnicoByViewsTecnico = exports.getOrdersByTecnico = exports.getOrdersCountbyViewsAdmin = exports.getOrders = void 0;
 const orders_1 = __importDefault(require("../models/orders"));
 const equipo_1 = __importDefault(require("../models/equipo"));
 const cliente_1 = __importDefault(require("../models/cliente"));
@@ -57,6 +57,49 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getOrders = getOrders;
+const getOrdersCountbyViewsAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Realizando el conteo de órdenes donde isview = false
+        const countOrders = yield orders_1.default.count({
+            include: [
+                {
+                    model: cliente_1.default,
+                    attributes: ['nom_cli', 'ap_cli', 'd_veri_cli', 'cel_cli', 'email_cli'],
+                    required: true
+                },
+                {
+                    model: equipo_1.default,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true
+                },
+                {
+                    model: vistamin_1.default,
+                    attributes: ['isview'], // Solo seleccionamos el campo 'isview' para aplicar el filtro
+                    required: true,
+                    where: {
+                        isview: false, // Filtramos las órdenes donde isview es false
+                        id_estado_ot: {
+                            [sequelize_1.Op.in]: [2, 4]
+                        }
+                    }
+                },
+                {
+                    model: vistaultimousuario_1.default,
+                    attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
+                }
+            ],
+        });
+        // Devolvemos la cantidad de órdenes que cumplen con la condición
+        res.json({ count: countOrders });
+    }
+    catch (error) {
+        console.error('Error fetching orders count:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders count',
+        });
+    }
+});
+exports.getOrdersCountbyViewsAdmin = getOrdersCountbyViewsAdmin;
 const getOrdersByTecnico = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const listOrders = yield orders_1.default.findAll({
@@ -80,7 +123,7 @@ const getOrdersByTecnico = (req, res) => __awaiter(void 0, void 0, void 0, funct
                     model: vistaultimousuario_1.default,
                     attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
                     where: {
-                        rut_usuario: req.body.rut_usuario
+                        rut_usuario: req.body.rut_usuario,
                     }
                 }
             ],
@@ -96,6 +139,52 @@ const getOrdersByTecnico = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.getOrdersByTecnico = getOrdersByTecnico;
+const getOrdersCountByTecnicoByViewsTecnico = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Realizando el conteo de órdenes asignadas a un técnico específico
+        const countOrdersByTecnico = yield orders_1.default.count({
+            include: [
+                {
+                    model: cliente_1.default,
+                    attributes: ['nom_cli', 'ap_cli', 'd_veri_cli', 'cel_cli', 'email_cli'],
+                    required: true
+                },
+                {
+                    model: equipo_1.default,
+                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
+                    required: true
+                },
+                {
+                    model: vistamin_1.default,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'fecha_termino', 'fecha_vista', 'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
+                    required: true,
+                    where: {
+                        isview: false, // Filtramos las órdenes donde isview es false
+                        id_estado_ot: {
+                            [sequelize_1.Op.in]: [1, 3]
+                        },
+                    }
+                },
+                {
+                    model: vistaultimousuario_1.default,
+                    attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
+                    where: {
+                        rut_usuario: req.body.rut_usuario // Filtramos por el rut_usuario enviado en el cuerpo de la solicitud
+                    }
+                }
+            ],
+        });
+        // Devolvemos el conteo de las órdenes asignadas al técnico específico
+        res.json({ count: countOrdersByTecnico });
+    }
+    catch (error) {
+        console.error('Error fetching orders count by tecnico:', error);
+        res.status(500).json({
+            msg: 'Error fetching orders count by tecnico',
+        });
+    }
+});
+exports.getOrdersCountByTecnicoByViewsTecnico = getOrdersCountByTecnicoByViewsTecnico;
 const getOrdersCountPorRealizar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ordersCount = yield orders_1.default.count({

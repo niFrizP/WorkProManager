@@ -34,11 +34,15 @@ import { EstadoOT } from '../../interfaces/estadoot';
 import { EstadoOTService } from '../../services/estado_ot.service';
 import { CausaRechazoService } from '../../services/causa_rechazo.service';
 import { Adjudicacion } from '../../interfaces/adjudicacion';
+import { MatIconAnchor } from '@angular/material/button';
 import { AdjudicacionService } from '../../services/adjudicacion.service';
+import { MatIcon } from '@angular/material/icon';
+import { PdfGeneratorEliminadasService } from '../../services/pdf-generator-eliminadas.service';
+
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, NgxPaginationModule,CronometroComponent, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, MatIcon ,NgxPaginationModule,CronometroComponent, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ReactiveFormsModule],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css'],
   animations: [
@@ -71,6 +75,7 @@ export class OrdersComponent implements OnInit {
   isModalOpenFinalizado: boolean = false; // Muestra el modal
   isClienteOpen = false;
   isEquipoOpen = false;
+  showFilters = false; // Set to false by default
 
 
 
@@ -117,6 +122,7 @@ export class OrdersComponent implements OnInit {
   clientes: Cliente[] = [];
   servicios: Servicio[] = [];
   solicitudes: Solicitud[] = [];
+  adjuducaciones: Adjudicacion[] = [];
   estados: EstadoOT[] = [];
   causasRechazo: CausaRechazo[] = [];
   adjudicacionData: Adjudicacion[] = []
@@ -181,7 +187,8 @@ export class OrdersComponent implements OnInit {
     private detalleCausaRechazoService: DetalleCausaRechazoService,
     private causaRechazoService: CausaRechazoService,
     private estadoOTService:EstadoOTService,
-    private adjudicacionService: AdjudicacionService
+    private adjudicacionService: AdjudicacionService,
+    private pdfGeneratorEliminadasService:PdfGeneratorEliminadasService
 
   ) {
 
@@ -224,8 +231,8 @@ export class OrdersComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.rut_usuario_filtro = this.authService.getUserId() ?? 0; // Obtén el `rut_usuario` desde
     this.rol_id = this.authService.getRolId() ?? 0; // Obtén el `rol_id` desde `authService`
+    this.rut_usuario = this.authService.getUserId() ?? 0; // Obtén el `rut_usuario` desde `authService`
     this.previousUsuarioID = this.form.get('rut_usuario')?.value;
     console.log(this.rut_usuario)
     console.log(this.rol_id)
@@ -299,9 +306,7 @@ export class OrdersComponent implements OnInit {
     this.filterOrders();
   }
 
-  filterOrdersByRutCliente() {
-    this.filterOrders();
-  }
+ 
 
   filterOrdersByStatus(status: string) {
     this.selectedStatus = status;
@@ -321,14 +326,7 @@ export class OrdersComponent implements OnInit {
 
   
 
-  filterOrdersByEquipo() {
-    this.filterOrders();
-  }
-
   
-  filterOrdersByRutUsuario() {
-    this.filterOrders();
-  }
 
 
   showSolicitudModal(orderId: number) {
@@ -763,6 +761,14 @@ filterOrders() {
   this.filteredOrders = this.sortOrders(this.filteredOrders);
 }
 
+sortOrdersByDueDate(): void {
+  this.filteredOrders.sort((a, b) => {
+    const dateA = new Date(a.VistaSolicitud?.fecha_plazo ?? '').getTime();
+    const dateB = new Date(b.VistaSolicitud?.fecha_plazo ?? '').getTime();
+    return dateA - dateB;
+  });
+}
+
 
   filterUsers() {
     this.filteredUsers = this.usuarios
@@ -860,6 +866,55 @@ filterOrders() {
       console.error('Error al generar PDF:', error);
     }
   }
+
+  generatePDFDeleted(order: newOrder): void {
+    try {
+      if (!order || !order.Equipo?.mod_equipo) {
+        throw new Error('Datos de orden incompletos');
+      }
+  
+      // Obtén los detalles de la orden y las solicitudes asociadas
+      this.detalleOTService.getListDetalleOTByOTId(order.id_ot ?? 0).subscribe({
+        next: (detalles: DetalleOT[]) => {
+          this.solicitud.getSolByOt(order.id_ot ?? 0).subscribe({
+            next: (solicitudes: Solicitud[]) => {
+              this.detalleCausaRechazoService.getListDetalleOTByOTId(order.id_ot ?? 0).subscribe({
+                next: (detalleCausaRechazo: DetalleCausaRechazo[]) => {
+                  this.adjudicacionService.getListDetalleOTByOTId(order.id_ot ?? 0).subscribe({
+                    next: (adjudicaciones: Adjudicacion[]) => {
+
+                  
+
+
+              const fileName = `OT_${order.id_ot}.pdf`;
+              // Genera el PDF con todos los datos
+              this.pdfGeneratorEliminadasService.generatePDFContent(order, detalles, solicitudes,detalleCausaRechazo, adjudicaciones, fileName);
+            },
+            error: (error) => {
+              console.error('Error al obtener adjudicaciones asociadas a la orden:');
+            },
+          });
+        },
+            error: (error) => {
+              console.error('Error al obtener los detalles eliminados asociadas a la orden:');
+            },
+          });
+        },
+
+            error: (error) => {
+              console.error('Error al obtener solicitudes asociadas a la orden:');
+            },
+          });
+        },
+        error: (err) => {
+          console.error('Error al obtener detalles de la orden:', err);
+        },
+      });
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+    }
+  }
+
 
   public openModal(id_ot:number): void {
     this.updateSolicitudOnLoad(id_ot)
@@ -1003,5 +1058,66 @@ filterOrders() {
     this.page = page;
   }
 
+  filterOrdersByState(state: string) {
+    this.selectedStatus = state;
+    this.filterOrders();
+  }
+  
+  onStateChange(event: Event): void {
+    const selectedState = (event.target as HTMLSelectElement).value;
+    this.filterOrdersByState(selectedState);
+  }
+
+  onUserChangeFilter(event: Event): void {
+    const searchUsuario = (event.target as HTMLSelectElement).value;
+    this.filterOrdersByRutUsuario(searchUsuario);
+  }
+  
+  onMonthChange(event: Event): void {
+    const selectedMonth = parseInt((event.target as HTMLSelectElement).value, 10);
+    this.filterOrdersByMonthYear(selectedMonth, this.selectedYear);
+  }
+
+  onYearChange(event: Event): void {
+    const selectedYear = parseInt((event.target as HTMLSelectElement).value, 10);
+    this.filterOrdersByMonthYear(this.selectedMonth, selectedYear);
+  }
+
+  filterOrdersByRutCliente(searchRutCliente: string) {
+    this.searchRutCliente = searchRutCliente;
+    this.filterOrders();
+  }
+
+
+
+  onClientChange(event: Event): void {
+    const searchRutCliente = (event.target as HTMLInputElement).value;
+    this.filterOrdersByRutCliente(searchRutCliente);
+  }
+
+  onEquipmentChange(event: Event): void {
+    const searchEquipo = (event.target as HTMLInputElement).value;
+    this.filterOrdersByEquipo(searchEquipo);
+  }
+
+  filterOrdersByRutUsuario(searchRutUsuario: string) {
+    this.searchUsuario = searchRutUsuario;
+    this.filterOrders();
+  }
+
+  filterOrdersByEquipo(searchEquipo: string) {
+    this.searchEquipo = searchEquipo;
+    this.filterOrders();
+  }
+
+  onRutUsuarioChange(event: Event): void {
+    const searchRutUsuario = (event.target as HTMLInputElement).value;
+    this.filterOrdersByRutUsuario(searchRutUsuario);
+  }
+
+  onEquipmentSerialChange(event: Event): void {
+    const searchEquipo = (event.target as HTMLInputElement).value;
+    this.filterOrdersByEquipo(searchEquipo);
+  }
   
 }
