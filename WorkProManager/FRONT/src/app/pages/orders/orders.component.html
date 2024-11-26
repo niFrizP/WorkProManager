@@ -1,456 +1,364 @@
-<div class="wpm-custom-gradient p-6 rounded-lg shadow-md md:flex-row flex-col">
-  <div class="contenedor">
-    <div *ngIf="authService.getUserId() as rut">
-      <p>Bienvenido, usuario con RUT: {{ rut }}</p>
-      <h1 class="text-2xl font-bold text-center mb-4">Reportes</h1>
-    </div>
+<div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
+  <div class="flex justify-between items-center mb-4">
+    <div class="contenedor">
+      <div *ngIf="authService.getUserId() as rut">
 
-    <div class="flex justify-between items-center mb-4">
-      <div class="filtros">
-        <h2 class="text-xl font-semibold mb-4 cursor-pointer" (click)="isFiltrosOpen = !isFiltrosOpen">Filtros</h2>
-        <div *ngIf="isFiltrosOpen">
-          <!--filtro por estado-->
-          <div class="filtro">
-            <h3 (click)="isEstadoOpen = !isEstadoOpen">Filtrar por estado</h3>
-            <div *ngIf="isEstadoOpen">
-              <label for="statusSelect" class="sr-only">Filtrar por estado</label>
-              <select id="statusSelect" class="p2 border rounded" [(ngModel)]="selectedStatus"
-                (change)="filterOrdersByStatus(selectedStatus)">
-                <option value="todas">Todas</option>
-                <option value="pendiente">Pendiente</option>
-                <option value="en proceso">En proceso</option>
-                <option value="incompleto">incompleto</option>
-                <option value="completo">completo</option>
-                <option value="finalizado">finalizado</option>
-                <option value="rechazado">rechazado</option>
-              </select>
-            </div>
+        <h1 class="text-2xl font-bold text-center mb-4">Ordenes de Trabajo</h1>
+        <button (click)="showFilters = !showFilters" class="bg-gray-500 text-white p-2 rounded mb-4">
+          {{ showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros' }}
+        </button>
+        <div *ngIf="showFilters" class="filters-container">
+          <h2 class="filters-title">Filtros</h2>
+        
+          <!-- Filtrar por Estado -->
+          <div class="filter-group">
+            <h3 class="filter-header">Filtrar por estado</h3>
+            <label for="stateFilter" class="sr-only">Filtrar por estado</label>
+            <select id="stateFilter" class="filter-select" (change)="onStateChange($event)">
+              <option value="todas">Todas</option>
+              <option value="pendiente">Pendiente de cotización</option>
+              <option value="en proceso">En proceso</option>
+              <option value="incompleto">Incompleto</option>
+              <option value="completo">Completada</option>
+              <option value="finalizado">Finalizada</option>
+              <option value="rechazado">Rechazada</option>
+            </select>
           </div>
-
-          <!--filtro por usuario-->
-          <div class="filtro">
-            <h3 (click)="isUsuarioOpen = !isUsuarioOpen">Filtrar por usuario</h3>
-            <div *ngIf="isUsuarioOpen">
-              <label for="usuarioSelect" class="sr-only">Filtrar por usuario</label>
-              <select id="usuarioSelect" #filterSelect class="p2 border rounded" [(ngModel)]="selectedUsuario"
-                (change)="filterOrdersByUsuario(selectedUsuario)">
-                <option *ngFor="let usuario of usuarios" [value]="usuario.nom_usu"> {{ usuario.nom_usu}} {{
-                  usuario.ap_usu}}</option>
-              </select>
-            </div>
+        
+          <!-- Filtrar por Usuario -->
+          <div class="filter-group">
+            <h3 class="filter-header">Filtrar por usuario</h3>
+            <label for="userFilter" class="sr-only">Filtrar por usuario</label>
+            <select id="userFilter" class="filter-select" (change)="onUserChangeFilter($event)">
+              <option value="">Seleccione un usuario</option>
+              <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
+                {{ usuario.nom_usu }} {{usuario.ap_usu}}
+              </option>
+            </select>
           </div>
-
-          <!--filtro por fecha-->
-          <div class="filtro">
-            <h3 (click)="isFechaOpen = !isFechaOpen">Filtrar por Fecha</h3>
-            <div *ngIf="isFechaOpen">
-              <label for="monthSelect" class="mr-2 font-medium">Mes</label>
-              <select #monthSelect class="p-2 border rounded" title="Select Month"
-                (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)">
-                <option value="0">Todos</option>
-                <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
-              </select>
-              <label for="yearSelect" class="ml-4 mr-2 font-medium">Año</label>
-              <select #yearSelect class="p-2 border rounded" title="Select Year"
-                (change)="filterOrdersByMonthYear(+monthSelect.value, +yearSelect.value)">
-                <option value="0">Todos</option>
-                <option *ngFor="let year of years">{{ year }}</option>
-              </select>
-            </div>
-          </div>
-
-          <!--filtro por cliente-->
-          <div class="filtro">
-            <h3 (click)="isClienteOpen = !isClienteOpen">Filtrar por Cliente</h3>
-            <div *ngIf="isClienteOpen">
-              <form class="search-form" (submit)="filterOrdersByRutCliente()">
-                <input type="text" placeholder="Buscar por RUT Cliente" [(ngModel)]="searchRutCliente"
-                  (input)="filterOrdersByRutCliente()" class="search-input" name="rut_cliente" />
-                <button type="submit" class="search-btn">Buscar</button>
-              </form>
-            </div>
-          </div>
-
-          <!--filtro por equipo-->
-          <div class="filtro">
-            <h3 (click)="isEquipoOpen = !isEquipoOpen">Filtrar por Equipo</h3>
-            <div *ngIf="isEquipoOpen">
-              <form class="search-form" (submit)="filterOrdersByEquipo()">
-                <input type="text" placeholder="Buscar equipo por número de serie" [(ngModel)]="searchEquipo"
-                  (input)="filterOrdersByEquipo()" class="search-input" name="num_equipo" />
-                <button type="submit" class="search-btn">Buscar</button>
-              </form>
-              <h1 class="text-2xl font-bold text-center mb-4">Órdenes de Trabajo</h1>
-              <!-- Filtros -->
-              <div class="mb-4">
-                <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center"
-                  (click)="toggleMenu('filtrosGenerales')">
-                  <span>Filtros</span>
-                  <span>{{ menuAbierto['filtrosGenerales'] ? '▼' : '▶' }}</span>
-                </button>
-                <div [@slideInOut]="menuAbierto['filtrosGenerales']" class="p-4 border rounded bg-gray-50">
-                  <div class="grid grid-cols-1 gap-4 mt-2">
-                    <!-- Filtro por estado -->
-                    <div class="mb-4">
-                      <button class="w-full p-2 bg-gray-100 rounded flex justify-between items-center"
-                        (click)="toggleMenu('filtroEstado')">
-                        <span>Filtrar por estado</span>
-                        <span>{{ menuAbierto['filtroEstado'] ? '▼' : '▶' }}</span>
-                      </button>
-                      <div [@slideInOut]="menuAbierto['filtroEstado']" class="p-2">
-                        <label for="filterSelect" class="sr-only">Filtrar por estado</label>
-                        <select id="filterSelect" #filterSelect class="w-full p-2 border rounded mt-2"
-                          (change)="filterOrdersByStatus(filterSelect.value)">
-                          <option value="todas">Todas</option>
-                          <option value="pendiente">Pendiente</option>
-                          <option value="en proceso">En proceso</option>
-                          <option value="incompleto">Incompleto</option>
-                          <option value="completo">Completo</option>
-                          <option value="finalizado">Finalizado</option>
-                          <option value="rechazado">Rechazado</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <<<<<<< HEAD <table class="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th class="border p-2 text-center">Fecha de entrega</th>
-                  <th class="border p-2 text-center">Número de serie</th>
-                  <th class="border p-2 text-center">Número de orden</th>
-                  <th class="border p-2 text-center">Modelo del equipo</th>
-                  <th class="border p-2 text-center">Rut cliente</th>
-                  <th class="border p-2 text-center">Estado</th>
-                  <th class="border p-2 text-center">Usuario</th>
-                  <th class="border p-2 text-center">Usuario</th>
-                  <th class="border p-2 text-center">Fecha de plazo</th>
-                  <th class="border p-2 text-center">Solicitud Vista</th>
-                  <th class="border p-2 text-center">Operaciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
-                  [ngClass]="{ 'text-red-600': newOrder.VistaSolicitud?.isview == false }"
-                  class="align-middle text-center">
-                  <td class="border p-2">{{ newOrder.fec_entrega }}</td>
-                  <td class="border p-2">{{ newOrder.num_equipo }}</td>
-                  <td class="border p-2">{{ newOrder.id_ot }}</td>
-                  <td class="border p-2">{{ newOrder.Equipo?.mod_equipo }}</td>
-                  <td class="border p-2">{{ newOrder.rut_cliente }}</td>
-                  <td class="border p-2">{{ newOrder.VistaSolicitud?.nom_estado_ot }}</td>
-                  <td class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.rut_usuario }}</td>
-                  <td class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.nom_usu }}
-                    {{newOrder.VistaUltimaAdjudicacion?.ap_usu}}</td>
-
-
-
-                  <td class="border p-2">
-                    <app-cronometro
-                      [fechaPlazo]="newOrder.VistaSolicitud?.fecha_plazo | date:'yyyy-MM-ddTHH:mm:ss'"></app-cronometro>
-                  </td>
-                  <td class="border p-2">
-                    <span *ngIf="newOrder.VistaSolicitud?.isview">✅</span>
-                    <span *ngIf="!newOrder.VistaSolicitud?.isview">⚠️</span>
-                  </td>
-                  <td class="border p-2">
-                    <button (click)="generatePDF(newOrder)" class="bg-blue-500 text-white p-1 rounded">🖨️</button>
-
-                    <button *ngIf="authService.getUserRole() === 2 && newOrder.VistaSolicitud?.id_estado_ot == 1 "
-                      [routerLink]="['/edit-order', newOrder.id_ot]"
-                      class="bg-yellow-500 text-white p-1 rounded">✏️</button>
-                    <button *ngIf="authService.getUserRole() === 3 && newOrder.VistaSolicitud?.id_estado_ot == 2"
-                      [routerLink]="['/edit-order-gestor', newOrder.id_ot]"
-                      class="bg-yellow-500 text-white p-1 rounded">✏️</button>
-                    <button *ngIf="authService.getUserRole() === 2 && newOrder.VistaSolicitud?.id_estado_ot == 3 "
-                      [routerLink]="['/reportes/createReport', newOrder.id_ot]"
-                      class="bg-yellow-500 text-white p-1 rounded">✏️</button>
-                    <button
-                      *ngIf="authService.getUserRole() === 3 && newOrder.VistaSolicitud?.id_estado_ot == 4 && newOrder.VistaSolicitud?.completada === false"
-                      (click)="showSolicitudModal(newOrder.id_ot ?? 0)" class="bg-yellow-500 text-white p-1 rounded">
-                      ✏️
-                    </button>
-
-
-
-                    <div *ngIf="authService.getUserRole() === 3">
-                      <button *ngIf="newOrder.id_ot !== undefined"
-                        (click)="openEstadoModal(newOrder.id_ot, newOrder.VistaUltimaAdjudicacion?.rut_usuario ?? 0, newOrder.VistaSolicitud?.id_estado_ot ?? 0) ; onUsuarioChange($event)">📄</button>
-                    </div>
-
-                    <div *ngIf="authService.getUserRole() === 3">
-                      <button *ngIf="newOrder.id_ot !== undefined"
-                        (click)="openEstadoModalCambio(newOrder.id_ot, newOrder.VistaUltimaAdjudicacion?.rut_usuario ?? 0, newOrder.VistaSolicitud?.id_estado_ot ?? 0) ; onUsuarioChange($event)">👉🏻</button>
-                    </div>
-
-                    <div>
-                      <button class="bg-red-500 text-white p-2 rounded hover:bg-red-600"
-                        (click)="openRejectionModal(newOrder.id_ot ?? 0)">
-                        ❌
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-              </table>
-
-
-              <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
-
-
-          </div>
-
-
-
-          <div *ngIf="isRejectionModalOpen" class="modal-overlay">
-            <div class="modal-content" [formGroup]="rejectionForm">
-              <h2 class="text-xl font-bold mb-4">Elige la causa de rechazo</h2>
-
-              <!-- Selector de causa de rechazo -->
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-2">Causa de rechazo:</label>
-                <select formControlName="id_rechazo" #estadoSelect class="w-full p-2 mb-4 border rounded"
-                  title="Seleccione una causa de rechazo" (change)="onCausaChange($event, selectedOtId!)">
-                  <option value="">Seleccione una causa</option>
-                  <option *ngFor="let causa of causasRechazo" [value]="causa.id_rechazo">
-                    {{ causa.nombre_rechazo }}
-                  </option>
+        
+          <!-- Filtrar por Fecha -->
+          <div class="filter-group">
+            <h3 class="filter-header">Filtrar por Fecha</h3>
+            <div class="date-filters">
+              <div class="date-filter">
+                <label for="monthSelect">Mes</label>
+                <select id="monthSelect" class="filter-select">
+                  <option value="0">Todos</option>
+                  <!-- Opciones de meses se agregarán dinámicamente -->
                 </select>
               </div>
-
-              <!--Descripción-->
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-2">Descripción:</label>
-                <textarea id="observaciones" [formGroup]="rejectionForm" formControlName="observaciones"
-                  class="w-full p-2 border rounded resize-none" rows="3"
-                  placeholder="Ingrese una descripción del cambio de estado...">
-      </textarea>
-              </div>
-
-              <!-- Botones de acción -->
-              <div class="flex justify-end gap-2">
-                <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeRejectionModal()">
-                  Cancelar
-                </button>
-                <button class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" type="submit"
-                  (click)="confirmRejection(selectedOtId!)">
-                  Confirmar
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div *ngIf="isEstadoModalOpen" class="modal-overlay">
-            <div class="modal-content" [formGroup]="form">
-              <h2 class="text-xl font-bold mb-4">Selecciona un estado</h2>
-
-              <!--Selector de nuevo estado-->
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-2">Estado: </label>
-                <select formControlName="id_estado_ot" #estadoSelect class="w-full p-2 mb-4 border rounded"
-                  title="Seleccione un estado" (change)="onUserChange($event, selectedOtId!)">
-                  <option value="">Seleccione un estado</option>
-                  <option *ngFor="let estado of estados" [value]="estado.id_estado_ot">
-                    {{ estado.nom_estado_ot }}
-                  </option>
+              <div class="date-filter">
+                <label for="yearSelect">Año</label>
+                <select id="yearSelect" class="filter-select">
+                  <option value="0">Todos</option>
+                  <!-- Opciones de años se agregarán dinámicamente -->
                 </select>
               </div>
-
-              <!--Descripción-->
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-2">Descripción:</label>
-                <textarea id="desc_sol" [formGroup]="form" formControlName="desc_sol"
-                  class="w-full p-2 border rounded resize-none" rows="3"
-                  placeholder="Ingrese una descripción del cambio de estado...">
-        </textarea>
-              </div>
-
-
-              <div class="mb-4">
-                <label for="usuarios">Selecciona un Usuario:</label>
-                <select id="rut_usuario_1" formControlName="rut_usuario" title="Seleccione un usuario"
-                  (change)="onUsuarioChange($event)">
-                  <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
-                    {{ usuario.nom_usu }} {{usuario.ap_usu}}
-                  </option>
-                </select>
-              </div>
-
-
-              <!--Fecha de plazo-->
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-2">Fecha Plazo:</label>
-                <input [min]="fechaHoy" type="date" [formGroup]="form" formControlName="fecha_plazo"
-                  placeholder="Añada una descripción" class="w-full p-2 border rounded">
-              </div>
-
-
-
-
-
-              <!--botones-->
-              <div class="flex justify-end gap-2">
-                <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeEstadoModal()">
-                  Cancelar
-                </button>
-                <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" type="submit"
-                  (click)="confirmChangeEstado(selectedOtId!)">
-                  Aceptar
-                </button>
-              </div>
             </div>
           </div>
-
-          <div *ngIf="isEstadoModalOpen" class="modal-overlay">
-            <div class="modal-content" [formGroup]="form">
-              <h2 class="text-xl font-bold mb-4">Selecciona un estado</h2>
-
-              <!--Selector de nuevo estado-->
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-2">Estado: </label>
-                <select formControlName="id_estado_ot" #estadoSelect class="w-full p-2 mb-4 border rounded"
-                  title="Seleccione un estado" (change)="onUserChange($event, selectedOtId!)">
-                  <option value="">Seleccione un estado</option>
-                  <option *ngFor="let estado of estados" [value]="estado.id_estado_ot">
-                    {{ estado.nom_estado_ot }}
-                  </option>
-                </select>
-              </div>
-
-              <!--Descripción-->
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-2">Descripción:</label>
-                <textarea id="desc_sol" [formGroup]="form" formControlName="desc_sol"
-                  class="w-full p-2 border rounded resize-none" rows="3"
-                  placeholder="Ingrese una descripción del cambio de estado...">
-        </textarea>
-              </div>
-
-
-
-
-
-              <!--Fecha de plazo-->
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-2">Fecha Plazo:</label>
-                <input [min]="fechaHoy" type="date" [formGroup]="form" formControlName="fecha_plazo"
-                  placeholder="Añada una descripción" class="w-full p-2 border rounded">
-              </div>
-
-
-
-
-
-              <!--botones-->
-              <div class="flex justify-end gap-2">
-                <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeEstadoModal()">
-                  Cancelar
-                </button>
-                <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" type="submit"
-                  (click)="confirmChangeEstado(selectedOtId!)">
-                  Aceptar
-                </button>
-              </div>
-            </div>
+        
+          <!-- Filtrar por Cliente -->
+          <div class="filter-group">
+            <h3 class="filter-header">Filtrar por Cliente</h3>
+            <form class="search-form" (submit)="onClientSearch($event)">
+              <input type="text" placeholder="Buscar por RUT Cliente" class="search-input" />
+              <button type="submit" class="search-btn">Buscar</button>
+            </form>
           </div>
-
-
-          <div *ngIf="isModalOpenFinalizado"
-            class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-            <div class="bg-white p-6 rounded shadow-lg w-96">
-              <h2 class="text-lg font-semibold mb-4">Crear Nueva Solicitud</h2>
-              <form [formGroup]="formFin">
-                <label for="desc_sol" class="block mb-2">Descripción de la solicitud:</label>
-                <input id="desc_sol" formControlName="desc_sol" class="border p-2 rounded w-full"
-                  placeholder="Ingrese la descripción" />
-                <div class="mt-4 flex justify-end gap-2">
-                  <button type="button" (click)="closeModalFinalizado()" class="bg-gray-500 text-white p-2 rounded">
-                    Cancelar
-                  </button>
-                  <button type="button" (click)="Finalizar(newOrderId ?? 0)" class="bg-blue-500 text-white p-2 rounded">
-                    Confirmar
-                  </button>
-                </div>
-              </form>
-            </div>
+        
+          <!-- Filtrar por Equipo -->
+          <div class="filter-group">
+            <h3 class="filter-header">Filtrar por Equipo</h3>
+            <form class="search-form" (submit)="onEquipmentSearch($event)">
+              <input type="text" placeholder="Buscar equipo por número de serie" class="search-input" />
+              <button type="submit" class="search-btn">Buscar</button>
+            </form>
           </div>
-
-
-          <div *ngIf="isModalCambioEstadoOpen" class="modal-overlay">
-            <div class="modal-content" [formGroup]="formUser">
-              <h2 class="text-xl font-bold mb-4">Cambio de encargado de OT</h2>
-              <div class="mb-4">
-                <label for="usuarios">Selecciona un Usuario:</label>
-                <select id="rut_usuario" formControlName="rut_usuario" title="Seleccione un usuario"
-                  (change)="onUsuarioChange($event)">
-                  <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
-                    {{ usuario.nom_usu }} {{usuario.ap_usu}}
-                  </option>
-                </select>
-              </div>
-              <!--botones-->
-              <div class="flex justify-end gap-2">
-                <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeEstadoAdjudicacion()">
-                  Cancelar
-                </button>
-                <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" type="submit"
-                  (click)="confirmAdjudicacion(selectedOtId!)">
-                  Aceptar
-                </button>
-              </div>
-            </div>
-            =======
-            <!-- Tabla de órdenes -->
-            <table class="w-full border-collapse text-center">
-              <thead>
-                <tr class="bg-gray-200">
-                  <th class="border p-2">Fecha de entrega</th>
-                  <th class="border p-2">Número de serie</th>
-                  <th class="border p-2">Número de orden</th>
-                  <th class="border p-2">Modelo del equipo</th>
-                  <th class="border p-2">Rut Cliente</th>
-                  <th class="border p-2">Estado</th>
-                  <th class="border p-2">Usuario</th>
-                  <th class="border p-2">Tiempo restante</th>
-                  <th class="border p-2">Vista</th>
-                  <th class="border p-2">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
-                  [ngClass]="{ 'text-red-600': newOrder.VistaSolicitud?.isview == false }" class="hover:bg-gray-100">
-                  <td class="border p-2">{{ newOrder.fec_entrega }}</td>
-                  <td class="border p-2">{{ newOrder.num_equipo }}</td>
-                  <td class="border p-2">{{ newOrder.id_ot }}</td>
-                  <td class="border p-2">{{ newOrder.Equipo?.mod_equipo }}</td>
-                  <td class="border p-2">{{ newOrder.rut_cliente }}</td>
-                  <td class="border p-2">{{ newOrder.VistaSolicitud?.nom_estado_ot }}</td>
-                  <td class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.nom_usu }}</td>
-                  <td class="border p-2">
-                    <app-cronometro
-                      [fechaPlazo]="newOrder.VistaSolicitud?.fecha_plazo | date:'yyyy-MM-ddTHH:mm:ss'"></app-cronometro>
-                  </td>
-                  <td class="border p-2">
-                    <span *ngIf="newOrder.VistaSolicitud?.isview"><i class="fa-solid fa-eye"></i></span>
-                    <span *ngIf="!newOrder.VistaSolicitud?.isview"><i class="fa-solid fa-eye-slash"></i></span>
-                  </td>
-                  <td class="border p-2 flex justify-center gap-2">
-                    <button [routerLink]="['/edit-order', newOrder.id_ot]" class="bg-yellow-500 text-white p-1 rounded"
-                      title="Editar Orden"><i class="fa-solid fa-pen-to-square"></i></button>
-                    <button (click)="generatePDF(newOrder)" class="bg-blue-500 text-white p-1 rounded"
-                      title="Descargar PDF"><i class="fa-solid fa-circle-down"></i></button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <pagination-controls (pageChange)="onPageChange($event)" class="mt-4" previousLabel="Anterior"
-              nextLabel="Siguiente"></pagination-controls>
-          </div>
-          >>>>>>> main
         </div>
+        
+
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="border p-2 text-center">Número de orden</th>
+              <th class="border p-2 text-center">Fecha de entrega</th>
+              <th class="border p-2 text-center">Número de serie del producto</th>
+              <th class="border p-2 text-center">Modelo del equipo</th>
+              <th class="border p-2 text-center">Rut del cliente</th>
+              <th class="border p-2 text-center">Estado de la OT</th>
+              <th *ngIf="authService.getUserRole() != 2" class="border p-2 text-center">Rut del técnico encargado</th>
+              <th *ngIf="authService.getUserRole() != 2" class="border p-2 text-center">Nombre del técnico encargado
+              </th>
+              <th class="border p-2 text-center">Fecha de plazo</th>
+              <th class="border p-2 text-center">Solicitud Vista</th>
+              <th class="border p-2 text-center">Operaciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+              class="align-middle text-center">
+              <td class="border p-2">{{ newOrder.id_ot }}</td>
+              <td class="border p-2">{{ newOrder.fec_entrega | date:'MM/dd' }}</td>
+              <td class="border p-2">{{ newOrder.num_equipo }}</td>
+              <td class="border p-2">{{ newOrder.Equipo?.mod_equipo }}</td>
+              <td class="border p-2">{{ newOrder.rut_cliente }}</td>
+              <td class="border p-2">{{ newOrder.VistaSolicitud?.nom_estado_ot }}</td>
+              <td *ngIf="authService.getUserRole() != 2" class="border p-2">{{
+                newOrder.VistaUltimaAdjudicacion?.rut_usuario }}</td>
+              <td *ngIf="authService.getUserRole() != 2" class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.nom_usu
+                }} {{newOrder.VistaUltimaAdjudicacion?.ap_usu}}</td>
+
+
+
+              <td class="border p-2">
+                <app-cronometro
+                  [fechaPlazo]="newOrder.VistaSolicitud?.fecha_plazo | date:'yyyy-MM-ddTHH:mm'"></app-cronometro>
+              </td>
+              <td class="border p-2">
+                <span *ngIf="newOrder.VistaSolicitud?.isview"><mat-icon>remove_red_eye</mat-icon></span>
+                <span *ngIf="!newOrder.VistaSolicitud?.isview">
+                  <mat-icon color="warn">remove_red_eye</mat-icon>
+                </span>
+              </td>
+              <td class="border p-2">
+                <button (click)="generatePDF(newOrder)" class="bg-blue-500 text-white p-1 rounded">🖨️</button>
+
+                <button *ngIf="authService.getUserRole() === 2 && newOrder.VistaSolicitud?.id_estado_ot == 1 "
+                  [routerLink]="['/edit-order', newOrder.id_ot]"
+                  class="bg-yellow-500 text-white p-1 rounded">✏️</button>
+                <button *ngIf="authService.getUserRole() === 3 && newOrder.VistaSolicitud?.id_estado_ot == 2"
+                  [routerLink]="['/edit-order-gestor', newOrder.id_ot]"
+                  class="bg-yellow-500 text-white p-1 rounded">✏️</button>
+                <button *ngIf="authService.getUserRole() === 2 && newOrder.VistaSolicitud?.id_estado_ot == 3 "
+                  [routerLink]="['/reportes/createReport', newOrder.id_ot]"
+                  class="bg-yellow-500 text-white p-1 rounded">✏️</button>
+                <button
+                  *ngIf="authService.getUserRole() === 3 && newOrder.VistaSolicitud?.id_estado_ot == 4 && newOrder.VistaSolicitud?.completada === false"
+                  (click)="showSolicitudModal(newOrder.id_ot ?? 0)" class="bg-yellow-500 text-white p-1 rounded">
+                  ✏️
+                </button>
+
+
+
+                <div *ngIf="authService.getUserRole() === 3">
+                  <button *ngIf="newOrder.id_ot !== undefined"
+                    (click)="openEstadoModal(newOrder.id_ot, newOrder.VistaUltimaAdjudicacion?.rut_usuario ?? 0, newOrder.VistaSolicitud?.id_estado_ot ?? 0) ; onUsuarioChange($event)">📄</button>
+                </div>
+
+                <div *ngIf="authService.getUserRole() === 3">
+                  <button *ngIf="newOrder.id_ot !== undefined"
+                    (click)="openEstadoModalCambio(newOrder.id_ot, newOrder.VistaUltimaAdjudicacion?.rut_usuario ?? 0, newOrder.VistaSolicitud?.id_estado_ot ?? 0) ; onUsuarioChange($event)">👉🏻</button>
+                </div>
+
+                <div>
+                  <button class="bg-red-500 text-white p-2 rounded hover:bg-red-600"
+                    (click)="openRejectionModal(newOrder.id_ot ?? 0)">
+                    ❌
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+
+        <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+
+
+      </div>
+
+
+
+      <div *ngIf="isRejectionModalOpen" class="modal-overlay">
+        <div class="modal-content" [formGroup]="rejectionForm">
+          <h2 class="text-xl font-bold mb-4">Elige la causa de rechazo</h2>
+
+          <!-- Selector de causa de rechazo -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Causa de rechazo:</label>
+            <select formControlName="id_rechazo" #estadoSelect class="w-full p-2 mb-4 border rounded" title="Causa de rechazo"
+              (change)="onCausaChange($event, selectedOtId!)">
+              <option value="">Seleccione una causa</option>
+              <option *ngFor="let causa of causasRechazo" [value]="causa.id_rechazo">
+                {{ causa.nombre_rechazo }}
+              </option>
+            </select>
+          </div>
+
+          <!--Descripción-->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Descripción:</label>
+            <textarea id="observaciones" [formGroup]="rejectionForm" formControlName="observaciones"
+              class="w-full p-2 border rounded resize-none" rows="3"
+              placeholder="Ingrese una descripción del cambio de estado...">
+      </textarea>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="flex justify-end gap-2">
+            <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeRejectionModal()">
+              Cancelar
+            </button>
+            <button class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" type="submit"
+              (click)="confirmRejection(selectedOtId!)">
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isEstadoModalOpen" class="modal-overlay">
+        <div class="modal-content" [formGroup]="form">
+          <h2 class="text-xl font-bold mb-4">Selecciona un estado</h2>
+
+          <!--Selector de nuevo estado-->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Estado: </label>
+            <select formControlName="id_estado_ot" #estadoSelect class="w-full p-2 mb-4 border rounded" title="Estado"
+              (change)="onUserChange($event, selectedOtId!)">
+              <option value="">Seleccione un estado</option>
+              <option *ngFor="let estado of estados" [value]="estado.id_estado_ot">
+                {{ estado.nom_estado_ot }}
+              </option>
+            </select>
+          </div>
+
+          <!--Descripción-->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Descripción:</label>
+            <textarea id="desc_sol" [formGroup]="form" formControlName="desc_sol"
+              class="w-full p-2 border rounded resize-none" rows="3"
+              placeholder="Ingrese una descripción del cambio de estado...">
+        </textarea>
+          </div>
+
+
+          <div class="mb-4">
+            <label for="usuarios">Selecciona un Usuario:</label>
+            <select id="rut_usuario_1" formControlName="rut_usuario" title="Selecciona un Usuario" (change)="onUsuarioChange($event)">
+              <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
+                {{ usuario.nom_usu }} {{usuario.ap_usu}}
+              </option>
+            </select>
+          </div>
+
+
+          <!--Fecha de plazo-->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Fecha Plazo:</label>
+            <input [min]="fechaHoy" type="date" [formGroup]="form" formControlName="fecha_plazo"
+              placeholder="Añada una descripción" class="w-full p-2 border rounded">
+          </div>
+
+          <!--botones-->
+          <div class="flex justify-end gap-2">
+            <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeEstadoModal()">
+              Cancelar
+            </button>
+            <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" type="submit"
+              (click)="confirmChangeEstado(selectedOtId!)">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isEstadoModalOpen" class="modal-overlay">
+        <div class="modal-content" [formGroup]="form">
+          <h2 class="text-xl font-bold mb-4">Selecciona un estado</h2>
+
+          <!--Selector de nuevo estado-->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Estado: </label>
+            <select formControlName="id_estado_ot" #estadoSelect class="w-full p-2 mb-4 border rounded"
+              (change)="onUserChange($event, selectedOtId!)">
+              <option value="">Seleccione un estado</option>
+              <option *ngFor="let estado of estados" [value]="estado.id_estado_ot">
+                {{ estado.nom_estado_ot }}
+              </option>
+            </select>
+          </div>
+
+          <!--Descripción-->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Descripción:</label>
+            <textarea id="desc_sol" [formGroup]="form" formControlName="desc_sol"
+              class="w-full p-2 border rounded resize-none" rows="3"
+              placeholder="Ingrese una descripción del cambio de estado...">
+        </textarea>
+          </div>
+
+
+
+
+
+          <!--Fecha de plazo-->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Fecha Plazo:</label>
+            <input [min]="fechaHoy" type="date" [formGroup]="form" formControlName="fecha_plazo"
+              placeholder="Añada una descripción" class="w-full p-2 border rounded">
+          </div>
+
+
+
+
+
+          <!--botones-->
+          <div class="flex justify-end gap-2">
+            <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeEstadoModal()">
+              Cancelar
+            </button>
+            <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" type="submit"
+              (click)="confirmChangeEstado(selectedOtId!)">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+      <div *ngIf="isModalOpenFinalizado"
+        class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-lg w-96">
+          <h2 class="text-lg font-semibold mb-4">Crear Nueva Solicitud</h2>
+          <form [formGroup]="formFin">
+            <label for="desc_sol" class="block mb-2">Descripción de la solicitud:</label>
+            <input id="desc_sol" formControlName="desc_sol" class="border p-2 rounded w-full"
+              placeholder="Ingrese la descripción" />
+            <div class="mt-4 flex justify-end gap-2">
+              <button type="button" (click)="closeModalFinalizado()" class="bg-gray-500 text-white p-2 rounded">
+                Cancelar
+              </button>
+              <button type="button" (click)="Finalizar(newOrderId ?? 0)" class="bg-blue-500 text-white p-2 rounded">
+                Confirmar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+      <div *ngIf="isModalCambioEstadoOpen" class="modal-overlay">
+        <div class="modal-content" [formGroup]="formUser">
+          <h2 class="text-xl font-bold mb-4">Cambio de encargado de OT</h2>
+          <div class="mb-4">
+            <label for="usuarios">Selecciona un Usuario:</label>
+            <select id="rut_usuario" formControlName="rut_usuario" (change)="onUsuarioChange($event)">
+              <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
+                {{ usuario.nom_usu }} {{usuario.ap_usu}}
+              </option>
+            </select>
+          </div>
+          <!--botones-->
+          <div class="flex justify-end gap-2">
+            <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeEstadoAdjudicacion()">
+              Cancelar
+            </button>
+            <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" type="submit"
+              (click)="confirmAdjudicacion(selectedOtId!)">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>

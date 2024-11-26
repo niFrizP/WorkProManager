@@ -14,11 +14,12 @@
     </div>
     <!-- Descripción de la OT -->
     <div>
-      <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+      <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción solicitud</label>
       <textarea id="descripcion" formControlName="descripcion" rows="4"
         class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
         placeholder="Añade una descripción detallada de la Orden de Trabajo..."></textarea>
     </div>
+
 
     <!-- Detalle Cliente -->
     <fieldset class="border border-gray-200 p-4 rounded-lg">
@@ -63,6 +64,13 @@
     <!-- Detalle Equipo -->
     <fieldset class="border border-gray-200 p-4 rounded-lg">
       <legend class="text-lg font-semibold">Detalle Equipo</legend>
+      <!-- Descripción de la OT -->
+      <div>
+        <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+        <textarea id="descripcion" formControlName="descripcion" rows="4"
+          class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+          placeholder="Añade una descripción detallada de la Orden de Trabajo..."></textarea>
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label for="mod_equipo" class="block text-sm font-medium text-gray-700">Modelo</label>
@@ -138,7 +146,7 @@
     <!-- Descripción formulario -->
     <fieldset>
       <div>
-        <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+        <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción Orden</label>
         <textarea id="descripcion" formControlName="desc_sol" rows="4"
           class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
           placeholder="Añade una descripción detallada de la Orden de Trabajo..."></textarea>

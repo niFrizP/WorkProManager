@@ -29,6 +29,7 @@ export class PdfGeneratorService {
       pdf.addImage(logoUrl, 'PNG', 10, 10, 40, 15); // Ajustar proporción del logo
       pdf.setFontSize(16);
       pdf.setTextColor(primaryColor);
+      pdf.setFillColor(secondaryColor);
       pdf.text('ORDEN DE TRABAJO', 80, 20); // Alinear con el logo
 
       currentY += 25; // Ajustar espacio debajo del encabezado
@@ -75,7 +76,7 @@ export class PdfGeneratorService {
       // Datos del equipo
       pdf.setFontSize(14);
       checkPageOverflow(20);
-      pdf.text('DATOS DEL EQUIPO', 15, currentY);
+      drawTableHeader(10, currentY, 190, 10, 'DATOS DEL EQUIPO');
       currentY += 8;
       pdf.setFontSize(12);
       if (order.Equipo) {
@@ -90,6 +91,7 @@ export class PdfGeneratorService {
 
       // Detalles de la Orden
       drawTableHeader(10, currentY, 190, 10, 'DETALLES DE LA ORDEN');
+      drawTableHeader(10, currentY + 8, 190, 12, '');
       pdf.text('Servicio', 12, currentY + 5);
       pdf.text('Descripción', 80, currentY + 5);
       currentY += 10;
