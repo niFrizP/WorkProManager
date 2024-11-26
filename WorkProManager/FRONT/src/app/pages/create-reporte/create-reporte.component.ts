@@ -133,7 +133,28 @@ export class CreateReportComponent implements OnInit {
   confirmarDesmarcar(id_ot: number, id_serv: number) {
     const confirmation = window.confirm('¿Estás seguro que quieres eliminar el estado del servicio?');
     if (confirmation) {
+      this.solicitudService.getListSolicitudes().subscribe((data: Solicitud[]) => {
+        this.solicitudes = data.reverse();
+        console.log(this.solicitudes);
+
+
+        this.solicitudService.updateSolicitudByFechaTermino(this.solicitudes[1].id_sol!, null).subscribe({
+          next: () => {
+            console.log('Solicitud updated successfully');
+          },
+        });
+
+
+        this.solicitudService.updateSolicitudByCompletada(this.solicitudes[1].id_sol!, false).subscribe({
+          next: () => {
+            console.log('Solicitud updated successfully');
+          },
+        });
+      }
+      );
       this.desmarcarEstado(id_ot, id_serv);
+
+      
     } else {
       console.log('Eliminación cancelada');
     }
@@ -165,6 +186,8 @@ export class CreateReportComponent implements OnInit {
             console.log('Solicitud deleted successfully');
           },
         });}
+
+       
       }
 
 

@@ -4,28 +4,24 @@ export interface newOrder {
     fec_creacion: Date;
     fec_entrega: Date;
     descripcion: string;
-    rut_usuario: number;
     id_rechazo?: number; // Opcional
     rut_cliente: number;
     nombre_rechazo?: string;
-    cliente: {
+    cliente?: {
       nom_cli: string;
       ap_cli: string;
       cel_cli: string;
       d_veri_cli: string;
       email_cli: string; // Agregado según los datos
     };
-    Usuario: {
-      nom_usu: string;
-      ap_usu: string;
-    };
-    Equipo: {
+
+    Equipo?: {
       mod_equipo: string;
       id_marca: number;
       id_tipo: number; // Agregado según los datos
       fecha_fab?: Date; // Opcional, ya que no aparece en el JSON proporcionado
     };
-    VistaSolicitud: {
+    VistaSolicitud?: {
       id_ot?: number; // Opcional, ya que no aparece en todos los casos
       isview: boolean;
       fecha_emision: Date;
@@ -35,6 +31,13 @@ export interface newOrder {
       id_estado_ot?: number; // Opcional según los datos
       nom_estado_ot: string; // Opcional según los datos
     };
+    VistaUltimaAdjudicacion?: {
+      id_adjudicacion?: number; // Opcional, ya que no aparece en todos los casos
+      fecha_adjudicacion?: Date; // Opcional según los datos
+      rut_usuario?: number; // Opcional según los datos
+      nom_usu?: string; // Opcional según los datos
+      ap_usu?: string; // Opcional según los datos
+    }
     fecha_rechazo?: Date;
     observaciones?: string;
   }

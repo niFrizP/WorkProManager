@@ -12,16 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersByUsuarioOrderEnProceso = exports.getOrdersEliminadas = exports.getOrdersByUsuarioOrder = exports.createSolicitudView = exports.createLastSolicitudPerOrderView = exports.getSolicitudesFromView = exports.countOrdersNotificationRechazadas = exports.countOrdersNotificationFinalizada = exports.countOrdersNotificationReportesByRut = exports.countOrdersNotificationCotizacionesByRut = exports.countOrdersNotificationReportes = exports.countOrdersNotificationCotizacon = exports.getOrders_3 = exports.getOrders_2 = exports.getOrders_1 = exports.getOrdersByRutUsuario3 = exports.getOrdersByRutUsuario2 = exports.getOrdersByRutUsuario1 = exports.getOrderssEliminadas = exports.getOrdersCompletadas = exports.getOrdersCotizacionesTecnico = exports.getOrdersCotizacionesGeneral = exports.getOrdersReporteTecnico = exports.getOrdersReporteGeneral = exports.getOrdersEliminadasCountByMonth = exports.getOrdersFinalizadasCountByMonth = exports.getOrdersRealizadasCountByMonth = exports.getOrdersCountByMonth = exports.getOrdersCountTerminadas = exports.getOrdersCountPorRealizadasTecnico = exports.getOrdersCountRealizadasTecnico = exports.getOrdersCountPorRealizarTecnico = exports.getOrdersCountPorRealizar = exports.getOrdersByTecnico = exports.getOrders = void 0;
+exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersByUsuarioOrderEnProceso = exports.getOrdersEliminadas = exports.getOrdersByUsuarioOrder = exports.createSolicitudView = exports.createLastAdjucacionPerUsuario = exports.getSolicitudesFromViewUsuario = exports.getSolicitudesFromView = exports.countOrdersNotificationRechazadas = exports.countOrdersNotificationFinalizada = exports.countOrdersNotificationReportesByRut = exports.countOrdersNotificationCotizacionesByRut = exports.countOrdersNotificationReportes = exports.countOrdersNotificationCotizacon = exports.getOrderssEliminadas = exports.getOrdersCompletadas = exports.getOrdersCotizacionesTecnico = exports.getOrdersCotizacionesGeneral = exports.getOrdersReporteTecnico = exports.getOrdersReporteGeneral = exports.getOrdersEliminadasCountByMonth = exports.getOrdersFinalizadasCountByMonth = exports.getOrdersRealizadasCountByMonth = exports.getOrdersCountByMonth = exports.getOrdersCountTerminadas = exports.getOrdersCountPorRealizadasTecnico = exports.getOrdersCountRealizadasTecnico = exports.getOrdersCountPorRealizarTecnico = exports.getOrdersCountPorRealizar = exports.getOrdersByTecnico = exports.getOrders = void 0;
 const orders_1 = __importDefault(require("../models/orders"));
 const equipo_1 = __importDefault(require("../models/equipo"));
 const cliente_1 = __importDefault(require("../models/cliente"));
-const usuario_1 = __importDefault(require("../models/usuario"));
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
 const vistamin_1 = __importDefault(require("../models/vistamin"));
 const sequelize_2 = __importDefault(require("sequelize"));
-const vistatecnico_1 = __importDefault(require("../models/vistatecnico"));
+const vistaultimousuario_1 = __importDefault(require("../models/vistaultimousuario"));
 const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const listOrders = yield orders_1.default.findAll({
@@ -29,11 +28,6 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 {
                     model: cliente_1.default,
                     attributes: ['nom_cli', 'ap_cli', 'd_veri_cli', 'cel_cli', 'email_cli'],
-                    required: true
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
                     required: true
                 },
                 {
@@ -45,6 +39,9 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'fecha_termino', 'fecha_vista', 'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
                     required: true
                 },
+                { model: vistaultimousuario_1.default,
+                    attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
+                }
             ],
         });
         console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
@@ -68,19 +65,20 @@ const getOrdersByTecnico = (req, res) => __awaiter(void 0, void 0, void 0, funct
                     required: true
                 },
                 {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
-                {
                     model: equipo_1.default,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
                 },
-                { model: vistatecnico_1.default,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'fecha_termino', 'fecha_vista', 'completada', 'id_estado_ot', 'nom_estado_ot', 'rut_usuario'],
+                { model: vistamin_1.default,
+                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'fecha_termino', 'fecha_vista', 'completada', 'id_estado_ot', 'nom_estado_ot', 'completada'],
                     required: true
                 },
+                { model: vistaultimousuario_1.default,
+                    attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
+                    where: {
+                        rut_usuario: req.body.rut_usuario
+                    }
+                }
             ],
         });
         console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
@@ -101,11 +99,6 @@ const getOrdersCountPorRealizar = (req, res) => __awaiter(void 0, void 0, void 0
                 {
                     model: cliente_1.default,
                     attributes: [], // No necesitas devolver columnas aquí para el conteo
-                    required: true,
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: [], // Lo mismo aquí
                     required: true,
                 },
                 {
@@ -143,11 +136,6 @@ const getOrdersCountPorRealizarTecnico = (req, res) => __awaiter(void 0, void 0,
                 {
                     model: cliente_1.default,
                     attributes: [], // No necesitas devolver columnas aquí para el conteo
-                    required: true,
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: [], // Lo mismo aquí
                     required: true,
                 },
                 {
@@ -189,11 +177,6 @@ const getOrdersCountRealizadasTecnico = (req, res) => __awaiter(void 0, void 0, 
                     required: true,
                 },
                 {
-                    model: usuario_1.default,
-                    attributes: [], // Lo mismo aquí
-                    required: true,
-                },
-                {
                     model: equipo_1.default,
                     attributes: [], // Igual para Equipo
                     required: true,
@@ -232,11 +215,6 @@ const getOrdersCountPorRealizadasTecnico = (req, res) => __awaiter(void 0, void 
                     required: true,
                 },
                 {
-                    model: usuario_1.default,
-                    attributes: [], // Lo mismo aquí
-                    required: true,
-                },
-                {
                     model: equipo_1.default,
                     attributes: [], // Igual para Equipo
                     required: true,
@@ -272,11 +250,6 @@ const getOrdersCountTerminadas = (req, res) => __awaiter(void 0, void 0, void 0,
                 {
                     model: cliente_1.default,
                     attributes: [], // No necesitas devolver columnas aquí para el conteo
-                    required: true,
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: [], // Lo mismo aquí
                     required: true,
                 },
                 {
@@ -497,11 +470,6 @@ const getOrdersReporteGeneral = (req, res) => __awaiter(void 0, void 0, void 0, 
                     required: true
                 },
                 {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
-                {
                     model: equipo_1.default,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
@@ -535,11 +503,6 @@ const getOrdersReporteTecnico = (req, res) => __awaiter(void 0, void 0, void 0, 
                 {
                     model: cliente_1.default,
                     attributes: ['nom_cli', 'ap_cli'],
-                    required: true
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
                     required: true
                 },
                 {
@@ -580,11 +543,6 @@ const getOrdersCotizacionesGeneral = (req, res) => __awaiter(void 0, void 0, voi
                     required: true
                 },
                 {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
-                {
                     model: equipo_1.default,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
@@ -618,11 +576,6 @@ const getOrdersCotizacionesTecnico = (req, res) => __awaiter(void 0, void 0, voi
                 {
                     model: cliente_1.default,
                     attributes: ['nom_cli', 'ap_cli'],
-                    required: true
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
                     required: true
                 },
                 {
@@ -663,11 +616,6 @@ const getOrdersCompletadas = (req, res) => __awaiter(void 0, void 0, void 0, fun
                     required: true
                 },
                 {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
-                {
                     model: equipo_1.default,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
@@ -704,11 +652,6 @@ const getOrderssEliminadas = (req, res) => __awaiter(void 0, void 0, void 0, fun
                     required: true
                 },
                 {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
-                {
                     model: equipo_1.default,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true
@@ -735,256 +678,6 @@ const getOrderssEliminadas = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.getOrderssEliminadas = getOrderssEliminadas;
-const getOrdersByRutUsuario1 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        // Obtén el filtro de rut_usuario desde el cuerpo de la solicitud
-        const { rut_usuario } = req.body;
-        const listOrders = yield orders_1.default.findAll({
-            include: [
-                {
-                    model: cliente_1.default,
-                    attributes: ['nom_cli', 'ap_cli'],
-                    required: true,
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu', 'rut_usuario'],
-                    required: true,
-                    where: rut_usuario ? { rut_usuario: rut_usuario } : undefined, // Aplica el filtro solo si rut_usuario está presente
-                },
-                {
-                    model: equipo_1.default,
-                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
-                    required: true,
-                },
-                {
-                    model: vistamin_1.default,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
-                    required: true,
-                    where: {
-                        id_estado_ot: [1], // Filtra solo órdenes con id_estado_ot igual a 1
-                    },
-                },
-            ],
-        });
-        console.log('Consulta de órdenes filtradas por rut_usuario:', JSON.stringify(listOrders, null, 2));
-        res.json(listOrders);
-    }
-    catch (error) {
-        console.error('Error fetching orders by rut_usuario:', error);
-        res.status(500).json({
-            msg: 'Error fetching orders by rut_usuario',
-        });
-    }
-});
-exports.getOrdersByRutUsuario1 = getOrdersByRutUsuario1;
-const getOrdersByRutUsuario2 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        // Obtén el filtro de rut_usuario desde el cuerpo de la solicitud
-        const { rut_usuario } = req.body;
-        const listOrders = yield orders_1.default.findAll({
-            include: [
-                {
-                    model: cliente_1.default,
-                    attributes: ['nom_cli', 'ap_cli'],
-                    required: true,
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu', 'rut_usuario'],
-                    required: true,
-                    where: rut_usuario ? { rut_usuario: rut_usuario } : undefined, // Aplica el filtro solo si rut_usuario está presente
-                },
-                {
-                    model: equipo_1.default,
-                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
-                    required: true,
-                },
-                {
-                    model: vistamin_1.default,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
-                    required: true,
-                    where: {
-                        id_estado_ot: [2, 3, 4], // Filtra solo órdenes con id_estado_ot igual a 1
-                    },
-                },
-            ],
-        });
-        console.log('Consulta de órdenes filtradas por rut_usuario:', JSON.stringify(listOrders, null, 2));
-        res.json(listOrders);
-    }
-    catch (error) {
-        console.error('Error fetching orders by rut_usuario:', error);
-        res.status(500).json({
-            msg: 'Error fetching orders by rut_usuario',
-        });
-    }
-});
-exports.getOrdersByRutUsuario2 = getOrdersByRutUsuario2;
-const getOrdersByRutUsuario3 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        // Obtén el filtro de rut_usuario desde el cuerpo de la solicitud
-        const { rut_usuario } = req.body;
-        const listOrders = yield orders_1.default.findAll({
-            include: [
-                {
-                    model: cliente_1.default,
-                    attributes: ['nom_cli', 'ap_cli'],
-                    required: true,
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu', 'rut_usuario'],
-                    required: true,
-                    where: rut_usuario ? { rut_usuario: rut_usuario } : undefined, // Aplica el filtro solo si rut_usuario está presente
-                },
-                {
-                    model: equipo_1.default,
-                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
-                    required: true,
-                },
-                {
-                    model: vistamin_1.default,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
-                    required: true,
-                    where: {
-                        id_estado_ot: [5, 6], // Filtra solo órdenes con id_estado_ot igual a 1
-                    },
-                },
-            ],
-        });
-        console.log('Consulta de órdenes filtradas por rut_usuario:', JSON.stringify(listOrders, null, 2));
-        res.json(listOrders);
-    }
-    catch (error) {
-        console.error('Error fetching orders by rut_usuario:', error);
-        res.status(500).json({
-            msg: 'Error fetching orders by rut_usuario',
-        });
-    }
-});
-exports.getOrdersByRutUsuario3 = getOrdersByRutUsuario3;
-const getOrders_1 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        // Obtén el filtro de rut_usuario desde los parámetros de consulta
-        const { rut_usuario } = req.query;
-        const listOrders = yield orders_1.default.findAll({
-            include: [
-                {
-                    model: cliente_1.default,
-                    attributes: ['nom_cli', 'ap_cli'],
-                    required: true,
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu', 'rut_usuario'],
-                    required: true,
-                    where: rut_usuario ? { rut_usuario: rut_usuario } : undefined, // Filtra solo si rut_usuario está presente
-                },
-                {
-                    model: equipo_1.default,
-                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
-                    required: true,
-                },
-                {
-                    model: vistamin_1.default,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
-                    required: true,
-                    where: {
-                        id_estado_ot: [1],
-                    },
-                },
-            ],
-        });
-        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
-        res.json(listOrders);
-    }
-    catch (error) {
-        console.error('Error fetching orders:', error);
-        res.status(500).json({
-            msg: 'Error fetching orders',
-        });
-    }
-});
-exports.getOrders_1 = getOrders_1;
-const getOrders_2 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const listOrders = yield orders_1.default.findAll({
-            include: [
-                {
-                    model: cliente_1.default,
-                    attributes: ['nom_cli', 'ap_cli'],
-                    required: true
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
-                {
-                    model: equipo_1.default,
-                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
-                    required: true
-                },
-                { model: vistamin_1.default,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
-                    required: true,
-                    where: {
-                        id_estado_ot: [2, 3, 4]
-                    }
-                },
-            ],
-        });
-        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
-        res.json(listOrders);
-    }
-    catch (error) {
-        console.error('Error fetching orders:', error);
-        res.status(500).json({
-            msg: 'Error fetching orders',
-        });
-    }
-});
-exports.getOrders_2 = getOrders_2;
-const getOrders_3 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const listOrders = yield orders_1.default.findAll({
-            include: [
-                {
-                    model: cliente_1.default,
-                    attributes: ['nom_cli', 'ap_cli'],
-                    required: true
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true
-                },
-                {
-                    model: equipo_1.default,
-                    attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
-                    required: true
-                },
-                { model: vistamin_1.default,
-                    attributes: ['isview', 'fecha_emision', 'fecha_plazo', 'rut_remitente', 'rut_receptor', 'id_estado_ot'],
-                    required: true,
-                    where: {
-                        id_estado_ot: [5, 6]
-                    }
-                },
-            ],
-        });
-        console.log('Consulta de órdenes con subconsulta:', JSON.stringify(listOrders, null, 2));
-        res.json(listOrders);
-    }
-    catch (error) {
-        console.error('Error fetching orders:', error);
-        res.status(500).json({
-            msg: 'Error fetching orders',
-        });
-    }
-});
-exports.getOrders_3 = getOrders_3;
 const countOrdersNotificationCotizacon = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const countOrders = yield orders_1.default.count({
@@ -992,11 +685,6 @@ const countOrdersNotificationCotizacon = (req, res) => __awaiter(void 0, void 0,
                 {
                     model: cliente_1.default,
                     attributes: ['nom_cli', 'ap_cli'],
-                    required: true,
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
                     required: true,
                 },
                 {
@@ -1036,11 +724,6 @@ const countOrdersNotificationReportes = (req, res) => __awaiter(void 0, void 0, 
                     required: true,
                 },
                 {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true,
-                },
-                {
                     model: equipo_1.default,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true,
@@ -1074,11 +757,6 @@ const countOrdersNotificationCotizacionesByRut = (req, res) => __awaiter(void 0,
                 {
                     model: cliente_1.default,
                     attributes: ['nom_cli', 'ap_cli'],
-                    required: true,
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
                     required: true,
                 },
                 {
@@ -1119,11 +797,6 @@ const countOrdersNotificationReportesByRut = (req, res) => __awaiter(void 0, voi
                     required: true,
                 },
                 {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true,
-                },
-                {
                     model: equipo_1.default,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true,
@@ -1161,11 +834,6 @@ const countOrdersNotificationFinalizada = (req, res) => __awaiter(void 0, void 0
                     required: true,
                 },
                 {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true,
-                },
-                {
                     model: equipo_1.default,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true,
@@ -1199,11 +867,6 @@ const countOrdersNotificationRechazadas = (req, res) => __awaiter(void 0, void 0
                 {
                     model: cliente_1.default,
                     attributes: ['nom_cli', 'ap_cli'],
-                    required: true,
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
                     required: true,
                 },
                 {
@@ -1248,32 +911,47 @@ const getSolicitudesFromView = (req, res) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.getSolicitudesFromView = getSolicitudesFromView;
-const createLastSolicitudPerOrderView = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getSolicitudesFromViewUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Consultar todos los datos desde la vista
+        const solicitudesFromView = yield connection_1.default.query('SELECT * FROM vista_ultima_adjudicacion', {
+            type: sequelize_1.QueryTypes.SELECT, // Especificamos que esperamos resultados de tipo SELECT
+        });
+        // Enviar los resultados al cliente
+        res.json(solicitudesFromView);
+    }
+    catch (error) {
+        console.error('Error al obtener solicitudes desde la vista:', error);
+        res.status(500).json({ message: 'Error al obtener solicitudes desde la vista', error });
+    }
+});
+exports.getSolicitudesFromViewUsuario = getSolicitudesFromViewUsuario;
+const createLastAdjucacionPerUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Consulta SQL para crear la vista
         const createViewQuery = `
-            CREATE OR REPLACE VIEW vista_ultima_solicitud_por_orden AS
-            SELECT 
-                s1.id_sol,
-                s1.id_ot,
-                s1.desc_sol,
-                s1.fecha_emision,
-                s1.fecha_plazo,
-                s1.fecha_termino,
-                s1.fecha_vista,
-                s1.isView,
-                s1.completada,
-                s1.rut_usuario,
-                s1.id_estado_ot,
-                (SELECT nom_estado_ot FROM estado_ot WHERE id_estado_ot = s1.id_estado_ot) AS nom_estado_ot
-            FROM solicitud s1
-            WHERE s1.rut_usuario IS NOT NULL
-              AND s1.fecha_emision = (
-                SELECT MAX(s2.fecha_emision)
-                FROM solicitud s2
-                WHERE s2.id_ot = s1.id_ot
-                  AND s2.rut_usuario IS NOT NULL
-            );
+           CREATE OR REPLACE VIEW vista_ultima_adjudicacion AS
+SELECT 
+    s1.id_adjudicacion,
+    s1.rut_usuario,
+    s1.id_ot,
+    s1.fecha_adjudicacion,
+    (SELECT nom_usu FROM usuario WHERE rut_usuario = s1.rut_usuario) AS nom_usu,
+    (SELECT ap_usu FROM usuario WHERE rut_usuario = s1.rut_usuario) AS ap_usu
+FROM adjudicacion s1
+WHERE s1.rut_usuario IS NOT NULL
+  AND NOT EXISTS (
+      SELECT 1 
+      FROM adjudicacion s2
+      WHERE s2.id_ot = s1.id_ot
+        AND s2.rut_usuario IS NOT NULL
+        AND (
+            s2.fecha_adjudicacion > s1.fecha_adjudicacion OR 
+            (s2.fecha_adjudicacion = s1.fecha_adjudicacion AND s2.id_adjudicacion > s1.id_adjudicacion)
+        )
+  );
+
+
         `;
         // Ejecutar la consulta para crear la vista
         yield connection_1.default.query(createViewQuery);
@@ -1284,13 +962,13 @@ const createLastSolicitudPerOrderView = (req, res) => __awaiter(void 0, void 0, 
         res.status(500).json({ message: 'Error al crear la vista', error });
     }
 });
-exports.createLastSolicitudPerOrderView = createLastSolicitudPerOrderView;
+exports.createLastAdjucacionPerUsuario = createLastAdjucacionPerUsuario;
 const createSolicitudView = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Consulta SQL para crear la vista
         const createViewQuery = `
             CREATE OR REPLACE VIEW vista_solicitudes_min_fecha AS
-            SELECT id_sol, id_ot, fecha_emision, isview, fecha_plazo,fecha_termino, rut_usuario, id_estado_ot,completada,fecha_vista,
+            SELECT id_sol, id_ot, fecha_emision, isview, fecha_plazo,fecha_termino, id_estado_ot,completada,fecha_vista,
             (SELECT nom_estado_ot FROM estado_ot WHERE id_estado_ot = s1.id_estado_ot) AS nom_estado_ot
             FROM solicitud s1
             WHERE fecha_emision = (
@@ -1316,11 +994,6 @@ const getOrdersByUsuarioOrder = (req, res) => __awaiter(void 0, void 0, void 0, 
                 {
                     model: cliente_1.default,
                     attributes: ['nom_cli', 'ap_cli'],
-                    required: true
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
                     required: true
                 },
                 {
@@ -1363,11 +1036,6 @@ const getOrdersEliminadas = (req, res) => __awaiter(void 0, void 0, void 0, func
                     required: true,
                 },
                 {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
-                    required: true,
-                },
-                {
                     model: equipo_1.default,
                     attributes: ['mod_equipo', 'id_marca', 'id_tipo'],
                     required: true,
@@ -1398,11 +1066,6 @@ const getOrdersByUsuarioOrderEnProceso = (req, res) => __awaiter(void 0, void 0,
                 {
                     model: cliente_1.default,
                     attributes: ['nom_cli', 'ap_cli'],
-                    required: true
-                },
-                {
-                    model: usuario_1.default,
-                    attributes: ['nom_usu', 'ap_usu'],
                     required: true
                 },
                 {
@@ -1438,8 +1101,8 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             include: [
                 { model: equipo_1.default },
                 { model: cliente_1.default },
-                { model: usuario_1.default },
-                { model: vistamin_1.default }
+                { model: vistamin_1.default },
+                { model: vistaultimousuario_1.default }
             ]
         });
         if (order) {
@@ -1476,14 +1139,13 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.deleteOrder = deleteOrder;
 const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { fec_creacion, fec_entrega, descripcion, rut_cliente, rut_usuario, num_equipo } = req.body;
+    const { fec_creacion, fec_entrega, descripcion, rut_cliente, num_equipo } = req.body;
     try {
         const newOrder = yield orders_1.default.create({
             fec_creacion,
             fec_entrega,
             descripcion,
             rut_cliente, // Incluye id_cliente en la creación
-            rut_usuario, // Incluye rut_usuario
             num_equipo, // Incluye num_equipo
         });
         res.json({
@@ -1500,7 +1162,7 @@ const postOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.postOrder = postOrder;
 const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { fec_creacion, fec_entrega, descripcion, rut_cliente, rut_usuario, num_equipo } = req.body; // Obtener los campos del cuerpo de la solicitud
+    const { fec_creacion, fec_entrega, descripcion, rut_cliente, num_equipo } = req.body; // Obtener los campos del cuerpo de la solicitud
     try {
         const order = yield orders_1.default.findByPk(id); // Buscar la orden por ID
         if (order) {
@@ -1510,7 +1172,6 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 fec_entrega,
                 descripcion,
                 rut_cliente,
-                rut_usuario,
                 num_equipo,
             }); // Actualiza todos los campos proporcionados
             res.json({

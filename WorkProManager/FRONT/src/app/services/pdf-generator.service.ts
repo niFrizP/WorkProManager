@@ -42,7 +42,7 @@ export class PdfGeneratorService {
       checkPageOverflow(40);
       pdf.text(`OT N°: ${order.id_ot}`, 15, currentY);
       currentY += 8;
-      pdf.text(`Creada por: ${order.Usuario.nom_usu} ${order.Usuario.ap_usu}`, 15, currentY);
+      pdf.text(`Creada por: ${order.VistaUltimaAdjudicacion?.nom_usu} ${order.VistaUltimaAdjudicacion?.ap_usu}`, 15, currentY);
       currentY += 8;
       pdf.text(`Fecha de creación: ${new Date(order.fec_creacion).toLocaleDateString()}`, 15, currentY);
       currentY += 8;
@@ -56,11 +56,11 @@ export class PdfGeneratorService {
       pdf.text('DATOS DEL CLIENTE', 15, currentY);
       currentY += 8;
       pdf.setFontSize(12);
-      pdf.text(`RUT: ${order.rut_cliente}-${order.cliente.d_veri_cli}`, 15, currentY);
+      pdf.text(`RUT: ${order.rut_cliente}-${order.cliente?.d_veri_cli}`, 15, currentY);
       currentY += 8;
-      pdf.text(`Nombre: ${order.cliente.nom_cli} ${order.cliente.ap_cli}`, 15, currentY);
+      pdf.text(`Nombre: ${order.cliente?.nom_cli} ${order.cliente?.ap_cli}`, 15, currentY);
       currentY += 8;
-      pdf.text(`Celular: ${order.cliente.cel_cli}`, 15, currentY);
+      pdf.text(`Celular: ${order.cliente?.cel_cli}`, 15, currentY);
 
       currentY += 12;
 
@@ -70,7 +70,7 @@ export class PdfGeneratorService {
       pdf.text('DATOS DEL EQUIPO', 15, currentY);
       currentY += 8;
       pdf.setFontSize(12);
-      pdf.text(`Modelo: ${order.Equipo.mod_equipo}`, 15, currentY);
+      pdf.text(`Modelo: ${order.Equipo?.mod_equipo}`, 15, currentY);
       currentY += 8;
       pdf.text(`N° Serie: ${order.num_equipo}`, 15, currentY);
 

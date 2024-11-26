@@ -29,6 +29,7 @@ const order_2 = __importDefault(require("../routes/order"));
 const query_1 = __importDefault(require("../routes/query"));
 const causa_rechazo_1 = __importDefault(require("../routes/causa_rechazo"));
 const detalle_causa_rechazo_1 = __importDefault(require("../routes/detalle_causa_rechazo"));
+const adjudicacion_1 = __importDefault(require("../routes/adjudicacion"));
 const tipo_1 = __importDefault(require("../routes/tipo"));
 const login_1 = __importDefault(require("../routes/login"));
 const solicitud_1 = __importDefault(require("../routes/solicitud"));
@@ -66,6 +67,12 @@ class Server {
             }
             next();
         }, causa_rechazo_1.default);
+        this.app.use('/api/adjudicacion', (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a login');
+            }
+            next();
+        }, adjudicacion_1.default);
         this.app.use('/api/detallecausa', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a login');

@@ -15,6 +15,7 @@ import ordersCountByService from '../routes/order';
 import queryRoutes from '../routes/query';
 import causaRoutes from '../routes/causa_rechazo';
 import detallecausaroutes from '../routes/detalle_causa_rechazo';
+import adjudicacionRoutes from '../routes/adjudicacion';
 
 import routesTipo from '../routes/tipo';
 import routesLogin from '../routes/login';
@@ -68,6 +69,13 @@ class Server {
             }
             next();
         }, causaRoutes);
+
+        this.app.use('/api/adjudicacion', (req: Request, res: Response, next: Function) => {
+            if (req.method === 'GET') {
+                console.log('Acceso a login');
+            }
+            next();
+        }, adjudicacionRoutes);
 
         this.app.use('/api/detallecausa', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {

@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 
 // Interfaces
-import { Order } from '../../interfaces/order';
 import { Servicio } from '../../interfaces/servicio';
 import { Usuario } from '../../interfaces/usuario';
 import { Marca } from '../../interfaces/marca';
@@ -24,6 +23,7 @@ import { MarcaService } from '../../services/marca.service';
 import { ClienteService } from '../../services/cliente.service';
 import { EquipoService } from '../../services/equipo.service';
 import { SolicitudService } from '../../services/solicitud.service';
+import { AdjudicacionService } from '../../services/adjudicacion.service';
 
 // Components
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
@@ -31,18 +31,20 @@ import { DetalleOTService } from '../../services/detalle_ot.service';
 import { error } from 'console';
 import { Solicitud } from '../../interfaces/solicitud';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { Adjudicacion } from '../../interfaces/adjudicacion';
 
 @Component({
   selector: 'app-edit-order',
   standalone: true,
   imports: [RouterLink, RouterOutlet, ReactiveFormsModule, HttpClientModule, CommonModule, SidebarComponent, FormsModule, ModalComponent],
-  templateUrl: './edit-order.component.html',
+  templateUrl: './edit-order-gestor.component.html',
   // styleUrls: ['./new-ot.component.css']
 })
-export class EditOrderComponent implements OnInit {
+export class EditOrderGestorComponent implements OnInit {
   mostrarSelectServicio: boolean = false; 
     solicitudForm: FormGroup;  // Define el FormGroup para el formulario
 
+  adjudicacionData: Adjudicacion[] = [];    
   solicitudes: Solicitud[] = [];
   solicitudesInvertidas: Solicitud[] = [];
   servicios: Servicio[] = []; // Inicialización como array vacío
@@ -96,7 +98,8 @@ export class EditOrderComponent implements OnInit {
     private equipoService:EquipoService,
     private clienteService:ClienteService,
     private solicitudService:SolicitudService,
-    public authService: AuthService
+    public authService: AuthService,
+    private adjudicacionService:AdjudicacionService
     
   ) {
 
@@ -195,6 +198,8 @@ export class EditOrderComponent implements OnInit {
       return this.cambiarSolicitud = 3;
     }
   }
+
+ 
   
   updateeee() {
  
@@ -236,6 +241,7 @@ export class EditOrderComponent implements OnInit {
           ap_usu: data.VistaUltimaAdjudicacion?.ap_usu,
           nom_usu: data.VistaUltimaAdjudicacion?.nom_usu, // Cambia esto si el nombre no está directamente en 'Usuario'
           rut_cliente: data.rut_cliente,
+          rut_usuario: data.VistaUltimaAdjudicacion?.rut_usuario,
           nombre: data.cliente?.nom_cli,
           mod_equipo: data.Equipo?.mod_equipo, // Asegúrate de que esta propiedad exista
           num_equipo: data.num_equipo, // Asegúrate de que esta propiedad exista
@@ -323,7 +329,7 @@ export class EditOrderComponent implements OnInit {
       fecha_emision: new Date(),
       rut_usuario: this.form.get('rut_usuario')?.value,
       completada: false,
-      id_estado_ot: 2,
+      id_estado_ot: 3
     };
     
     console.log('Solicitud data:')
@@ -437,6 +443,8 @@ export class EditOrderComponent implements OnInit {
       const detalleOT = await this.createOrUpdateDetalleOT();
 
       const solicitud = await this.createorupdateSolicitud();
+
+      const adjudicacion = await this.createAdjudicacion();
 
 
       console.log(order);
@@ -629,6 +637,52 @@ export class EditOrderComponent implements OnInit {
     }
 }
 
+private async createAdjudicacion(): Promise<newOrder> {
+  // Usar this.id_ot en lugar de obtenerlo del formulario
+  this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
+
+
+  const adjudicacionData: Adjudicacion = {
+      id_ot: this.id_ot,
+      rut_usuario : this.form.get('rut_usuario')?.value,
+      fecha_adjudicacion: new Date()
+  };
+
+ 
+          return new Promise((resolve, reject) => {
+              this.adjudicacionService.saveAdjudicaciones(adjudicacionData).subscribe({
+                  next: (response: any) => {  // Usamos 'any' para acceder a la respuesta completa
+                      console.log('Response from server:', response);
+
+                      // Asegúrate de que la respuesta tiene la estructura esperada
+                      const newOrder = response?.order; // Accede al objeto 'order'
+
+                      if (newOrder) {
+                          this.newOrderId = newOrder?.id_ot; // Accede a la propiedad 'id_ot'
+
+                          if (this.newOrderId) {
+                              console.log('New order ID:', this.newOrderId);
+                          } else {
+                              console.warn('No order ID found in response');
+                          }
+
+                          resolve(newOrder); // Devuelve la orden creada
+                      } else {
+                          console.warn('Order object not found in response');
+                          reject(new Error('Order object not found in response'));
+                      }
+                  },
+                  error: (error) => {
+                      console.error('Error creating order:', error);
+                      reject(error);
+                  }
+              });
+          });
+      }
+  
+
+
+
   private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
 
@@ -779,22 +833,33 @@ export class EditOrderComponent implements OnInit {
     }, 2000);
   }
   
-  
+  onMarcaChange(event: Event) {
+    const selectedId = (event.target as HTMLSelectElement).value;
+    const selectedUser = this.marcas.find(marca => marca.id_marca?.toString() === selectedId);
+    
+    // Comprobar si el usuario seleccionado existe antes de acceder a su precio
+    if (selectedUser) {
+      this.selectedMarcaNombre = selectedUser.nom_marca // Usa la propiedad precio o lo que necesites
+     
+    } else {
+      this.selectedMarcaNombre = null// Usa la propiedad precio o lo que necesites
+
+
+    }
+  }
 
   onUserChange(event: Event) {
     const selectedId = (event.target as HTMLSelectElement).value;
     const selectedUser = this.usuarios.find(usuario => usuario.rut_usuario?.toString() === selectedId);
     
+    // Comprobar si el usuario seleccionado existe antes de acceder a su precio
     if (selectedUser) {
-      this.selectedUsuarioName = selectedUser.nom_usu;
-      this.selectedUsuarioSurname = selectedUser.ap_usu;
-      this.selectedUsuarioID = selectedUser.rut_usuario ?? null;
-      this.form.patchValue({ rut_usuario: this.selectedUsuarioID });
+      this.selectedUsuarioName = selectedUser.nom_usu // Usa la propiedad precio o lo que necesites
+     
     } else {
-      this.selectedUsuarioName = null;
-      this.selectedUsuarioSurname = null;
-      this.selectedUsuarioID = null;
-      this.form.patchValue({ rut_usuario: null });
+      this.selectedUsuarioName = null// Usa la propiedad precio o lo que necesites
+
+
     }
   }
   
@@ -812,36 +877,8 @@ export class EditOrderComponent implements OnInit {
     });
   }
   
-  onMarcaChange(event: Event) {
-    const selectedId = (event.target as HTMLSelectElement).value;
-    const selectedUser = this.marcas.find(marca => marca.id_marca?.toString() === selectedId);
-    
-    // Comprobar si el usuario seleccionado existe antes de acceder a su precio
-    if (selectedUser) {
-      this.selectedMarcaNombre = selectedUser.nom_marca // Usa la propiedad precio o lo que necesites
-     
-    } else {
-      this.selectedMarcaNombre = null// Usa la propiedad precio o lo que necesites
 
 
-    }
-  }
-
-  loadOrders(id: number): void {
-    this._orderService.getlistnewOrders().subscribe(
-      (data: newOrder[]) => {
-        this.newOrders = data;
-        console.log(this.newOrders.map(newOrder => ({
-          id: newOrder.id_ot,      // Asegúrate de que 'id' esté disponible en newOrder
-          Equipo: newOrder.Equipo
-        })));
-      },
-      (error) => {
-        console.error('Error fetching orders', error);
-      }
-    );
-  }
-  
   getOrderIdFromUrl(): number {
     const urlSegments = window.location.pathname.split('/');
     return Number(urlSegments[urlSegments.length - 1]); // Asegúrate de que este índice sea correcto

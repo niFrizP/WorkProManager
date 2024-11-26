@@ -1,6 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
 import Cliente from './cliente'; // Importa el modelo Cliente
-import Usuario from './usuario'; // Importa el modelo Usuario
 import Servicio from './servicio'; // Importa el modelo Servicio
 import Equipo from './equipo'; // Importa el modelo Equipo
 import EstadoOT from './estado_ot'; // Importa el modelo EstadoOT
@@ -8,6 +7,8 @@ import db from '../db/connection';
 import Solicitud from './solicitud';
 import VistaSolicitud from './vistamin';
 import VistaSolicitudTecnico from './vistatecnico';
+import { getOrdersByUsuarioOrder } from '../controllers/order';
+import VistaUltimaAdjudicacion from './vistaultimousuario';
 
 
 class Order extends Model {}
@@ -40,13 +41,6 @@ Order.init({
             key: 'rut_cliente'
         }
     },
-    rut_usuario: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'usuario',
-            key: 'rut_usuario'
-        }
-    },
 
     num_equipo: {
         type: DataTypes.INTEGER,
@@ -70,13 +64,14 @@ Order.init({
 
 // Definir las relaciones
 Order.belongsTo(Cliente, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
-Order.belongsTo(Usuario, { foreignKey: 'rut_usuario', targetKey: 'rut_usuario' });
 Order.belongsTo(Solicitud, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.belongsTo(Equipo, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
 Order.hasMany(Order, { foreignKey: 'id_ot' });
 Order.belongsTo(VistaSolicitud, { foreignKey: 'id_ot', targetKey: 'id_ot' });
+Order.belongsTo(VistaUltimaAdjudicacion, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.belongsTo(VistaSolicitudTecnico, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.hasMany(Solicitud, { foreignKey: 'id_ot' }); // Cambiado a hasMany
+
 
 
 

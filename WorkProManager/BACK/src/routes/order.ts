@@ -1,6 +1,6 @@
 // WorkProManager/BACK/src/routes/order.ts
 import { Router } from 'express';
-import {  getOrder,getOrdersByTecnico, createLastSolicitudPerOrderView,getOrders_1,getOrdersFinalizadasCountByMonth,countOrdersNotificationRechazadas,countOrdersNotificationFinalizada,countOrdersNotificationReportes,countOrdersNotificationCotizacon,getOrdersRealizadasCountByMonth,getOrdersCountRealizadasTecnico,getOrdersCountPorRealizarTecnico,getOrdersCountTerminadas, getOrdersCountPorRealizar,getOrders,getOrdersCountByMonth,getOrdersCotizacionesTecnico,getOrdersReporteTecnico, getOrdersCotizacionesGeneral,getOrdersReporteGeneral,getOrders_2,getOrders_3,getOrdersCompletadas, getOrderssEliminadas ,postOrder, updateOrder, getSolicitudesFromView, deleteOrder, createSolicitudView, getOrdersEliminadas, getOrdersByRutUsuario1, getOrdersByRutUsuario2, getOrdersByRutUsuario3, countOrdersNotificationReportesByRut, countOrdersNotificationCotizacionesByRut} from '../controllers/order';
+import {  getOrder,getOrdersByTecnico, getSolicitudesFromViewUsuario, createLastAdjucacionPerUsuario,getOrdersFinalizadasCountByMonth,countOrdersNotificationRechazadas,countOrdersNotificationFinalizada,countOrdersNotificationReportes,countOrdersNotificationCotizacon,getOrdersRealizadasCountByMonth,getOrdersCountRealizadasTecnico,getOrdersCountPorRealizarTecnico,getOrdersCountTerminadas, getOrdersCountPorRealizar,getOrders,getOrdersCountByMonth,getOrdersCotizacionesTecnico,getOrdersReporteTecnico, getOrdersCotizacionesGeneral,getOrdersReporteGeneral,getOrdersCompletadas, getOrderssEliminadas ,postOrder, updateOrder, getSolicitudesFromView, deleteOrder, createSolicitudView, getOrdersEliminadas, countOrdersNotificationReportesByRut, countOrdersNotificationCotizacionesByRut} from '../controllers/order';
 import { Sequelize } from 'sequelize';
 import sequelize from '../db/connection';
 import db from '../db/connection';
@@ -9,9 +9,10 @@ import Order from '../models/orders';
 const router = Router();
 
 router.get('/', getOrders); // Ruta para obtener todas las ordenes
-router.get('/tecnico', getOrdersByTecnico)
+router.post('/tecnico', getOrdersByTecnico)
 
-router.get('/vistatecnico', createLastSolicitudPerOrderView) //crea vista de ultima solicitud por orden
+router.get('/vistausuario', createLastAdjucacionPerUsuario) //crea vista de ultima solicitud por orden
+router.get('/vervistausuario', getSolicitudesFromViewUsuario)
 
 router.get('/completass', getOrdersCompletadas)
 router.post('/reportestecnico', getOrdersReporteTecnico)
@@ -34,12 +35,7 @@ router.post('/cotizacionesabiertastecnico', getOrdersCountPorRealizarTecnico)
 
 router.get('/cotizacionesgeneral', getOrdersCotizacionesGeneral)
 router.post('/cotizacionestecnico', getOrdersCotizacionesTecnico)
-router.get('/getOrders1', getOrders_1 )
-router.get('/getOrders2', getOrders_2 )
-router.get('/getOrders3', getOrders_3 );
-router.get('/getOrdersByRutUsuario1', getOrdersByRutUsuario1 );
-router.get('/getOrdersByRutUsuario2', getOrdersByRutUsuario2 );
-router.get('/getOrdersByRutUsuario3', getOrdersByRutUsuario3 );
+
 
 router.get('/reportesGeneral', getOrdersReporteGeneral);
 
@@ -76,20 +72,7 @@ router.get('/count-by-status', async (req, res) => {
   });
 
 
-  router.get('/ordersByUsuario', async (req, res) => {
-    try {
-      const ordersByUsuario = await Order.findAll({
-        attributes: ['rut_usuario', [sequelize.fn('COUNT', sequelize.col('id_ot')), 'total']], // Contar el número de órdenes por usuario
-        group: ['rut_usuario'],  // Agrupar por el campo 'rut_usuario'
-      });
-  
-      res.json(ordersByUsuario);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error al obtener los datos');
-    }
-  }
-  );
+
   
   // Ejemplo de contar órdenes por servicio
   router.get('/count-by-service', async (req, res) => {
