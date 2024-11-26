@@ -44,7 +44,7 @@ export class PdfGeneratorRechazadasService {
       pdf.setFontSize(12);
       pdf.text(`OT N°: ${order.id_ot}`, margin, currentY);
       currentY += 8;
-      pdf.text(`Creada por: ${order.Usuario.nom_usu} ${order.Usuario.ap_usu}`, margin, currentY);
+      pdf.text(`Creada por: ${order.VistaUltimaAdjudicacion?.nom_usu} ${order.VistaUltimaAdjudicacion?.ap_usu}`, margin, currentY);
       currentY += 8;
       pdf.text(`Fecha de creación: ${new Date(order.fec_creacion).toLocaleDateString()}`, margin, currentY);
       currentY += 8;
@@ -57,11 +57,11 @@ export class PdfGeneratorRechazadasService {
       pdf.text('DATOS DEL CLIENTE', margin, currentY);
       currentY += 8;
       pdf.setFontSize(12);
-      pdf.text(`RUT: ${order.rut_cliente}-${order.cliente.d_veri_cli}`, margin, currentY);
+      pdf.text(`RUT: ${order.rut_cliente}-${order.cliente?.d_veri_cli}`, margin, currentY);
       currentY += 8;
-      pdf.text(`Nombre: ${order.cliente.nom_cli} ${order.cliente.ap_cli}`, margin, currentY);
+      pdf.text(`Nombre: ${order.cliente?.nom_cli} ${order.cliente?.ap_cli}`, margin, currentY);
       currentY += 8;
-      pdf.text(`Celular: ${order.cliente.cel_cli}`, margin, currentY);
+      pdf.text(`Celular: ${order.cliente?.cel_cli}`, margin, currentY);
 
       pdf.text(`Orden: ${order.descripcion}`, margin, currentY);
 

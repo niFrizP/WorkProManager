@@ -60,23 +60,33 @@ export class PdfGeneratorService {
       drawTableHeader(10, currentY, 190, 10, 'INFORMACIÓN GENERAL');
       pdf.setFontSize(10);
       pdf.text(`OT N°: ${order.id_ot}`, 12, currentY + 5);
-      pdf.text(`Creada por: ${order.Usuario.nom_usu} ${order.Usuario.ap_usu}`, 80, currentY + 5);
+      pdf.text(`Creada por: ${order.VistaUltimaAdjudicacion?.nom_usu} ${order.VistaUltimaAdjudicacion?.ap_usu}`, 80, currentY + 5);
       pdf.text(`Fecha creación: ${new Date(order.fec_creacion).toLocaleDateString()}`, 12, currentY + 10);
       pdf.text(`Fecha entrega: ${new Date(order.fec_entrega).toLocaleDateString()}`, 80, currentY + 10);
       currentY += 15;
 
       // Datos del Cliente
       drawTableHeader(10, currentY, 190, 10, 'DATOS DEL CLIENTE');
-      pdf.text(`RUT: ${order.rut_cliente}-${order.cliente.d_veri_cli}`, 12, currentY + 5);
-      pdf.text(`Nombre: ${order.cliente.nom_cli} ${order.cliente.ap_cli}`, 80, currentY + 5);
-      pdf.text(`Celular: ${order.cliente.cel_cli}`, 150, currentY + 5);
+      pdf.text(`RUT: ${order.rut_cliente}-${order.cliente?.d_veri_cli}`, 12, currentY + 5);
+      pdf.text(`Nombre: ${order.cliente?.nom_cli} ${order.cliente?.ap_cli}`, 80, currentY + 5);
+      pdf.text(`Celular: ${order.cliente?.cel_cli}`, 150, currentY + 5);
       currentY += 15;
 
-      // Datos del Equipo
-      drawTableHeader(10, currentY, 190, 10, 'DATOS DEL EQUIPO');
-      pdf.text(`Modelo: ${order.Equipo.mod_equipo}`, 12, currentY + 5);
-      pdf.text(`N° Serie: ${order.num_equipo}`, 80, currentY + 5);
-      currentY += 15;
+      // Datos del equipo
+      pdf.setFontSize(14);
+      checkPageOverflow(20);
+      pdf.text('DATOS DEL EQUIPO', 15, currentY);
+      currentY += 8;
+      pdf.setFontSize(12);
+      if (order.Equipo) {
+        pdf.text(`Modelo: ${order.Equipo.mod_equipo}`, 15, currentY);
+      } else {
+        pdf.text('Modelo: N/A', 15, currentY);
+      }
+      currentY += 8;
+      pdf.text(`N° Serie: ${order.num_equipo}`, 15, currentY);
+
+      currentY += 12;
 
       // Detalles de la Orden
       drawTableHeader(10, currentY, 190, 10, 'DETALLES DE LA ORDEN');

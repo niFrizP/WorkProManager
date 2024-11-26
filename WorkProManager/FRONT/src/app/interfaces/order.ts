@@ -4,7 +4,6 @@ export interface Order {
     fec_creacion: Date;
     fec_entrega: Date;
     descripcion: String;
-    rut_usuario: number;
     rut_cliente: number;
 }
 

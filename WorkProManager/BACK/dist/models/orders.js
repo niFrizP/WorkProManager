@@ -5,12 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const cliente_1 = __importDefault(require("./cliente")); // Importa el modelo Cliente
-const usuario_1 = __importDefault(require("./usuario")); // Importa el modelo Usuario
 const equipo_1 = __importDefault(require("./equipo")); // Importa el modelo Equipo
 const connection_1 = __importDefault(require("../db/connection"));
 const solicitud_1 = __importDefault(require("./solicitud"));
 const vistamin_1 = __importDefault(require("./vistamin"));
 const vistatecnico_1 = __importDefault(require("./vistatecnico"));
+const vistaultimousuario_1 = __importDefault(require("./vistaultimousuario"));
 class Order extends sequelize_1.Model {
 }
 // Definir el modelo de 'Order'
@@ -40,13 +40,6 @@ Order.init({
             key: 'rut_cliente'
         }
     },
-    rut_usuario: {
-        type: sequelize_1.DataTypes.INTEGER,
-        references: {
-            model: 'usuario',
-            key: 'rut_usuario'
-        }
-    },
     num_equipo: {
         type: sequelize_1.DataTypes.INTEGER,
         references: {
@@ -64,11 +57,11 @@ Order.init({
 });
 // Definir las relaciones
 Order.belongsTo(cliente_1.default, { foreignKey: 'rut_cliente', targetKey: 'rut_cliente' });
-Order.belongsTo(usuario_1.default, { foreignKey: 'rut_usuario', targetKey: 'rut_usuario' });
 Order.belongsTo(solicitud_1.default, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.belongsTo(equipo_1.default, { foreignKey: 'num_equipo', targetKey: 'num_equipo' });
 Order.hasMany(Order, { foreignKey: 'id_ot' });
 Order.belongsTo(vistamin_1.default, { foreignKey: 'id_ot', targetKey: 'id_ot' });
+Order.belongsTo(vistaultimousuario_1.default, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.belongsTo(vistatecnico_1.default, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.hasMany(solicitud_1.default, { foreignKey: 'id_ot' }); // Cambiado a hasMany
 exports.default = Order;

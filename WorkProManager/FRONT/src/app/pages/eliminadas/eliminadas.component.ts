@@ -235,7 +235,8 @@ export class EliminadasComponent implements OnInit {
 
   actualizarTiempoRestante() {
     const ahora = new Date().getTime();
-    const diferencia = this.newOrders[0].VistaSolicitud.fecha_plazo.getTime() - ahora;
+    const fechaPlazo = this.newOrders[0].VistaSolicitud?.fecha_plazo;
+    const diferencia = fechaPlazo ? fechaPlazo.getTime() - ahora : 0;
 
     if (diferencia > 0) {
       const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
@@ -431,7 +432,7 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
 
   generatePDFEliminada(order: newOrder): void {
     try {
-      if (!order || !order.Equipo.mod_equipo) {
+      if (!order || !order.Equipo?.mod_equipo) {
         throw new Error('Datos de orden incompletos');
       }
   
@@ -510,7 +511,7 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
 
           this.filteredOrders = this.newOrders; // Inicializar filteredOrders
           this.sortOrders(this.newOrders);
-          console.log(this.newOrders.map(newOrder => newOrder.VistaSolicitud.nom_estado_ot));
+          console.log(this.newOrders.map(newOrder => newOrder.VistaSolicitud?.nom_estado_ot));
 
           
         },
@@ -525,7 +526,7 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
         (data: newOrder[]) => {
           this.newOrders = data;
           this.filteredOrders = this.newOrders; // Inicializar filteredOrders
-          console.log(this.newOrders.map(newOrder => newOrder.VistaSolicitud.nom_estado_ot));
+          console.log(this.newOrders.map(newOrder => newOrder.VistaSolicitud?.nom_estado_ot));
       
           this.sortOrders(this.newOrders);
       
@@ -593,15 +594,13 @@ updateSolicitudOnLoadWhileCreate(id_ot: number): void {
 
   filterOrders() {
     this.filteredOrders = this.newOrders
-      .filter(newOrder => this.selectedStatus === 'todas' || newOrder.VistaSolicitud.nom_estado_ot.toLowerCase() === this.selectedStatus)
+      .filter(newOrder => this.selectedStatus === 'todas' || newOrder.VistaSolicitud?.nom_estado_ot.toLowerCase() === this.selectedStatus)
       .filter(newOrder => this.selectedMonth === 0 || new Date(newOrder.fec_entrega).getMonth() + 1 === this.selectedMonth)
       .filter(newOrder => this.selectedYear === 0 || new Date(newOrder.fec_entrega).getFullYear() === this.selectedYear)
       .filter(newOrder => !this.searchRutCliente || newOrder.rut_cliente.toString().toLowerCase().includes(this.searchRutCliente.toLowerCase()))
       .filter(newOrder => !this.selectedDate || new Date(newOrder.fec_entrega).toDateString() === this.selectedDate?.toDateString())
-      .filter(newOrder => !this.searchEquipo || newOrder.Equipo.mod_equipo.toString().toLowerCase().includes(this.searchEquipo.toString().toLowerCase()))
-      .filter(newOrder => this.selectedUsuario === 'todos' || newOrder.Usuario.nom_usu.toLowerCase() === this.selectedUsuario.toLowerCase())// Filtro de usuario
-      .filter(newOrder => !this.selectedFechaPlazo || new Date(newOrder.VistaSolicitud.fecha_plazo).toDateString() === this.selectedFechaPlazo?.toDateString())
-      .sort((a, b) => new Date(b.VistaSolicitud.fecha_plazo).getTime() - new Date(a.VistaSolicitud.fecha_plazo).getTime());
+      .filter(newOrder => !this.searchEquipo || newOrder.Equipo?.mod_equipo.toString().toLowerCase().includes(this.searchEquipo.toString().toLowerCase()))
+      .filter(newOrder => this.selectedUsuario === 'todos' || newOrder.VistaUltimaAdjudicacion?.nom_usu?.toLowerCase() === this.selectedUsuario.toLowerCase())// Filtro de usuario
       this.filteredOrders = this.sortOrders(this.filteredOrders);
 
   }

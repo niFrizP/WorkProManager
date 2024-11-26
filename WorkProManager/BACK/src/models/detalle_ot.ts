@@ -22,13 +22,7 @@ const Detalle_Ot = db.define('detalle_ot', {
     desc_detalle: {
         type: DataTypes.STRING
     },
-    rut_usuario: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'usuario',
-            key: 'rut_usuario'
-        }
-    },
+
     d_estado: {
         type: DataTypes.INTEGER
     }

@@ -14,6 +14,7 @@ import { Marca } from '../../interfaces/marca';
 import { Equipo } from '../../interfaces/equipo';
 import { Tipo } from '../../interfaces/tipo';
 import { Cliente } from '../../interfaces/cliente';
+import { Adjudicacion } from '../../interfaces/adjudicacion';
 import { DetalleOT } from '../../interfaces/detalle_ot';
 import { Solicitud } from '../../interfaces/solicitud';
 
@@ -23,6 +24,7 @@ import { ServicioService } from '../../services/servicio.service';
 import { UsuarioService } from '../../services/usuario.service';
 import { MarcaService } from '../../services/marca.service';
 import { ClienteService } from '../../services/cliente.service';
+import { AdjudicacionService } from '../../services/adjudicacion.service';
 import { EquipoService } from '../../services/equipo.service';
 import { TipoService } from '../../services/tipo';
 import { DetalleOTService } from '../../services/detalle_ot.service';
@@ -58,6 +60,7 @@ export class CotizacionComponent implements OnInit {
     servicioSeleccionado: number | null = null;
     selectedTipoNombre: string | null = null;
     selectedServiceID: number | null = null;
+    adjudicacionData: Adjudicacion[] = [];
     selectedUsuarioID: number | null = null;  // Add this line
     form: FormGroup;
     solicitudData: Solicitud[] = []
@@ -88,7 +91,8 @@ export class CotizacionComponent implements OnInit {
       private clienteService:ClienteService,
       private tipoService:TipoService,
       private solicitudService:SolicitudService, 
-      private authService: AuthService,
+      private authService: AuthService, 
+      private adjudicacionService: AdjudicacionService
       
     ) {
       this.form = this.fb.group({
@@ -178,6 +182,8 @@ export class CotizacionComponent implements OnInit {
         const detalleOT = await this.createOrUpdateDetalleOT();
         const solicitud = await this.createorupdateSolicitud();
   
+
+        const adjudicacion = await this.cretaorupdateadjudicacion();
         console.log('New order ID:', this.newOrderId);
         console.log('Order:', JSON.stringify(order, null, 2));
 
@@ -191,14 +197,38 @@ export class CotizacionComponent implements OnInit {
 
       if (this.form.invalid) {
         this.form.markAllAsTouched();
-        return;
-      }
-
-      if (this.form.valid) {
         console.log('Formulario enviado con exito', this.form.value);
       } else {
         console.log('Formulario inválido');
       }
+    }    cretaorupdateadjudicacion(): Promise<void> {
+      const adjudicacionData: Adjudicacion = {
+        id_ot: this.newOrderId!,
+        rut_usuario: this.form.get('rut_usuario')?.value,
+        fecha_adjudicacion: new Date()
+      };
+      return new Promise((resolve, reject) => {
+        this.adjudicacionService.saveAdjudicaciones(adjudicacionData).subscribe({
+          next: (response: any) => {
+            console.log('Response from server:', response);
+  
+            // Asegúrate de que la respuesta tiene la estructura esperada
+            const newAdjudicacion = response?.adjudicacion; // Accede al objeto 'adjudicacion'
+  
+            if (newAdjudicacion) {
+              console.log('New adjudicacion created:', newAdjudicacion);
+              resolve(); // Devuelve la adjudicación creada
+            } else {
+              console.warn('Adjudicacion object not found in response');
+              reject(new Error('Adjudicacion object not found in response'));
+            }
+          },
+          error: (error) => {
+            console.error('Error creating adjudicacion:', error);
+            reject(error);
+          }
+        });
+      });
     }
   
     onServicioChange(event: any) {
@@ -232,7 +262,6 @@ export class CotizacionComponent implements OnInit {
           isView: false,
           completada: false,
           fecha_emision: new Date(),
-          rut_usuario: this.form.get('rut_usuario')?.value,
           fecha_plazo: new Date(Date.now() + 24 * 60 * 60 * 1000), // Fecha actual + 1 día
         };
         
@@ -373,7 +402,6 @@ export class CotizacionComponent implements OnInit {
           fec_creacion: new Date(),
           fec_entrega: this.form.get('fecha')?.value,
           descripcion: this.form.get('descripcion')?.value,
-          rut_usuario: this.form.get('rut_usuario')?.value,
           rut_cliente: this.form.get('rut_cliente')?.value,
       };
   
@@ -437,7 +465,6 @@ export class CotizacionComponent implements OnInit {
       fecha_detalle: new Date(),
       desc_detalle: servicio.nom_serv!,
       d_estado: 0,
-      rut_usuario: this.form.get('rut_usuario')?.value,
     }));
   
     console.log('DetalleOT data:', JSON.stringify(detalleOTData, null, 2));

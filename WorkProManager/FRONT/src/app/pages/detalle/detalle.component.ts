@@ -67,6 +67,7 @@ export class DetalleComponent implements OnInit {
   selectedServiceID: number | null = null;
   selectedUsuarioID: number | null = null;  // Add this line
   form: FormGroup;
+  formDesc: FormGroup;
   estados: EstadoOT[] = [];
   loading: boolean = false;
   newDetalleOTId: number | null = null;
@@ -114,6 +115,10 @@ export class DetalleComponent implements OnInit {
       desc_detalle: [null, Validators.required],
       rut_usuario: [null, Validators.required],
       
+    });
+
+    this.formDesc = this.fb.group({
+      desc_sol: [null, Validators.required],
     });
     
     this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
@@ -450,8 +455,8 @@ public async createorupdateSolicitud(id_ot:number | null, id_estado_ot:number| n
 
   const solicitudData: Solicitud = {
     id_ot: id_ot ?? 0, // Ensure id_ot is not null
-    desc_sol: this.form.get('desc_sol')?.value,
     id_estado_ot: 4, // Ensure id_estado_ot is not null
+    desc_sol: this.formDesc.get('desc_sol')?.value,
     isView: false,
     fecha_emision: new Date(),
     fecha_termino: null, 
@@ -542,7 +547,15 @@ public async createorupdateSolicitud(id_ot:number | null, id_estado_ot:number| n
       next: () => {
         console.log('Solicitud updated successfully');
       },
-    }); })  }
+    });
+  
+    this.solicitudService.updateSolicitudByCompletada(this.solicitudes[0].id_sol!, true).subscribe({
+      next: () => {
+        console.log('Solicitud updated successfully');
+      },  
+    });
+  
+  })  }
 
 public confirmUpdate(id_ot: number): void {
   // Realiza la actualización solo si el usuario confirma

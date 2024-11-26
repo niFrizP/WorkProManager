@@ -3,7 +3,6 @@
     <div *ngIf="authService.getUserId() as rut">
       <h1 class="text-2xl font-bold text-center mb-4">Eliminadas</h1>
     </div>
-
     <div class="flex justify-between items-center mb-4">
       <div class="filtros">
         <h2 class="text-xl font-semibold mb-4 cursor-pointer" (click)="isFiltrosOpen = !isFiltrosOpen">Filtros</h2>
@@ -81,7 +80,6 @@
         </div>
       </div>
     </div>
-
     <table class="w-full border-collapse">
       <thead>
         <tr>
@@ -111,16 +109,6 @@
           <td class="border p-2" **ngIf="authService.getUserRole == 2">{{ newOrder.id_rechazo }}</td>
           <td class="border p-2">{{ newOrder.nombre_rechazo }}</td>
           <td class="border p-2">{{ newOrder.VistaSolicitud.fecha_emision }}</td>
-
-
-
-
-
-
-
-
-
-
           <td class="border p-2">
             <button [routerLink]="['createReport/', newOrder.id_ot]">✏️</button>
             <div *ngIf="authService.getUserRole() === 3">
@@ -136,11 +124,7 @@
       </tbody>
     </table>
 
-
     <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
-
-
-
 
     <div *ngIf="isEstadoModalOpen" class="modal-overlay">
       <div class="modal-content" [formGroup]="form">
@@ -179,12 +163,6 @@
           <input type="number" [formGroup]="form" formControlName="rut_receptor" placeholder="Añada una descripción"
             class="w-full p-2 border rounded">
         </div>
-
-
-
-
-
-
 
         <!--botones-->
         <div class="flex justify-end gap-2">

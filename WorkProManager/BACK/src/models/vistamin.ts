@@ -27,10 +27,6 @@ VistaSolicitud.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
-    rut_usuario: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     id_estado_ot: {
       type: DataTypes.INTEGER,
       allowNull: false,

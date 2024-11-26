@@ -66,14 +66,13 @@ const getDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.getDetalleOt = getDetalleOt;
 // Crear un nuevo detalle de OT
 const postDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id_ot, id_serv, fecha_detalle, desc_detalle, rut_usuario, d_estado } = req.body;
+    const { id_ot, id_serv, fecha_detalle, desc_detalle, d_estado } = req.body;
     try {
         const newDetalleOt = yield detalle_ot_1.default.create({
             id_ot,
             id_serv,
             fecha_detalle,
             desc_detalle,
-            rut_usuario,
             d_estado
         });
         res.status(201).json({
@@ -90,7 +89,7 @@ exports.postDetalleOt = postDetalleOt;
 // Actualizar un detalle de OT
 const updateDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id_ot, id_serv } = req.params;
-    const { fecha_detalle, desc_detalle, rut_usuario, d_estado } = req.body;
+    const { fecha_detalle, desc_detalle, d_estado } = req.body;
     try {
         const detalleOt = yield detalle_ot_1.default.findOne({
             where: { id_ot, id_serv }
@@ -101,7 +100,6 @@ const updateDetalleOt = (req, res) => __awaiter(void 0, void 0, void 0, function
                 id_serv,
                 fecha_detalle,
                 desc_detalle,
-                rut_usuario,
                 d_estado
             });
             res.json({ message: 'Detalle de OT actualizado con éxito' });

@@ -31,8 +31,8 @@ export class OrderService {
   }
 
   getOrdersListByTecnico(rut_usuario: number): Observable<newOrder[]> {
-    const body = { rut_usuario };  // Define el body correctamente
-    return this.http.post<newOrder[]>(`${this.myAppUrl}${this.myApiUrl}tecnico`, {rut_usuario});
+    // El cuerpo se pasa directamente en la solicitud sin encabezados adicionales
+    return this.http.post<newOrder[]>(`${this.myAppUrl}${this.myApiUrl}tecnico`, { rut_usuario });
   }
 
   getOrdersCountCerradas(): Observable<any> {
