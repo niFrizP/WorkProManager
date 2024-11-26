@@ -30,7 +30,8 @@
         </table>
 
         <div class="flex justify-center mt-4">
-            <pagination-controls (pageChange)="page = $event"></pagination-controls>
+            <pagination-controls (pageChange)="onPageChange($event)" class="mt-4"
+            previousLabel="Anterior" nextLabel="Siguiente"></pagination-controls>
         </div>
     </div>
 </div>

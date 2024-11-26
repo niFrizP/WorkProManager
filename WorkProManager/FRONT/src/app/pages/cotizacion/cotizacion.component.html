@@ -71,7 +71,7 @@
           </div>
           <div>
             <label for="marcas" class="block text-sm font-medium text-gray-700">Marca</label>
-            <select id="id_marca" formControlName="id_marca" (change)="onMarcaChange($event)"
+            <select id="id_marca" formControlName="id_marca" (change)="onMarcaChange($event)" title="Seleccione una marca"
               class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
               <option value="">Seleccione una marca</option>
               <option *ngFor="let marca of marcas" [value]="marca.id_marca">{{ marca.nom_marca }}</option>
