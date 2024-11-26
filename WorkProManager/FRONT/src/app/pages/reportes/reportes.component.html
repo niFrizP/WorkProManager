@@ -147,8 +147,8 @@
   </table>
   
 
-  <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
-
+  <pagination-controls (pageChange)="onPageChange($event)" class="mt-4"
+  previousLabel="Anterior" nextLabel="Siguiente"></pagination-controls>
 
   <!-- Modal de rechazo -->
 <div *ngIf="isRejectionModalOpen" class="modal-overlay">
