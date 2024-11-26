@@ -1,19 +1,19 @@
 <div class="bk-image min-h-screen bg-cover bg-center">
-
-
-    
+  <ng-container *ngIf="!isPage"> <!-- Si no estamos en el login, muestra el resto -->
     <aside>
       <div>
         <app-sidebar></app-sidebar>
       </div>
-       
     </aside>
-  <header>
-    <app-header></app-header>
-  </header>
+
+    <header>
+      <app-header></app-header>
+    </header>
+  </ng-container>
+
+  <!-- Main con router outlet -->
   <main>
     <router-outlet></router-outlet>
   </main>
 
-  
 </div>

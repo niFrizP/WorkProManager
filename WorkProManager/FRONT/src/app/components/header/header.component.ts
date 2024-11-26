@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-header',
   standalone: true,
   template: '<app-header></app-header>',
-  imports: [CommonModule, RouterOutlet, RouterModule],
+  imports: [CommonModule, RouterModule],
   providers: [TitleCasePipe],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],

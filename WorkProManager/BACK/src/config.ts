@@ -1,3 +1,10 @@
+/**
+ * @constant {string} JWT_SECRET
+ * @description Clave secreta utilizada para firmar y verificar tokens JWT.
+ * @default 'defaultsecret'
+ */
+
+
 // config.ts
 import dotenv from 'dotenv';
 

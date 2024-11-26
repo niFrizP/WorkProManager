@@ -1,84 +1,22 @@
-
-  
 <div>
-
+  <!-- Botón para abrir el sidebar en pantallas pequeñas -->
   <div class="lg:hidden fixed top-4 left-4 z-50">
     <button
       class="bg-blue-800 text-yellow-500 p-2 rounded-full focus:outline-none"
       (click)="toggleSidebar()"
       title="Toggle Sidebar"
     >
-      <!-- Ícono burger -->
       <i class="fas fa-bars text-2xl"></i>
     </button>
   </div>
-  
-  <!-- Sidebar para pantallas grandes -->
-  <aside
-    class="fixed inset-y-0 flex-col items-center justify-between w-full p-4 my-4 overflow-y-auto bg-blue-800 shadow-xl dark:bg-slate-850 max-w-64 xl:ml-6 rounded-2xl xl:left-0 transform hidden lg:flex"
-  >
-    <!-- Logo -->
-    <div class="mb-4">
-      <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap text-yellow-500">
-        <img
-          src="https://i.imgur.com/kTQg9EM.png"
-          alt="wpm-logo"
-          class="h-auto transition-all duration-700"
-          
-        />
-      </a>
-    </div>
-    
-    <!-- Rutas de navegación -->
-    <div class="flex-grow w-full">
-      <nav class="space-y-4">
-        <a
-          *ngFor="let item of resources"
-          class="block p-4 text-center font-medium text-yellow-500 rounded-lg hover:bg-yellow-400 hover:text-black dark:text-white dark:hover:bg-yellow-400 dark:hover:text-black relative"
-          [routerLink]="item.link"
-          routerLinkActive="active"
-        >
-          <i [class]="item.icon + ' mr-3'"></i>
-          <span>{{ item.name }}</span>
-      
-          <!-- Solo mostrar el contador en la esquina superior izquierda del ítem de "Reportes" -->
-          <span *ngIf="item.name === 'Ordenes' && contar > 0 && authService.getUserRole() != 2"
-            class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-        {{contar}}
-    </span>
-    <span *ngIf="item.name === 'Reportes' && contarReportes > 0 && authService.getUserRole() != 2"
-            class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-        {{contarReportes}}
-    </span>
-    <span *ngIf="item.name === 'Completas' && contarFinalizadas > 0 && authService.getUserRole() != 2"
-            class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-        {{contarFinalizadas}}
-    </span>
-    <span *ngIf="item.name === 'Eliminadas' && contarRechazadas > 0 && authService.getUserRole() != 2"
-            class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-        {{contarRechazadas}}
-    </span>
-    <span *ngIf="item.name === 'Ordenes' && contar > 0 && authService.getUserRole() === 2"
-            class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-        {{contarTecnico}}
-    </span>
-    <span *ngIf="item.name === 'Reportes' && contar > 0 && authService.getUserRole() === 2"
-      class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-  {{contarTecnicoReportes}}
-</span>
-    
-          
-        </a>
-      </nav>
-    </div>
-  </aside>
-  
+
   <!-- Sidebar para pantallas pequeñas -->
   <aside
-    [class.hidden]="!sidebarOpen"
+    [class.translate-x-0]="sidebarOpen"
+    [class.-translate-x-full]="!sidebarOpen"
     class="fixed inset-y-0 left-0 w-64 bg-blue-800 p-4 z-50 lg:hidden transform transition-transform duration-300"
   >
-    <!-- Cerrar sidebar -->
+    <!-- Botón para cerrar el sidebar -->
     <button
       class="absolute top-4 right-4 text-yellow-500"
       (click)="toggleSidebar()"
@@ -86,7 +24,7 @@
     >
       <i class="fas fa-times text-2xl"></i>
     </button>
-  
+
     <!-- Logo -->
     <div class="mb-4">
       <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap text-yellow-500">
@@ -97,25 +35,54 @@
         />
       </a>
     </div>
-  
+
     <!-- Rutas de navegación -->
-    <div class="flex-grow w-full mt-8">
-      <nav class="space-y-4">
-        <a
-          *ngFor="let item of resources"
-          class="block p-4 text-center font-medium text-yellow-500 rounded-lg hover:bg-yellow-400 hover:text-black dark:text-white dark:hover:bg-yellow-400 dark:hover:text-black"
-          [routerLink]="item.link"
-          routerLinkActive="active"
-        >
-          <i [class]="item.icon + ' mr-3'"></i>
-          <span>{{ item.name }}</span>
-        </a>
-      </nav>
-    </div>
+    <nav class="space-y-4">
+      <a
+        *ngFor="let item of resources"
+        class="block p-4 text-center font-medium text-yellow-500 rounded-lg hover:bg-yellow-400 hover:text-black dark:text-white dark:hover:bg-yellow-400 dark:hover:text-black"
+        [routerLink]="item.link"
+        routerLinkActive="active"
+      >
+        <i [class]="item.icon + ' mr-3'"></i>
+        <span>{{ item.name }}</span>
+      </a>
+    </nav>
   </aside>
 
+  <!-- Sidebar para pantallas grandes -->
+  <aside
+    class="fixed inset-y-0 flex flex-col items-center justify-between w-64 p-4 bg-blue-800 shadow-xl dark:bg-slate-850 hidden lg:flex"
+  >
+    <!-- Logo -->
+    <div class="mb-4">
+      <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap text-yellow-500">
+        <img
+          src="https://i.imgur.com/kTQg9EM.png"
+          alt="wpm-logo"
+          class="h-auto transition-all duration-700"
+        />
+      </a>
+    </div>
 
+    <!-- Rutas de navegación -->
+    <nav class="flex-grow w-full space-y-4">
+      <a
+        *ngFor="let item of resources"
+        class="block p-4 text-center font-medium text-yellow-500 rounded-lg hover:bg-yellow-400 hover:text-black dark:text-white dark:hover:bg-yellow-400 dark:hover:text-black relative"
+        [routerLink]="item.link"
+        routerLinkActive="active"
+      >
+        <i [class]="item.icon + ' mr-3'"></i>
+        <span>{{ item.name }}</span>
+        <!-- Notificaciones -->
+        <span
+          *ngIf="item.name === 'Ordenes' && contar > 0 && authService.getUserRole() != 2"
+          class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2"
+        >
+          {{ contar }}
+        </span>
+      </a>
+    </nav>
+  </aside>
 </div>
-  
-
-
