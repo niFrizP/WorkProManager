@@ -1,11 +1,13 @@
-import { DataTypes } from 'sequelize';
-import db from '../db/connection';
-import Order from './orders';
-import Rol from './rol';
-import usuarios_rol_2_con_tiempo from './usuarios_rol_2_con_tiempo';
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../db/connection';
 
-// Definición del modelo Usuario
-const Usuario = db.define('Usuario', {
+class usuarios_rol_2_con_tiempo extends Model {
+public rut_usuario!: number;
+}
+
+usuarios_rol_2_con_tiempo.init(
+  {
+
     rut_usuario: {
         type: DataTypes.INTEGER, // El tipo de dato es un entero
         primaryKey: true, // Define que rut_usuario es la clave primaria
@@ -28,10 +30,6 @@ const Usuario = db.define('Usuario', {
         type: DataTypes.STRING, // Define el correo del usuario como una cadena de caracteres
         allowNull: true // Correo es opcional
     },
-    password:{
-        type: DataTypes.STRING, // Define la contraseña del usuario como una cadena de caracteres
-        allowNull: false // Contraseña no puede ser nula    
-    },
     cel_usu:{
         type: DataTypes.STRING, // Define el celular del usuario como una cadena de caracteres
         allowNull: false // Celular no puede ser nulo
@@ -41,21 +39,24 @@ const Usuario = db.define('Usuario', {
         allowNull: false,
         references: {
             model: 'rol',
-            key: 'nom_rol'
+            key: 'id_rol'
         }
-    }
-}, {
-    tableName: 'usuario', // Especifica el nombre exacto de la tabla en la base de datos
-    createdAt: false, // Desactiva el timestamp de creación
-    updatedAt: false // Desactiva el timestamp de actualización
-});
+    },
+    tiempo_actual:{
+        type: DataTypes.DATE, // Define el rol del usuario como un entero
+        allowNull: false,
+},
+tiempo_limite:{
+    type: DataTypes.DATE, // Define el rol del usuario como un entero
+    allowNull: false,
+    },
+    },
+  {
+    sequelize,
+    modelName: 'usuarios_rol_2_con_tiempo',
+    tableName: 'usuarios_rol_2_con_tiempo', // Nombre de la vista en la base de datos
+    timestamps: false, // No tienes timestamps en la vista
+  }
+);
 
-Usuario.hasMany(Usuario, { foreignKey: 'rut_usuario' });
-Usuario.belongsTo(Rol, { foreignKey: 'id_rol',  targetKey: 'id_rol' });
-Usuario.hasMany(Usuario, { foreignKey: 'rut_usuario' });
-Usuario.hasOne(usuarios_rol_2_con_tiempo, { foreignKey: 'rut_usuario' });
-usuarios_rol_2_con_tiempo.belongsTo(Usuario, { foreignKey: 'rut_usuario' });
-
-
-
-export default Usuario;
+export default usuarios_rol_2_con_tiempo;

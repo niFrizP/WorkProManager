@@ -46,12 +46,13 @@ export const deleteServicio = async (req: Request, res: Response) => {
 };
 
 export const postServicio = async (req: Request, res: Response) => {
-    const { nom_serv, precio } = req.body; // Extrae los datos relevantes
+    const { nom_serv, tiempo_estimado } = req.body; // Extrae los datos relevantes
 
     try {
         // Crear el nuevo servicio sin especificar `id_servicio`
         const newServicio = await Servicio.create({
             nom_serv,
+            tiempo_estimado
         });
 
         res.json({

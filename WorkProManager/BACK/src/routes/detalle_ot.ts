@@ -9,6 +9,7 @@ import {
     deleteDetalleOtByOtId,
     countDetalleOt,
     countDetalleOtByEstado,
+    
 } from '../controllers/detalle_ot';
 
 const router = Router();

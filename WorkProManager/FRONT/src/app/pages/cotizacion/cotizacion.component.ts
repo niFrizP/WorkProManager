@@ -155,7 +155,7 @@ export class CotizacionComponent {
 
         // Establece la fecha actual
         const today = new Date();
-        this.fechaHoy = today.toISOString().split('T')[0];  // Obtiene solo la fecha sin la parte de la hora
+        this.fechaHoy = today.toISOString().split('.')[0]; // Include time part
 
         // Verificación del token de usuario
         this.authService.verificarToken().subscribe({
@@ -213,7 +213,7 @@ export class CotizacionComponent {
           confirmButtonColor: '#3085d6'
         }).then((result) => {
           if (result.isConfirmed) {
-            this.router.navigate(['/']); // Redirige a la página principal
+            this.router.navigate(['/orders']); // Redirige a la página principal
           }
         });
       } catch (error) {
@@ -680,7 +680,32 @@ export class CotizacionComponent {
       this.servicioAEliminar = null;
     }
   
-   
+    validateDateTime(event: any): void {
+      const selectedDateTime = new Date(event.target.value);
+      const day = selectedDateTime.getUTCDay();
+      const hours = selectedDateTime.getUTCHours();
+  
+      // Check if the selected day is Saturday (6) or Sunday (0)
+      if (day === 6 || day === 0) {
+          alert('No se permiten fechas en sábado o domingo.');
+          event.target.value = '';
+          return;
+      }
+  
+      // Check if the selected time is outside 9 AM to 5 PM
+      if (hours < 9 && hours >= 17) {
+          alert('La hora debe estar entre las 9:00 y las 17:00.');
+          event.target.value = '';
+          return;
+      }
+  
+      // Check if the selected date and time is in the past
+      const now = new Date();
+      if (selectedDateTime < now) {
+          alert('No se permiten fechas y horas anteriores a la actual.');
+          event.target.value = '';
+      }
+  }
   
   }
 

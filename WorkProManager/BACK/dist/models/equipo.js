@@ -28,7 +28,7 @@ const Equipo = connection_1.default.define('Equipo', {
     id_tipo: {
         type: sequelize_1.DataTypes.INTEGER,
         references: {
-            model: 'nom_tipo',
+            model: 'tipo_equipo',
             key: 'id_tipo'
         }
     }

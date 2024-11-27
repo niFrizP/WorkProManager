@@ -21,6 +21,7 @@ const connection_1 = __importDefault(require("../db/connection"));
 const vistamin_1 = __importDefault(require("../models/vistamin"));
 const sequelize_2 = __importDefault(require("sequelize"));
 const vistaultimousuario_1 = __importDefault(require("../models/vistaultimousuario"));
+const vistatiemposestimados_1 = __importDefault(require("../models/vistatiemposestimados"));
 const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const listOrders = yield orders_1.default.findAll({
@@ -43,6 +44,10 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 {
                     model: vistaultimousuario_1.default,
                     attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
+                },
+                {
+                    model: vistatiemposestimados_1.default,
+                    attributes: ['tiempo_estimado_total'],
                 }
             ],
         });
@@ -1203,7 +1208,7 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 { model: equipo_1.default },
                 { model: cliente_1.default },
                 { model: vistamin_1.default },
-                { model: vistaultimousuario_1.default }
+                { model: vistaultimousuario_1.default },
             ]
         });
         if (order) {

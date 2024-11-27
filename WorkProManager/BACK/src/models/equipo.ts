@@ -26,7 +26,7 @@ const Equipo = db.define('Equipo', {
     id_tipo: {
         type: DataTypes.INTEGER,
         references: {
-            model: 'nom_tipo',
+            model: 'tipo_equipo',
             key: 'id_tipo'
         }
     }

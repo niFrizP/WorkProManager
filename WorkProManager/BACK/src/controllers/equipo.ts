@@ -2,9 +2,10 @@ import { Request, Response } from 'express';
 import Equipo from '../models/equipo'; // Asegúrate de tener el modelo de Equipo importado
 import sequelize from '../db/connection';
 import Marca from '../models/marca';
+import Tipo_Equipo from '../models/tipo';
 
 export const getEquipos = async (req: Request, res: Response) => {
-    const listEquipos = await Equipo.findAll({include: [{model: Marca, attributes: ['nom_marca']}]});
+    const listEquipos = await Equipo.findAll({include: [{model: Marca }, {model: Tipo_Equipo}]});
 
     res.json(listEquipos);
 };
@@ -13,7 +14,9 @@ export const getEquipos = async (req: Request, res: Response) => {
 export const getEquipo = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const equipo = await Equipo.findByPk(id,{include: [{model: Marca, attributes: ['nom_marca']}]});
+        const equipo = await Equipo.findByPk(id,{include: [{model: Marca },
+            {model: Tipo_Equipo, attributes: ['nom_tipo']}
+        ]});
 
         if (equipo) {
             res.json(equipo);

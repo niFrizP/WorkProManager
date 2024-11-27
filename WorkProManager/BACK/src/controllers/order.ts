@@ -13,6 +13,7 @@ import VistaSolicitud from '../models/vistamin';
 import Sequelize from 'sequelize';
 import VistaSolicitudTecnico from '../models/vistatecnico';
 import VistaUltimaAdjudicacion from '../models/vistaultimousuario';
+import vista_tiempos_estimados_por_ot from '../models/vistatiemposestimados';
 
 
 export const getOrders = async (req: Request, res: Response) => {
@@ -39,6 +40,10 @@ export const getOrders = async (req: Request, res: Response) => {
                 {
                     model: VistaUltimaAdjudicacion,
                     attributes: ['fecha_adjudicacion', 'rut_usuario', 'nom_usu', 'ap_usu'],
+                },
+                {
+                    model: vista_tiempos_estimados_por_ot,
+                    attributes: ['tiempo_estimado_total'],
                 }
 
             ],
@@ -1294,7 +1299,7 @@ export const getOrder = async (req: Request, res: Response) => {
                 { model: Equipo },
                 { model: Cliente },
                 { model: VistaSolicitud },
-                { model: VistaUltimaAdjudicacion }
+                { model: VistaUltimaAdjudicacion },
             ]
         });
 

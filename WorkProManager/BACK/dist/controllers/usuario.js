@@ -12,9 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUsuario = exports.postUsuario = exports.deleteUsuario = exports.getUsuario = exports.getUsuarios = void 0;
+exports.updateUsuario = exports.postUsuario = exports.deleteUsuario = exports.getUsuario = exports.getUsuarios2 = exports.getUsuarios = void 0;
 const usuario_1 = __importDefault(require("../models/usuario"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const usuarios_rol_2_con_tiempo_1 = __importDefault(require("../models/usuarios_rol_2_con_tiempo"));
 const getUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const listUsuarios = yield usuario_1.default.findAll();
@@ -26,6 +27,22 @@ const getUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getUsuarios = getUsuarios;
+const getUsuarios2 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const listUsuarios = yield usuario_1.default.findAll({
+            include: [usuarios_rol_2_con_tiempo_1.default],
+            where: {
+                id_rol: 2
+            }
+        });
+        res.json(listUsuarios);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "Error al obtener usuarios" });
+    }
+});
+exports.getUsuarios2 = getUsuarios2;
 const getUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {

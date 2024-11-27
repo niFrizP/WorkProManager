@@ -24,7 +24,7 @@ import { CausaComponent } from './pages/causa/causa.component';
 import { EditOrderGestorComponent } from './pages/edit-order-gestor/edit-order-gestor.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' }, // Redirige a 'home' al inicio
+  { path: '', redirectTo: '/home', pathMatch: 'full' }, // Redirige a 'home' al inicio
   { path: 'cotizacion', component: CotizacionComponent, canActivate: [AuthRolGuard], data: { requiredRoles: [1, 3] } }, // Ruta a 'cotizacion'
   { path: 'login', component: LoginComponent }, // Ruta a 'login'
   { path: 'edit-order-gestor/:id_ot', component: EditOrderGestorComponent}, // Ruta a 'edit-order'

@@ -1,9 +1,27 @@
 import { Request, Response} from "express";
 import Usuario from "../models/usuario";
 import bcrypt from "bcrypt";
+import usuarios_rol_2_con_tiempo from "../models/usuarios_rol_2_con_tiempo";
 export const getUsuarios = async (req: Request, res: Response) => {
     try {
         const listUsuarios = await Usuario.findAll();
+        res.json(listUsuarios);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "Error al obtener usuarios"});
+    }
+};
+
+
+export const getUsuarios2 = async (req: Request, res: Response) => {
+    try {
+        const listUsuarios = await Usuario.findAll({
+            include: [usuarios_rol_2_con_tiempo],
+        where: {
+            id_rol: 2
+        }
+        })
+        ;
         res.json(listUsuarios);
     } catch (error) {
         console.log(error);

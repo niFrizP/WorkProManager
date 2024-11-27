@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
 const rol_1 = __importDefault(require("./rol"));
+const usuarios_rol_2_con_tiempo_1 = __importDefault(require("./usuarios_rol_2_con_tiempo"));
 // Definición del modelo Usuario
 const Usuario = connection_1.default.define('Usuario', {
     rut_usuario: {
@@ -53,4 +54,6 @@ const Usuario = connection_1.default.define('Usuario', {
 Usuario.hasMany(Usuario, { foreignKey: 'rut_usuario' });
 Usuario.belongsTo(rol_1.default, { foreignKey: 'id_rol', targetKey: 'id_rol' });
 Usuario.hasMany(Usuario, { foreignKey: 'rut_usuario' });
+Usuario.hasOne(usuarios_rol_2_con_tiempo_1.default, { foreignKey: 'rut_usuario' });
+usuarios_rol_2_con_tiempo_1.default.belongsTo(Usuario, { foreignKey: 'rut_usuario' });
 exports.default = Usuario;

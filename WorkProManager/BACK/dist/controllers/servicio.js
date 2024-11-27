@@ -58,11 +58,12 @@ const deleteServicio = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.deleteServicio = deleteServicio;
 const postServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nom_serv, precio } = req.body; // Extrae los datos relevantes
+    const { nom_serv, tiempo_estimado } = req.body; // Extrae los datos relevantes
     try {
         // Crear el nuevo servicio sin especificar `id_servicio`
         const newServicio = yield servicio_1.default.create({
             nom_serv,
+            tiempo_estimado
         });
         res.json({
             msg: 'El servicio fue agregado con éxito!',

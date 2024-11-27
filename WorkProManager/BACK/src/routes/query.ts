@@ -10,6 +10,7 @@ const router = Router();
 
 router.post('/getorderbyid', getOrdersByUsuarioOrder); // Ruta para obtener las órdenes con joins
 
+
 router.get('/grafico', getOrdersByEstadoEnTiempoGrafico ); // Ruta para obtener las órdenes con joins
 
 router.post('/getUser1', getOrdersByEstadoByUser_1)

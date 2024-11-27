@@ -12,13 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersBy = exports.getOrdersByMonthAndYear = exports.getOrdersFromLast7DaysExcludingWeekends = exports.getOrdersByYear = exports.getOrdersByFecha = exports.getOrdersEstadoSum = exports.getOrdersCosto = exports.getOrdersByUsuario = exports.countOrdersByDate = exports.getOrdersByEstadoEliminadaByUser = exports.getOrdersByEstadoByUser = exports.getOrdersByEstadoTotalByUser = exports.getOrdersByEstadoEliminada = exports.getOrdersByEstadoTotal = exports.getOrdersByEstado = exports.getOrdersByEstadoTotalEnTiempo = exports.getOrdersByEstadoEnTiempoGrafico = exports.getOrdersByEstadoEnTiempo = exports.getOrdersByEstadoByUser_5 = exports.getOrdersByEstadoByUser_4 = exports.getOrdersByEstadoByUser_3 = exports.getOrdersByEstadoByUser_2 = exports.getOrdersByEstadoByUser_1 = void 0;
+exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder = exports.getOrdersBy = exports.getOrdersByMonthAndYear = exports.getOrdersFromLast7DaysExcludingWeekends = exports.getOrdersByYear = exports.getOrdersByFecha = exports.getOrdersEstadoSum = exports.getOrdersCosto = exports.getOrdersByUsuario = exports.countOrdersByDate = exports.getOrdersByEstadoEliminadaByUser = exports.getOrdersByEstadoByUser = exports.getOrdersByEstadoTotalByUser = exports.getOrdersByEstadoEliminada = exports.getOrdersByEstadoTotal = exports.getOrdersByEstado = exports.getOrdersByEstadoTotalEnTiempo = exports.getOrdersByEstadoEnTiempoGrafico = exports.getOrdersByEstadoEnTiempo = exports.getDetallesOtByOTSum = exports.getOrdersByEstadoByUser_5 = exports.getOrdersByEstadoByUser_4 = exports.getOrdersByEstadoByUser_3 = exports.getOrdersByEstadoByUser_2 = exports.getOrdersByEstadoByUser_1 = void 0;
 const orders_1 = __importDefault(require("../models/orders"));
 const equipo_1 = __importDefault(require("../models/equipo"));
 const cliente_1 = __importDefault(require("../models/cliente"));
 const usuario_1 = __importDefault(require("../models/usuario"));
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
+const detalle_ot_1 = __importDefault(require("../models/detalle_ot"));
+const servicio_1 = __importDefault(require("../models/servicio"));
 const getOrdersByEstadoByUser_1 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ordersCount = yield orders_1.default.findAll({
@@ -124,6 +126,34 @@ const getOrdersByEstadoByUser_5 = (req, res) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.getOrdersByEstadoByUser_5 = getOrdersByEstadoByUser_5;
+const getDetallesOtByOTSum = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id_ot } = req.params;
+    try {
+        // Realizar la consulta para obtener los detalles de la orden de trabajo junto con la suma de los tiempos estimados
+        const detallesOt = yield detalle_ot_1.default.findOne({
+            attributes: [
+                'id_ot',
+                [connection_1.default.fn('SUM', connection_1.default.col('Servicios.tiempo_estimado')), 'total_tiempo_estimado']
+            ],
+            include: [{
+                    model: servicio_1.default,
+                    attributes: [] // No es necesario incluir los detalles de 'tiempo_estimado' aquí
+                }],
+            where: { id_ot },
+            group: ['Detalle_Ot.id_ot'] // Agrupar por id_ot para obtener la suma por cada id_ot
+        });
+        // Si no se encuentra detalles para ese id_ot, se retorna un mensaje adecuado
+        if (!detallesOt) {
+            return res.status(404).json({ message: 'No se encontraron detalles para esta orden de trabajo' });
+        }
+        res.json(detallesOt);
+    }
+    catch (error) {
+        console.error('Error en getDetallesOt:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+});
+exports.getDetallesOtByOTSum = getDetallesOtByOTSum;
 const getOrdersByEstadoEnTiempo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { startDate, endDate } = req.body;
     try {

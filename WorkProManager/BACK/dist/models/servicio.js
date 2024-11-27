@@ -16,6 +16,9 @@ const Servicio = connection_1.default.define('Servicio', {
     nom_serv: {
         type: sequelize_1.DataTypes.STRING // Define el tipo de servicio como una cadena de caracteres
     },
+    tiempo_estimado: {
+        type: sequelize_1.DataTypes.DECIMAL(1, 1) // Define el tiempo estimado como un entero
+    },
 }, {
     tableName: 'servicio', // Especifica el nombre exacto de la tabla en la base de datos
     createdAt: false, // Desactiva el timestamp de creación

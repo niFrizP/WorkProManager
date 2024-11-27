@@ -7,6 +7,8 @@ import EstadoOT from '../models/estado_ot';
 import { Op, Sequelize } from 'sequelize';
 import sequelize from '../db/connection';
 import Query from '../models/query';
+import Detalle_Ot from '../models/detalle_ot';
+import Servicio from '../models/servicio';
 
 
 export const getOrdersByEstadoByUser_1 = async (req: Request, res: Response) => {
@@ -139,6 +141,34 @@ export const getOrdersByEstadoByUser_5 = async (req: Request, res: Response) => 
   }
 };
 
+export const getDetallesOtByOTSum = async (req: Request, res: Response) => {
+  const { id_ot } = req.params;
+  try {
+      // Realizar la consulta para obtener los detalles de la orden de trabajo junto con la suma de los tiempos estimados
+      const detallesOt = await Detalle_Ot.findOne({
+          attributes: [
+              'id_ot',
+              [sequelize.fn('SUM', sequelize.col('Servicios.tiempo_estimado')), 'total_tiempo_estimado']
+          ],
+          include: [{
+              model: Servicio,
+              attributes: [] // No es necesario incluir los detalles de 'tiempo_estimado' aquí
+          }],
+          where: { id_ot },
+          group: ['Detalle_Ot.id_ot'] // Agrupar por id_ot para obtener la suma por cada id_ot
+      });
+
+      // Si no se encuentra detalles para ese id_ot, se retorna un mensaje adecuado
+      if (!detallesOt) {
+          return res.status(404).json({ message: 'No se encontraron detalles para esta orden de trabajo' });
+      }
+
+      res.json(detallesOt);
+  } catch (error) {
+      console.error('Error en getDetallesOt:', error);
+      res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};
 
 export const getOrdersByEstadoEnTiempo = async (req: Request, res: Response) => {
   const { startDate, endDate } = req.body;

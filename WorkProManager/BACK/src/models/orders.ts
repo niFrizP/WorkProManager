@@ -9,6 +9,7 @@ import VistaSolicitud from './vistamin';
 import VistaSolicitudTecnico from './vistatecnico';
 import { getOrdersByUsuarioOrder } from '../controllers/order';
 import VistaUltimaAdjudicacion from './vistaultimousuario';
+import vista_tiempos_estimados_por_ot from './vistatiemposestimados';
 
 
 class Order extends Model {}
@@ -71,6 +72,7 @@ Order.belongsTo(VistaSolicitud, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.belongsTo(VistaUltimaAdjudicacion, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.belongsTo(VistaSolicitudTecnico, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.hasMany(Solicitud, { foreignKey: 'id_ot' }); // Cambiado a hasMany
+Order.belongsTo(vista_tiempos_estimados_por_ot, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 
 
 

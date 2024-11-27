@@ -11,6 +11,7 @@ const solicitud_1 = __importDefault(require("./solicitud"));
 const vistamin_1 = __importDefault(require("./vistamin"));
 const vistatecnico_1 = __importDefault(require("./vistatecnico"));
 const vistaultimousuario_1 = __importDefault(require("./vistaultimousuario"));
+const vistatiemposestimados_1 = __importDefault(require("./vistatiemposestimados"));
 class Order extends sequelize_1.Model {
 }
 // Definir el modelo de 'Order'
@@ -64,4 +65,5 @@ Order.belongsTo(vistamin_1.default, { foreignKey: 'id_ot', targetKey: 'id_ot' })
 Order.belongsTo(vistaultimousuario_1.default, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.belongsTo(vistatecnico_1.default, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 Order.hasMany(solicitud_1.default, { foreignKey: 'id_ot' }); // Cambiado a hasMany
+Order.belongsTo(vistatiemposestimados_1.default, { foreignKey: 'id_ot', targetKey: 'id_ot' });
 exports.default = Order;

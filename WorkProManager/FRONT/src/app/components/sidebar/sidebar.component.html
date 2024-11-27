@@ -21,7 +21,6 @@
           src="https://i.imgur.com/kTQg9EM.png"
           alt="wpm-logo"
           class="h-auto transition-all duration-700"
-          
         />
       </a>
     </div>
@@ -41,20 +40,12 @@
           <!-- Solo mostrar el contador en la esquina superior izquierda del ítem de "Reportes" -->
           <span *ngIf="item.name === 'Ordenes' && contar > 0 && authService.getUserRole() != 2"
             class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-        {{contar}}
-    </span>
-    <span *ngIf="item.name === 'Ordenes' && contar > 0 && authService.getUserRole() == 2"
-      class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-  {{contarTecnicoReportes}}
-</span>
-
-
-
-
-
-
-    
-          
+            {{contar}}
+          </span>
+          <span *ngIf="item.name === 'Ordenes' && contar > 0 && authService.getUserRole() == 2"
+            class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
+            {{contarTecnicoReportes}}
+          </span>
         </a>
       </nav>
     </div>
@@ -96,42 +87,6 @@
       >
         <i [class]="item.icon + ' mr-3'"></i>
         <span>{{ item.name }}</span>
-      </a>
-    </nav>
-  </aside>
-
-  <!-- Sidebar para pantallas grandes -->
-  <aside
-    class="fixed inset-y-0 flex flex-col items-center justify-between w-64 p-4 bg-blue-800 shadow-xl dark:bg-slate-850 hidden lg:flex"
-  >
-    <!-- Logo -->
-    <div class="mb-4">
-      <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap text-yellow-500">
-        <img
-          src="https://i.imgur.com/kTQg9EM.png"
-          alt="wpm-logo"
-          class="h-auto transition-all duration-700"
-        />
-      </a>
-    </div>
-
-    <!-- Rutas de navegación -->
-    <nav class="flex-grow w-full space-y-4">
-      <a
-        *ngFor="let item of resources"
-        class="block p-4 text-center font-medium text-yellow-500 rounded-lg hover:bg-yellow-400 hover:text-black dark:text-white dark:hover:bg-yellow-400 dark:hover:text-black relative"
-        [routerLink]="item.link"
-        routerLinkActive="active"
-      >
-        <i [class]="item.icon + ' mr-3'"></i>
-        <span>{{ item.name }}</span>
-        <!-- Notificaciones -->
-        <span
-          *ngIf="item.name === 'Ordenes' && contar > 0 && authService.getUserRole() != 2"
-          class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2"
-        >
-          {{ contar }}
-        </span>
       </a>
     </nav>
   </aside>

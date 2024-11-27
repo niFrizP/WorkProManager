@@ -18,7 +18,7 @@ const servicio_1 = __importDefault(require("../models/servicio"));
 // Obtener todos los detalles de OT
 const getDetallesOt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const detallesOt = yield detalle_ot_1.default.findAll({ include: [{ model: servicio_1.default, attributes: ['nom_serv'] }]
+        const detallesOt = yield detalle_ot_1.default.findAll({ include: [{ model: servicio_1.default }]
         });
         res.json(detallesOt);
     }
