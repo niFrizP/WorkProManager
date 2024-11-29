@@ -1,16 +1,24 @@
 import { Request, Response } from 'express';
-import Servicio from '../models/servicio'; // Asegúrate de tener el modelo de Servicio importado
+import Servicio from '../models/servicio';
 
 export const getServicios = async (req: Request, res: Response) => {
-    const listServicios = await Servicio.findAll();
-    res.json(listServicios);
+    try {
+        const listServicios = await Servicio.findAll({
+            where: { activo: true }
+        });
+        res.json(listServicios);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al obtener los servicios'
+        });
+    }
 };
 
 export const getServicio = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
         const servicio = await Servicio.findByPk(id);
-
         if (servicio) {
             res.json(servicio);
         } else {
@@ -21,69 +29,68 @@ export const getServicio = async (req: Request, res: Response) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: `Error al obtener el servicio, contacta con soporte`
+            msg: 'Error al obtener el servicio'
+        });
+    }
+};
+
+export const postServicio = async (req: Request, res: Response) => {
+    const { nombre_servicio, descripcion_servicio } = req.body;
+    try {
+        const servicio = await Servicio.create({
+            nombre_servicio,
+            descripcion_servicio,
+            activo: true
+        });
+        res.json(servicio);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al crear el servicio'
+        });
+    }
+};
+
+export const updateServicio = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { nombre_servicio, descripcion_servicio } = req.body;
+    try {
+        const servicio = await Servicio.findByPk(id);
+        if (!servicio) {
+            return res.status(404).json({
+                msg: `No existe un servicio con el id ${id}`
+            });
+        }
+        await servicio.update({
+            nombre_servicio,
+            descripcion_servicio
+        });
+        res.json(servicio);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al actualizar el servicio'
         });
     }
 };
 
 export const deleteServicio = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const servicio = await Servicio.findByPk(id);
-
-    if (!servicio) {
-        res.status(404).json({
-            msg: `No existe un servicio con el id ${id}`
-        });
-    } else {
-        await servicio.destroy();
-        res.json({
-            msg: 'El servicio fue eliminado con éxito!'
-        });
-    }
-};
-
-export const postServicio = async (req: Request, res: Response) => {
-    const { nom_serv, precio } = req.body; // Extrae los datos relevantes
-
-    try {
-        // Crear el nuevo servicio sin especificar `id_servicio`
-        const newServicio = await Servicio.create({
-            nom_serv,
-        });
-
-        res.json({
-            msg: 'El servicio fue agregado con éxito!',
-            servicio: newServicio // Devuelve el nuevo servicio, incluyendo el id_servicio generado
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
-        });
-    }
-};
-
-export const updateServicio = async (req: Request, res: Response) => {
-    const { body } = req;
-    const { id } = req.params;
-
     try {
         const servicio = await Servicio.findByPk(id);
-
-        if (servicio) {
-            await servicio.update(body);
-            res.json({
-                msg: 'El servicio fue actualizado con éxito'
-            });
-        } else {
-            res.status(404).json({
+        if (!servicio) {
+            return res.status(404).json({
                 msg: `No existe un servicio con el id ${id}`
             });
         }
+        await servicio.update({ activo: false });
+        res.json({
+            msg: 'Servicio eliminado con éxito'
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: `Upps, ocurrió un error. Comuníquese con soporte`
+            msg: 'Error al eliminar el servicio'
         });
     }
 };

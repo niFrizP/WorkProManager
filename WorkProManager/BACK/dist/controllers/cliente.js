@@ -12,17 +12,43 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCliente = exports.postCliente = exports.deleteCliente = exports.getCliente = exports.getClientes = void 0;
+exports.deleteCliente = exports.updateCliente = exports.postCliente = exports.getCliente = exports.getClientes = void 0;
 const cliente_1 = __importDefault(require("../models/cliente"));
+// Obtener todos los clientes
 const getClientes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const listClientes = yield cliente_1.default.findAll();
-    res.json(listClientes);
+    try {
+        const listClientes = yield cliente_1.default.findAll({
+            attributes: [
+                'id_cliente',
+                'nombre_cliente',
+                'direccion_cliente',
+                'telefono_cliente',
+                'email_cliente'
+            ]
+        });
+        res.json(listClientes);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al obtener los clientes'
+        });
+    }
 });
 exports.getClientes = getClientes;
+// Obtener un cliente por ID
 const getCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const cliente = yield cliente_1.default.findByPk(id);
+        const cliente = yield cliente_1.default.findByPk(id, {
+            attributes: [
+                'id_cliente',
+                'nombre_cliente',
+                'direccion_cliente',
+                'telefono_cliente',
+                'email_cliente'
+            ]
+        });
         if (cliente) {
             res.json(cliente);
         }
@@ -35,74 +61,78 @@ const getCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: `Error al obtener el cliente, contacta con soporte`
+            msg: 'Error al obtener el cliente'
         });
     }
 });
 exports.getCliente = getCliente;
-const deleteCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const cliente = yield cliente_1.default.findByPk(id);
-    if (!cliente) {
-        res.status(404).json({
-            msg: `No existe un cliente con el id ${id}`
+// Crear un nuevo cliente
+const postCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { nombre_cliente, direccion_cliente, telefono_cliente, email_cliente } = req.body;
+    try {
+        const cliente = yield cliente_1.default.create({
+            nombre_cliente,
+            direccion_cliente,
+            telefono_cliente,
+            email_cliente
         });
+        res.json(cliente);
     }
-    else {
-        yield cliente.destroy();
-        res.json({
-            msg: 'El cliente fue eliminado con éxito!'
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al crear el cliente'
         });
     }
 });
-exports.deleteCliente = deleteCliente;
-const postCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { rut_cliente, nom_cli, ap_cli, email_cli, cel_cli, d_veri_cli } = req.body; // Extrae los datos relevantes
+exports.postCliente = postCliente;
+// Actualizar un cliente
+const updateCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const { nombre_cliente, direccion_cliente, telefono_cliente, email_cliente } = req.body;
     try {
-        // Crear el nuevo cliente sin especificar `id_cliente`
-        const newCliente = yield cliente_1.default.create({
-            rut_cliente,
-            nom_cli,
-            ap_cli,
-            email_cli,
-            cel_cli,
-            d_veri_cli
+        const cliente = yield cliente_1.default.findByPk(id);
+        if (!cliente) {
+            return res.status(404).json({
+                msg: `No existe un cliente con el id ${id}`
+            });
+        }
+        yield cliente.update({
+            nombre_cliente,
+            direccion_cliente,
+            telefono_cliente,
+            email_cliente
         });
+        res.json(cliente);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al actualizar el cliente'
+        });
+    }
+});
+exports.updateCliente = updateCliente;
+// Eliminar un cliente
+const deleteCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const cliente = yield cliente_1.default.findByPk(id);
+        if (!cliente) {
+            return res.status(404).json({
+                msg: `No existe un cliente con el id ${id}`
+            });
+        }
+        yield cliente.destroy();
         res.json({
-            msg: 'El cliente fue agregado con éxito!',
-            cliente: newCliente // Devuelve el nuevo cliente, incluyendo el id_cliente generado
+            msg: 'Cliente eliminado con éxito'
         });
     }
     catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
+            msg: 'Error al eliminar el cliente'
         });
     }
 });
-exports.postCliente = postCliente;
-const updateCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
-    const { id } = req.params;
-    try {
-        const cliente = yield cliente_1.default.findByPk(id);
-        if (cliente) {
-            yield cliente.update(body);
-            res.json({
-                msg: 'El cliente fue actualizado con éxito'
-            });
-        }
-        else {
-            res.status(404).json({
-                msg: `No existe un cliente con el id ${id}`
-            });
-        }
-    }
-    catch (error) {
-        console.log(error);
-        res.json({
-            msg: `Upps, ocurrió un error. Comuníquese con soporte`
-        });
-    }
-});
-exports.updateCliente = updateCliente;
+exports.deleteCliente = deleteCliente;

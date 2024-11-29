@@ -12,93 +12,145 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateEquipo = exports.postEquipo = exports.deleteEquipo = exports.getEquipo = exports.getEquipos = void 0;
-const equipo_1 = __importDefault(require("../models/equipo")); // Asegúrate de tener el modelo de Equipo importado
-const marca_1 = __importDefault(require("../models/marca"));
+exports.deleteEquipo = exports.updateEquipo = exports.postEquipo = exports.getEquipo = exports.getEquipos = void 0;
+const equipo_1 = __importDefault(require("../models/equipo"));
+const cliente_1 = __importDefault(require("../models/cliente"));
+// Obtener todos los equipos
 const getEquipos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const listEquipos = yield equipo_1.default.findAll({ include: [{ model: marca_1.default, attributes: ['nom_marca'] }] });
-    res.json(listEquipos);
+    try {
+        const listEquipos = yield equipo_1.default.findAll({
+            include: [{
+                    model: cliente_1.default,
+                    attributes: ['nombre_cliente']
+                }],
+            attributes: [
+                'numero_serie',
+                'tipo_equipo',
+                'marca',
+                'modelo',
+                'id_cliente'
+            ]
+        });
+        res.json(listEquipos);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al obtener los equipos'
+        });
+    }
 });
 exports.getEquipos = getEquipos;
+// Obtener un equipo por número de serie
 const getEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const equipo = yield equipo_1.default.findByPk(id, { include: [{ model: marca_1.default, attributes: ['nom_marca'] }] });
+        const equipo = yield equipo_1.default.findByPk(id, {
+            include: [{
+                    model: cliente_1.default,
+                    attributes: ['nombre_cliente']
+                }]
+        });
         if (equipo) {
             res.json(equipo);
         }
         else {
             res.status(404).json({
-                msg: `No existe un equipo con el id ${id}`
+                msg: `No existe un equipo con el número de serie ${id}`
             });
         }
     }
     catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: `Error al obtener el equipo, contacta con soporte`
+            msg: 'Error al obtener el equipo'
         });
     }
 });
 exports.getEquipo = getEquipo;
-const deleteEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const equipo = yield equipo_1.default.findByPk(id);
-    if (!equipo) {
-        res.status(404).json({
-            msg: `No existe un equipo con el id ${id}`
+// Crear un nuevo equipo
+const postEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { tipo_equipo, marca, modelo, id_cliente } = req.body;
+    try {
+        // Verificar si el cliente existe
+        const clienteExiste = yield cliente_1.default.findByPk(id_cliente);
+        if (!clienteExiste) {
+            return res.status(404).json({
+                msg: `No existe un cliente con el ID ${id_cliente}`
+            });
+        }
+        const equipo = yield equipo_1.default.create({
+            tipo_equipo,
+            marca,
+            modelo,
+            id_cliente
         });
+        res.json(equipo);
     }
-    else {
-        yield equipo.destroy();
-        res.json({
-            msg: 'El equipo fue eliminado con éxito!'
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al crear el equipo'
         });
     }
 });
-exports.deleteEquipo = deleteEquipo;
-const postEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { num_equipo, id_tipo, mod_equipo, fecha_fab, id_marca } = req.body; // Extrae los datos relevantes
+exports.postEquipo = postEquipo;
+// Actualizar un equipo
+const updateEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const { tipo_equipo, marca, modelo, id_cliente } = req.body;
     try {
-        // Crear el nuevo equipo sin especificar `id_equipo`
-        const newEquipo = yield equipo_1.default.create({
-            num_equipo, id_tipo, mod_equipo, id_marca, fecha_fab
+        const equipo = yield equipo_1.default.findByPk(id);
+        if (!equipo) {
+            return res.status(404).json({
+                msg: `No existe un equipo con el número de serie ${id}`
+            });
+        }
+        // Verificar si el nuevo cliente existe (si se está actualizando)
+        if (id_cliente) {
+            const clienteExiste = yield cliente_1.default.findByPk(id_cliente);
+            if (!clienteExiste) {
+                return res.status(404).json({
+                    msg: `No existe un cliente con el ID ${id_cliente}`
+                });
+            }
+        }
+        yield equipo.update({
+            tipo_equipo,
+            marca,
+            modelo,
+            id_cliente
         });
+        res.json(equipo);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al actualizar el equipo'
+        });
+    }
+});
+exports.updateEquipo = updateEquipo;
+// Eliminar un equipo
+const deleteEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const equipo = yield equipo_1.default.findByPk(id);
+        if (!equipo) {
+            return res.status(404).json({
+                msg: `No existe un equipo con el número de serie ${id}`
+            });
+        }
+        yield equipo.destroy();
         res.json({
-            msg: 'El equipo fue agregado con éxito!',
-            equipo: newEquipo // Devuelve el nuevo equipo, incluyendo el id_equipo generado
+            msg: 'Equipo eliminado con éxito'
         });
     }
     catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
+            msg: 'Error al eliminar el equipo'
         });
     }
 });
-exports.postEquipo = postEquipo;
-const updateEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
-    const { id } = req.params;
-    try {
-        const equipo = yield equipo_1.default.findByPk(id);
-        if (equipo) {
-            yield equipo.update(body);
-            res.json({
-                msg: 'El equipo fue actualizado con éxito'
-            });
-        }
-        else {
-            res.status(404).json({
-                msg: `No existe un equipo con el id ${id}`
-            });
-        }
-    }
-    catch (error) {
-        console.log(error);
-        res.json({
-            msg: `Upps, ocurrió un error. Comuníquese con soporte`
-        });
-    }
-});
-exports.updateEquipo = updateEquipo;
+exports.deleteEquipo = deleteEquipo;

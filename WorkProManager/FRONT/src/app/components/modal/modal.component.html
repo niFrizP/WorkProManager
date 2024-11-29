@@ -1,13 +1,8 @@
 <div class="modal-backdrop" (click)="closeModal($event)"></div>
-<div class="modal-content">
-  <div class="modal-header">
-    <h2>Historico de OT</h2>
-    <button class="btn-close" (click)="closeModal($event)">X</button>
-  </div>
-  
-  <!-- Información del ID de OT -->
-  <div class="id-ot-badge">
-    <p>ID de la Orden de Trabajo: {{ id_ot }}</p>
+<div class="modal-content bg-yellow-500 text-blue-700 p-6 rounded-lg shadow-md">
+  <div class="header-ot flex justify-between items-center">
+    <h2 class="text-2xl font-semibold">Historial de la Orden de Trabajo</h2>
+    <button class="btn-cerrar bg-blue-500 text-white font-bold py-1 px-3 rounded hover:bg-blue-600" (click)="closeModal($event)">X</button>
   </div>
   
   <!-- Contenido con desplazamiento -->
@@ -21,30 +16,28 @@
       <div class="solicitud-dates">
         <div class="date-item">
           <strong>Fecha de Vista:</strong>
-          <span>{{ solicitud.fecha_vista | date:'dd/MM/yyyy' }}</span>
+          <span>{{ getFormattedDate(solicitud.fecha_vista) }}</span>
         </div>
         <div class="date-item">
           <strong>Fecha de Emisión:</strong>
-          <span>{{ solicitud.fecha_emision | date:'dd/MM/yyyy' }}</span>
+          <span>{{ getFormattedDate(solicitud.fecha_emision) }}</span>
         </div>
         <div class="date-item">
           <strong>Fecha de Término:</strong>
-          <span>{{ solicitud.fecha_termino | date:'dd/MM/yyyy' }}</span>
+          <span>{{ getFormattedDate(solicitud.fecha_termino) }}</span>
         </div>
         <div class="date-item">
           <strong>Fecha Plazo:</strong>
-          <span>{{ solicitud.fecha_plazo | date:'dd/MM/yyyy' }}</span>
+          <span>{{ getFormattedDate(solicitud.fecha_plazo) }}</span>
         </div>
       </div>
 
       <div class="solicitud-description">
-        <p><strong>Descripción:</strong> {{ solicitud.desc_sol }}</p>
-        <p><strong>Estado de OT:</strong> {{ solicitud.id_estado_ot }}</p>
+        <p><strong>Descripción:</strong> {{ getDescription(solicitud.desc_sol) }}</p>
+        <p><strong>Estado de OT:</strong> {{ solicitud.EstadoOT?.nom_estado_ot }}</p>
       </div>
     </div>
   </div>
 
-  <div class="modal-footer">
-    <button class="btn-cerrar" (click)="closeModal($event)">Cerrar</button>
-  </div>
+  
 </div>

@@ -1,93 +1,152 @@
 import { Request, Response } from 'express';
-import Equipo from '../models/equipo'; // Asegúrate de tener el modelo de Equipo importado
-import sequelize from '../db/connection';
-import Marca from '../models/marca';
+import Equipo from '../models/equipo';
+import Cliente from '../models/cliente';
 
+// Obtener todos los equipos
 export const getEquipos = async (req: Request, res: Response) => {
-    const listEquipos = await Equipo.findAll({include: [{model: Marca, attributes: ['nom_marca']}]});
-
-    res.json(listEquipos);
+    try {
+        const listEquipos = await Equipo.findAll({
+            include: [{
+                model: Cliente,
+                attributes: ['nombre_cliente']
+            }],
+            attributes: [
+                'numero_serie',
+                'tipo_equipo',
+                'marca',
+                'modelo',
+                'id_cliente'
+            ]
+        });
+        res.json(listEquipos);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al obtener los equipos'
+        });
+    }
 };
 
-
+// Obtener un equipo por número de serie
 export const getEquipo = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const equipo = await Equipo.findByPk(id,{include: [{model: Marca, attributes: ['nom_marca']}]});
-
+        const equipo = await Equipo.findByPk(id, {
+            include: [{
+                model: Cliente,
+                attributes: ['nombre_cliente']
+            }]
+        });
         if (equipo) {
             res.json(equipo);
         } else {
             res.status(404).json({
-                msg: `No existe un equipo con el id ${id}`
+                msg: `No existe un equipo con el número de serie ${id}`
             });
         }
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: `Error al obtener el equipo, contacta con soporte`
+            msg: 'Error al obtener el equipo'
         });
     }
 };
 
-export const deleteEquipo = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const equipo = await Equipo.findByPk(id);
-
-    if (!equipo) {
-        res.status(404).json({
-            msg: `No existe un equipo con el id ${id}`
-        });
-    } else {
-        await equipo.destroy();
-        res.json({
-            msg: 'El equipo fue eliminado con éxito!'
-        });
-    }
-};
-
+// Crear un nuevo equipo
 export const postEquipo = async (req: Request, res: Response) => {
-    const { num_equipo, id_tipo, mod_equipo, fecha_fab,id_marca } = req.body; // Extrae los datos relevantes
+    const { 
+        tipo_equipo, 
+        marca, 
+        modelo, 
+        id_cliente 
+    } = req.body;
 
     try {
-        // Crear el nuevo equipo sin especificar `id_equipo`
-        const newEquipo = await Equipo.create({
-            num_equipo, id_tipo, mod_equipo, id_marca, fecha_fab
-        });
+        // Verificar si el cliente existe
+        const clienteExiste = await Cliente.findByPk(id_cliente);
+        if (!clienteExiste) {
+            return res.status(404).json({
+                msg: `No existe un cliente con el ID ${id_cliente}`
+            });
+        }
 
-        res.json({
-            msg: 'El equipo fue agregado con éxito!',
-            equipo: newEquipo // Devuelve el nuevo equipo, incluyendo el id_equipo generado
+        const equipo = await Equipo.create({
+            tipo_equipo,
+            marca,
+            modelo,
+            id_cliente
         });
+        res.json(equipo);
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
+            msg: 'Error al crear el equipo'
         });
     }
 };
 
+// Actualizar un equipo
 export const updateEquipo = async (req: Request, res: Response) => {
-    const { body } = req;
     const { id } = req.params;
+    const { 
+        tipo_equipo, 
+        marca, 
+        modelo, 
+        id_cliente 
+    } = req.body;
 
     try {
         const equipo = await Equipo.findByPk(id);
-
-        if (equipo) {
-            await equipo.update(body);
-            res.json({
-                msg: 'El equipo fue actualizado con éxito'
-            });
-        } else {
-            res.status(404).json({
-                msg: `No existe un equipo con el id ${id}`
+        if (!equipo) {
+            return res.status(404).json({
+                msg: `No existe un equipo con el número de serie ${id}`
             });
         }
+
+        // Verificar si el nuevo cliente existe (si se está actualizando)
+        if (id_cliente) {
+            const clienteExiste = await Cliente.findByPk(id_cliente);
+            if (!clienteExiste) {
+                return res.status(404).json({
+                    msg: `No existe un cliente con el ID ${id_cliente}`
+                });
+            }
+        }
+
+        await equipo.update({
+            tipo_equipo,
+            marca,
+            modelo,
+            id_cliente
+        });
+        res.json(equipo);
     } catch (error) {
         console.log(error);
+        res.status(500).json({
+            msg: 'Error al actualizar el equipo'
+        });
+    }
+};
+
+// Eliminar un equipo
+export const deleteEquipo = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const equipo = await Equipo.findByPk(id);
+        if (!equipo) {
+            return res.status(404).json({
+                msg: `No existe un equipo con el número de serie ${id}`
+            });
+        }
+
+        await equipo.destroy();
         res.json({
-            msg: `Upps, ocurrió un error. Comuníquese con soporte`
+            msg: 'Equipo eliminado con éxito'
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al eliminar el equipo'
         });
     }
 };

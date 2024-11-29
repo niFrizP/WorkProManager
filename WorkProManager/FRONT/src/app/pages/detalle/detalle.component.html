@@ -1,100 +1,127 @@
-<div class="flex justify-end px-8 py-6">
-  <div class="main max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <!-- Leyenda de descripción -->
-    <p class="text-md text-gray-600 mb-6">
-      Completa el siguiente formulario para llevar constancia del servicio realizado.
-    </p>
-    
-    <form class="space-y-8" [formGroup]="form">
-
-      <!-- Fecha de Entrega -->
-      <div class="mt-4">
-        <label for="fecha_detalle" class="block text-sm font-medium text-gray-700">Fecha de Entrega:</label>
-        <input type="date" id="fecha_detalle" formControlName="fecha_detalle" class="border border-gray-300 p-2 rounded-md w-full focus:outline-none focus:ring-blue-500" />
-      </div>
-
-      <!-- Título del formulario -->
-      <p class="text-2xl font-semibold text-gray-700 mt-6 mb-4">Formulario de Servicio</p>
-
-      <!-- Descripción de la OT -->
-      <div>
-        <label for="desc_detalle" class="block text-sm font-medium text-gray-700">Descripción</label>
-        <textarea
-          id="desc_detalle"
-          formControlName="desc_detalle"
-          rows="4"
-          class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
-          placeholder="Añade una descripción detallada de la Orden de Trabajo..."
-        ></textarea>
-      </div>
-
-      <!-- Detalle Cliente (solo si el usuario tiene el rol adecuado) -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg mt-6" *ngIf="authService.getUserRole() === 3">
-        <legend class="text-lg font-semibold text-gray-700">Usuario</legend>
-        
-        <div>
-          <label for="usuarios" class="block text-sm font-medium text-gray-700">Selecciona un Usuario:</label>
-          <select formControlName="rut_usuario" class="w-full border border-gray-300 p-2 rounded-md">
-            <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
-              {{ usuario.nom_usu }} {{ usuario.ap_usu }}
-            </option>
-          </select>
-        </div>
-        
-        <div *ngIf="selectedUsuarioName !== null" class="mt-2">
-          <p>Precio del usuario seleccionado: <strong>{{ selectedUsuarioName }} {{ selectedUsuarioSurname }}</strong></p>
-        </div>
-      </fieldset>
-
-      <!-- Servicio -->
-      <fieldset class="border border-gray-200 p-4 rounded-lg mt-6">
-        <legend class="text-lg font-semibold text-gray-700">Servicio</legend>
-        
-        <div>
-          <label for="servicios" class="block text-sm font-medium text-gray-700">Selecciona un Servicio:</label>
-          <select formControlName="id_serv" (change)="onServicioChange($event)" class="w-full border border-gray-300 p-2 rounded-md">
-            <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">
-              {{ servicio.nom_serv }}
-            </option>
-          </select>
-        </div>
-      </fieldset>
-
-      <!-- Modal para confirmación -->
-      <div *ngIf="isModalOpen" class="modal-overlay fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
-        <div class="modal-content bg-white p-6 rounded-lg shadow-md">
-          <h2 class="text-xl font-semibold text-gray-700 mb-4">Confirmación</h2>
-          <p class="text-gray-600 mb-4">¿Estás a punto de actualizar el estado a "Completado"?</p>
-          
-          <form class="space-y-6" [formGroup]="form">
-            <div>
-              <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
-              <textarea id="descripcion" formControlName="desc_sol" rows="4" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="Añade una descripción detallada de la Orden de Trabajo..."></textarea>
+<div class="wpm-custom-gradient p-6 sm:p-4 lg:p-8 rounded-lg shadow-md">
+  <div class="contenedor px-4 sm:px-6 lg:px-8">
+    <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+      <!-- Leyenda de descripción -->
+      <p class="text-md text-gray-600 mb-4">
+        Completa el siguiente formulario para llevar constancia del servicio realizado.
+      </p>
+      
+      <form class="space-y-6 sm:space-y-4 lg:space-y-8" [formGroup]="form">
+        <!-- Fecha de Entrega -->
+        <!-- Fecha de Entrega -->
+        <fieldset class="border border-gray-200 p-4 rounded-lg">
+          <legend class="text-lg font-semibold">Fecha de entrega</legend>
+<div class="mt-4">
+  <div class="relative">
+    <input 
+      type="date" 
+      id="fecha_detalle" 
+      formControlName="fecha_detalle" 
+      class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none bg-gray-100 cursor-not-allowed" 
+      readonly 
+    />
+    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+      <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 111.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+      </svg>
+    </div>
+  </div>
+</div>
+</fieldset>
+        <!-- Servicio -->
+        <fieldset class="border border-gray-200 p-4 rounded-lg">
+          <legend class="text-lg font-semibold">Servicio</legend>
+          <div>
+            <div class="relative">
+              <input type="text" formControlName="nom_serv">
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 111.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                </svg>
+              </div>
             </div>
-          </form>
+          </div>
+        </fieldset>
 
-          <div class="modal-actions flex justify-end mt-4">
-            <button (click)="cancelUpdate()" class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 mr-2">Cancelar</button>
-            <button (click)="confirmUpdate(id_ot)" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Aceptar</button>
+        <!-- Título del formulario -->
+        <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
+
+        <!-- Descripción de la OT -->
+        <fieldset class="border border-gray-200 p-4 rounded-lg">
+          <legend class="text-lg font-semibold">Descripción del servicio</legend>
+          <div>
+            <label for="desc_detalle" class="block text-sm font-medium text-gray-700">Descripción</label>
+            <textarea
+              id="desc_detalle"
+              formControlName="desc_detalle"
+              rows="4"
+              class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 sm:rows-3 lg:rows-5"
+              placeholder="Añade una descripción detallada de la Orden de Trabajo...">
+            </textarea>
+          </div>
+        </fieldset>
+
+        <!-- Detalle Cliente (solo si el usuario tiene el rol adecuado) -->
+        <fieldset class="border border-gray-200 p-4 rounded-lg" *ngIf="authService.getUserRole() === 3">
+          <legend class="text-lg font-semibold">Usuario</legend>
+          <div>
+            <label for="usuarios" class="block text-sm font-medium text-gray-700 mb-2">Selecciona un Usuario:</label>
+            <div class="relative">
+              <select formControlName="rut_usuario" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 appearance-none bg-white">
+                <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
+                  {{ usuario.nom_usu }} {{ usuario.ap_usu }}
+                </option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 111.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="selectedUsuarioName !== null">
+            <p>Precio del usuario seleccionado: <strong>{{ selectedUsuarioName }} {{ selectedUsuarioSurname }}</strong></p>
+          </div>
+        </fieldset>
+
+
+
+        
+      
+
+
+        <!-- Modal para confirmación -->
+        <div *ngIf="isModalOpen" class="modal-overlay fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+          <div class="modal-content bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Confirmación</h2>
+            <p class="text-gray-600 mb-4">¿Estás a punto de actualizar el estado a "Completado"?</p>
+            <form class="space-y-6" [formGroup]="formDesc">
+              <div>
+                <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+                <textarea id="descripcion" formControlName="desc_sol" rows="4" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" placeholder="Añade una descripción detallada de la Orden de Trabajo..."></textarea>
+              </div>
+            </form>
+            <div class="modal-actions flex justify-end mt-4">
+              <button (click)="cancelUpdate()" class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 mr-2">Cancelar</button>
+              <button (click)="confirmUpdate(id_ot)" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Aceptar</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Botón de Confirmación o Volver a Editar -->
-      <div class="mt-8 flex justify-center">
-        <button
-          type="button"
-          [ngClass]="{
-            'bg-red-500 hover:bg-red-600': d_estado === 1, 
-            'bg-green-500 hover:bg-green-600': d_estado !== 1
-          }"
-          class="text-white font-bold py-2 px-4 rounded-md flex items-center"
-          (click)="anotherAction()"
-        >
-          <i class="fas" [ngClass]="{'fa-times': d_estado === 1, 'fa-check': d_estado !== 1}" class="mr-2"></i>
-          {{ d_estado === 1 ? 'Volver a editar' : 'Confirmar' }}
-        </button>
-      </div> 
-    </form>
+        <!-- Botón de Confirmación o Volver a Editar -->
+        <div class="mt-8 flex justify-center">
+          <button
+            type="button"
+            [ngClass]="{
+              'bg-red-500 hover:bg-red-600': d_estado === 1, 
+              'bg-green-500 hover:bg-green-600': d_estado !== 1
+            }"
+            class="text-white font-bold py-2 px-4 rounded-md flex items-center"
+            (click)="anotherAction()"
+          >
+            <i class="fas" [ngClass]="{'fa-times': d_estado === 1, 'fa-check': d_estado !== 1}" class="mr-2"></i>
+            {{ d_estado === 1 ? 'Volver a editar' : 'Confirmar' }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

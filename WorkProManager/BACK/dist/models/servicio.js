@@ -5,20 +5,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
-// Definición del modelo Servicio en lugar de EstadoOT
+const historial_servicio_orden_1 = __importDefault(require("./historial_servicio_orden"));
 const Servicio = connection_1.default.define('Servicio', {
-    id_serv: {
-        type: sequelize_1.DataTypes.INTEGER, // El tipo de dato es un entero
-        primaryKey: true, // Define que id_servicio es la clave primaria
-        autoIncrement: true // Indica que se incrementa automáticamente
+    id_servicio: {
+        type: sequelize_1.DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
     },
-    nom_serv: {
-        type: sequelize_1.DataTypes.STRING // Define el tipo de servicio como una cadena de caracteres
+    nombre_servicio: {
+        type: sequelize_1.DataTypes.STRING(100),
+        allowNull: false,
+    },
+    descripcion_servicio: {
+        type: sequelize_1.DataTypes.TEXT,
+        allowNull: true,
+    },
+    activo: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        defaultValue: true,
     },
 }, {
-    tableName: 'servicio', // Especifica el nombre exacto de la tabla en la base de datos
-    createdAt: false, // Desactiva el timestamp de creación
-    updatedAt: false // Desactiva el timestamp de actualización
+    tableName: 'servicio',
+    timestamps: false, // Si no usas createdAt y updatedAt
 });
-Servicio.hasMany(Servicio, { foreignKey: 'id_serv' });
+Servicio.hasMany(historial_servicio_orden_1.default, { foreignKey: 'id_servicio' });
+historial_servicio_orden_1.default.belongsTo(Servicio, { foreignKey: 'id_servicio', targetKey: 'id_servicio' });
 exports.default = Servicio;

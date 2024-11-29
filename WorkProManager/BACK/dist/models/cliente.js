@@ -4,35 +4,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
-const connection_1 = __importDefault(require("../db/connection")); // Asegúrate de que esta ruta sea correcta
-class Cliente extends sequelize_1.Model {
-}
-Cliente.init({
-    rut_cliente: {
+const connection_1 = __importDefault(require("../db/connection"));
+const asignacion_1 = __importDefault(require("./asignacion"));
+const Cliente = connection_1.default.define('Cliente', {
+    id_cliente: {
         type: sequelize_1.DataTypes.INTEGER,
+        autoIncrement: true,
         primaryKey: true,
     },
-    d_veri_cli: {
-        type: sequelize_1.DataTypes.STRING
+    nombre_cliente: {
+        type: sequelize_1.DataTypes.STRING(255),
+        allowNull: false,
     },
-    nom_cli: {
-        type: sequelize_1.DataTypes.STRING
+    direccion_cliente: {
+        type: sequelize_1.DataTypes.STRING(255),
+        allowNull: true,
     },
-    ap_cli: {
-        type: sequelize_1.DataTypes.STRING
+    telefono_cliente: {
+        type: sequelize_1.DataTypes.STRING(15),
+        allowNull: true,
     },
-    email_cli: {
-        type: sequelize_1.DataTypes.STRING
+    email_cliente: {
+        type: sequelize_1.DataTypes.STRING(100),
+        allowNull: true,
+        validate: {
+            isEmail: true, // Valida que sea un formato de correo válido
+        },
     },
-    cel_cli: {
-        type: sequelize_1.DataTypes.INTEGER
-    }
 }, {
-    sequelize: connection_1.default, // Asegúrate de que 'db' esté definido correctamente
-    modelName: 'cliente',
-    tableName: 'cliente', // Especifica el nombre exacto de la tabla
-    createdAt: false,
-    updatedAt: false
+    tableName: 'cliente', // Especifica el nombre de la tabla
+    timestamps: false, // No hay columnas createdAt/updatedAt
 });
-Cliente.hasMany(Cliente, { foreignKey: 'rut_cliente' });
+Cliente.hasMany(Cliente, { foreignKey: 'id_cliente' });
+Cliente.belongsTo(Cliente, { foreignKey: 'id_cliente', targetKey: 'id_cliente' });
+Cliente.hasMany(asignacion_1.default, { foreignKey: 'id_cliente' });
+Cliente.belongsTo(asignacion_1.default, { foreignKey: 'id_cliente', targetKey: 'id_cliente' });
 exports.default = Cliente;

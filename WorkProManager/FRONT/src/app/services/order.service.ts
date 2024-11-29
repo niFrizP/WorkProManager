@@ -31,8 +31,8 @@ export class OrderService {
   }
 
   getOrdersListByTecnico(rut_usuario: number): Observable<newOrder[]> {
-    const body = { rut_usuario };  // Define el body correctamente
-    return this.http.post<newOrder[]>(`${this.myAppUrl}${this.myApiUrl}tecnico`, {rut_usuario});
+    // El cuerpo se pasa directamente en la solicitud sin encabezados adicionales
+    return this.http.post<newOrder[]>(`${this.myAppUrl}${this.myApiUrl}tecnico`, { rut_usuario });
   }
 
   getOrdersCountCerradas(): Observable<any> {
@@ -78,8 +78,8 @@ export class OrderService {
     return this.http.delete<void>(`${this.myAppUrl}${this.myApiUrl}${id_ot}`)
   }
 
-  saveOrder(order: Order): Observable<Order> {
-    return this.http.post<Order>(`${this.myAppUrl}${this.myApiUrl}`,order)
+  saveOrder(order: Order): Observable<newOrder> {
+    return this.http.post<newOrder>(`${this.myAppUrl}${this.myApiUrl}`,order)
   }
 
   getOrder(id_ot: number): Observable<Order> {
@@ -101,7 +101,7 @@ export class OrderService {
   }
 
   countOrderNotifications(): Observable<any> {
-    return this.http.get<any>(`${this.myAppUrl}${this.myApiUrl}countOrderN`);
+    return this.http.get<any>(`${this.myAppUrl}${this.myApiUrl}ordenesxadmin`);
   }
 
   countOrderNotificationsCotizacionesByRut(rut_usuario:number): Observable<any> {
@@ -111,7 +111,7 @@ export class OrderService {
 
   countOrderNotificationsReportesByRut(rut_usuario:number): Observable<any> {
     const body = { rut_usuario }
-    return this.http.post<any>(`${this.myAppUrl}${this.myApiUrl}countOrderNReportesByRut`, {rut_usuario});
+    return this.http.post<any>(`${this.myAppUrl}${this.myApiUrl}ordenesxtecnico`, {rut_usuario});
   }
 
 

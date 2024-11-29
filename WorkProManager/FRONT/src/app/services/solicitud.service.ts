@@ -51,9 +51,9 @@ export class SolicitudService {
         return this.http.put<Date>(url, { fecha_emision });
     }
 
-    updateSolicitudByFechaTermino(id_sol: number, fecha_termino: Date): Observable<Date> {
+    updateSolicitudByFechaTermino(id_sol: number, fecha_termino: Date | null): Observable<Date | null> {
         const url = `${this.myAppUrl}${this.myApiUrl}${id_sol}`;
-        return this.http.put<Date>(url, { fecha_termino });
+        return this.http.put<Date | null>(url, { fecha_termino });
     }
 
     updateSolicitudByCompletada(id_sol: number, completada: boolean): Observable<boolean> {

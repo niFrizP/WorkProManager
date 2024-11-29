@@ -16,12 +16,15 @@
             <thead>
                 <tr class="col-start-auto">
                     <th class="border p-2">Nombre</th>
+                    <th class="border p-2">Marcas mas registradas en equipos</th>
                     <th>Eliminar</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let marca of marcas | paginate : { itemsPerPage: itemsPerPage, currentPage: page }">
                     <td>{{ marca.nom_marca }}</td>
+                    <td>{{ marca.vista_count_marca?.total_equipo ?? 0 }}</td>
+
                     <td>
                         <button (click)="marca.id_marca !== undefined ? deleteMarca(marca.id_marca) : null">🗑️</button>
                     </td>

@@ -1,24 +1,32 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
-import Order from './orders';
+import HistorialServicioOrden from './historial_servicio_orden';
 
-// Definición del modelo Servicio en lugar de EstadoOT
 const Servicio = db.define('Servicio', {
-    id_serv: {
-        type: DataTypes.INTEGER, // El tipo de dato es un entero
-        primaryKey: true, // Define que id_servicio es la clave primaria
-        autoIncrement: true // Indica que se incrementa automáticamente
+    id_servicio: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false,
     },
-    nom_serv: {
-        type: DataTypes.STRING // Define el tipo de servicio como una cadena de caracteres
+    nombre_servicio: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
     },
+    descripcion_servicio: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    activo: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+  }, {
+    tableName: 'servicio',
+    timestamps: false, // Si no usas createdAt y updatedAt
+  });
 
-}, {
-    tableName: 'servicio', // Especifica el nombre exacto de la tabla en la base de datos
-    createdAt: false, // Desactiva el timestamp de creación
-    updatedAt: false // Desactiva el timestamp de actualización
-});
+  Servicio.hasMany(HistorialServicioOrden, { foreignKey: 'id_servicio' });
+  HistorialServicioOrden.belongsTo(Servicio, { foreignKey: 'id_servicio', targetKey: 'id_servicio' });
 
-Servicio.hasMany(Servicio, { foreignKey: 'id_serv' });
-
-export default Servicio;
+  export default Servicio;

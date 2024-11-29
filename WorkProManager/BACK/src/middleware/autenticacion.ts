@@ -2,8 +2,8 @@ import { Request } from "express";
 import jwt from "jsonwebtoken";
 
 interface DecodedToken {
-    id_usuario: number;
-    rol: string;
+    trabajador_id: number;
+    id_rol: number;
 }
 
 export const verificarToken = async (req: Request): Promise<DecodedToken | null> => {
@@ -27,5 +27,5 @@ export const verificarToken = async (req: Request): Promise<DecodedToken | null>
 }
 
 export const esAdmin = (decoded: DecodedToken | null): boolean => {
-    return decoded?.rol === 'admin';
+    return decoded?.id_rol === 1;
 }
