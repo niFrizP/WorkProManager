@@ -16,7 +16,7 @@ exports.updateOrder = exports.postOrder = exports.deleteOrder = exports.getOrder
 const orders_1 = __importDefault(require("../models/orders"));
 const equipo_1 = __importDefault(require("../models/equipo"));
 const cliente_1 = __importDefault(require("../models/cliente"));
-const usuario_1 = __importDefault(require("../models/usuario"));
+const trabajador_1 = __importDefault(require("../models/trabajador"));
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
 const getOrdersByEstadoByUser_1 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -476,7 +476,7 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             include: [
                 { model: equipo_1.default },
                 { model: cliente_1.default },
-                { model: usuario_1.default },
+                { model: trabajador_1.default },
             ]
         });
         if (order) {

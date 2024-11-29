@@ -1,46 +1,33 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
-import Marca from './marca';
-import Tipo_Equipo from './tipo';
+import Asignacion from './asignacion';
+import Cliente from './cliente';
 
 const Equipo = db.define('Equipo', {
-    
-    num_equipo: {
-        type: DataTypes.INTEGER,// Puede ser STRING si el número de equipo tiene caracteres especiales
-        primaryKey: true, // Define que id_equipo es la clave primaria
-
+    numero_serie: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
     },
-    fecha_fab: {
-        type: DataTypes.DATE
+    tipo_equipo: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
     },
-    mod_equipo: {
-        type: DataTypes.STRING
+    marca: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
     },
-    id_marca: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'marca',
-            key: 'nom_marca'
-        }
+    modelo: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
     },
-    id_tipo: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'nom_tipo',
-            key: 'id_tipo'
-        }
-    }
+  }, {
+    tableName: 'equipo', // Nombre explícito de la tabla
+    timestamps: false, // No hay columnas createdAt/updatedAt
+  });
 
-  
-}, {
-    tableName: 'equipo', // Especifica el nombre exacto de la tabla
-    createdAt: false,
-    updatedAt: false
-});
+  Equipo.hasMany(Asignacion, { foreignKey: 'numero_serie' });
+  Asignacion.belongsTo(Equipo, { foreignKey: 'numero_serie', targetKey: 'numero_serie' });
+  Equipo.belongsTo(Cliente, { foreignKey: 'id_cliente', targetKey: 'id_cliente' });
 
-Equipo.hasMany(Equipo, { foreignKey: 'num_equipo' });
-Equipo.belongsTo(Marca, { foreignKey: 'id_marca', targetKey: 'id_marca' });
-Equipo.belongsTo(Tipo_Equipo, { foreignKey: 'id_tipo', targetKey: 'id_tipo' });
-
-
-export default Equipo;
+  export default Equipo;

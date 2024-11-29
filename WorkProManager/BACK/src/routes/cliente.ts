@@ -1,12 +1,18 @@
-import { Router } from 'express';
-import { getCliente, getClientes, updateCliente, deleteCliente, postCliente } from '../controllers/cliente';
+import { Router, RequestHandler } from 'express';
+import { 
+    getClientes, 
+    getCliente, 
+    postCliente, 
+    updateCliente, 
+    deleteCliente 
+} from '../controllers/cliente';
 
 const router = Router();
 
-router.get('/', getClientes);
-router.get('/:id', getCliente);
-router.delete('/:id', deleteCliente);
-router.post('/', postCliente);
-router.put('/:id', updateCliente);
+router.get('/', getClientes as RequestHandler);
+router.get('/:id', getCliente as RequestHandler);
+router.post('/', postCliente as RequestHandler);
+router.put('/:id', updateCliente as RequestHandler);
+router.delete('/:id', deleteCliente as RequestHandler);
 
-export default router;
+export default router; 

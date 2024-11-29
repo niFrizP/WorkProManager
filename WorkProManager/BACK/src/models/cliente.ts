@@ -1,36 +1,40 @@
-import { DataTypes, Model } from 'sequelize';
-import db from '../db/connection'; // Asegúrate de que esta ruta sea correcta
+import { DataTypes } from 'sequelize';
+import db from '../db/connection';
+import Asignacion from './asignacion';
 
-class Cliente extends Model {}
+const Cliente = db.define('Cliente', {
+    id_cliente: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    nombre_cliente: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    direccion_cliente: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    telefono_cliente: {
+      type: DataTypes.STRING(15),
+      allowNull: true,
+    },
+    email_cliente: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      validate: {
+        isEmail: true, // Valida que sea un formato de correo válido
+      },
+    },
+  }, {
+    tableName: 'cliente', // Especifica el nombre de la tabla
+    timestamps: false, // No hay columnas createdAt/updatedAt
+  });
 
-Cliente.init({
-    rut_cliente: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-    },
-    d_veri_cli: {
-        type: DataTypes.STRING
-    },
-    nom_cli: {
-        type: DataTypes.STRING
-    },
-    ap_cli: {
-        type: DataTypes.STRING
-    },
-    email_cli: {
-        type: DataTypes.STRING
-    },
-    cel_cli: {
-        type: DataTypes.INTEGER
-    }
-}, {
-    sequelize: db, // Asegúrate de que 'db' esté definido correctamente
-    modelName: 'cliente',
-    tableName: 'cliente', // Especifica el nombre exacto de la tabla
-    createdAt: false,
-    updatedAt: false
-});
+  Cliente.hasMany(Cliente, { foreignKey: 'id_cliente' });
+  Cliente.belongsTo(Cliente, { foreignKey: 'id_cliente', targetKey: 'id_cliente' });
+  Cliente.hasMany(Asignacion, { foreignKey: 'id_cliente' });
+  Cliente.belongsTo(Asignacion, { foreignKey: 'id_cliente', targetKey: 'id_cliente' });
 
-Cliente.hasMany(Cliente, { foreignKey: 'rut_cliente' });
-
-export default Cliente;
+  export default Cliente;

@@ -5,20 +5,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
-// Definición del modelo EstadoOT en lugar de Equipo
+const asignacion_1 = __importDefault(require("./asignacion"));
 const EstadoOT = connection_1.default.define('EstadoOT', {
-    id_estado_ot: {
-        type: sequelize_1.DataTypes.INTEGER, // El tipo de dato es un entero
-        primaryKey: true, // Define que id_estado es la clave primaria
-        autoIncrement: true // Indica que se incrementa automáticamente
+    id_estado: {
+        type: sequelize_1.DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
     },
-    nom_estado_ot: {
-        type: sequelize_1.DataTypes.STRING // Define el tipo de estado como una cadena de caracteres
-    }
+    nom_estado: {
+        type: sequelize_1.DataTypes.ENUM('Pendiente', 'En Proceso', 'Completada', 'Cancelada'),
+        allowNull: false,
+    },
 }, {
-    tableName: 'estado_ot', // Especifica el nombre exacto de la tabla en la base de datos
-    createdAt: false, // Desactiva el timestamp de creación
-    updatedAt: false // Desactiva el timestamp de actualización
+    tableName: 'estado_ot', // Nombre explícito de la tabla
+    timestamps: false, // No hay columnas createdAt/updatedAt
 });
-EstadoOT.hasMany(EstadoOT, { foreignKey: 'id_estado_ot' });
+EstadoOT.hasMany(asignacion_1.default, { foreignKey: 'id_estado' });
+asignacion_1.default.belongsTo(EstadoOT, { foreignKey: 'id_estado', targetKey: 'id_estado' });
 exports.default = EstadoOT;

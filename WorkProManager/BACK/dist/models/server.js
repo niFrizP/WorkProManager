@@ -14,25 +14,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const order_1 = __importDefault(require("../routes/order"));
 const cliente_1 = __importDefault(require("../routes/cliente"));
-const usuario_1 = __importDefault(require("../routes/usuario"));
+const trabajador_1 = __importDefault(require("../routes/trabajador"));
 const servicio_1 = __importDefault(require("../routes/servicio"));
 const estado_ot_1 = __importDefault(require("../routes/estado_ot"));
 const equipo_1 = __importDefault(require("../routes/equipo"));
-const rol_1 = __importDefault(require("../routes/rol"));
-const log_ot_1 = __importDefault(require("../routes/log_ot"));
-const marca_1 = __importDefault(require("../routes/marca"));
-const detalle_ot_1 = __importDefault(require("../routes/detalle_ot"));
-const usuario_eliminado_1 = __importDefault(require("../routes/usuario_eliminado"));
-const order_2 = __importDefault(require("../routes/order"));
-const query_1 = __importDefault(require("../routes/query"));
-const causa_rechazo_1 = __importDefault(require("../routes/causa_rechazo"));
-const detalle_causa_rechazo_1 = __importDefault(require("../routes/detalle_causa_rechazo"));
-const adjudicacion_1 = __importDefault(require("../routes/adjudicacion"));
-const tipo_1 = __importDefault(require("../routes/tipo"));
+const trabajador_rol_1 = __importDefault(require("../routes/trabajador_rol"));
 const login_1 = __importDefault(require("../routes/login"));
-const solicitud_1 = __importDefault(require("../routes/solicitud"));
+const accion_1 = __importDefault(require("../routes/accion"));
+const asignacion_1 = __importDefault(require("../routes/asignacion"));
+const historial_orden_1 = __importDefault(require("../routes/historial_orden"));
+const orden_trabajo_1 = __importDefault(require("../routes/orden_trabajo"));
+const servicio_orden_1 = __importDefault(require("../routes/servicio_orden"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const connection_1 = __importDefault(require("../db/connection")); // Asegúrate de que aquí importas initModels
 class Server {
@@ -61,78 +54,48 @@ class Server {
                 msg: 'API Working'
             });
         });
-        this.app.use('/api/causa', (req, res, next) => {
+        this.app.use('/api/accion', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a login');
             }
             next();
-        }, causa_rechazo_1.default);
-        this.app.use('/api/adjudicacion', (req, res, next) => {
+        }, accion_1.default);
+        this.app.use('/api/asignacion', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a login');
             }
             next();
-        }, adjudicacion_1.default);
-        this.app.use('/api/detallecausa', (req, res, next) => {
+        }, asignacion_1.default);
+        this.app.use('/api/cliente', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a login');
             }
             next();
-        }, detalle_causa_rechazo_1.default);
+        }, cliente_1.default);
         this.app.use('/api/login', (req, res, next) => {
             if (req.method === 'POST') {
                 console.log('Acceso a login');
             }
             next();
         }, login_1.default);
-        this.app.use('/api/solicitud', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a solicitudes');
-            }
-            next();
-        }, solicitud_1.default);
-        this.app.use('/api/detalle_ot', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a detalles de órdenes de trabajo');
-            }
-            next();
-        }, detalle_ot_1.default);
-        this.app.use('/api/log_ot', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a logs de órdenes de trabajo');
-            }
-            next();
-        }, log_ot_1.default);
-        this.app.use('/api/query', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a consultas');
-            }
-            next();
-        }, query_1.default);
         this.app.use('/api/clientes', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a clientes');
             }
             next();
         }, cliente_1.default);
-        this.app.use('/api/orders', (req, res, next) => {
+        //this.app.use('/api/ordersCountByService', (req: Request, res: Response, next: Function) => {
+        //if (req.method === 'GET') {
+        //console.log('Acceso a órdenes');
+        //}
+        //next();
+        //}, ordersCountByService);
+        this.app.use('/api/trabajador', (req, res, next) => {
             if (req.method === 'GET') {
-                console.log('Acceso a órdenes');
+                console.log('Acceso a trabajadores');
             }
             next();
-        }, order_1.default);
-        this.app.use('/api/ordersCountByService', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a órdenes');
-            }
-            next();
-        }, order_2.default);
-        this.app.use('/api/usuario', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a usuarios');
-            }
-            next();
-        }, usuario_1.default);
+        }, trabajador_1.default);
         this.app.use('/api/servicio', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a servicios');
@@ -145,42 +108,36 @@ class Server {
             }
             next();
         }, estado_ot_1.default);
-        this.app.use('/api/tipo', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a tipos');
-            }
-            next();
-        }, tipo_1.default);
         this.app.use('/api/equipo', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a equipos');
             }
             next();
         }, equipo_1.default);
-        this.app.use('/api/rol', (req, res, next) => {
+        this.app.use('/api/trabajador_rol', (req, res, next) => {
             if (req.method === 'GET') {
                 console.log('Acceso a roles');
             }
             next();
-        }, rol_1.default);
-        this.app.use('/api/log', (req, res, next) => {
+        }, trabajador_rol_1.default);
+        this.app.use('/api/historial_orden', (req, res, next) => {
             if (req.method === 'GET') {
-                console.log('Acceso a logs');
+                console.log('Acceso al historial de órdenes');
             }
             next();
-        }, log_ot_1.default);
-        this.app.use('/api/marca', (req, res, next) => {
+        }, historial_orden_1.default);
+        this.app.use('/api/orden_trabajo', (req, res, next) => {
             if (req.method === 'GET') {
-                console.log('Acceso a marcas');
+                console.log('Acceso a órdenes de trabajo');
             }
             next();
-        }, marca_1.default);
-        this.app.use('/api/usuarioEliminado', (req, res, next) => {
+        }, orden_trabajo_1.default);
+        this.app.use('/api/servicio_orden', (req, res, next) => {
             if (req.method === 'GET') {
-                console.log('Acceso a usuarios eliminados');
+                console.log('Acceso a servicios de órdenes');
             }
             next();
-        }, usuario_eliminado_1.default);
+        }, servicio_orden_1.default);
     }
     middlewares() {
         this.app.use((0, cors_1.default)({ origin: "http://localhost:4200", credentials: true

@@ -1,26 +1,19 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import routesOrder from '../routes/order';
-import routesClient from '../routes/cliente';
-import routesUsuario from '../routes/usuario';
-import routesServicio from '../routes/servicio';
-import routesEstadoOt from '../routes/estado_ot';
+import routerCliente from '../routes/cliente';
+import routerTrabajador from '../routes/trabajador';
+import routerServicio from '../routes/servicio';
+import routerEstadoOt from '../routes/estado_ot';
 import routesEquipo from '../routes/equipo';
-import routesRol from '../routes/rol';
-import logRoutes from '../routes/log_ot';
-import routesMarca from '../routes/marca';
-import detalleOtRoutes from '../routes/detalle_ot';
-import routesUsuarioEliminado from '../routes/usuario_eliminado';
-import ordersCountByService from '../routes/order';
-import queryRoutes from '../routes/query';
-import causaRoutes from '../routes/causa_rechazo';
-import detallecausaroutes from '../routes/detalle_causa_rechazo';
-import adjudicacionRoutes from '../routes/adjudicacion';
+import routerTrabajadorRol from '../routes/trabajador_rol';
+import routerLogin from '../routes/login';
+import routerAsignacion from '../routes/asignacion';
+import routerHistorialOrden from '../routes/historial_orden';
+import routerOrdenTrabajo from '../routes/orden_trabajo';
+import routerServicioOrden from '../routes/servicio_orden';
+//import ordersCountByService from '../routes/order';
 
-import routesTipo from '../routes/tipo';
-import routesLogin from '../routes/login';
 import bodyparser from 'body-parser';
-import routerSolicitud from '../routes/solicitud';
 import cookieparser from 'cookie-parser';
 
 import db from '../db/connection'; // Asegúrate de que aquí importas initModels
@@ -63,112 +56,63 @@ class Server {
             });
         });
 
-        this.app.use('/api/causa', (req: Request, res: Response, next: Function) => {
+        this.app.use('/api/asignacion', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a login');
             }
             next();
-        }, causaRoutes);
+        }, routerAsignacion);
 
-        this.app.use('/api/adjudicacion', (req: Request, res: Response, next: Function) => {
+        this.app.use('/api/cliente', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a login');
             }
             next();
-        }, adjudicacionRoutes);
-
-        this.app.use('/api/detallecausa', (req: Request, res: Response, next: Function) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a login');
-            }
-            next();
-        }, detallecausaroutes);
+        }, routerCliente);
        
 
-        this.app.use('/api/login', (req: Request, res: Response, next: Function) => {
+        this.app.use('/api/login', (req: Request, res: Response, next: NextFunction) => {
             if (req.method === 'POST') {
                 console.log('Acceso a login');
             }
             next();
-        }, routesLogin);
-       
-
-        this.app.use('/api/solicitud', (req: Request, res: Response, next: Function) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a solicitudes');
-            }
-            next();
-        }, routerSolicitud);
-
-        this.app.use('/api/detalle_ot', (req: Request, res: Response, next: Function) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a detalles de órdenes de trabajo');
-            }
-            next();
-        }, detalleOtRoutes);
-
-        this.app.use('/api/log_ot', (req: Request, res: Response, next: Function) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a logs de órdenes de trabajo');
-            }
-            next();
-        }, logRoutes);
-
-        this.app.use('/api/query', (req: Request, res: Response, next: Function) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a consultas');
-            }
-            next();
-        }, queryRoutes);
+        }, routerLogin);
 
         this.app.use('/api/clientes', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a clientes');
             }
             next();
-        }, routesClient);
-    
-        this.app.use('/api/orders', (req: Request, res: Response, next: Function) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a órdenes');
-            }
-            next();
-        }, routesOrder);
+        }, routerCliente);
 
-        this.app.use('/api/ordersCountByService', (req: Request, res: Response, next: Function) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a órdenes');
-            }
-            next();
-        }, ordersCountByService);
+
+        //this.app.use('/api/ordersCountByService', (req: Request, res: Response, next: Function) => {
+            //if (req.method === 'GET') {
+                //console.log('Acceso a órdenes');
+            //}
+            //next();
+        //}, ordersCountByService);
     
-        this.app.use('/api/usuario', (req: Request, res: Response, next: Function) => {
+        this.app.use('/api/trabajador', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
-                console.log('Acceso a usuarios');
+                console.log('Acceso a trabajadores');
             }
             next();
-        }, routesUsuario);
+        }, routerTrabajador);
     
         this.app.use('/api/servicio', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a servicios');
             }
             next();
-        }, routesServicio);
+        }, routerServicio);
     
         this.app.use('/api/estado_ot', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a estado de órdenes de trabajo');
             }
             next();
-        }, routesEstadoOt);
-
-        this.app.use('/api/tipo', (req: Request, res: Response, next: Function) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a tipos');
-            }
-            next();
-        }, routesTipo);
+        }, routerEstadoOt);
     
         this.app.use('/api/equipo', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
@@ -177,35 +121,35 @@ class Server {
             next();
         }, routesEquipo);
 
-        this.app.use('/api/rol', (req: Request, res: Response, next: Function) => {
+        this.app.use('/api/trabajador_rol', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
                 console.log('Acceso a roles');
             }
             next();
-        }, routesRol);
+        }, routerTrabajadorRol);
 
-        this.app.use('/api/log', (req: Request, res: Response, next: Function) => {
+        this.app.use('/api/historial_orden', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
-                console.log('Acceso a logs');
+                console.log('Acceso al historial de órdenes');
             }
             next();
-        }, logRoutes);
+        }, routerHistorialOrden);
 
 
-        this.app.use('/api/marca', (req: Request, res: Response, next: Function) => {
+        this.app.use('/api/orden_trabajo', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
-                console.log('Acceso a marcas');
+                console.log('Acceso a órdenes de trabajo');
             }
             next();
-        }, routesMarca);  
+        }, routerOrdenTrabajo);  
 
 
-        this.app.use('/api/usuarioEliminado', (req: Request, res: Response, next: Function) => {
+        this.app.use('/api/servicio_orden', (req: Request, res: Response, next: Function) => {
             if (req.method === 'GET') {
-                console.log('Acceso a usuarios eliminados');
+                console.log('Acceso a servicios de órdenes');
             }
             next();
-        }, routesUsuarioEliminado);
+        }, routerServicioOrden);
 
      
     }
