@@ -25,18 +25,14 @@ export class PdfGeneratorService {
       pdf.setFont('IBMPlexSans-Regular', 'normal');
 
       // Encabezado: Logo y título
-      // Encabezado: Logo y título
       const logoUrl = 'https://i.imgur.com/kTQg9EM.png';
       pdf.addImage(logoUrl, 'PNG', 10, 10, 40, 15); // Ajustar proporción del logo
       pdf.setFontSize(16);
       pdf.setTextColor(primaryColor);
+      pdf.setFillColor(secondaryColor);
       pdf.text('ORDEN DE TRABAJO', 80, 20); // Alinear con el logo
-      pdf.addImage(logoUrl, 'PNG', 10, 10, 40, 15); // Ajustar proporción del logo
-      pdf.setFontSize(16);
-      pdf.setTextColor(primaryColor);
-      pdf.text('ORDEN DE TRABAJO', 80, 20); // Alinear con el logo
+      pdf.setFontSize(12);
 
-      currentY += 25; // Ajustar espacio debajo del encabezado
       currentY += 25; // Ajustar espacio debajo del encabezado
 
       const addNewPage = () => {
@@ -81,6 +77,7 @@ export class PdfGeneratorService {
       currentY += 15;
 
       // Datos del Equipo
+      pdf.setFontSize(14);
       checkPageOverflow(25);
       drawTableHeader(10, currentY, 190, 10, 'DATOS DEL EQUIPO');
       pdf.text(`Modelo: ${order.Equipo?.mod_equipo}`, 12, currentY + 5);
@@ -90,6 +87,7 @@ export class PdfGeneratorService {
       // Detalles de la Orden
       checkPageOverflow(25);
       drawTableHeader(10, currentY, 190, 10, 'DETALLES DE LA ORDEN');
+      drawTableHeader(10, currentY + 8, 190, 12, '');
       pdf.text('Servicio', 12, currentY + 5);
       pdf.text('Descripción', 80, currentY + 5);
       currentY += 10;
@@ -135,6 +133,21 @@ export class PdfGeneratorService {
 
         // Dibujar el recuadro para una solicitud
         pdf.rect(10, currentY + 7, 190, 36); // Rectángulo principal
+        // Líneas internas
+        lineYPositions.forEach((lineY) => {
+          pdf.line(10, lineY, 200, lineY); // Líneas horizontales
+        });
+
+        // Datos dentro del recuadro
+        pdf.text(`ID Solicitud: ${solicitud.id_sol}`, 15, currentY + 11);
+        pdf.text(`Descripción: ${solicitud.desc_sol || 'N/A'}`, 15, currentY + 17);
+        pdf.text(`Estado: ${solicitud.id_estado_ot || 'N/A'}`, 15, currentY + 22);
+        pdf.text(`Fecha de vista: ${solicitud.fecha_vista || 'N/A'}`, 15, currentY + 28);
+        pdf.text(`Fecha de emisión: ${solicitud.fecha_emision || 'N/A'}`, 15, currentY + 35);
+        pdf.text(`Fecha de término: ${solicitud.fecha_termino || 'N/A'}`, 15, currentY + 40);
+
+        // Espaciado entre solicitudes
+        currentY += 38; // Altura del recuadro más margen
       });
 
       // Guardar archivo
