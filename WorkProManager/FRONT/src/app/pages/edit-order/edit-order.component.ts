@@ -24,7 +24,7 @@ import { MarcaService } from '../../services/marca.service';
 import { ClienteService } from '../../services/cliente.service';
 import { EquipoService } from '../../services/equipo.service';
 import { SolicitudService } from '../../services/solicitud.service';
-
+import { TipoService } from '../../services/tipo';
 // Components
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { DetalleOTService } from '../../services/detalle_ot.service';
@@ -105,7 +105,8 @@ export class EditOrderComponent implements OnInit {
     private equipoService:EquipoService,
     private clienteService:ClienteService,
     private solicitudService:SolicitudService,
-    public authService: AuthService
+    public authService: AuthService,
+    private tipoService: TipoService 
     
   ) {
 
@@ -132,10 +133,13 @@ export class EditOrderComponent implements OnInit {
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       celular: [null, Validators.required],
+      id_tipo: [null, Validators.required],
       correo: ['', Validators.required],
       tipo_equipo: ['', Validators.required],
       mod_equipo: ['', Validators.required],
+      fec_entrega: ['', Validators.required],
       fec_fabric: ['', Validators.required],
+      fec_creacion: ['', Validators.required],
       id_marca: [null, Validators.required],
       d_veri_cli: ['', Validators.required],
       desc_sol: ['', Validators.required],
@@ -165,6 +169,7 @@ export class EditOrderComponent implements OnInit {
     this.loadOrder(this.id_ot);
     this.updateSolicitudOnLoad()
     this.loadDetalle(this.id_ot);
+    this.cargarTipoEquipo();
     console.log(this.id_ot);
     this.form.patchValue({ rut_usuario: this.form.get('rut_usuario')?.value });
     this.cargarServicios();
@@ -201,6 +206,7 @@ export class EditOrderComponent implements OnInit {
 
     }
   }
+
 
   conseguirRolRemitente(rut_remitente: number): number | undefined {
     let rol: number | undefined;
@@ -239,6 +245,22 @@ export class EditOrderComponent implements OnInit {
 
 }
 
+cargarTipoEquipo() {
+  this.tipoService.getListTipos().subscribe({
+    next: (data: Tipo[]) => {
+      this.tipos = data; // Asigna la respuesta a la variable
+    },
+    error: (error) => {
+      console.error('Error al cargar tipos:', error); // Manejo de errores
+    },
+    complete: () => {
+      console.log('Carga de tipos completada'); // (Opcional) Mensaje de finalización
+    }
+  });
+}
+
+
+
   private log(){
     console.log(this.id_ot);
   }
@@ -261,6 +283,7 @@ export class EditOrderComponent implements OnInit {
           nom_usu: data.VistaUltimaAdjudicacion?.nom_usu, // Cambia esto si el nombre no está directamente en 'Usuario'
           rut_cliente: data.rut_cliente,
           nombre: data.cliente?.nom_cli,
+          id_tipo: data.Equipo?.id_tipo ?? null, // Ensure this line is added
           mod_equipo: data.Equipo?.mod_equipo, // Asegúrate de que esta propiedad exista
           num_equipo: data.num_equipo, // Asegúrate de que esta propiedad exista
           fec_fabric: data.Equipo?.fecha_fab,
@@ -488,7 +511,7 @@ export class EditOrderComponent implements OnInit {
         confirmButtonColor: '#3085d6'
       }).then((result) => {
         if (result.isConfirmed) {
-          this.router.navigate(['/']); // Redirige a la página principal
+          this.router.navigate(['/orders']); // Redirige a la página principal
         }
       });
     } catch (error) {
@@ -907,5 +930,32 @@ export class EditOrderComponent implements OnInit {
   
   toggleSelectServicio(): void {
     this.mostrarSelectServicio = !this.mostrarSelectServicio;
+  }
+
+  validateDateTime(event: any): void {
+    const selectedDateTime = new Date(event.target.value);
+    const day = selectedDateTime.getUTCDay();
+    const hours = selectedDateTime.getUTCHours();
+  
+    // Check if the selected day is Saturday (6) or Sunday (0)
+    if (day === 6 || day === 0) {
+        alert('No se permiten fechas en sábado o domingo.');
+        event.target.value = '';
+        return;
+    }
+  
+    // Check if the selected time is outside 9 AM to 5 PM
+    if (hours < 9 && hours >= 17) {
+        alert('La hora debe estar entre las 9:00 y las 17:00.');
+        event.target.value = '';
+        return;
+    }
+  
+    // Check if the selected date and time is in the past
+    const now = new Date();
+    if (selectedDateTime < now) {
+        alert('No se permiten fechas y horas anteriores a la actual.');
+        event.target.value = '';
+    }
   }
 }

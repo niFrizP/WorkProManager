@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { newOrder } from '../../interfaces/newOrder';
 import { AuthService } from '../../services/auth.service';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgModel } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CookieManagementService } from '../../services/cookie.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';

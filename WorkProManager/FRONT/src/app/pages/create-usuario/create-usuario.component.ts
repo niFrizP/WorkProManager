@@ -10,6 +10,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Usuario } from '../../interfaces/usuario';
 import { UsuarioService } from '../../services/usuario.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -25,7 +26,8 @@ export class CreateUsuarioComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private router: Router
   ) {
     this.userForm = this.fb.group({
       rut_usuario: ['', [Validators.required, Validators.pattern('^[0-9]{7,8}$')]],
@@ -59,6 +61,7 @@ export class CreateUsuarioComponent implements OnInit {
             duration: 3000
           });
           console.log('Usuario creado o actualizado:', usuario);
+          this.router.navigate(['/orders']);
         }
       ).catch(
         (error) => {

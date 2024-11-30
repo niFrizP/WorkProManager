@@ -153,9 +153,9 @@ export class CotizacionComponent {
     this.rut_remitente = this.authService.getIdLocal();
     console.log('User ID:', this['userId']);
 
-    // Establece la fecha actual
-    const today = new Date();
-    this.fechaHoy = today.toISOString().split('T')[0];  // Obtiene solo la fecha sin la parte de la hora
+        // Establece la fecha actual
+        const today = new Date();
+        this.fechaHoy = today.toISOString().split('.')[0]; // Include time part
 
     // Verificación del token de usuario
     this.authService.verificarToken().subscribe({
@@ -213,7 +213,7 @@ export class CotizacionComponent {
         confirmButtonColor: '#3085d6'
       }).then((result) => {
         if (result.isConfirmed) {
-          this.router.navigate(['/']); // Redirige a la página principal
+          this.router.navigate(['/orders']); // Redirige a la página principal
         }
       });
     } catch (error) {
