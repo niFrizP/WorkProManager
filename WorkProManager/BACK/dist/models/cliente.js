@@ -4,35 +4,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
-const connection_1 = __importDefault(require("../db/connection")); // Asegúrate de que esta ruta sea correcta
-class Cliente extends sequelize_1.Model {
-}
-Cliente.init({
-    rut_cliente: {
+const connection_1 = __importDefault(require("../db/connection"));
+const Cliente = connection_1.default.define('Cliente', {
+    rut_cli: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
-    },
-    d_veri_cli: {
-        type: sequelize_1.DataTypes.STRING
+        allowNull: false,
     },
     nom_cli: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING(255),
+        allowNull: false,
     },
-    ap_cli: {
-        type: sequelize_1.DataTypes.STRING
+    ape_cli: {
+        type: sequelize_1.DataTypes.STRING(100),
+        allowNull: true,
+    },
+    dir_cli: {
+        type: sequelize_1.DataTypes.STRING(255),
+        allowNull: true,
+    },
+    tel_cli: {
+        type: sequelize_1.DataTypes.STRING(15),
+        allowNull: true,
     },
     email_cli: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING(100),
+        allowNull: true,
+        validate: {
+            isEmail: true,
+        },
     },
-    cel_cli: {
-        type: sequelize_1.DataTypes.INTEGER
+    d_ver_cli: {
+        type: sequelize_1.DataTypes.STRING(1),
+        allowNull: true,
     }
 }, {
-    sequelize: connection_1.default, // Asegúrate de que 'db' esté definido correctamente
-    modelName: 'cliente',
-    tableName: 'cliente', // Especifica el nombre exacto de la tabla
-    createdAt: false,
-    updatedAt: false
+    tableName: 'cliente',
+    timestamps: false,
 });
-Cliente.hasMany(Cliente, { foreignKey: 'rut_cliente' });
 exports.default = Cliente;

@@ -2,8 +2,8 @@ import { Request } from "express";
 import jwt from "jsonwebtoken";
 
 interface DecodedToken {
-    id_usuario: number;
-    rol: string;
+    rut_trab: number;
+    id_rol: number;
 }
 
 export const verificarToken = async (req: Request): Promise<DecodedToken | null> => {
@@ -27,5 +27,22 @@ export const verificarToken = async (req: Request): Promise<DecodedToken | null>
 }
 
 export const esAdmin = (decoded: DecodedToken | null): boolean => {
-    return decoded?.rol === 'admin';
+    return decoded?.id_rol === 1;
+}
+
+export const esGestor = (decoded: DecodedToken | null): boolean => {
+    return decoded?.id_rol === 2;
+}
+
+export const esTecnico = (decoded: DecodedToken | null): boolean => {
+    return decoded?.id_rol === 3;
+}
+
+export const verificarRol = (decoded: DecodedToken | null, rolesPermitidos: number[]): boolean => {
+    if (!decoded) return false;
+    return rolesPermitidos.includes(decoded.id_rol);
+}
+
+export const obtenerRutTrabajador = (decoded: DecodedToken | null): number | null => {
+    return decoded?.rut_trab || null;
 }

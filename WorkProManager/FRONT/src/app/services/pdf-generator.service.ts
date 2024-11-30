@@ -3,6 +3,8 @@ import jsPDF from 'jspdf';
 import { newOrder } from '../interfaces/newOrder';
 import { DetalleOT } from '../interfaces/detalle_ot';
 import { Solicitud } from '../interfaces/solicitud';
+import '../assets/fonts/IBMPlexSans-Regular-normal.js';
+
 
 @Injectable({
   providedIn: 'root',
@@ -28,12 +30,11 @@ export class PdfGeneratorService {
       pdf.addImage(logoUrl, 'PNG', 10, 10, 40, 15); // Ajustar proporción del logo
       pdf.setFontSize(16);
       pdf.setTextColor(primaryColor);
+      pdf.setFillColor(secondaryColor);
       pdf.text('ORDEN DE TRABAJO', 80, 20); // Alinear con el logo
+      pdf.setFontSize(12);
 
       currentY += 25; // Ajustar espacio debajo del encabezado
-
-
-
 
       const addNewPage = () => {
         pdf.addPage();
@@ -104,6 +105,7 @@ export class PdfGeneratorService {
       currentY += 15;
 
       // Datos del Equipo
+      pdf.setFontSize(14);
       checkPageOverflow(25);
       drawTableHeader(10, currentY, 190, 10, 'DATOS DEL EQUIPO');
       pdf.text(`Modelo: ${order.Equipo?.mod_equipo}`, 12, currentY + 5);
@@ -113,6 +115,7 @@ export class PdfGeneratorService {
       // Detalles de la Orden
       checkPageOverflow(25);
       drawTableHeader(10, currentY, 190, 10, 'DETALLES DE LA ORDEN');
+      drawTableHeader(10, currentY + 8, 190, 12, '');
       pdf.text('Servicio', 12, currentY + 5);
       pdf.text('Descripción', 80, currentY + 5);
       currentY += 10;
@@ -129,17 +132,13 @@ export class PdfGeneratorService {
       checkPageOverflow(25);
       drawTableHeader(10, currentY + 7, 190, 10, 'SOLICITUDES ASOCIADAS');
 
-
-
+      const lineYPositions = [currentY + 13, currentY + 19, currentY + 25, currentY + 31, currentY + 37];
 
       solicitudes.forEach((solicitud) => {
         checkPageOverflow(36);
-
         // Dibujar el recuadro para una solicitud
         pdf.rect(10, currentY + 7, 190, 36); // Rectángulo principal
-
         // Líneas internas
-        const lineYPositions = [currentY + 7, currentY + 12, currentY + 18, currentY + 24, currentY + 30];
         lineYPositions.forEach((lineY) => {
           pdf.line(10, lineY, 200, lineY); // Líneas horizontales
         });

@@ -1,12 +1,12 @@
-import { Router } from 'express';
-import { getServicio, getServicios, updateServicio, deleteServicio, postServicio } from '../controllers/servicio';
+import { Router, RequestHandler } from 'express';
+import { getServicios, getServicio, postServicio, updateServicio, deleteServicio } from '../controllers/servicio';
 
 const router = Router();
 
-router.get('/', getServicios);
-router.get('/:id', getServicio);
-router.delete('/:id', deleteServicio);
-router.post('/', postServicio);
-router.put('/:id', updateServicio);
+router.get('/', getServicios as RequestHandler);
+router.get('/:id', getServicio as RequestHandler);
+router.post('/', postServicio as RequestHandler);
+router.put('/:id', updateServicio as RequestHandler);
+router.delete('/:id', deleteServicio as RequestHandler);
 
-export default router;
+export default router; 

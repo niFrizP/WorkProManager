@@ -5,7 +5,7 @@ const equipo_1 = require("../controllers/equipo");
 const router = (0, express_1.Router)();
 router.get('/', equipo_1.getEquipos);
 router.get('/:id', equipo_1.getEquipo);
-router.delete('/:id', equipo_1.deleteEquipo);
 router.post('/', equipo_1.postEquipo);
 router.put('/:id', equipo_1.updateEquipo);
+router.delete('/:id', equipo_1.deleteEquipo);
 exports.default = router;

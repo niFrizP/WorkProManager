@@ -1,89 +1,155 @@
 import { Request, Response } from 'express';
-import EstadoOT from '../models/estado_ot'; // Asegúrate de tener el modelo de EstadoOT importado
+import EstadoOT from '../models/estado_ot';
+import { verificarToken, verificarRol } from '../middleware/autenticacion';
+
+const ESTADOS_VALIDOS = [
+    'Cotización en curso',
+    'Verificando cotización',
+    'En progreso',
+    'Completada',
+    'Rechazada'
+] as const;
+
+type EstadoValido = typeof ESTADOS_VALIDOS[number];
 
 export const getEstadosOT = async (req: Request, res: Response) => {
-    const listEstadosOT = await EstadoOT.findAll();
-    res.json(listEstadosOT);
+    try {
+        const decoded = await verificarToken(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+
+        const listEstados = await EstadoOT.findAll({
+            attributes: ['id_estado', 'nom_estado']
+        });
+        res.json(listEstados);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al obtener los estados de OT'
+        });
+    }
 };
 
 export const getEstadoOT = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const estadoOT = await EstadoOT.findByPk(id);
+        const decoded = await verificarToken(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
 
-        if (estadoOT) {
-            res.json(estadoOT);
+        const estado = await EstadoOT.findByPk(id);
+        if (estado) {
+            res.json(estado);
         } else {
             res.status(404).json({
-                msg: `No existe un estado con el id ${id}`
+                msg: `No existe un estado de OT con el id ${id}`
             });
         }
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: `Error al obtener el estado, contacta con soporte`
+            msg: 'Error al obtener el estado de OT'
+        });
+    }
+};
+
+export const postEstadoOT = async (req: Request, res: Response) => {
+    const { nom_estado } = req.body;
+    try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para crear estados de OT'
+            });
+        }
+
+        // Verificar que el estado sea uno de los permitidos
+        if (!ESTADOS_VALIDOS.includes(nom_estado as EstadoValido)) {
+            return res.status(400).json({
+                msg: `Estado no válido. Los estados permitidos son: ${ESTADOS_VALIDOS.join(', ')}`
+            });
+        }
+
+        const estado = await EstadoOT.create({
+            nom_estado
+        });
+        res.json(estado);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al crear el estado de OT'
+        });
+    }
+};
+
+export const updateEstadoOT = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { nom_estado } = req.body;
+    try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para actualizar estados de OT'
+            });
+        }
+
+        const estado = await EstadoOT.findByPk(id);
+        if (!estado) {
+            return res.status(404).json({
+                msg: `No existe un estado de OT con el id ${id}`
+            });
+        }
+
+        // Verificar que el estado sea uno de los permitidos
+        if (!ESTADOS_VALIDOS.includes(nom_estado as EstadoValido)) {
+            return res.status(400).json({
+                msg: `Estado no válido. Los estados permitidos son: ${ESTADOS_VALIDOS.join(', ')}`
+            });
+        }
+
+        await estado.update({
+            nom_estado
+        });
+        res.json(estado);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al actualizar el estado de OT'
         });
     }
 };
 
 export const deleteEstadoOT = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const estadoOT = await EstadoOT.findByPk(id);
-
-    if (!estadoOT) {
-        res.status(404).json({
-            msg: `No existe un estado con el id ${id}`
-        });
-    } else {
-        await estadoOT.destroy();
-        res.json({
-            msg: 'El estado fue eliminado con éxito!'
-        });
-    }
-};
-
-export const postEstadoOT = async (req: Request, res: Response) => {
-    const { nom_estado_ot } = req.body; // Extrae los datos relevantes
-
     try {
-        // Crear el nuevo estado sin especificar `id_estado`
-        const newEstadoOT = await EstadoOT.create({
-            nom_estado_ot
-        });
-
-        res.json({
-            msg: 'El estado fue agregado con éxito!',
-            estado: newEstadoOT // Devuelve el nuevo estado, incluyendo el id_estado generado
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
-        });
-    }
-};
-
-export const updateEstadoOT = async (req: Request, res: Response) => {
-    const { body } = req;
-    const { id } = req.params;
-
-    try {
-        const estadoOT = await EstadoOT.findByPk(id);
-
-        if (estadoOT) {
-            await estadoOT.update(body);
-            res.json({
-                msg: 'El estado fue actualizado con éxito'
-            });
-        } else {
-            res.status(404).json({
-                msg: `No existe un estado con el id ${id}`
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para eliminar estados de OT'
             });
         }
+
+        const estado = await EstadoOT.findByPk(id);
+        if (!estado) {
+            return res.status(404).json({
+                msg: `No existe un estado de OT con el id ${id}`
+            });
+        }
+
+        await estado.destroy();
+        res.json({
+            msg: 'Estado de OT eliminado con éxito'
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: `Upps, ocurrió un error. Comuníquese con soporte`
+            msg: 'Error al eliminar el estado de OT'
         });
     }
 };

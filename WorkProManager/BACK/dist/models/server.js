@@ -12,191 +12,99 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// server.ts
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const order_1 = __importDefault(require("../routes/order"));
+const body_parser_1 = __importDefault(require("body-parser"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+// Importación de rutas
 const cliente_1 = __importDefault(require("../routes/cliente"));
-const usuario_1 = __importDefault(require("../routes/usuario"));
+const trabajador_1 = __importDefault(require("../routes/trabajador"));
 const servicio_1 = __importDefault(require("../routes/servicio"));
 const estado_ot_1 = __importDefault(require("../routes/estado_ot"));
 const equipo_1 = __importDefault(require("../routes/equipo"));
-const rol_1 = __importDefault(require("../routes/rol"));
-const log_ot_1 = __importDefault(require("../routes/log_ot"));
-const marca_1 = __importDefault(require("../routes/marca"));
-const detalle_ot_1 = __importDefault(require("../routes/detalle_ot"));
-const usuario_eliminado_1 = __importDefault(require("../routes/usuario_eliminado"));
-const order_2 = __importDefault(require("../routes/order"));
-const query_1 = __importDefault(require("../routes/query"));
-const causa_rechazo_1 = __importDefault(require("../routes/causa_rechazo"));
-const detalle_causa_rechazo_1 = __importDefault(require("../routes/detalle_causa_rechazo"));
-const adjudicacion_1 = __importDefault(require("../routes/adjudicacion"));
-const tipo_1 = __importDefault(require("../routes/tipo"));
+const trabajador_rol_1 = __importDefault(require("../routes/trabajador_rol"));
 const login_1 = __importDefault(require("../routes/login"));
-const solicitud_1 = __importDefault(require("../routes/solicitud"));
-const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const connection_1 = __importDefault(require("../db/connection")); // Asegúrate de que aquí importas initModels
+const asignacion_1 = __importDefault(require("../routes/asignacion"));
+const historial_orden_1 = __importDefault(require("../routes/historial_orden"));
+const orden_trabajo_1 = __importDefault(require("../routes/orden_trabajo"));
+const servicio_orden_1 = __importDefault(require("../routes/servicio_orden"));
+const marca_1 = __importDefault(require("../routes/marca"));
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
-        this.app.use((0, cookie_parser_1.default)());
-        this.app.use((0, cors_1.default)({
-            origin: ['http://localhost:4200', 'http://localhost:54351'], // Dirección del frontend
-            credentials: true // Permite el envío de cookies
-        }));
+        this.app.use((0, cors_1.default)({ origin: 'http://localhost:4200', credentials: true }));
         this.port = process.env.PORT || '3001';
-        const JWT_SECRET = process.env.JWT_SECRET;
         this.middlewares();
+        this.dbConnect().then(() => {
+            console.log('Database connected');
+        }).catch((error) => {
+            console.log('Error connecting to the database:', error);
+        });
         this.routes();
-        this.dbConnect();
-        this.listen();
-    }
-    listen() {
-        this.app.listen(this.port, () => {
-            console.log(`Aplicación corriendo en el puerto ${this.port}`);
-        });
-    }
-    routes() {
-        this.app.get('/', (req, res) => {
-            res.json({
-                msg: 'API Working'
-            });
-        });
-        this.app.use('/api/causa', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a login');
-            }
-            next();
-        }, causa_rechazo_1.default);
-        this.app.use('/api/adjudicacion', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a login');
-            }
-            next();
-        }, adjudicacion_1.default);
-        this.app.use('/api/detallecausa', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a login');
-            }
-            next();
-        }, detalle_causa_rechazo_1.default);
-        this.app.use('/api/login', (req, res, next) => {
-            if (req.method === 'POST') {
-                console.log('Acceso a login');
-            }
-            next();
-        }, login_1.default);
-        this.app.use('/api/solicitud', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a solicitudes');
-            }
-            next();
-        }, solicitud_1.default);
-        this.app.use('/api/detalle_ot', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a detalles de órdenes de trabajo');
-            }
-            next();
-        }, detalle_ot_1.default);
-        this.app.use('/api/log_ot', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a logs de órdenes de trabajo');
-            }
-            next();
-        }, log_ot_1.default);
-        this.app.use('/api/query', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a consultas');
-            }
-            next();
-        }, query_1.default);
-        this.app.use('/api/clientes', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a clientes');
-            }
-            next();
-        }, cliente_1.default);
-        this.app.use('/api/orders', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a órdenes');
-            }
-            next();
-        }, order_1.default);
-        this.app.use('/api/ordersCountByService', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a órdenes');
-            }
-            next();
-        }, order_2.default);
-        this.app.use('/api/usuario', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a usuarios');
-            }
-            next();
-        }, usuario_1.default);
-        this.app.use('/api/servicio', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a servicios');
-            }
-            next();
-        }, servicio_1.default);
-        this.app.use('/api/estado_ot', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a estado de órdenes de trabajo');
-            }
-            next();
-        }, estado_ot_1.default);
-        this.app.use('/api/tipo', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a tipos');
-            }
-            next();
-        }, tipo_1.default);
-        this.app.use('/api/equipo', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a equipos');
-            }
-            next();
-        }, equipo_1.default);
-        this.app.use('/api/rol', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a roles');
-            }
-            next();
-        }, rol_1.default);
-        this.app.use('/api/log', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a logs');
-            }
-            next();
-        }, log_ot_1.default);
-        this.app.use('/api/marca', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a marcas');
-            }
-            next();
-        }, marca_1.default);
-        this.app.use('/api/usuarioEliminado', (req, res, next) => {
-            if (req.method === 'GET') {
-                console.log('Acceso a usuarios eliminados');
-            }
-            next();
-        }, usuario_eliminado_1.default);
     }
     middlewares() {
-        this.app.use((0, cors_1.default)({ origin: "http://localhost:4200", credentials: true
+        // CORS
+        this.app.use((0, cors_1.default)({
+            origin: ['http://localhost:4200', 'http://localhost:54351'],
+            credentials: true
         }));
+        // Parsers
         this.app.use(express_1.default.json());
+        this.app.use((0, cookie_parser_1.default)());
+        this.app.use(body_parser_1.default.json());
+    }
+    routes() {
+        // Ruta base
+        this.app.get('/', (req, res) => {
+            res.json({ msg: 'API Funcionando' });
+        });
+        /*         // Aquí se registra el router de login
+                this.app.use('/api/login', routerLogin); // Registra correctamente el router
+        
+                // Otras rutas
+                this.app.use('/api/cliente', routerCliente);
+                this.app.use('/api/estado_ot', routerEstadoOt);
+                this.app.use('/api/servicio', routerServicio);
+         */
+        // Rutas de la API
+        this.configureRoute('/api/login', login_1.default);
+        this.configureRoute('/api/cliente', cliente_1.default);
+        this.configureRoute('/api/estado_ot', estado_ot_1.default);
+        this.configureRoute('/api/servicio', servicio_1.default);
+        this.configureRoute('/api/asignacion', asignacion_1.default);
+        this.configureRoute('/api/equipo', equipo_1.default);
+        this.configureRoute('/api/historial_orden', historial_orden_1.default);
+        this.configureRoute('/api/marca', marca_1.default);
+        this.configureRoute('/api/orden_trabajo', orden_trabajo_1.default);
+        this.configureRoute('/api/servicio_orden', servicio_orden_1.default);
+        this.configureRoute('/api/trabajador', trabajador_1.default);
+        this.configureRoute('/api/trabajador_rol', trabajador_rol_1.default);
+    }
+    configureRoute(path, router) {
+        this.app.use(path, (req, res, next) => {
+            if (req.method === 'GET') {
+                console.log(`Acceso a ${path.replace('/api/', '')}`);
+            }
+            next();
+        }, router);
     }
     dbConnect() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield connection_1.default.authenticate();
+                // Conexión a la base de datos
                 console.log('Base de datos conectada');
-                // Inicializar los modelos después de conectar a la base de datos
+                // Sincronizar modelos con la base de datos
+                // await db.sync({ force: false }); // force: true solo en desarrollo
             }
             catch (error) {
                 console.log('Error al conectarse a la base de datos:', error);
             }
+        });
+    }
+    listen() {
+        this.app.listen(this.port, () => {
+            console.log(`Servidor corriendo en puerto ${this.port}`);
         });
     }
 }

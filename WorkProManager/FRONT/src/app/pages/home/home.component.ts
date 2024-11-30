@@ -12,7 +12,7 @@ import { QueryService } from '../../services/query';
 import { CommonModule } from '@angular/common';
 import { OrderService } from '../../services/order.service';
 import { ChartOptions, ChartType, ChartDataset } from 'chart.js';
-import  {NgChartsModule}  from 'ng2-charts';
+import { NgChartsModule } from 'ng2-charts';
 
 @Component({
   standalone: true,

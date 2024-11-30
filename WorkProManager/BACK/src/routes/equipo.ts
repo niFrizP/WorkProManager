@@ -1,14 +1,18 @@
-import { Router } from 'express';
-import { getEquipo, getEquipos, updateEquipo, deleteEquipo, postEquipo } from '../controllers/equipo';
+import { Router, RequestHandler } from 'express';
+import { 
+    getEquipos, 
+    getEquipo, 
+    postEquipo, 
+    updateEquipo, 
+    deleteEquipo 
+} from '../controllers/equipo';
 
 const router = Router();
 
-router.get('/', getEquipos);
+router.get('/', getEquipos as RequestHandler);
+router.get('/:id', getEquipo as RequestHandler);
+router.post('/', postEquipo as RequestHandler);
+router.put('/:id', updateEquipo as RequestHandler);
+router.delete('/:id', deleteEquipo as RequestHandler);
 
-router.get('/:id', getEquipo);
-
-router.delete('/:id', deleteEquipo);
-router.post('/', postEquipo);
-router.put('/:id', updateEquipo);
-
-export default router;
+export default router; 

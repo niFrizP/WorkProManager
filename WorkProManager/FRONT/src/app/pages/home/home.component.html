@@ -7,6 +7,7 @@
     <!-- Filtro por periodo de tiempo -->
     <article>
       <h3 class="text-balance text-2xl font-bold">Dashboard</h3>
+      <br><br>
       <div class="flex flex-wrap px-6 py-6 space-x-6"
         *ngIf="authService.getUserRole() === 1 || authService.getUserRole() === 3">
         <div class="tarjeta">
@@ -44,14 +45,16 @@
         </div>
       </article>
     </article>
-
-    <div style="width: 100%; max-width: 600px; margin: 0 auto;">
-      <canvas baseChart
-              [datasets]="barChartData"
-              [labels]="barChartLabels"
-              [options]="barChartOptions"
-              [legend]="barChartLegend">
-      </canvas>
+    <div class="chart-wrapper">
+      <div class="chart-container tarjeta-graficos">
+        <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
+          [legend]="barChartLegend">
+        </canvas>
+      </div>
+      <div class="chart-container tarjeta-graficos">
+        <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
+          [legend]="barChartLegend">
+        </canvas>
+      </div>
     </div>
   </div>
-</div>

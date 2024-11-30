@@ -1,66 +1,84 @@
-import router from "../routes/order";
-import Usuario from '../models/usuario'; // Asegúrate de tener el modelo de Usuario importado
-import Rol from '../models/rol';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Response, Request, NextFunction } from "express";
-import bcrypt from 'bcrypt';
-import { Jwt } from "jsonwebtoken";
-import { JWT_SECRET } from "../config";
+import express, { Application, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import routerCliente from '../routes/cliente';
+import routerTrabajador from '../routes/trabajador';
+import routerServicio from '../routes/servicio';
+import routerEstadoOt from '../routes/estado_ot';
+import routesEquipo from '../routes/equipo';
+import routerTrabajadorRol from '../routes/trabajador_rol';
+import routerLogin from '../routes/login';  // Asegúrate de importar las rutas correctamente
+import routerAsignacion from '../routes/asignacion';
+import routerHistorialOrden from '../routes/historial_orden';
+import routerOrdenTrabajo from '../routes/orden_trabajo';
+import routerServicioOrden from '../routes/servicio_orden';
+import cookieparser from 'cookie-parser';
+import db from '../db/connection'; // Asegúrate de que aquí importas initModels
 
-const secretKey = JWT_SECRET
+class Server {
 
-export const login = async (req: Request, res: Response) => {
+    public app: Application;
+    private port: string;
 
-  const rut_usuario = req.body.rut_usuario;
-  const password = req.body.password;
-  
-    const usuario = await Usuario.findOne({ where: { rut_usuario } });
-    if(!usuario){
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
-    const isValid = await bcrypt.compare(password, (usuario as any).password);
-    if (!isValid) {
-      return res.status(401).json({ message: 'Credenciales incorrectas' });
-    }
-  
-    const { password: pass, ...publicData } = usuario.toJSON()
-    return publicData;
-  
-  };    
+    constructor() {
+        this.app = express();
 
-  export const verificarTokenn = (req: Request, res: Response, next: NextFunction): void => {
-    const token = req.cookies.access_token;
+        this.app.use(cookieparser());
+        this.app.use(cors({
+            origin: ['http://localhost:4200', 'http://localhost:54351'],   // Dirección del frontend
+            credentials: true                  // Permite el envío de cookies
+        }));
+        this.port = process.env.PORT || '3001';
 
-    if (!token) {
-        console.log("No se encontró el token en las cookies");
-        res.status(401).json({ message: 'No hay token' });
-        return;
+        this.middlewares();
+        this.routes();
+        this.dbConnect();
+        this.listen();
     }
 
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    listen() {
+        this.app.listen(this.port, () => {
+            console.log(`Aplicación corriendo en el puerto ${this.port}`);
+        });
+    }
 
-        // Extrae el `rut_usuario` del payload del token
-        const id_rol = decoded.id_rol;
-        const rut_usuario = decoded.rut_usuario;
-        if (!rut_usuario) {
-            console.log("RUT de usuario no encontrado en el token");
-            res.status(400).json({ message: 'RUT de usuario no encontrado en el token' });
-            return;
+    routes() {
+        this.app.get('/', (req: Request, res: Response) => {
+            res.json({
+                msg: 'API Working'
+            });
+        });
+
+        // Rutas específicas para el login
+        this.app.use('/api/login', routerLogin);  // Ya no es necesario el middleware adicional, el archivo login.ts se encarga
+
+        // Resto de las rutas
+        this.app.use('/api/asignacion', routerAsignacion);
+        this.app.use('/api/cliente', routerCliente);
+        this.app.use('/api/trabajador', routerTrabajador);
+        this.app.use('/api/servicio', routerServicio);
+        this.app.use('/api/estado_ot', routerEstadoOt);
+        this.app.use('/api/equipo', routesEquipo);
+        this.app.use('/api/trabajador_rol', routerTrabajadorRol);
+        this.app.use('/api/historial_orden', routerHistorialOrden);
+        this.app.use('/api/orden_trabajo', routerOrdenTrabajo);
+        this.app.use('/api/servicio_orden', routerServicioOrden);
+    }
+
+    middlewares() {
+        this.app.use(cors({
+            origin: "http://localhost:4200", credentials: true
+        }));
+        this.app.use(express.json());
+    }
+
+    async dbConnect() {
+        try {
+            await db.authenticate();
+            console.log('Base de datos conectada');
+        } catch (error) {
+            console.log('Error al conectarse a la base de datos:', error);
         }
-
-        // Agregar el `rut_usuario` al request para usarlo en la respuesta o en otras rutas
-        (req as any).rut_usuario = rut_usuario;
-        (req as any).id_rol = id_rol;
-
-        next();
-    } catch (error) {
-        if (error instanceof jwt.TokenExpiredError) {
-            console.log("Token expirado");
-            res.status(401).json({ message: 'Token expirado' });
-        } else {
-            console.log("Token inválido");
-            res.status(401).json({ message: 'Token inválido' });
-        }
     }
-};
+}
+
+export default Server;

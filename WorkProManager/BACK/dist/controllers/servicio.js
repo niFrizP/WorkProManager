@@ -12,94 +12,159 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateServicio = exports.postServicio = exports.deleteServicio = exports.getServicio = exports.getServicios = void 0;
-const servicio_1 = __importDefault(require("../models/servicio")); // Asegúrate de tener el modelo de Servicio importado
-const vista_count_ot_por_servicio_1 = __importDefault(require("../models/vista_count_ot_por_servicio"));
+exports.deleteServicio = exports.updateServicio = exports.postServicio = exports.getServicio = exports.getServicios = void 0;
+const servicio_1 = __importDefault(require("../models/servicio"));
+const autenticacion_1 = require("../middleware/autenticacion");
+// Obtener todos los servicios activos
 const getServicios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const listServicios = yield servicio_1.default.findAll({ include: [{ model: vista_count_ot_por_servicio_1.default }] });
-    res.json(listServicios);
+    try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+        const listServicios = yield servicio_1.default.findAll({
+            where: { activo: true },
+            attributes: ['id_serv', 'nom_serv', 'activo'],
+            order: [['nom_serv', 'ASC']]
+        });
+        res.json(listServicios);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al obtener los servicios'
+        });
+    }
 });
 exports.getServicios = getServicios;
+// Obtener un servicio por ID
 const getServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
         const servicio = yield servicio_1.default.findByPk(id);
         if (servicio) {
             res.json(servicio);
         }
         else {
             res.status(404).json({
-                msg: `No existe un servicio con el id ${id}`
+                msg: `No existe un servicio con el ID ${id}`
             });
         }
     }
     catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: `Error al obtener el servicio, contacta con soporte`
+            msg: 'Error al obtener el servicio'
         });
     }
 });
 exports.getServicio = getServicio;
-const deleteServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const servicio = yield servicio_1.default.findByPk(id);
-    if (!servicio) {
-        res.status(404).json({
-            msg: `No existe un servicio con el id ${id}`
-        });
-    }
-    else {
-        yield servicio.destroy();
-        res.json({
-            msg: 'El servicio fue eliminado con éxito!'
-        });
-    }
-});
-exports.deleteServicio = deleteServicio;
+// Crear un nuevo servicio
 const postServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nom_serv, tiempo_estimado } = req.body; // Extrae los datos relevantes
+    const { nom_serv } = req.body;
     try {
-        // Crear el nuevo servicio sin especificar `id_servicio`
-        const newServicio = yield servicio_1.default.create({
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para crear servicios'
+            });
+        }
+        // Verificar si ya existe un servicio con el mismo nombre
+        const servicioExiste = yield servicio_1.default.findOne({
+            where: { nom_serv }
+        });
+        if (servicioExiste) {
+            return res.status(400).json({
+                msg: `Ya existe un servicio con el nombre ${nom_serv}`
+            });
+        }
+        const servicio = yield servicio_1.default.create({
             nom_serv,
-            tiempo_estimado
+            activo: true
         });
-        res.json({
-            msg: 'El servicio fue agregado con éxito!',
-            servicio: newServicio // Devuelve el nuevo servicio, incluyendo el id_servicio generado
-        });
+        res.json(servicio);
     }
     catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
+            msg: 'Error al crear el servicio'
         });
     }
 });
 exports.postServicio = postServicio;
+// Actualizar un servicio
 const updateServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
     const { id } = req.params;
+    const { nom_serv } = req.body;
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para actualizar servicios'
+            });
+        }
         const servicio = yield servicio_1.default.findByPk(id);
-        if (servicio) {
-            yield servicio.update(body);
-            res.json({
-                msg: 'El servicio fue actualizado con éxito'
+        if (!servicio) {
+            return res.status(404).json({
+                msg: `No existe un servicio con el ID ${id}`
             });
         }
-        else {
-            res.status(404).json({
-                msg: `No existe un servicio con el id ${id}`
+        // Verificar si el nuevo nombre ya existe en otro servicio
+        if (nom_serv) {
+            const servicioExiste = yield servicio_1.default.findOne({
+                where: { nom_serv }
             });
+            if (servicioExiste && servicioExiste.getDataValue('id_serv') !== parseInt(id)) {
+                return res.status(400).json({
+                    msg: `Ya existe un servicio con el nombre ${nom_serv}`
+                });
+            }
         }
+        yield servicio.update({ nom_serv });
+        res.json(servicio);
     }
     catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: `Upps, ocurrió un error. Comuníquese con soporte`
+            msg: 'Error al actualizar el servicio'
         });
     }
 });
 exports.updateServicio = updateServicio;
+// Desactivar un servicio (borrado lógico)
+const deleteServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para eliminar servicios'
+            });
+        }
+        const servicio = yield servicio_1.default.findByPk(id);
+        if (!servicio) {
+            return res.status(404).json({
+                msg: `No existe un servicio con el ID ${id}`
+            });
+        }
+        yield servicio.update({ activo: false });
+        res.json({
+            msg: 'Servicio desactivado con éxito'
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al desactivar el servicio'
+        });
+    }
+});
+exports.deleteServicio = deleteServicio;
