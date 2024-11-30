@@ -14,9 +14,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteEstadoOT = exports.updateEstadoOT = exports.postEstadoOT = exports.getEstadoOT = exports.getEstadosOT = void 0;
 const estado_ot_1 = __importDefault(require("../models/estado_ot"));
-// Obtener todos los estados de OT
+const autenticacion_1 = require("../middleware/autenticacion");
+const ESTADOS_VALIDOS = [
+    'Cotización en curso',
+    'Verificando cotización',
+    'En progreso',
+    'Completada',
+    'Rechazada'
+];
 const getEstadosOT = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
         const listEstados = yield estado_ot_1.default.findAll({
             attributes: ['id_estado', 'nom_estado']
         });
@@ -30,13 +43,16 @@ const getEstadosOT = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getEstadosOT = getEstadosOT;
-// Obtener un estado de OT por ID
 const getEstadoOT = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const estado = yield estado_ot_1.default.findByPk(id, {
-            attributes: ['id_estado', 'nom_estado']
-        });
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+        const estado = yield estado_ot_1.default.findByPk(id);
         if (estado) {
             res.json(estado);
         }
@@ -54,14 +70,19 @@ const getEstadoOT = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getEstadoOT = getEstadoOT;
-// Crear un nuevo estado de OT
 const postEstadoOT = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { nom_estado } = req.body;
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para crear estados de OT'
+            });
+        }
         // Verificar que el estado sea uno de los permitidos
-        if (!['Pendiente', 'En Proceso', 'Completada', 'Cancelada'].includes(nom_estado)) {
+        if (!ESTADOS_VALIDOS.includes(nom_estado)) {
             return res.status(400).json({
-                msg: 'Estado no válido. Los estados permitidos son: Pendiente, En Proceso, Completada, Cancelada'
+                msg: `Estado no válido. Los estados permitidos son: ${ESTADOS_VALIDOS.join(', ')}`
             });
         }
         const estado = yield estado_ot_1.default.create({
@@ -77,11 +98,16 @@ const postEstadoOT = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.postEstadoOT = postEstadoOT;
-// Actualizar un estado de OT
 const updateEstadoOT = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { nom_estado } = req.body;
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para actualizar estados de OT'
+            });
+        }
         const estado = yield estado_ot_1.default.findByPk(id);
         if (!estado) {
             return res.status(404).json({
@@ -89,9 +115,9 @@ const updateEstadoOT = (req, res) => __awaiter(void 0, void 0, void 0, function*
             });
         }
         // Verificar que el estado sea uno de los permitidos
-        if (!['Pendiente', 'En Proceso', 'Completada', 'Cancelada'].includes(nom_estado)) {
+        if (!ESTADOS_VALIDOS.includes(nom_estado)) {
             return res.status(400).json({
-                msg: 'Estado no válido. Los estados permitidos son: Pendiente, En Proceso, Completada, Cancelada'
+                msg: `Estado no válido. Los estados permitidos son: ${ESTADOS_VALIDOS.join(', ')}`
             });
         }
         yield estado.update({
@@ -107,10 +133,15 @@ const updateEstadoOT = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.updateEstadoOT = updateEstadoOT;
-// Eliminar un estado de OT
 const deleteEstadoOT = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para eliminar estados de OT'
+            });
+        }
         const estado = yield estado_ot_1.default.findByPk(id);
         if (!estado) {
             return res.status(404).json({

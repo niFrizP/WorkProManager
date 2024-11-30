@@ -14,16 +14,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteCliente = exports.updateCliente = exports.postCliente = exports.getCliente = exports.getClientes = void 0;
 const cliente_1 = __importDefault(require("../models/cliente"));
-// Obtener todos los clientes
+const autenticacion_1 = require("../middleware/autenticacion");
 const getClientes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
         const listClientes = yield cliente_1.default.findAll({
             attributes: [
-                'id_cliente',
-                'nombre_cliente',
-                'direccion_cliente',
-                'telefono_cliente',
-                'email_cliente'
+                'rut_cli',
+                'nom_cli',
+                'ape_cli',
+                'dir_cli',
+                'tel_cli',
+                'email_cli',
+                'd_ver_cli'
             ]
         });
         res.json(listClientes);
@@ -36,25 +44,22 @@ const getClientes = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getClientes = getClientes;
-// Obtener un cliente por ID
 const getCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
+    const { rut } = req.params;
     try {
-        const cliente = yield cliente_1.default.findByPk(id, {
-            attributes: [
-                'id_cliente',
-                'nombre_cliente',
-                'direccion_cliente',
-                'telefono_cliente',
-                'email_cliente'
-            ]
-        });
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+        const cliente = yield cliente_1.default.findByPk(rut);
         if (cliente) {
             res.json(cliente);
         }
         else {
             res.status(404).json({
-                msg: `No existe un cliente con el id ${id}`
+                msg: `No existe un cliente con el RUT ${rut}`
             });
         }
     }
@@ -66,15 +71,30 @@ const getCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.getCliente = getCliente;
-// Crear un nuevo cliente
 const postCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nombre_cliente, direccion_cliente, telefono_cliente, email_cliente } = req.body;
+    const { rut_cli, nom_cli, ape_cli, dir_cli, tel_cli, email_cli, d_ver_cli } = req.body;
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1, 2])) { // Solo admin y gestor
+            return res.status(403).json({
+                msg: 'No tiene permisos para crear clientes'
+            });
+        }
+        // Verificar si ya existe el cliente
+        const clienteExistente = yield cliente_1.default.findByPk(rut_cli);
+        if (clienteExistente) {
+            return res.status(400).json({
+                msg: `Ya existe un cliente con el RUT ${rut_cli}`
+            });
+        }
         const cliente = yield cliente_1.default.create({
-            nombre_cliente,
-            direccion_cliente,
-            telefono_cliente,
-            email_cliente
+            rut_cli,
+            nom_cli,
+            ape_cli,
+            dir_cli,
+            tel_cli,
+            email_cli,
+            d_ver_cli
         });
         res.json(cliente);
     }
@@ -86,22 +106,29 @@ const postCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.postCliente = postCliente;
-// Actualizar un cliente
 const updateCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const { nombre_cliente, direccion_cliente, telefono_cliente, email_cliente } = req.body;
+    const { rut } = req.params;
+    const { nom_cli, ape_cli, dir_cli, tel_cli, email_cli, d_ver_cli } = req.body;
     try {
-        const cliente = yield cliente_1.default.findByPk(id);
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1, 2])) {
+            return res.status(403).json({
+                msg: 'No tiene permisos para actualizar clientes'
+            });
+        }
+        const cliente = yield cliente_1.default.findByPk(rut);
         if (!cliente) {
             return res.status(404).json({
-                msg: `No existe un cliente con el id ${id}`
+                msg: `No existe un cliente con el RUT ${rut}`
             });
         }
         yield cliente.update({
-            nombre_cliente,
-            direccion_cliente,
-            telefono_cliente,
-            email_cliente
+            nom_cli,
+            ape_cli,
+            dir_cli,
+            tel_cli,
+            email_cli,
+            d_ver_cli
         });
         res.json(cliente);
     }
@@ -113,14 +140,19 @@ const updateCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.updateCliente = updateCliente;
-// Eliminar un cliente
 const deleteCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
+    const { rut } = req.params;
     try {
-        const cliente = yield cliente_1.default.findByPk(id);
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para eliminar clientes'
+            });
+        }
+        const cliente = yield cliente_1.default.findByPk(rut);
         if (!cliente) {
             return res.status(404).json({
-                msg: `No existe un cliente con el id ${id}`
+                msg: `No existe un cliente con el RUT ${rut}`
             });
         }
         yield cliente.destroy();
