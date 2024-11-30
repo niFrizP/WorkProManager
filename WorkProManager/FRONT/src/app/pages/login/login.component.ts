@@ -1,13 +1,8 @@
-// login.component.ts (Componente Angular)
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http'
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { UsuarioService } from '../../services/usuario.service';
-import { Usuario } from '../../interfaces/usuario';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { error } from 'console';
 
 @Component({
   standalone: true,
@@ -16,62 +11,57 @@ import { error } from 'console';
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
-  run_login: any = '';
-  login_contra: string = '';
-  loginError: string = '';
-  usuario: Usuario[] = [];
-  showErrorModal: boolean = false; // Muestra el modal de error 
-  errorMessages: string = ''; // Mensaje de error
+  run_login: string = '';        // Se asegura de que sea string
+  login_contra: string = '';     // Para almacenar la contraseña
+  loginError: string = '';       // Para mostrar los errores de login
+  showErrorModal: boolean = false; // Mostrar el modal de error
+  errorMessages: string = '';    // Para mensajes de error personalizados
 
-
-  constructor(private http: HttpClient,
-    private usuarioService: UsuarioService,
-    private router: Router, 
-    private authService: AuthService 
+  constructor(
+    private authService: AuthService, // Usamos AuthService para manejar la autenticación
+    private router: Router             // Para redirigir después de iniciar sesión
   ) { }
 
+  // Método que se llama cuando el usuario envía el formulario de inicio de sesión
   onSubmit() {
-    let loginData = {
+    const loginData = {
       run: this.run_login,
       password: this.login_contra,
     };
 
-    this.usuarioService.login(loginData.run, loginData.password).subscribe(
-      (data) => {
-        this.usuario = [data];
-        console.log(this.usuario);
-        this.router.navigate(['/home']).then(() => {
-          window.location.reload();  // Recarga la página
-        });
+    // Llamamos al método iniciarSesion del AuthService
+    this.authService.iniciarSesion(loginData.run, this.login_contra).subscribe(
+      (response) => {
+        // Verificar si la respuesta contiene los datos esperados
+        if (response && response.rut_usuario && response.id_rol) {
+          // Guardar los datos del usuario (rut_usuario e id_rol) en el servicio
+          this.authService.saveUserData(response.rut_usuario, response.id_rol);
 
+          // Redirigir al usuario a la página de inicio (home)
+          this.router.navigate(['/home']).then(() => {
+            window.location.reload(); // Recargar la página después de la redirección
+          });
+        } else {
+          this.showErrorModal = true; // Si no hay datos válidos, mostrar el modal de error
+          this.errorMessages = 'Error al obtener los datos del usuario';
+        }
       },
-      /* Manejo de errores */
-      // Si el error es 401, muestra un mensaje de credenciales incorrectas 
-      // Si no, muestra un mensaje de error genérico
       (error) => {
-        this.showErrorModal = true; // Muestra el modal de error
+        // Mostrar el modal de error en caso de fallo en la autenticación
+        this.showErrorModal = true;
+        // Mostrar mensaje de error personalizado según el código de error
         this.errorMessages =
           error.status === 401
             ? 'Usuario o contraseña incorrectos'
             : 'Error al iniciar sesión';
-        this.loginError = error; // Guarda el error
-        console.log(this.loginError); // Imprime el error en la consola
+        this.loginError = error; // Guardar el error para fines de depuración
+        console.error('Error de autenticación:', error); // Mostrar el error en la consola
       }
     );
-    // Verifica el token del usuario
-    this.authService.verificarToken().subscribe({
-      next: (data) => {
-        // Guarda los datos de usuario
-        this.authService.saveUserData(data.rut_usuario, data.id_rol);
-        console.log('Usuario verificado:', data);
-      },
-      error: (err) => {
-        console.error('Error al verificar el token:', err);
-      },
-    });
   }
-  // Cierra el modal de error
+
+  // Método para cerrar el modal de error
   closeErrorModal() {
-    this.showErrorModal = false; // Oculta el modal de error
+    this.showErrorModal = false; // Ocultar el modal de error
   }
 }

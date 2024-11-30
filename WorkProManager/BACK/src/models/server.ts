@@ -1,3 +1,4 @@
+// server.ts
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import bodyparser from 'body-parser';
@@ -16,8 +17,6 @@ import routerAsignacion from '../routes/asignacion';
 import routerHistorialOrden from '../routes/historial_orden';
 import routerOrdenTrabajo from '../routes/orden_trabajo';
 import routerServicioOrden from '../routes/servicio_orden';
-import routerHistorialServicioOrden from '../routes/historial_servicio_orden';
-import routerMarca from '../routes/marca';
 
 class Server {
     public app: Application;
@@ -25,9 +24,8 @@ class Server {
 
     constructor() {
         this.app = express();
+        this.app.use(cors({ origin: 'http://localhost:4200', credentials: true }));
         this.port = process.env.PORT || '3001';
-
-        // Configuración inicial
         this.middlewares();
         this.dbConnect();
         this.routes();
@@ -49,6 +47,21 @@ class Server {
     routes() {
         // Ruta base
         this.app.get('/', (req: Request, res: Response) => {
+            res.json({ msg: 'API Working' });
+        });
+
+        // Aquí se registra el router de login
+        this.app.use('/api/login', routerLogin); // Registra correctamente el router
+
+        // Otras rutas
+        this.app.use('/api/cliente', routerCliente);
+        this.app.use('/api/estado_ot', routerEstadoOt);
+        this.app.use('/api/servicio', routerServicio);
+        // Continúa con las demás rutas...
+    }
+
+    middlewares() {
+        this.app.use(express.json());
             res.json({ msg: 'API Working' });
         });
 
@@ -79,7 +92,7 @@ class Server {
 
     async dbConnect() {
         try {
-            await db.authenticate();
+            // Conexión a la base de datos
             console.log('Base de datos conectada');
 
             // Sincronizar modelos con la base de datos

@@ -1,57 +1,84 @@
-import TrabajadorRol from "../models/trabajador_rol";
-import Trabajador from "../models/trabajador";
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Response, Request, NextFunction } from "express";
-import bcrypt from 'bcrypt';
-import { Jwt } from "jsonwebtoken";
-import { JWT_SECRET } from "../config";
+import express, { Application, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import routerCliente from '../routes/cliente';
+import routerTrabajador from '../routes/trabajador';
+import routerServicio from '../routes/servicio';
+import routerEstadoOt from '../routes/estado_ot';
+import routesEquipo from '../routes/equipo';
+import routerTrabajadorRol from '../routes/trabajador_rol';
+import routerLogin from '../routes/login';  // Asegúrate de importar las rutas correctamente
+import routerAsignacion from '../routes/asignacion';
+import routerHistorialOrden from '../routes/historial_orden';
+import routerOrdenTrabajo from '../routes/orden_trabajo';
+import routerServicioOrden from '../routes/servicio_orden';
+import cookieparser from 'cookie-parser';
+import db from '../db/connection'; // Asegúrate de que aquí importas initModels
 
-const secretKey = JWT_SECRET
+class Server {
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id_trabajador, clave } = req.body;
-    
-    const trabajador = await Trabajador.findOne({ where: { id_trabajador } }) as any;
-    if (!trabajador) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
+    public app: Application;
+    private port: string;
+
+    constructor() {
+        this.app = express();
+
+        this.app.use(cookieparser());
+        this.app.use(cors({
+            origin: ['http://localhost:4200', 'http://localhost:54351'],   // Dirección del frontend
+            credentials: true                  // Permite el envío de cookies
+        }));
+        this.port = process.env.PORT || '3001';
+
+        this.middlewares();
+        this.routes();
+        this.dbConnect();
+        this.listen();
     }
 
-    const isValid = await bcrypt.compare(clave, trabajador.clave);
-    if (!isValid) {
-      return res.status(401).json({ message: 'Credenciales incorrectas' });
+    listen() {
+        this.app.listen(this.port, () => {
+            console.log(`Aplicación corriendo en el puerto ${this.port}`);
+        });
     }
 
-    // Crear el token JWT
-    const token = jwt.sign(
-      { 
-        id_trabajador: trabajador.id_trabajador,
-        id_rol: trabajador.id_rol
-      },
-      secretKey,
-      { expiresIn: '24h' }
-    );
+    routes() {
+        this.app.get('/', (req: Request, res: Response) => {
+            res.json({
+                msg: 'API Working'
+            });
+        });
 
-    // Extraer la contraseña del objeto usuario
-    const { clave: _, ...userData } = trabajador.toJSON();
+        // Rutas específicas para el login
+        this.app.use('/api/login', routerLogin);  // Ya no es necesario el middleware adicional, el archivo login.ts se encarga
 
-    // Configurar la cookie con el token
-    res.cookie('access_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000 // 24 horas
-    });
+        // Resto de las rutas
+        this.app.use('/api/asignacion', routerAsignacion);
+        this.app.use('/api/cliente', routerCliente);
+        this.app.use('/api/trabajador', routerTrabajador);
+        this.app.use('/api/servicio', routerServicio);
+        this.app.use('/api/estado_ot', routerEstadoOt);
+        this.app.use('/api/equipo', routesEquipo);
+        this.app.use('/api/trabajador_rol', routerTrabajadorRol);
+        this.app.use('/api/historial_orden', routerHistorialOrden);
+        this.app.use('/api/orden_trabajo', routerOrdenTrabajo);
+        this.app.use('/api/servicio_orden', routerServicioOrden);
+    }
 
-    // Devolver los datos del usuario y el token
-    return res.status(200).json({
-      message: 'Login exitoso',
-      user: userData,
-      token
-    });
+    middlewares() {
+        this.app.use(cors({
+            origin: "http://localhost:4200", credentials: true
+        }));
+        this.app.use(express.json());
+    }
 
-  } catch (error) {
-    console.error('Error en el login:', error);
-    return res.status(500).json({ message: 'Error interno del servidor' });
-  }
-};
+    async dbConnect() {
+        try {
+            await db.authenticate();
+            console.log('Base de datos conectada');
+        } catch (error) {
+            console.log('Error al conectarse a la base de datos:', error);
+        }
+    }
+}
+
+export default Server;
