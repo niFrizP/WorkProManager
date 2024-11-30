@@ -1,179 +1,183 @@
 <div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
-  <div class="contenedor w-full">
     <div *ngIf="authService.getUserId() as rut">
       <h1 class="text-2xl font-bold text-center mb-4">Órdenes de trabajo</h1>
     </div>
 
-  <div class="flex justify-between items-center mb-4">
-<div class="contenedor">
-            <button (click)="showFilters = !showFilters" class="bg-gray-500 text-white p-2 rounded mb-4 flex items-center">
-              <mat-icon>filter_list</mat-icon>
-              <span class="ml-2">{{ showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros' }}</span>
-            </button>
-            <div *ngIf="showFilters" class="filters-container p-4 border rounded">
-                <h2 class="filters-title text-lg font-semibold mb-4">Filtros</h2>
-                
-                <div class="filter-group mb-4">
-                    <h3 class="filter-header text-sm font-medium mb-2">Filtrar por estado</h3>
-                    <select class="filter-select w-full p-2 border rounded" (change)="onStateChange($event)">
-                        <option value="todas">Todas las ordenes de trabajo</option>
-                        <option value="pendiente">Pendiente de cotización</option>
-                        <option value="en proceso">Aprobación de la cotización</option>
-                        <option value="incompleto">En proceso</option>
-                        <option value="completo">Completada</option>
-                        <option value="finalizado">Finalizada</option>
-                        <option value="rechazado">Rechazada</option>
-                    </select>
-                </div>
+    <div class="flex justify-between items-center mb-4">
+      <div class="contenedor">
+        <div class="buscador_container">
+          <i class="fa-solid fa-magnifying-glass buscador_icon"></i>
+          <input class="buscador" id="buscador" type="text" placeholder="Buscar OT">
+        </div>
+        <button (click)="showFilters = !showFilters" class="boton-wpm text-white p-2 rounded mb-4 flex items-center">
+          <mat-icon>filter_list</mat-icon>
+          <span class="ml-2">{{ showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros' }}</span>
+        </button>
 
-                <div class="filter-group mb-4">
-                    <h3 class="filter-header text-sm font-medium mb-2">Filtrar por usuario</h3>
-                    <select class="filter-select w-full p-2 border rounded" (change)="onUserChangeFilter($event)">
-                        <option value="">Todos los usuarios</option>
-                        <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
-                          {{ usuario.nom_usu }} {{usuario.ap_usu}}
-                        </option>
-                    </select>
-                </div>
+        <div *ngIf="showFilters" class="filters-container p-4 border rounded">
+          <h2 class="filters-title text-lg font-semibold mb-4">Filtros</h2>
+          <div class="filter-group mb-4">
+            <h3 class="filter-header text-sm font-medium mb-2">Filtrar por estado</h3>
+            <select class="filter-select w-full p-2 border rounded" title="Filtrar por estado"
+              (change)="onStateChange($event)">
+              <option value="todas">Todas las ordenes de trabajo</option>
+              <option value="pendiente">Pendiente de cotización</option>
+              <option value="en proceso">Aprobación de la cotización</option>
+              <option value="incompleto">En proceso</option>
+              <option value="completo">Completada</option>
+              <option value="finalizado">Finalizada</option>
+              <option value="rechazado">Rechazada</option>
+            </select>
+          </div>
 
-                <div class="filter-group mb-4">
-                    <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Fecha</h3>
-                    <div class="date-filters flex space-x-4">
-                        <div class="date-filter">
-                            <label for="monthSelect" class="block text-sm font-medium mb-1">Mes</label>
-                            <select id="monthSelect" class="filter-select w-full p-2 border rounded" (change)="onMonthChange($event)">
-                                <option value="0">Todos</option>
-                                <option *ngFor="let month of months" [value]="month.value">
-                                  {{ month.name }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="date-filter">
-                            <label for="yearSelect" class="block text-sm font-medium mb-1">Año</label>
-                            <select id="yearSelect" class="filter-select w-full p-2 border rounded" (change)="onYearChange($event)">
-                                <option value="0">Todos</option>
-                                <option *ngFor="let year of years" [value]="year">
-                                  {{ year }}
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+          <div class="filter-group mb-4">
+            <h3 class="filter-header text-sm font-medium mb-2">Filtrar por usuario</h3>
+            <select class="filter-select w-full p-2 border rounded" title="Filtrar por usuario"
+              (change)="onUserChangeFilter($event)">
+              <option value="">Todos los usuarios</option>
+              <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
+                {{ usuario.nom_usu }} {{usuario.ap_usu}}
+              </option>
+            </select>
+          </div>
 
-                <div class="filter-group mb-4">
-                    <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Cliente</h3>
-                    <input type="text" placeholder="Buscar por RUT Cliente" class="search-input w-full p-2 border rounded" (input)="onClientChange($event)" />
-                </div>
+          <div class="filter-group mb-4">
+            <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Fecha</h3>
+            <div class="date-filters flex space-x-4">
+              <div class="date-filter">
+                <label for="monthSelect" class="block text-sm font-medium mb-1">Mes</label>
+                <select id="monthSelect" class="filter-select w-full p-2 border rounded"
+                  (change)="onMonthChange($event)">
+                  <option value="0">Todos</option>
+                  <option *ngFor="let month of months" [value]="month.value">
+                    {{ month.name }}
+                  </option>
+                </select>
+              </div>
+              <div class="date-filter">
+                <label for="yearSelect" class="block text-sm font-medium mb-1">Año</label>
+                <select id="yearSelect" class="filter-select w-full p-2 border rounded" (change)="onYearChange($event)">
+                  <option value="0">Todos</option>
+                  <option *ngFor="let year of years" [value]="year">
+                    {{ year }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
 
-                <div class="filter-group mb-4">
-                    <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Usuario</h3>
-                    <input type="text" placeholder="Buscar por RUT Usuario" class="search-input w-full p-2 border rounded" (input)="onRutUsuarioChange($event)" />
-                </div>
+          <div class="filter-group mb-4">
+            <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Cliente</h3>
+            <input type="text" placeholder="Buscar por RUT Cliente" class="search-input w-full p-2 border rounded"
+              (input)="onClientChange($event)" />
+          </div>
 
-                <div class="filter-group mb-4">
-                    <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Equipo</h3>
-                    <input type="text" placeholder="Buscar equipo por número de serie" class="search-input w-full p-2 border rounded" (input)="onEquipmentSerialChange($event)" />
-                </div>
+          <div class="filter-group mb-4">
+            <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Usuario</h3>
+            <input type="text" placeholder="Buscar por RUT Usuario" class="search-input w-full p-2 border rounded"
+              (input)="onRutUsuarioChange($event)" />
+          </div>
 
-  </div>
+          <div class="filter-group mb-4">
+            <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Equipo</h3>
+            <input type="text" placeholder="Buscar equipo por número de serie"
+              class="search-input w-full p-2 border rounded" (input)="onEquipmentSerialChange($event)" />
+          </div>
+        </div>
 
-  <table class="w-full border-collapse">
-    <thead>
-      <tr>
-        <th class="border p-2 text-center">Número de orden</th>
-        <th class="border p-2 text-center">Fecha de entrega</th>
-        <th class="border p-2 text-center">Número de serie del producto</th>
-        <th class="border p-2 text-center">Modelo del equipo</th>
-        <th class="border p-2 text-center">Rut del cliente</th>
-        <th class="border p-2 text-center">Estado de la OT</th>
-        <th *ngIf="authService.getUserRole() != 2" class="border p-2 text-center">Rut del técnico encargado</th>
-        <th *ngIf="authService.getUserRole() != 2" class="border p-2 text-center">Nombre del técnico encargado</th>
-        <th class="border p-2 text-center">Fecha de plazo</th>
-        <th class="border p-2 text-center">Solicitud Vista</th>
-        <th  class="border p-2 text-center">Operaciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr 
-        *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
-        class="align-middle text-center"
-      >
-        <td class="border p-2">{{ newOrder.id_ot }}</td>
-        <td class="border p-2">{{ newOrder.fec_entrega | date:'MM/dd' }}</td>
-        <td class="border p-2">{{ newOrder.num_equipo }}</td>
-        <td class="border p-2">{{ newOrder.Equipo?.mod_equipo }}</td>
-        <td class="border p-2">{{ newOrder.rut_cliente }} - {{newOrder.cliente?.d_veri_cli}}</td>
-        <td class="border p-2">{{ newOrder.VistaSolicitud?.nom_estado_ot }}</td>
-        <td *ngIf="authService.getUserRole() != 2" class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.rut_usuario }}</td>
-        <td *ngIf="authService.getUserRole() != 2" class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.nom_usu }} {{newOrder.VistaUltimaAdjudicacion?.ap_usu}}</td>
-        
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="border p-2 text-center">N° de orden</th>
+              <th class="border p-2 text-center">Fecha de entrega</th>
+              <th class="border p-2 text-center">S/N del producto</th>
+              <th class="border p-2 text-center">Modelo del equipo</th>
+              <th class="border p-2 text-center">Rut del cliente</th>
+              <th class="border p-2 text-center">Estado de la OT</th>
+              <th *ngIf="authService.getUserRole() != 2" class="border p-2 text-center">Rut del técnico</th>
+              <th *ngIf="authService.getUserRole() != 2" class="border p-2 text-center">Nombre del técnico
+              </th>
+              <th class="border p-2 text-center">Fecha de plazo</th>
+              <th class="border p-2 text-center">Solicitud Vista</th>
+              <th class="border p-2 text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+              class="align-middle text-center">
+              <td class="border p-2">{{ newOrder.id_ot }}</td>
+              <td class="border p-2">{{ newOrder.fec_entrega | date:'MM/dd' }}</td>
+              <td class="border p-2">{{ newOrder.num_equipo }}</td>
+              <td class="border p-2">{{ newOrder.Equipo?.mod_equipo }}</td>
+              <td class="border p-2">{{ newOrder.rut_cliente }} - {{newOrder.cliente?.d_veri_cli}}</td>
+              <td class="border p-2">{{ newOrder.VistaSolicitud?.nom_estado_ot }}</td>
+              <td *ngIf="authService.getUserRole() != 2" class="border p-2">{{
+                newOrder.VistaUltimaAdjudicacion?.rut_usuario }}</td>
+              <td *ngIf="authService.getUserRole() != 2" class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.nom_usu
+                }} {{newOrder.VistaUltimaAdjudicacion?.ap_usu}}</td>
 
-        
-        <td class="border p-2">
-          <app-cronometro 
-            [fechaPlazo]="newOrder.VistaSolicitud?.fecha_plazo | date:'yyyy-MM-ddTHH:mm'"
-          ></app-cronometro>
-        </td>
-        <td class="border p-2">
-          <button mat-icon-button color="warn" [attr.aria-label]="newOrder.VistaSolicitud?.isview ? 'Vista activa' : 'Vista inactiva'">
-            <mat-icon>
-              {{ newOrder.VistaSolicitud?.isview ? 'visibility' : 'visibility_off' }}
-            </mat-icon>
-          </button>
-                  </td>
-        <td class="border p-2">
-          <button *ngIf="newOrder.VistaSolicitud?.id_estado_ot != 6" (click)="generatePDF(newOrder)" class="bg-blue-500 text-white p-1 rounded">🖨️</button>
-          <button *ngIf="newOrder.VistaSolicitud?.id_estado_ot == 6" (click)="generatePDFDeleted(newOrder)" class="bg-blue-500 text-white p-1 rounded">🖨️</button>
+              <td class="border p-2">
+                <app-cronometro
+                  [fechaPlazo]="newOrder.VistaSolicitud?.fecha_plazo | date:'yyyy-MM-ddTHH:mm'"></app-cronometro>
+              </td>
+              <td class="border p-2">
+                <button mat-icon-button color="warn"
+                  [attr.aria-label]="newOrder.VistaSolicitud?.isview ? 'Vista activa' : 'Vista inactiva'">
+                  <mat-icon>
+                    {{ newOrder.VistaSolicitud?.isview ? 'visibility' : 'visibility_off' }}
+                  </mat-icon>
+                </button>
+              </td>
+              <td class="border p-2">
+                <button *ngIf="newOrder.VistaSolicitud?.id_estado_ot != 6" (click)="generatePDF(newOrder)"
+                  class="bg-blue-500 text-white p-1 rounded" title="Descargar PDF"><i
+                    class="fa-solid fa-download"></i></button>
+                <button *ngIf="newOrder.VistaSolicitud?.id_estado_ot == 6" (click)="generatePDFDeleted(newOrder)"
+                  class="bg-blue-500 text-white p-1 rounded" title="Descargar PDF Eliminado"><i
+                    class="fa-solid fa-download"></i></button>
 
 
                 <button *ngIf="authService.getUserRole() === 2 && newOrder.VistaSolicitud?.id_estado_ot == 1 "
-                  [routerLink]="['/edit-order', newOrder.id_ot]"
-                  class="bg-yellow-500 text-white p-1 rounded">✏️</button>
+                  [routerLink]="['/edit-order', newOrder.id_ot]" title="Editar Orden"
+                  class="bg-yellow-500 text-white p-1 rounded"><i class="fa-solid fa-pen-to-square"></i></button>
                 <button *ngIf="authService.getUserRole() === 3 && newOrder.VistaSolicitud?.id_estado_ot == 2"
-                  [routerLink]="['/edit-order-gestor', newOrder.id_ot]"
-                  class="bg-yellow-500 text-white p-1 rounded">✏️</button>
+                  title="Editar Orden" [routerLink]="['/edit-order-gestor', newOrder.id_ot]"
+                  class="bg-yellow-500 text-white p-1 rounded"><i class="fa-solid fa-pen-to-square"></i></button>
                 <button *ngIf="authService.getUserRole() === 2 && newOrder.VistaSolicitud?.id_estado_ot == 3 "
-                  [routerLink]="['/reportes/createReport', newOrder.id_ot]"
-                  class="bg-yellow-500 text-white p-1 rounded">✏️</button>
+                  [routerLink]="['/reportes/createReport', newOrder.id_ot]" class="bg-yellow-500 text-white p-1 rounded"
+                  title="Crear Reporte"><i class="fa-solid fa-pen-to-square"></i></button>
                 <button
                   *ngIf="authService.getUserRole() === 3 && newOrder.VistaSolicitud?.id_estado_ot == 4 && newOrder.VistaSolicitud?.completada === false"
-                  (click)="showSolicitudModal(newOrder.id_ot ?? 0)" class="bg-yellow-500 text-white p-1 rounded">
-                  ✏️
+                  (click)="showSolicitudModal(newOrder.id_ot ?? 0)" class="bg-yellow-500 text-white p-1 rounded"
+                  title="Editar Solicitud">
+                  <i class="fa-solid fa-pen-to-square"></i>
                 </button>
 
-
-
                 <div *ngIf="authService.getUserRole() === 3">
-                  <button *ngIf="newOrder.id_ot !== undefined"
+                  <button *ngIf="newOrder.id_ot !== undefined" title="Estado de la OT"
                     (click)="openEstadoModal(newOrder.id_ot, newOrder.VistaUltimaAdjudicacion?.rut_usuario ?? 0, newOrder.VistaSolicitud?.id_estado_ot ?? 0) ; onUsuarioChange($event)">📄</button>
                 </div>
-
                 <div *ngIf="authService.getUserRole() === 3">
-                  <button *ngIf="newOrder.id_ot !== undefined"
-                    (click)="openEstadoModalCambio(newOrder.id_ot, newOrder.VistaUltimaAdjudicacion?.rut_usuario ?? 0, newOrder.VistaSolicitud?.id_estado_ot ?? 0) ; onUsuarioChange($event)">👉🏻</button>
+                  <button *ngIf="newOrder.id_ot !== undefined" title="Cambio de responsable"
+                    (click)="openEstadoModalCambio(newOrder.id_ot, newOrder.VistaUltimaAdjudicacion?.rut_usuario ?? 0, newOrder.VistaSolicitud?.id_estado_ot ?? 0) ; onUsuarioChange($event)"><i
+                      class="fa-solid fa-people-arrows"></i></button>
                 </div>
-
                 <div>
-                  <button class="bg-red-500 text-white p-2 rounded hover:bg-red-600"
+                  <button type="button" title="Rechazar Orden"
+                    class="bg-red-500 text-white p-2 rounded hover:bg-red-600"
                     (click)="openRejectionModal(newOrder.id_ot ?? 0)">
-                    ❌
+                    <i class="fa-solid fa-xmark"></i>
                   </button>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
-
-
-  <div class="flex justify-center mt-4">
-    <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previa" nextLabel="Siguiente"></pagination-controls>
-  </div>
-
-
+        <div class="flex justify-center mt-4">
+          <pagination-controls (pageChange)="onPageChange($event)" previousLabel="Previa"
+            nextLabel="Siguiente"></pagination-controls>
+        </div>
       </div>
-
-
-
       <div *ngIf="isRejectionModalOpen" class="modal-overlay">
         <div class="modal-content" [formGroup]="rejectionForm">
           <h2 class="text-xl font-bold mb-4">Elige la causa de rechazo</h2>
@@ -181,8 +185,8 @@
           <!-- Selector de causa de rechazo -->
           <div class="mb-4">
             <label class="block text-sm font-medium mb-2">Causa de rechazo:</label>
-            <select formControlName="id_rechazo" #estadoSelect class="w-full p-2 mb-4 border rounded" title="Causa de rechazo"
-              (change)="onCausaChange($event, selectedOtId!)">
+            <select formControlName="id_rechazo" #estadoSelect class="w-full p-2 mb-4 border rounded"
+              title="Causa de rechazo" (change)="onCausaChange($event, selectedOtId!)">
               <option value="">Seleccione una causa</option>
               <option *ngFor="let causa of causasRechazo" [value]="causa.id_rechazo">
                 {{ causa.nombre_rechazo }}
@@ -240,7 +244,8 @@
 
           <div class="mb-4">
             <label for="usuarios">Selecciona un Usuario:</label>
-            <select id="rut_usuario_1" formControlName="rut_usuario" title="Selecciona un Usuario" (change)="onUsuarioChange($event)">
+            <select id="rut_usuario_1" formControlName="rut_usuario" title="Selecciona un Usuario"
+              (change)="onUsuarioChange($event)">
               <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
                 {{ usuario.nom_usu }} {{usuario.ap_usu}}
               </option>
@@ -275,7 +280,7 @@
           <!--Selector de nuevo estado-->
           <div class="mb-4">
             <label class="block text-sm font-medium mb-2">Estado: </label>
-            <select formControlName="id_estado_ot" #estadoSelect class="w-full p-2 mb-4 border rounded"
+            <select formControlName="id_estado_ot" #estadoSelect class="w-full p-2 mb-4 border rounded" title="Estado"
               (change)="onUserChange($event, selectedOtId!)">
               <option value="">Seleccione un estado</option>
               <option *ngFor="let estado of estados" [value]="estado.id_estado_ot">
@@ -292,22 +297,12 @@
               placeholder="Ingrese una descripción del cambio de estado...">
         </textarea>
           </div>
-
-
-
-
-
           <!--Fecha de plazo-->
           <div class="mb-4">
             <label class="block text-sm font-medium mb-2">Fecha Plazo:</label>
             <input [min]="fechaHoy" type="date" [formGroup]="form" formControlName="fecha_plazo"
               placeholder="Añada una descripción" class="w-full p-2 border rounded">
           </div>
-
-
-
-
-
           <!--botones-->
           <div class="flex justify-end gap-2">
             <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeEstadoModal()">
@@ -320,7 +315,6 @@
           </div>
         </div>
       </div>
-
 
       <div *ngIf="isModalOpenFinalizado"
         class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
@@ -343,76 +337,119 @@
       </div>
 
 
-          <div *ngIf="isModalCambioEstadoOpen" class="modal-overlay">
-            <div class="modal-content" [formGroup]="formUser">
-              <h2 class="text-xl font-bold mb-4">Cambio de encargado de OT</h2>
-              <div class="mb-4">
-                <label for="usuarios">Selecciona un Usuario:</label>
-                <select id="rut_usuario" formControlName="rut_usuario" title="Seleccione un usuario"
-                  (change)="onUsuarioChange($event)">
-                  <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
-                    {{ usuario.nom_usu }} {{usuario.ap_usu}}
-                  </option>
-                </select>
-              </div>
-              <!--botones-->
-              <div class="flex justify-end gap-2">
-                <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeEstadoAdjudicacion()">
-                  Cancelar
-                </button>
-                <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" type="submit"
-                  (click)="confirmAdjudicacion(selectedOtId!)">
-                  Aceptar
-                </button>
-              </div>
-            </div>
-            =======
-            <!-- Tabla de órdenes -->
-            <table class="w-full border-collapse text-center">
-              <thead>
-                <tr class="bg-gray-200">
-                  <th class="border p-2">Fecha de entrega</th>
-                  <th class="border p-2">Número de serie</th>
-                  <th class="border p-2">Número de orden</th>
-                  <th class="border p-2">Modelo del equipo</th>
-                  <th class="border p-2">Rut Cliente</th>
-                  <th class="border p-2">Estado</th>
-                  <th class="border p-2">Usuario</th>
-                  <th class="border p-2">Tiempo restante</th>
-                  <th class="border p-2">Vista</th>
-                  <th class="border p-2">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
-                  [ngClass]="{ 'text-red-600': newOrder.VistaSolicitud?.isview == false }" class="hover:bg-gray-100">
-                  <td class="border p-2">{{ newOrder.fec_entrega }}</td>
-                  <td class="border p-2">{{ newOrder.num_equipo }}</td>
-                  <td class="border p-2">{{ newOrder.id_ot }}</td>
-                  <td class="border p-2">{{ newOrder.Equipo?.mod_equipo }}</td>
-                  <td class="border p-2">{{ newOrder.rut_cliente }}</td>
-                  <td class="border p-2">{{ newOrder.VistaSolicitud?.nom_estado_ot }}</td>
-                  <td class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.nom_usu }}</td>
-                  <td class="border p-2">
-                    <app-cronometro
-                      [fechaPlazo]="newOrder.VistaSolicitud?.fecha_plazo | date:'yyyy-MM-ddTHH:mm:ss'"></app-cronometro>
-                  </td>
-                  <td class="border p-2">
-                    <span *ngIf="newOrder.VistaSolicitud?.isview"><i class="fa-solid fa-eye"></i></span>
-                    <span *ngIf="!newOrder.VistaSolicitud?.isview"><i class="fa-solid fa-eye-slash"></i></span>
-                  </td>
-                  <td class="border p-2 flex justify-center gap-2">
-                    <button [routerLink]="['/edit-order', newOrder.id_ot]" class="bg-yellow-500 text-white p-1 rounded"
-                      title="Editar Orden"><i class="fa-solid fa-pen-to-square"></i></button>
-                    <button (click)="generatePDF(newOrder)" class="bg-blue-500 text-white p-1 rounded"
-                      title="Descargar PDF"><i class="fa-solid fa-circle-down"></i></button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <pagination-controls (pageChange)="onPageChange($event)" class="mt-4" previousLabel="Anterior"
-              nextLabel="Siguiente"></pagination-controls>
+      <div *ngIf="isModalCambioEstadoOpen" class="modal-overlay">
+        <div class="modal-content" [formGroup]="formUser">
+          <h2 class="text-xl font-bold mb-4">Cambio de encargado de OT</h2>
+          <div class="mb-4">
+            <label for="usuarios">Selecciona un Usuario:</label>
+            <select id="rut_usuario" formControlName="rut_usuario" title="Seleccione un usuario"
+              (change)="onUsuarioChange($event)">
+              <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">
+                {{ usuario.nom_usu }} {{usuario.ap_usu}}
+              </option>
+            </select>
+          </div>
+          <!--botones-->
+          <div class="flex justify-end gap-2">
+            <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" (click)="closeEstadoAdjudicacion()">
+              Cancelar
+            </button>
+            <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" type="submit"
+              (click)="confirmAdjudicacion(selectedOtId!)">
+              Aceptar
+            </button>
           </div>
         </div>
+        <!-- Tabla de órdenes -->
+        <table class="w-full border-collapse text-center">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="border p-2 cursor-pointer" (click)="sortTable('fec_entrega')">
+                Fecha de entrega
+                <span *ngIf="sortedColumn === 'fec_entrega'">
+                  <i *ngIf="sortDirection === 'asc'" class="fa fa-arrow-up"></i>
+                  <i *ngIf="sortDirection === 'desc'" class="fa fa-arrow-down"></i>
+                </span>
+              </th>
+              <th class="border p-2 cursor-pointer" (click)="sortTable('num_equipo')">
+                Número de serie
+                <span *ngIf="sortedColumn === 'num_equipo'">
+                  <i *ngIf="sortDirection === 'asc'" class="fa fa-arrow-up"></i>
+                  <i *ngIf="sortDirection === 'desc'" class="fa fa-arrow-down"></i>
+                </span>
+              </th>
+              <th class="border p-2 cursor-pointer" (click)="sortTable('id_ot')">
+                Número de orden
+                <span *ngIf="sortedColumn === 'id_ot'">
+                  <i *ngIf="sortDirection === 'asc'" class="fa fa-arrow-up"></i>
+                  <i *ngIf="sortDirection === 'desc'" class="fa fa-arrow-down"></i>
+                </span>
+              </th>
+              <th class="border p-2 cursor-pointer" (click)="sortTable('mod_equipo')">
+                Modelo del equipo
+                <span *ngIf="sortedColumn === 'mod_equipo'">
+                  <i *ngIf="sortDirection === 'asc'" class="fa fa-arrow-up"></i>
+                  <i *ngIf="sortDirection === 'desc'" class="fa fa-arrow-down"></i>
+                </span>
+              </th>
+              <th class="border p-2 cursor-pointer" (click)="sortTable('rut_cliente')">
+                Rut Cliente
+                <span *ngIf="sortedColumn === 'rut_cliente'">
+                  <i *ngIf="sortDirection === 'asc'" class="fa fa-arrow-up"></i>
+                  <i *ngIf="sortDirection === 'desc'" class="fa fa-arrow-down"></i>
+                </span>
+              </th>
+              <th class="border p-2 cursor-pointer" (click)="sortTable('estado')">
+                Estado
+                <span *ngIf="sortedColumn === 'estado'">
+                  <i *ngIf="sortDirection === 'asc'" class="fa fa-arrow-up"></i>
+                  <i *ngIf="sortDirection === 'desc'" class="fa fa-arrow-down"></i>
+                </span>
+              </th>
+              <th class="border p-2 cursor-pointer" (click)="sortTable('usuario')">
+                Usuario
+                <span *ngIf="sortedColumn === 'usuario'">
+                  <i *ngIf="sortDirection === 'asc'" class="fa fa-arrow-up"></i>
+                  <i *ngIf="sortDirection === 'desc'" class="fa fa-arrow-down"></i>
+                </span>
+              </th>
+              <th class="border p-2">Tiempo restante</th>
+              <th class="border p-2">Vista</th>
+              <th class="border p-2">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let newOrder of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+              [ngClass]="{ 'text-red-600': newOrder.VistaSolicitud?.isview == false }" class="hover:bg-gray-100">
+              <td class="border p-2">{{ newOrder.fec_entrega }}</td>
+              <td class="border p-2">{{ newOrder.num_equipo }}</td>
+              <td class="border p-2">{{ newOrder.id_ot }}</td>
+              <td class="border p-2">{{ newOrder.Equipo?.mod_equipo }}</td>
+              <td class="border p-2">{{ newOrder.rut_cliente }}</td>
+              <td class="border p-2">{{ newOrder.VistaSolicitud?.nom_estado_ot }}</td>
+              <td class="border p-2">{{ newOrder.VistaUltimaAdjudicacion?.nom_usu }}</td>
+              <td class="border p-2">
+                <app-cronometro
+                  [fechaPlazo]="newOrder.VistaSolicitud?.fecha_plazo | date:'yyyy-MM-ddTHH:mm:ss'"></app-cronometro>
+              </td>
+              <td class="border p-2">
+                <span *ngIf="newOrder.VistaSolicitud?.isview"><i class="fa-solid fa-eye"></i></span>
+                <span *ngIf="!newOrder.VistaSolicitud?.isview"><i class="fa-solid fa-eye-slash"></i></span>
+              </td>
+              <td class="border p-2 flex justify-center gap-2">
+                <button [routerLink]="['/edit-order', newOrder.id_ot]" class="bg-yellow-500 text-white p-1 rounded"
+                  title="Editar Orden"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button (click)="generatePDF(newOrder)" class="bg-blue-500 text-white p-1 rounded"
+                  title="Descargar PDF">
+                  <i class="fa-solid fa-circle-down"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+
+        <pagination-controls (pageChange)="onPageChange($event)" class="mt-4" previousLabel="Anterior"
+          nextLabel="Siguiente"></pagination-controls>
+      </div>
+    </div>

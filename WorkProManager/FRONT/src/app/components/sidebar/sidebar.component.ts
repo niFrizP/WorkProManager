@@ -100,11 +100,11 @@ export class SidebarComponent implements OnInit {
     this.resources = [
       { name: 'Inicio', link: './home', icon: 'fas fa-home', requiredRoles: [1, 2, 3] },
       { name: 'Ordenes', link: './orders', icon: 'fas fa-box', requiredRoles: [1, 2, 3] },
-      { name: 'Usuarios', link: './usuarios', icon: 'fas fa-user', requiredRoles: [1 ] },
-      { name: 'Cotización', link: './cotizacion', icon: 'fas fa-dollar-sign', requiredRoles: [1, 3 ] },
-      {name: 'Marca', link: './marca', icon: 'fas fa-check', requiredRoles: [1] },
-      {name: 'Servicios', link: './servicios', icon: 'fas fa-check', requiredRoles: [1] },
-      {name: 'Causa', link: './causa', icon: 'fas fa-check', requiredRoles: [1] },
+      { name: 'Usuarios', link: './usuarios', icon: 'fas fa-user', requiredRoles: [1] },
+      { name: 'Cotización', link: './cotizacion', icon: 'fas fa-dollar-sign', requiredRoles: [1, 3] },
+      { name: 'Marca', link: './marca', icon: 'fas fa-copyright', requiredRoles: [1] },
+      { name: 'Servicios', link: './servicios', icon: 'fas fa-toolbox', requiredRoles: [1] },
+      { name: 'Causa', link: './causa', icon: 'fas fa-scroll', requiredRoles: [1] },
     ];
 
     // Filtra los recursos en función del rol del usuario

@@ -17,7 +17,7 @@ import routerAsignacion from '../routes/asignacion';
 import routerHistorialOrden from '../routes/historial_orden';
 import routerOrdenTrabajo from '../routes/orden_trabajo';
 import routerServicioOrden from '../routes/servicio_orden';
-
+import routerMarca from '../routes/marca';
 class Server {
     public app: Application;
     private port: string;
@@ -27,7 +27,11 @@ class Server {
         this.app.use(cors({ origin: 'http://localhost:4200', credentials: true }));
         this.port = process.env.PORT || '3001';
         this.middlewares();
-        this.dbConnect();
+        this.dbConnect().then(() => {
+            console.log('Database connected');
+        }).catch((error) => {
+            console.log('Error connecting to the database:', error);
+        });
         this.routes();
     }
 
@@ -47,35 +51,27 @@ class Server {
     routes() {
         // Ruta base
         this.app.get('/', (req: Request, res: Response) => {
-            res.json({ msg: 'API Working' });
+            res.json({ msg: 'API Funcionando' });
         });
 
-        // Aquí se registra el router de login
-        this.app.use('/api/login', routerLogin); // Registra correctamente el router
-
-        // Otras rutas
-        this.app.use('/api/cliente', routerCliente);
-        this.app.use('/api/estado_ot', routerEstadoOt);
-        this.app.use('/api/servicio', routerServicio);
-        // Continúa con las demás rutas...
-    }
-
-    middlewares() {
-        this.app.use(express.json());
-            res.json({ msg: 'API Working' });
-        });
-
+        /*         // Aquí se registra el router de login
+                this.app.use('/api/login', routerLogin); // Registra correctamente el router
+        
+                // Otras rutas
+                this.app.use('/api/cliente', routerCliente);
+                this.app.use('/api/estado_ot', routerEstadoOt);
+                this.app.use('/api/servicio', routerServicio);
+         */
         // Rutas de la API
-        this.configureRoute('/api/asignacion', routerAsignacion);
-        this.configureRoute('/api/cliente', routerCliente);
-        this.configureRoute('/api/equipo', routerEquipo);
-        this.configureRoute('/api/estado_ot', routerEstadoOt);
-        this.configureRoute('/api/historial_orden', routerHistorialOrden);
-        this.configureRoute('/api/historial_servicio_orden', routerHistorialServicioOrden);
         this.configureRoute('/api/login', routerLogin);
+        this.configureRoute('/api/cliente', routerCliente);
+        this.configureRoute('/api/estado_ot', routerEstadoOt);
+        this.configureRoute('/api/servicio', routerServicio);
+        this.configureRoute('/api/asignacion', routerAsignacion);
+        this.configureRoute('/api/equipo', routerEquipo);
+        this.configureRoute('/api/historial_orden', routerHistorialOrden);
         this.configureRoute('/api/marca', routerMarca);
         this.configureRoute('/api/orden_trabajo', routerOrdenTrabajo);
-        this.configureRoute('/api/servicio', routerServicio);
         this.configureRoute('/api/servicio_orden', routerServicioOrden);
         this.configureRoute('/api/trabajador', routerTrabajador);
         this.configureRoute('/api/trabajador_rol', routerTrabajadorRol);
