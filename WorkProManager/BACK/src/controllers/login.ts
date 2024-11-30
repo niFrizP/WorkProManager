@@ -8,7 +8,7 @@ import { JWT_SECRET } from "../config";
 
 const secretKey = JWT_SECRET
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id_trabajador, clave } = req.body;
     

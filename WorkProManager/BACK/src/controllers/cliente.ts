@@ -1,16 +1,26 @@
 import { Request, Response } from 'express';
 import Cliente from '../models/cliente';
+import { verificarToken, verificarRol } from '../middleware/autenticacion';
 
-// Obtener todos los clientes
+
 export const getClientes = async (req: Request, res: Response) => {
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+
         const listClientes = await Cliente.findAll({
             attributes: [
-                'id_cliente',
-                'nombre_cliente',
-                'direccion_cliente',
-                'telefono_cliente',
-                'email_cliente'
+                'rut_cli',
+                'nom_cli',
+                'ape_cli',
+                'dir_cli',
+                'tel_cli',
+                'email_cli',
+                'd_ver_cli'
             ]
         });
         res.json(listClientes);
@@ -22,24 +32,22 @@ export const getClientes = async (req: Request, res: Response) => {
     }
 };
 
-// Obtener un cliente por ID
 export const getCliente = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { rut } = req.params;
     try {
-        const cliente = await Cliente.findByPk(id, {
-            attributes: [
-                'id_cliente',
-                'nombre_cliente',
-                'direccion_cliente',
-                'telefono_cliente',
-                'email_cliente'
-            ]
-        });
+        const decoded = await verificarToken(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+
+        const cliente = await Cliente.findByPk(rut);
         if (cliente) {
             res.json(cliente);
         } else {
             res.status(404).json({
-                msg: `No existe un cliente con el id ${id}`
+                msg: `No existe un cliente con el RUT ${rut}`
             });
         }
     } catch (error) {
@@ -50,21 +58,41 @@ export const getCliente = async (req: Request, res: Response) => {
     }
 };
 
-// Crear un nuevo cliente
 export const postCliente = async (req: Request, res: Response) => {
     const { 
-        nombre_cliente, 
-        direccion_cliente, 
-        telefono_cliente, 
-        email_cliente 
+        rut_cli,
+        nom_cli,
+        ape_cli,
+        dir_cli,
+        tel_cli,
+        email_cli,
+        d_ver_cli
     } = req.body;
 
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1, 2])) { // Solo admin y gestor
+            return res.status(403).json({
+                msg: 'No tiene permisos para crear clientes'
+            });
+        }
+
+        // Verificar si ya existe el cliente
+        const clienteExistente = await Cliente.findByPk(rut_cli);
+        if (clienteExistente) {
+            return res.status(400).json({
+                msg: `Ya existe un cliente con el RUT ${rut_cli}`
+            });
+        }
+
         const cliente = await Cliente.create({
-            nombre_cliente,
-            direccion_cliente,
-            telefono_cliente,
-            email_cliente
+            rut_cli,
+            nom_cli,
+            ape_cli,
+            dir_cli,
+            tel_cli,
+            email_cli,
+            d_ver_cli
         });
         res.json(cliente);
     } catch (error) {
@@ -75,29 +103,39 @@ export const postCliente = async (req: Request, res: Response) => {
     }
 };
 
-// Actualizar un cliente
 export const updateCliente = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { rut } = req.params;
     const { 
-        nombre_cliente, 
-        direccion_cliente, 
-        telefono_cliente, 
-        email_cliente 
+        nom_cli,
+        ape_cli,
+        dir_cli,
+        tel_cli,
+        email_cli,
+        d_ver_cli
     } = req.body;
 
     try {
-        const cliente = await Cliente.findByPk(id);
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1, 2])) {
+            return res.status(403).json({
+                msg: 'No tiene permisos para actualizar clientes'
+            });
+        }
+
+        const cliente = await Cliente.findByPk(rut);
         if (!cliente) {
             return res.status(404).json({
-                msg: `No existe un cliente con el id ${id}`
+                msg: `No existe un cliente con el RUT ${rut}`
             });
         }
 
         await cliente.update({
-            nombre_cliente,
-            direccion_cliente,
-            telefono_cliente,
-            email_cliente
+            nom_cli,
+            ape_cli,
+            dir_cli,
+            tel_cli,
+            email_cli,
+            d_ver_cli
         });
         res.json(cliente);
     } catch (error) {
@@ -108,14 +146,20 @@ export const updateCliente = async (req: Request, res: Response) => {
     }
 };
 
-// Eliminar un cliente
 export const deleteCliente = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { rut } = req.params;
     try {
-        const cliente = await Cliente.findByPk(id);
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para eliminar clientes'
+            });
+        }
+
+        const cliente = await Cliente.findByPk(rut);
         if (!cliente) {
             return res.status(404).json({
-                msg: `No existe un cliente con el id ${id}`
+                msg: `No existe un cliente con el RUT ${rut}`
             });
         }
 

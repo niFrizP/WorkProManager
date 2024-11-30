@@ -1,37 +1,53 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
-import Servicio from './servicio';
 import OrdenTrabajo from './orden_trabajo';
+import Servicio from './servicio';
 
 const ServicioOrden = db.define('ServicioOrden', {
-    id_servicio_orden: {
+  id_ot: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
+      allowNull: false,
       primaryKey: true,
-      allowNull: false,
-    },
-    id_ot: {
+      references: {
+          model: 'orden_trabajo',
+          key: 'id_ot',
+      },
+  },
+  id_serv: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    },
-    id_servicio: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    descripcion_servicio: {
+      primaryKey: true,
+      references: {
+          model: 'servicio',
+          key: 'id_serv',
+      },
+  },
+  desc_serv: {
       type: DataTypes.TEXT,
       allowNull: true,
-    },
-    fecha_inicio: {
+  },
+  fec_inicio_serv: {
       type: DataTypes.DATEONLY,
       allowNull: true,
-    },
-  }, {
-    tableName: 'servicio_orden',
-    timestamps: false, // Si no usas createdAt y updatedAt
-  });
+  },
+  fec_ter_serv: {
+      type: DataTypes.DATE,
+      allowNull: true,
+  },
+  activo_serv: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+  },
+  completado_serv: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+  }
+}, {
+  tableName: 'servicio_orden',
+  timestamps: false,
+});
 
-  ServicioOrden.belongsTo(OrdenTrabajo, { foreignKey: 'id_ot', targetKey: 'id_ot' });
-  ServicioOrden.belongsTo(Servicio, { foreignKey: 'id_servicio', targetKey: 'id_servicio' });
+ServicioOrden.belongsTo(OrdenTrabajo, { foreignKey: 'id_ot', targetKey: 'id_ot' });
+ServicioOrden.belongsTo(Servicio, { foreignKey: 'id_serv', targetKey: 'id_serv' });
 
-  export default ServicioOrden;
+export default ServicioOrden;

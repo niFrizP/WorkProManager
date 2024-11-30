@@ -1,54 +1,94 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
-import Asignacion from './asignacion';
-import Accion from './accion';
-import Trabajador from './trabajador';
+import OrdenTrabajo from './orden_trabajo';
 
 const HistorialOrden = db.define('HistorialOrden', {
-    id_historial: {
+  id_hist_ot: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-    },
-    id_ot: {
+  },
+  id_ot: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    },
-    fecha_cambio: {
+      references: {
+          model: 'orden_trabajo',
+          key: 'id_ot',
+      },
+  },
+  fec_cambio: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
-    },
-    usuario_responsable: {
-      type: DataTypes.STRING(100),
+  },
+  desc_ot_old: {
+      type: DataTypes.STRING(255),
       allowNull: true,
-    },
-    id_accion: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    descripcion: {
+  },
+  desc_ot_new: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+  },
+  fec_ter_old: {
+      type: DataTypes.DATE,
+      allowNull: true,
+  },
+  fec_ter_new: {
+      type: DataTypes.DATE,
+      allowNull: true,
+  },
+  det_adic_old: {
       type: DataTypes.TEXT,
       allowNull: true,
-    },
-    estado_anterior: {
-      type: DataTypes.ENUM('Abierta', 'En progreso', 'Cerrada'),
+  },
+  det_adic_new: {
+      type: DataTypes.TEXT,
       allowNull: true,
-    },
-    estado_nuevo: {
-      type: DataTypes.ENUM('Abierta', 'En progreso', 'Cerrada'),
+  },
+  num_ser_old: {
+      type: DataTypes.STRING(30),
       allowNull: true,
-    },
-    id_trabajador_asignado: {
+  },
+  num_ser_new: {
+      type: DataTypes.STRING(30),
+      allowNull: true,
+  },
+  id_estado_old: {
       type: DataTypes.INTEGER,
       allowNull: true,
-    },
-  }, {
-    tableName: 'historial_orden', // Nombre explícito de la tabla
-    timestamps: false, // No hay columnas createdAt/updatedAt
-  });
+  },
+  id_estado_new: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+  },
+  motiv_rec_old: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+  },
+  motiv_rec_new: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+  },
+  old_rut_cli: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+  },
+  new_rut_cli: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+  },
+  id_asig_old: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+  },
+  id_asig_new: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+  }
+}, {
+  tableName: 'historial_orden',
+  timestamps: false,
+});
 
-  HistorialOrden.belongsTo(Asignacion, { foreignKey: 'id_ot', targetKey: 'id_ot' });
-  HistorialOrden.belongsTo(Accion, { foreignKey: 'id_accion', targetKey: 'id_accion' });
-  HistorialOrden.belongsTo(Trabajador, { foreignKey: 'id_trabajador_asignado', targetKey: 'id_trabajador' });
+HistorialOrden.belongsTo(OrdenTrabajo, { foreignKey: 'id_ot' });
 
-  export default HistorialOrden;
+export default HistorialOrden;

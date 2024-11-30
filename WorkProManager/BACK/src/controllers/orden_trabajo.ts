@@ -4,29 +4,43 @@ import Cliente from '../models/cliente';
 import EstadoOT from '../models/estado_ot';
 import Asignacion from '../models/asignacion';
 import Trabajador from '../models/trabajador';
+import Equipo from '../models/equipo';
+import { verificarToken, verificarRol } from '../middleware/autenticacion';
 
 // Obtener todas las órdenes de trabajo
 export const getOrdenesTrabajo = async (req: Request, res: Response) => {
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+
         const ordenes = await OrdenTrabajo.findAll({
             include: [
                 {
                     model: Cliente,
-                    attributes: ['nombre_cliente']
+                    attributes: ['rut_cli', 'nom_cli', 'ape_cli']
                 },
                 {
                     model: EstadoOT,
-                    attributes: ['nom_estado']
+                    attributes: ['id_estado', 'nom_estado']
                 },
                 {
                     model: Asignacion,
                     include: [{
                         model: Trabajador,
-                        attributes: ['nombre', 'apellido']
+                        as: 'Tecnico',
+                        attributes: ['rut_trab', 'nom_trab', 'ape_trab']
                     }]
+                },
+                {
+                    model: Equipo,
+                    attributes: ['num_ser', 'tip_equ', 'mod_equ']
                 }
             ],
-            order: [['fecha_creacion_ot', 'DESC']]
+            order: [['fec_creacion', 'DESC']]
         });
         res.json(ordenes);
     } catch (error) {
@@ -41,22 +55,34 @@ export const getOrdenesTrabajo = async (req: Request, res: Response) => {
 export const getOrdenTrabajo = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+
         const orden = await OrdenTrabajo.findByPk(id, {
             include: [
                 {
                     model: Cliente,
-                    attributes: ['nombre_cliente']
+                    attributes: ['rut_cli', 'nom_cli', 'ape_cli']
                 },
                 {
                     model: EstadoOT,
-                    attributes: ['nom_estado']
+                    attributes: ['id_estado', 'nom_estado']
                 },
                 {
                     model: Asignacion,
                     include: [{
                         model: Trabajador,
-                        attributes: ['nombre', 'apellido']
+                        as: 'Tecnico',
+                        attributes: ['rut_trab', 'nom_trab', 'ape_trab']
                     }]
+                },
+                {
+                    model: Equipo,
+                    attributes: ['num_ser', 'tip_equ', 'mod_equ']
                 }
             ]
         });
@@ -79,46 +105,58 @@ export const getOrdenTrabajo = async (req: Request, res: Response) => {
 // Crear una nueva orden de trabajo
 export const postOrdenTrabajo = async (req: Request, res: Response) => {
     const {
-        descripcion_ot,
-        fecha_inicio,
-        fecha_fin,
-        detalles_adicionales,
-        id_cliente,
-        id_estado
+        desc_ot,
+        fec_ter,
+        det_adic,
+        num_ser,
+        id_estado,
+        motiv_rec,
+        rut_cli,
+        id_asig
     } = req.body;
 
     try {
-        // Verificar si el cliente existe
-        const clienteExiste = await Cliente.findByPk(id_cliente);
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1, 2])) { // Solo admin y gestor
+            return res.status(403).json({
+                msg: 'No tiene permisos para crear órdenes de trabajo'
+            });
+        }
+
+        // Verificaciones
+        const clienteExiste = await Cliente.findByPk(rut_cli);
         if (!clienteExiste) {
             return res.status(404).json({
-                msg: `No existe un cliente con el ID ${id_cliente}`
+                msg: `No existe un cliente con el RUT ${rut_cli}`
             });
         }
 
-        // Verificar si el estado existe
-        const estadoExiste = await EstadoOT.findByPk(id_estado);
-        if (!estadoExiste) {
+        const equipoExiste = await Equipo.findByPk(num_ser);
+        if (!equipoExiste) {
             return res.status(404).json({
-                msg: `No existe un estado con el ID ${id_estado}`
+                msg: `No existe un equipo con el número de serie ${num_ser}`
             });
         }
 
-        // Generar número de serie único
-        const ultimaOrden = await OrdenTrabajo.findOne({
-            order: [['numero_serie', 'DESC']]
-        }) as any;
-        const numero_serie = ultimaOrden ? ultimaOrden.numero_serie + 1 : 1;
+        if (id_estado) {
+            const estadoExiste = await EstadoOT.findByPk(id_estado);
+            if (!estadoExiste) {
+                return res.status(404).json({
+                    msg: `No existe un estado con el ID ${id_estado}`
+                });
+            }
+        }
 
         const orden = await OrdenTrabajo.create({
-            descripcion_ot,
-            fecha_inicio,
-            fecha_fin,
-            detalles_adicionales,
-            id_cliente,
-            numero_serie,
+            desc_ot,
+            fec_creacion: new Date(),
+            fec_ter,
+            det_adic,
+            num_ser,
             id_estado,
-            fecha_creacion_ot: new Date()
+            motiv_rec,
+            rut_cli,
+            id_asig
         });
 
         res.json(orden);
@@ -134,15 +172,24 @@ export const postOrdenTrabajo = async (req: Request, res: Response) => {
 export const updateOrdenTrabajo = async (req: Request, res: Response) => {
     const { id } = req.params;
     const {
-        descripcion_ot,
-        fecha_inicio,
-        fecha_fin,
-        detalles_adicionales,
-        id_cliente,
-        id_estado
+        desc_ot,
+        fec_ter,
+        det_adic,
+        num_ser,
+        id_estado,
+        motiv_rec,
+        rut_cli,
+        id_asig
     } = req.body;
 
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1, 2])) { // Solo admin y gestor
+            return res.status(403).json({
+                msg: 'No tiene permisos para actualizar órdenes de trabajo'
+            });
+        }
+
         const orden = await OrdenTrabajo.findByPk(id);
         if (!orden) {
             return res.status(404).json({
@@ -150,17 +197,25 @@ export const updateOrdenTrabajo = async (req: Request, res: Response) => {
             });
         }
 
-        // Verificar si el nuevo cliente existe (si se está actualizando)
-        if (id_cliente) {
-            const clienteExiste = await Cliente.findByPk(id_cliente);
+        // Verificaciones si se actualizan las referencias
+        if (rut_cli) {
+            const clienteExiste = await Cliente.findByPk(rut_cli);
             if (!clienteExiste) {
                 return res.status(404).json({
-                    msg: `No existe un cliente con el ID ${id_cliente}`
+                    msg: `No existe un cliente con el RUT ${rut_cli}`
                 });
             }
         }
 
-        // Verificar si el nuevo estado existe (si se está actualizando)
+        if (num_ser) {
+            const equipoExiste = await Equipo.findByPk(num_ser);
+            if (!equipoExiste) {
+                return res.status(404).json({
+                    msg: `No existe un equipo con el número de serie ${num_ser}`
+                });
+            }
+        }
+
         if (id_estado) {
             const estadoExiste = await EstadoOT.findByPk(id_estado);
             if (!estadoExiste) {
@@ -171,12 +226,14 @@ export const updateOrdenTrabajo = async (req: Request, res: Response) => {
         }
 
         await orden.update({
-            descripcion_ot,
-            fecha_inicio,
-            fecha_fin,
-            detalles_adicionales,
-            id_cliente,
-            id_estado
+            desc_ot,
+            fec_ter,
+            det_adic,
+            num_ser,
+            id_estado,
+            motiv_rec,
+            rut_cli,
+            id_asig
         });
 
         res.json(orden);

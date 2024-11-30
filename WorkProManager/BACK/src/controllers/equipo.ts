@@ -1,21 +1,27 @@
 import { Request, Response } from 'express';
 import Equipo from '../models/equipo';
-import Cliente from '../models/cliente';
+import Marca from '../models/marca';
+import { verificarToken, verificarRol } from '../middleware/autenticacion';
 
-// Obtener todos los equipos
 export const getEquipos = async (req: Request, res: Response) => {
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+
         const listEquipos = await Equipo.findAll({
             include: [{
-                model: Cliente,
-                attributes: ['nombre_cliente']
+                model: Marca,
+                attributes: ['nom_marca']
             }],
             attributes: [
-                'numero_serie',
-                'tipo_equipo',
-                'marca',
-                'modelo',
-                'id_cliente'
+                'num_ser',
+                'tip_equ',
+                'mod_equ',
+                'id_marca'
             ]
         });
         res.json(listEquipos);
@@ -27,21 +33,28 @@ export const getEquipos = async (req: Request, res: Response) => {
     }
 };
 
-// Obtener un equipo por número de serie
 export const getEquipo = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { num_ser } = req.params;
     try {
-        const equipo = await Equipo.findByPk(id, {
+        const decoded = await verificarToken(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+
+        const equipo = await Equipo.findByPk(num_ser, {
             include: [{
-                model: Cliente,
-                attributes: ['nombre_cliente']
+                model: Marca,
+                attributes: ['nom_marca']
             }]
         });
+        
         if (equipo) {
             res.json(equipo);
         } else {
             res.status(404).json({
-                msg: `No existe un equipo con el número de serie ${id}`
+                msg: `No existe un equipo con el número de serie ${num_ser}`
             });
         }
     } catch (error) {
@@ -52,29 +65,45 @@ export const getEquipo = async (req: Request, res: Response) => {
     }
 };
 
-// Crear un nuevo equipo
 export const postEquipo = async (req: Request, res: Response) => {
     const { 
-        tipo_equipo, 
-        marca, 
-        modelo, 
-        id_cliente 
+        num_ser,
+        tip_equ, 
+        mod_equ, 
+        id_marca 
     } = req.body;
 
     try {
-        // Verificar si el cliente existe
-        const clienteExiste = await Cliente.findByPk(id_cliente);
-        if (!clienteExiste) {
-            return res.status(404).json({
-                msg: `No existe un cliente con el ID ${id_cliente}`
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1, 2])) { // Solo admin y gestor
+            return res.status(403).json({
+                msg: 'No tiene permisos para crear equipos'
             });
         }
 
+        // Verificar si ya existe el equipo
+        const equipoExiste = await Equipo.findByPk(num_ser);
+        if (equipoExiste) {
+            return res.status(400).json({
+                msg: `Ya existe un equipo con el número de serie ${num_ser}`
+            });
+        }
+
+        // Verificar si existe la marca
+        if (id_marca) {
+            const marcaExiste = await Marca.findByPk(id_marca);
+            if (!marcaExiste) {
+                return res.status(404).json({
+                    msg: `No existe una marca con el ID ${id_marca}`
+                });
+            }
+        }
+
         const equipo = await Equipo.create({
-            tipo_equipo,
-            marca,
-            modelo,
-            id_cliente
+            num_ser,
+            tip_equ,
+            mod_equ,
+            id_marca
         });
         res.json(equipo);
     } catch (error) {
@@ -85,39 +114,43 @@ export const postEquipo = async (req: Request, res: Response) => {
     }
 };
 
-// Actualizar un equipo
 export const updateEquipo = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { num_ser } = req.params;
     const { 
-        tipo_equipo, 
-        marca, 
-        modelo, 
-        id_cliente 
+        tip_equ, 
+        mod_equ, 
+        id_marca 
     } = req.body;
 
     try {
-        const equipo = await Equipo.findByPk(id);
-        if (!equipo) {
-            return res.status(404).json({
-                msg: `No existe un equipo con el número de serie ${id}`
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1, 2])) {
+            return res.status(403).json({
+                msg: 'No tiene permisos para actualizar equipos'
             });
         }
 
-        // Verificar si el nuevo cliente existe (si se está actualizando)
-        if (id_cliente) {
-            const clienteExiste = await Cliente.findByPk(id_cliente);
-            if (!clienteExiste) {
+        const equipo = await Equipo.findByPk(num_ser);
+        if (!equipo) {
+            return res.status(404).json({
+                msg: `No existe un equipo con el número de serie ${num_ser}`
+            });
+        }
+
+        // Verificar si existe la marca
+        if (id_marca) {
+            const marcaExiste = await Marca.findByPk(id_marca);
+            if (!marcaExiste) {
                 return res.status(404).json({
-                    msg: `No existe un cliente con el ID ${id_cliente}`
+                    msg: `No existe una marca con el ID ${id_marca}`
                 });
             }
         }
 
         await equipo.update({
-            tipo_equipo,
-            marca,
-            modelo,
-            id_cliente
+            tip_equ,
+            mod_equ,
+            id_marca
         });
         res.json(equipo);
     } catch (error) {
@@ -128,14 +161,20 @@ export const updateEquipo = async (req: Request, res: Response) => {
     }
 };
 
-// Eliminar un equipo
 export const deleteEquipo = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { num_ser } = req.params;
     try {
-        const equipo = await Equipo.findByPk(id);
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para eliminar equipos'
+            });
+        }
+
+        const equipo = await Equipo.findByPk(num_ser);
         if (!equipo) {
             return res.status(404).json({
-                msg: `No existe un equipo con el número de serie ${id}`
+                msg: `No existe un equipo con el número de serie ${num_ser}`
             });
         }
 

@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import HistorialOrden from '../models/historial_orden';
+import HistorialServicioOrden from '../models/historial_servicio_orden';
 import OrdenTrabajo from '../models/orden_trabajo';
 import { verificarToken, verificarRol } from '../middleware/autenticacion';
 
-export const getHistorialOrdenes = async (req: Request, res: Response) => {
+export const getHistorialServicios = async (req: Request, res: Response) => {
     try {
         const decoded = await verificarToken(req);
         if (!decoded) {
@@ -12,23 +12,23 @@ export const getHistorialOrdenes = async (req: Request, res: Response) => {
             });
         }
 
-        const historial = await HistorialOrden.findAll({
+        const historial = await HistorialServicioOrden.findAll({
             include: [{
                 model: OrdenTrabajo,
                 attributes: ['id_ot']
             }],
-            order: [['fec_cambio', 'DESC']]
+            order: [['fecha_cambio_serv', 'DESC']]
         });
         res.json(historial);
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: 'Error al obtener el historial de órdenes'
+            msg: 'Error al obtener el historial de servicios'
         });
     }
 };
 
-export const getHistorialOrden = async (req: Request, res: Response) => {
+export const getHistorialServicio = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
         const decoded = await verificarToken(req);
@@ -38,7 +38,7 @@ export const getHistorialOrden = async (req: Request, res: Response) => {
             });
         }
 
-        const historial = await HistorialOrden.findByPk(id, {
+        const historial = await HistorialServicioOrden.findByPk(id, {
             include: [{
                 model: OrdenTrabajo,
                 attributes: ['id_ot']
@@ -60,7 +60,7 @@ export const getHistorialOrden = async (req: Request, res: Response) => {
     }
 };
 
-export const getHistorialPorOT = async (req: Request, res: Response) => {
+export const getHistorialServicioPorOT = async (req: Request, res: Response) => {
     const { id_ot } = req.params;
     try {
         const decoded = await verificarToken(req);
@@ -70,38 +70,33 @@ export const getHistorialPorOT = async (req: Request, res: Response) => {
             });
         }
 
-        const historial = await HistorialOrden.findAll({
+        const historial = await HistorialServicioOrden.findAll({
             where: { id_ot },
-            order: [['fec_cambio', 'DESC']]
+            order: [['fecha_cambio_serv', 'DESC']]
         });
         res.json(historial);
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: 'Error al obtener el historial de la orden'
+            msg: 'Error al obtener el historial de servicios de la orden'
         });
     }
 };
 
-export const postHistorialOrden = async (req: Request, res: Response) => {
+export const postHistorialServicio = async (req: Request, res: Response) => {
     const {
         id_ot,
-        desc_ot_old,
-        desc_ot_new,
-        fec_ter_old,
-        fec_ter_new,
-        det_adic_old,
-        det_adic_new,
-        num_ser_old,
-        num_ser_new,
-        id_estado_old,
-        id_estado_new,
-        motiv_rec_old,
-        motiv_rec_new,
-        old_rut_cli,
-        new_rut_cli,
-        id_asig_old,
-        id_asig_new
+        id_serv,
+        new_desc_serv,
+        old_desc_serv,
+        new_fec_inicio_serv,
+        old_fec_inicio_serv,
+        new_fec_ter_serv,
+        old_fec_ter_serv,
+        new_activo_serv,
+        old_activo_serv,
+        new_completado_serv,
+        old_completado_serv
     } = req.body;
 
     try {
@@ -112,25 +107,28 @@ export const postHistorialOrden = async (req: Request, res: Response) => {
             });
         }
 
-        const historial = await HistorialOrden.create({
+        // Verificar si existe la orden de trabajo
+        const ordenTrabajo = await OrdenTrabajo.findByPk(id_ot);
+        if (!ordenTrabajo) {
+            return res.status(404).json({
+                msg: `No existe una orden de trabajo con el ID ${id_ot}`
+            });
+        }
+
+        const historial = await HistorialServicioOrden.create({
             id_ot,
-            fec_cambio: new Date(),
-            desc_ot_old,
-            desc_ot_new,
-            fec_ter_old,
-            fec_ter_new,
-            det_adic_old,
-            det_adic_new,
-            num_ser_old,
-            num_ser_new,
-            id_estado_old,
-            id_estado_new,
-            motiv_rec_old,
-            motiv_rec_new,
-            old_rut_cli,
-            new_rut_cli,
-            id_asig_old,
-            id_asig_new
+            id_serv,
+            fecha_cambio_serv: new Date(),
+            new_desc_serv,
+            old_desc_serv,
+            new_fec_inicio_serv,
+            old_fec_inicio_serv,
+            new_fec_ter_serv,
+            old_fec_ter_serv,
+            new_activo_serv,
+            old_activo_serv,
+            new_completado_serv,
+            old_completado_serv
         });
 
         res.json(historial);
