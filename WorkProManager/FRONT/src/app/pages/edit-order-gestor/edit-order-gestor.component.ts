@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+/* import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -96,7 +96,6 @@ tipos: Tipo[] = [];
 
 constructor(
   private fb: FormBuilder,
-  private _orderService: OrderService,
   private router: Router,
   private aRouter: ActivatedRoute,
   private detalleOTService:DetalleOTService,
@@ -210,19 +209,6 @@ onTipoChange(event: Event) {
 }
 
 
-cargarTipoEquipo() {
-  this.tipoService.getListTipos().subscribe({
-    next: (data: Tipo[]) => {
-      this.tipos = data; // Asigna la respuesta a la variable
-    },
-    error: (error) => {
-      console.error('Error al cargar tipos:', error); // Manejo de errores
-    },
-    complete: () => {
-      console.log('Carga de tipos completada'); // (Opcional) Mensaje de finalización
-    }
-  });
-}
 
 conseguirRolRemitente(rut_remitente: number): number | undefined {
   let rol: number | undefined;
@@ -937,3 +923,4 @@ toggleSelectServicio(): void {
   this.mostrarSelectServicio = !this.mostrarSelectServicio;
 }
 }
+ */

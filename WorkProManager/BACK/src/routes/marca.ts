@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { getMarcas, getMarca, updateMarca, deleteMarca, postMarca } from '../controllers/marca';
+import { getMarcas, getMarcaById, createMarca, updateMarca, deleteMarca } from '../controllers/marca';
 
 const router = Router();
 
 router.get('/', getMarcas);
-router.get('/:id', getMarca);
-router.delete('/:id', deleteMarca);
-router.post('/', postMarca);
+router.get('/:id', getMarcaById);
+router.post('/', createMarca);
 router.put('/:id', updateMarca);
+router.delete('/:id', deleteMarca);
 
 export default router;

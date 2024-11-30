@@ -37,15 +37,6 @@
           <i [class]="item.icon + ' mr-3'"></i>
           <span>{{ item.name }}</span>
       
-          <!-- Solo mostrar el contador en la esquina superior izquierda del ítem de "Reportes" -->
-          <span *ngIf="item.name === 'Ordenes' && contar > 0 && authService.getUserRole() != 2"
-            class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-            {{contar}}
-          </span>
-          <span *ngIf="item.name === 'Ordenes' && contar > 0 && authService.getUserRole() == 2"
-            class="absolute top-0 left-0 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full transform -translate-x-1/2 -translate-y-1/2">
-            {{contarTecnicoReportes}}
-          </span>
         </a>
       </nav>
     </div>

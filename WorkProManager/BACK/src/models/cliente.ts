@@ -1,36 +1,55 @@
 import { DataTypes, Model } from 'sequelize';
-import db from '../db/connection'; // Asegúrate de que esta ruta sea correcta
+import db from '../db/connection'; // Connection to the database
 
-class Cliente extends Model {}
+// Define the Cliente model
+class Cliente extends Model {
+  public rut_cli!: number;
+  public nom_cli!: string;
+  public dir_cli!: string | null;
+  public tel_cli!: string | null;
+  public email_cli!: string | null;
+  public ape_cli!: string | null;
+  public d_ver_cli!: string | null;
+}
 
-Cliente.init({
-    rut_cliente: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-    },
-    d_veri_cli: {
-        type: DataTypes.STRING
+Cliente.init(
+  {
+    rut_cli: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      allowNull: false,
     },
     nom_cli: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING(255),
+      allowNull: false,
     },
-    ap_cli: {
-        type: DataTypes.STRING
+    dir_cli: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    tel_cli: {
+      type: DataTypes.STRING(15),
+      allowNull: true,
     },
     email_cli: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING(100),
+      allowNull: true,
     },
-    cel_cli: {
-        type: DataTypes.INTEGER
-    }
-}, {
-    sequelize: db, // Asegúrate de que 'db' esté definido correctamente
-    modelName: 'cliente',
-    tableName: 'cliente', // Especifica el nombre exacto de la tabla
-    createdAt: false,
-    updatedAt: false
-});
-
-Cliente.hasMany(Cliente, { foreignKey: 'rut_cliente' });
+    ape_cli: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    d_ver_cli: {
+      type: DataTypes.STRING(1),
+      allowNull: true,
+    },
+  },
+  {
+    sequelize: db,
+    modelName: 'Cliente',
+    tableName: 'cliente',
+    timestamps: false, // As the SQL definition doesn't include timestamps
+  }
+);
 
 export default Cliente;

@@ -1,46 +1,42 @@
-import { DataTypes } from 'sequelize';
-import db from '../db/connection';
-import Marca from './marca';
-import Tipo_Equipo from './tipo';
+import { DataTypes, Model } from 'sequelize';
+import db from '../db/connection'; // Connection to the database
 
-const Equipo = db.define('Equipo', {
-    
-    num_equipo: {
-        type: DataTypes.INTEGER,// Puede ser STRING si el número de equipo tiene caracteres especiales
-        primaryKey: true, // Define que id_equipo es la clave primaria
+// Define the Equipo model
+class Equipo extends Model {
+  public num_ser!: string;
+  public tip_equ!: string | null;
+  public mod_equ!: string | null;
+  public id_marca!: number | null;
+}
 
+Equipo.init(
+  {
+    num_ser: {
+      type: DataTypes.STRING(30),
+      primaryKey: true,
+      allowNull: false,
     },
-    fecha_fab: {
-        type: DataTypes.DATE
+    tip_equ: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
     },
-    mod_equipo: {
-        type: DataTypes.STRING
+    mod_equ: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
     },
     id_marca: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'marca',
-            key: 'nom_marca'
-        }
+      type: DataTypes.INTEGER,
+      allowNull: true, // Foreign key, nullable if not assigned
     },
-    id_tipo: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'tipo_equipo',
-            key: 'id_tipo'
-        }
-    }
+  },
+  {
+    sequelize: db,
+    modelName: 'Equipo',
+    tableName: 'equipo',
+    timestamps: false, // As the SQL definition doesn't use timestamps
+  }
+);
 
-  
-}, {
-    tableName: 'equipo', // Especifica el nombre exacto de la tabla
-    createdAt: false,
-    updatedAt: false
-});
-
-Equipo.hasMany(Equipo, { foreignKey: 'num_equipo' });
-Equipo.belongsTo(Marca, { foreignKey: 'id_marca', targetKey: 'id_marca' });
-Equipo.belongsTo(Tipo_Equipo, { foreignKey: 'id_tipo', targetKey: 'id_tipo' });
 
 
 export default Equipo;

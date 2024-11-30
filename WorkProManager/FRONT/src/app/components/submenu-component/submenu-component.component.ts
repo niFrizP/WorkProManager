@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+/* import { Component, OnInit } from '@angular/core';
 import { EstadoOT } from '../../interfaces/estadoot';
 import { EstadoOTService } from '../../services/estado_ot.service';
 import { Order } from '../../interfaces/order';
@@ -96,3 +96,4 @@ estadoUpdated(id_estado_ot:number){
  
   
 
+ */

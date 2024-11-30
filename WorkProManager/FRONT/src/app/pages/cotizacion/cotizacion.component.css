@@ -15,6 +15,9 @@
     padding: 20px;
 }
 
+
+
+
 select {
     appearance: none;
     background-color: #fff;
@@ -236,3 +239,43 @@ li button:hover {
     border-radius: 4px;
     margin-bottom: 10px;
 }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px; /* Ajusta el espacio entre los elementos */
+    width: 100%; /* Esto asegura que el grid ocupe todo el espacio disponible */
+  }
+  
+
+textarea {
+    resize: vertical;
+}
+
+textarea#det_adic {
+    height: 100px; /* Ajusta la altura según sea necesario */
+}
+
+textarea#desc_ot {
+    height: 200px; /* Ajusta la altura según sea necesario */
+}
+
+textarea#desc_serv {
+    height: 150px; /* Ajusta la altura según sea necesario */
+    width: 100%; /* Asegura que ocupe todo el ancho disponible */
+}
+
+button {
+  width: 100%;
+  background-color: #0046ad;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #003e8a;
+}
+

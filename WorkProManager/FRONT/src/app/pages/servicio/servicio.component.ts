@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+/* import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Servicio } from '../../interfaces/servicio';
 import { ServicioService } from '../../services/servicio.service';
@@ -125,3 +125,4 @@ export class ServicioComponent {
       }
 
 
+ */

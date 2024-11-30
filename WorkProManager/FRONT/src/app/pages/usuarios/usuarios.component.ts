@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+/* import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { RouterModule } from '@angular/router';
@@ -34,25 +34,12 @@ export class UsuariosComponent {
       page = 1;
       itemsPerPage = 10;
     
-      constructor(private usuarioEliminadoService:UsuarioEliminadoService,private usuarioservice: UsuarioService ,private usuarioService: UsuarioService, private equipoService: EquipoService, private clienteService: ClienteService, private servicioService: ServicioService) {}
+      constructor(private usuarioservice: UsuarioService ,private usuarioService: UsuarioService, private equipoService: EquipoService, private clienteService: ClienteService, private servicioService: ServicioService) {}
     
       ngOnInit(): void {
-        this.loadusuarios();
       }
     
-      loadusuarios(): void {
-        this.usuarioservice.getListUsuarios().subscribe(
-          (data: Usuario[]) => {
-            this.usuarios = data;
-            console.log(this.usuarios.map(usuario => usuario.nom_usu));
-            
-          },
-          (error) => {
-            console.error('Error fetching usuarios', error);
-          }
-        );
-      }
-    
+
      
       filterusuarios(filter: string | null): void {
         if (filter === 'todas') {
@@ -66,36 +53,6 @@ export class UsuariosComponent {
         this.page = page;
       }
 
-      deleteUsuario(rut_usuario: number): void {
-        if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
-          this.usuarioService.getUsuario(rut_usuario).subscribe(
-            (usuario: Usuario) => {
-              this.usuarioEliminadoService.saveUsuario(usuario).subscribe(
-                () => {
-                  console.log('Orden registrada como eliminada', usuario);
-                  this.usuarioservice.deleteUsuarios(rut_usuario).subscribe(
-                    () => {
-                      console.log('Orden eliminada');
-                      this.loadusuarios(); // Actualizar la lista de órdenes
-                    },
-                    (error) => {
-                      console.error('Error eliminando la orden', error);
-                      alert('Hubo un error al intentar eliminar la orden.');
-                    }
-                  );
-                },
-                (error) => {
-                  console.error('Error registrando la orden eliminada', error);
-                  alert('Hubo un error al registrar la orden eliminada.');
-                }
-              );
-            },
-            (error) => {
-              console.error('Error obteniendo la orden', error);
-              alert('No se pudo obtener la orden para eliminar.');
-            }
-          );
-        }
-      }
     }
     
+ */

@@ -12,23 +12,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateMarca = exports.postMarca = exports.deleteMarca = exports.getMarca = exports.getMarcas = void 0;
+exports.deleteMarca = exports.updateMarca = exports.createMarca = exports.getMarcaById = exports.getMarcas = void 0;
 const marca_1 = __importDefault(require("../models/marca"));
-const vista_count_marca_1 = __importDefault(require("../models/vista_count_marca"));
+// Get all marcas
 const getMarcas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const listMarcas = yield marca_1.default.findAll({ include: [{ model: vista_count_marca_1.default }] });
-        res.json(listMarcas);
+        const marcas = yield marca_1.default.findAll();
+        res.json(marcas);
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al obtener las marcas, contacta con soporte'
-        });
+        res.status(500).json({ message: 'Error retrieving marcas', error });
     }
 });
 exports.getMarcas = getMarcas;
-const getMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+// Get a single marca by ID
+const getMarcaById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
         const marca = yield marca_1.default.findByPk(id);
@@ -36,76 +34,61 @@ const getMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.json(marca);
         }
         else {
-            res.status(404).json({
-                msg: `No existe una marca con el id ${id}`
-            });
+            res.status(404).json({ message: 'Marca not found' });
         }
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al obtener la marca, contacta con soporte'
-        });
+        res.status(500).json({ message: 'Error retrieving marca', error });
     }
 });
-exports.getMarca = getMarca;
-const deleteMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const marca = yield marca_1.default.findByPk(id);
-    if (!marca) {
-        res.status(404).json({
-            msg: `No existe una marca con el id ${id}`
-        });
-    }
-    else {
-        yield marca.destroy();
-        res.json({
-            msg: 'La marca fue eliminada con éxito!'
-        });
-    }
-});
-exports.deleteMarca = deleteMarca;
-const postMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nom_marca } = req.body; // Extrae el dato relevante
+exports.getMarcaById = getMarcaById;
+// Create a new marca
+const createMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name } = req.body;
     try {
-        const newMarca = yield marca_1.default.create({
-            nom_marca
-        });
-        res.json({
-            msg: 'La marca fue agregada con éxito!',
-            marca: newMarca // Devuelve la nueva marca, incluyendo el id_marca generado
-        });
+        const newMarca = yield marca_1.default.create({ name });
+        res.status(201).json(newMarca);
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
-        });
+        res.status(500).json({ message: 'Error creating marca', error });
     }
 });
-exports.postMarca = postMarca;
+exports.createMarca = createMarca;
+// Update an existing marca
 const updateMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
+    const { id } = req.params;
+    const { nom_marca } = req.body;
+    try {
+        const marca = yield marca_1.default.findByPk(id);
+        if (marca) {
+            marca.nom_marca = nom_marca;
+            yield marca.save();
+            res.json(marca);
+        }
+        else {
+            res.status(404).json({ message: 'Marca not found' });
+        }
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Error updating marca', error });
+    }
+});
+exports.updateMarca = updateMarca;
+// Delete a marca
+const deleteMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
         const marca = yield marca_1.default.findByPk(id);
         if (marca) {
-            yield marca.update(body);
-            res.json({
-                msg: 'La marca fue actualizada con éxito'
-            });
+            yield marca.destroy();
+            res.json({ message: 'Marca deleted' });
         }
         else {
-            res.status(404).json({
-                msg: `No existe una marca con el id ${id}`
-            });
+            res.status(404).json({ message: 'Marca not found' });
         }
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
-        });
+        res.status(500).json({ message: 'Error deleting marca', error });
     }
 });
-exports.updateMarca = updateMarca;
+exports.deleteMarca = deleteMarca;

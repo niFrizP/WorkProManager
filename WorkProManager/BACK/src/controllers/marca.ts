@@ -1,96 +1,72 @@
 import { Request, Response } from 'express';
 import Marca from '../models/marca';
-import vista_count_marca from '../models/vista_count_marca';
 
+// Get all marcas
 export const getMarcas = async (req: Request, res: Response) => {
     try {
-        const listMarcas = await Marca.findAll({include: [{model: vista_count_marca}]});
-        res.json(listMarcas);
+        const marcas = await Marca.findAll();
+        res.json(marcas);
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al obtener las marcas, contacta con soporte'
-        });
+        res.status(500).json({ message: 'Error retrieving marcas', error });
     }
-}
+};
 
-export const getMarca = async (req: Request, res: Response) => {
+// Get a single marca by ID
+export const getMarcaById = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
         const marca = await Marca.findByPk(id);
-
         if (marca) {
             res.json(marca);
         } else {
-            res.status(404).json({
-                msg: `No existe una marca con el id ${id}`
-            });
+            res.status(404).json({ message: 'Marca not found' });
         }
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al obtener la marca, contacta con soporte'
-        });
+        res.status(500).json({ message: 'Error retrieving marca', error });
     }
 };
 
-export const deleteMarca = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const marca = await Marca.findByPk(id);
-
-    if (!marca) {
-        res.status(404).json({
-            msg: `No existe una marca con el id ${id}`
-        });
-    } else {
-        await marca.destroy();
-        res.json({
-            msg: 'La marca fue eliminada con éxito!'
-        });
-    }
-}
-
-export const postMarca = async (req: Request, res: Response) => {
-    const { nom_marca } = req.body; // Extrae el dato relevante
-
+// Create a new marca
+export const createMarca = async (req: Request, res: Response) => {
+    const { name } = req.body;
     try {
-        const newMarca = await Marca.create({
-            nom_marca
-        });
-
-        res.json({
-            msg: 'La marca fue agregada con éxito!',
-            marca: newMarca // Devuelve la nueva marca, incluyendo el id_marca generado
-        });
+        const newMarca = await Marca.create({ name });
+        res.status(201).json(newMarca);
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
-        });
+        res.status(500).json({ message: 'Error creating marca', error });
     }
 };
 
+// Update an existing marca
 export const updateMarca = async (req: Request, res: Response) => {
-    const { body } = req;
     const { id } = req.params;
-
+    const { nom_marca } = req.body;
     try {
         const marca = await Marca.findByPk(id);
-
         if (marca) {
-            await marca.update(body);
-            res.json({
-                msg: 'La marca fue actualizada con éxito'
-            });
+            marca.nom_marca = nom_marca;
+            await marca.save();
+            res.json(marca);
         } else {
-            res.status(404).json({
-                msg: `No existe una marca con el id ${id}`
-            });
+            res.status(404).json({ message: 'Marca not found' });
         }
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
-        });
+        res.status(500).json({ message: 'Error updating marca', error });
+    }
+};
+
+// Delete a marca
+export const deleteMarca = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const marca = await Marca.findByPk(id);
+        if (marca) {
+            await marca.destroy();
+            res.json({ message: 'Marca deleted' });
+        } else {
+            res.status(404).json({ message: 'Marca not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting marca', error });
     }
 };
