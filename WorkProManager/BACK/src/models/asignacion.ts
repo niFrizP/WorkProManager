@@ -1,48 +1,47 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
 import Trabajador from './trabajador';
-import Accion from './accion';
 
 const Asignacion = db.define('Asignacion', {
-    id_asignacion: {
+  id_asig: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-    },
-    id_ot: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    id_trabajador: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    asignado_por: {
+  },
+  rut_tec: {
       type: DataTypes.INTEGER,
       allowNull: true,
-    },
-    fecha_asignacion: {
+      references: {
+        model: 'trabajador',
+        key: 'rut_trab'
+      }
+  },
+  rut_ges: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'trabajador',
+        key: 'rut_trab'
+      }
+  },
+  fecha_asig: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
-    },
-    fecha_finalizacion: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    notas: {
+  },
+  notas_asig: {
       type: DataTypes.TEXT,
       allowNull: true,
-    },
-  }, {
-    tableName: 'asignacion', // Nombre explícito de la tabla en la base de datos
-    timestamps: false, // No hay columnas createdAt/updatedAt
-  });
+  },
+  es_actual: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+  }
+}, {
+  tableName: 'asignacion',
+  timestamps: false,
+});
 
-  Asignacion.hasMany(Asignacion, { foreignKey: 'id_asignacion' });
-  Asignacion.belongsTo(Asignacion, { foreignKey: 'id_asignacion', targetKey: 'id_asignacion' });
-  Asignacion.belongsTo(Trabajador, { foreignKey: 'id_trabajador', targetKey: 'id_trabajador' });
-  Asignacion.belongsTo(Trabajador, { foreignKey: 'asignado_por', targetKey: 'id_trabajador' });
-  Asignacion.hasMany(Accion, { foreignKey: 'id_asignacion' });
-  Asignacion.belongsTo(Accion, { foreignKey: 'id_asignacion', targetKey: 'id_asignacion' });
+Asignacion.belongsTo(Trabajador, { as: 'tecnico', foreignKey: 'rut_tec', targetKey: 'rut_trab' });
+Asignacion.belongsTo(Trabajador, { as: 'gerente', foreignKey: 'rut_ges', targetKey: 'rut_trab' });
 
-  export default Asignacion;
+export default Asignacion;

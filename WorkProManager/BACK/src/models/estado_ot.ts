@@ -1,23 +1,25 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
-import Asignacion from './asignacion';
 
 const EstadoOT = db.define('EstadoOT', {
-    id_estado: {
+  id_estado: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-    },
-    nom_estado: {
-      type: DataTypes.ENUM('Pendiente', 'En Proceso', 'Completada', 'Cancelada'),
+  },
+  nom_estado: {
+      type: DataTypes.ENUM(
+          'Cotización en curso',
+          'Verificando cotización',
+          'En progreso',
+          'Completada',
+          'Rechazada'
+      ),
       allowNull: false,
-    },
-  }, {
-    tableName: 'estado_ot', // Nombre explícito de la tabla
-    timestamps: false, // No hay columnas createdAt/updatedAt
-  });
+  },
+}, {
+  tableName: 'estado_ot',
+  timestamps: false,
+});
 
-  EstadoOT.hasMany(Asignacion, { foreignKey: 'id_estado' });
-  Asignacion.belongsTo(EstadoOT, { foreignKey: 'id_estado', targetKey: 'id_estado' });
-
-  export default EstadoOT;
+export default EstadoOT;

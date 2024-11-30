@@ -1,49 +1,74 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
-import Servicio from './servicio';
-import Accion from './accion';
-import Asignacion from './asignacion';
-import ServicioOrden from './servicio_orden';
+import OrdenTrabajo from './orden_trabajo';
 
 const HistorialServicioOrden = db.define('HistorialServicioOrden', {
-    id_historial: {
+  id_hist_serv: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-    },
-    id_ot: {
+  },
+  id_ot: {
       type: DataTypes.INTEGER,
       allowNull: true,
-    },
-    id_servicio: {
+      references: {
+          model: 'orden_trabajo',
+          key: 'id_ot',
+      },
+  },
+  id_serv: {
       type: DataTypes.INTEGER,
       allowNull: true,
-    },
-    id_accion: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    fecha_cambio: {
+  },
+  fecha_cambio_serv: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
-    },
-    usuario_responsable: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
-    notas: {
+  },
+  new_desc_serv: {
       type: DataTypes.TEXT,
       allowNull: true,
-    },
-  }, {
-    tableName: 'historial_servicio_orden', // Nombre explícito de la tabla
-    timestamps: false, // No hay columnas createdAt/updatedAt
-  });
+  },
+  old_desc_serv: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+  },
+  new_fec_inicio_serv: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+  },
+  old_fec_inicio_serv: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+  },
+  new_fec_ter_serv: {
+      type: DataTypes.DATE,
+      allowNull: true,
+  },
+  old_fec_ter_serv: {
+      type: DataTypes.DATE,
+      allowNull: true,
+  },
+  new_activo_serv: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+  },
+  old_activo_serv: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+  },
+  new_completado_serv: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+  },
+  old_completado_serv: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+  }
+}, {
+  tableName: 'historial_servicio_orden',
+  timestamps: false,
+});
 
-  HistorialServicioOrden.belongsTo(Servicio, { foreignKey: 'id_servicio', targetKey: 'id_servicio' });
-  HistorialServicioOrden.belongsTo(Accion, { foreignKey: 'id_accion', targetKey: 'id_accion' });
-  HistorialServicioOrden.belongsTo(Asignacion, { foreignKey: 'id_ot', targetKey: 'id_ot' });
-  HistorialServicioOrden.belongsTo(ServicioOrden, { foreignKey: 'id_ot', targetKey: 'id_ot' }); 
-  HistorialServicioOrden.belongsTo(Servicio, { foreignKey: 'id_servicio', targetKey: 'id_servicio' });
+HistorialServicioOrden.belongsTo(OrdenTrabajo, { foreignKey: 'id_ot' });
 
-  export default HistorialServicioOrden;
+export default HistorialServicioOrden;

@@ -1,33 +1,34 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
-import Asignacion from './asignacion';
-import Cliente from './cliente';
+import Marca from './marca';
 
 const Equipo = db.define('Equipo', {
-    numero_serie: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+  num_ser: {
+      type: DataTypes.STRING(30),
       primaryKey: true,
-    },
-    tipo_equipo: {
+      allowNull: false,
+  },
+  tip_equ: {
       type: DataTypes.STRING(50),
       allowNull: true,
-    },
-    marca: {
+  },
+  mod_equ: {
       type: DataTypes.STRING(50),
       allowNull: true,
-    },
-    modelo: {
-      type: DataTypes.STRING(50),
+  },
+  id_marca: {
+      type: DataTypes.INTEGER,
       allowNull: true,
-    },
-  }, {
-    tableName: 'equipo', // Nombre explícito de la tabla
-    timestamps: false, // No hay columnas createdAt/updatedAt
-  });
+      references: {
+          model: 'marca',
+          key: 'id_marca',
+      },
+  }
+}, {
+  tableName: 'equipo',
+  timestamps: false,
+});
 
-  Equipo.hasMany(Asignacion, { foreignKey: 'numero_serie' });
-  Asignacion.belongsTo(Equipo, { foreignKey: 'numero_serie', targetKey: 'numero_serie' });
-  Equipo.belongsTo(Cliente, { foreignKey: 'id_cliente', targetKey: 'id_cliente' });
+Equipo.belongsTo(Marca, { foreignKey: 'id_marca', targetKey: 'id_marca' });
 
-  export default Equipo;
+export default Equipo;

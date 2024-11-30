@@ -1,14 +1,22 @@
 import { Request, Response } from 'express';
 import TrabajadorRol from '../models/trabajador_rol';
 import Trabajador from '../models/trabajador';
+import { verificarToken, verificarRol } from '../middleware/autenticacion';
 
 // Obtener todos los roles de trabajador
 export const getRoles = async (req: Request, res: Response) => {
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para ver los roles'
+            });
+        }
+
         const roles = await TrabajadorRol.findAll({
             include: [{
                 model: Trabajador,
-                attributes: ['nombre', 'apellido']
+                attributes: ['nom_trab', 'ape_trab']
             }]
         });
         res.json(roles);
@@ -24,10 +32,17 @@ export const getRoles = async (req: Request, res: Response) => {
 export const getRol = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para ver los roles'
+            });
+        }
+
         const rol = await TrabajadorRol.findByPk(id, {
             include: [{
                 model: Trabajador,
-                attributes: ['nombre', 'apellido']
+                attributes: ['nom_trab', 'ape_trab']
             }]
         });
 
@@ -48,22 +63,29 @@ export const getRol = async (req: Request, res: Response) => {
 
 // Crear un nuevo rol
 export const postRol = async (req: Request, res: Response) => {
-    const { nombre_rol } = req.body;
+    const { nom_rol } = req.body;
 
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para crear roles'
+            });
+        }
+
         // Verificar si ya existe un rol con el mismo nombre
         const rolExistente = await TrabajadorRol.findOne({
-            where: { nombre_rol }
+            where: { nom_rol }
         });
 
         if (rolExistente) {
             return res.status(400).json({
-                msg: `Ya existe un rol con el nombre ${nombre_rol}`
+                msg: `Ya existe un rol con el nombre ${nom_rol}`
             });
         }
 
         const rol = await TrabajadorRol.create({
-            nombre_rol
+            nom_rol
         });
 
         res.json(rol);
@@ -78,9 +100,16 @@ export const postRol = async (req: Request, res: Response) => {
 // Actualizar un rol
 export const updateRol = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { nombre_rol } = req.body;
+    const { nom_rol } = req.body;
 
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para actualizar roles'
+            });
+        }
+
         const rol = await TrabajadorRol.findByPk(id);
         if (!rol) {
             return res.status(404).json({
@@ -90,17 +119,17 @@ export const updateRol = async (req: Request, res: Response) => {
 
         // Verificar si ya existe otro rol con el mismo nombre
         const rolExistente = await TrabajadorRol.findOne({
-            where: { nombre_rol }
+            where: { nom_rol }
         });
 
         if (rolExistente && rolExistente.getDataValue('id_rol') !== Number(id)) {
             return res.status(400).json({
-                msg: `Ya existe un rol con el nombre ${nombre_rol}`
+                msg: `Ya existe un rol con el nombre ${nom_rol}`
             });
         }
 
         await rol.update({
-            nombre_rol
+            nom_rol
         });
 
         res.json(rol);
@@ -116,6 +145,13 @@ export const updateRol = async (req: Request, res: Response) => {
 export const deleteRol = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para eliminar roles'
+            });
+        }
+
         const rol = await TrabajadorRol.findByPk(id);
         if (!rol) {
             return res.status(404).json({
@@ -150,10 +186,17 @@ export const deleteRol = async (req: Request, res: Response) => {
 export const getTrabajadoresPorRol = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para ver los trabajadores por rol'
+            });
+        }
+
         const rol = await TrabajadorRol.findByPk(id, {
             include: [{
                 model: Trabajador,
-                attributes: ['id_trabajador', 'nombre', 'apellido', 'email']
+                attributes: ['rut_trab', 'nom_trab', 'ape_trab', 'email_trab']
             }]
         });
 

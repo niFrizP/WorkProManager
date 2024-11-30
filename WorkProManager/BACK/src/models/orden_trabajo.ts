@@ -2,54 +2,93 @@ import { DataTypes } from 'sequelize';
 import db from '../db/connection';
 import Asignacion from './asignacion';
 import EstadoOT from './estado_ot';
+import Cliente from './cliente';
+import Equipo from './equipo';
 
 const OrdenTrabajo = db.define('OrdenTrabajo', {
-    id_ot: {
+  id_ot: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-    },
-    fecha_creacion_ot: {
+  },
+  fec_creacion: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
-    },
-    descripcion_ot: {
+  },
+  desc_ot: {
       type: DataTypes.STRING(255),
       allowNull: true,
-    },
-    fecha_inicio: {
+  },
+  fec_ter: {
       type: DataTypes.DATE,
       allowNull: true,
-    },
-    fecha_fin: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    detalles_adicionales: {
+  },
+  det_adic: {
       type: DataTypes.TEXT,
       allowNull: true,
-    },
-    id_cliente: {
+  },
+  num_ser: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+      references: {
+          model: 'equipo',
+          key: 'num_ser',
+      },
+  },
+  id_estado: {
       type: DataTypes.INTEGER,
       allowNull: true,
-    },
-    numero_serie: {
+      references: {
+          model: 'estado_ot',
+          key: 'id_estado',
+      },
+  },
+  motiv_rec: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+  },
+  rut_cli: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
-    },
-    id_estado: {
+      references: {
+          model: 'cliente',
+          key: 'rut_cli',
+      },
+  },
+  id_asig: {
       type: DataTypes.INTEGER,
       allowNull: true,
-    },
-  }, {
-    tableName: 'orden_trabajo', // Nombre explícito de la tabla
-    timestamps: false, // No hay columnas createdAt/updatedAt
-  });
+      references: {
+          model: 'asignacion',
+          key: 'id_asig',
+      },
+  }
+}, {
+  tableName: 'orden_trabajo',
+  timestamps: false,
+});
 
-  OrdenTrabajo.hasMany(Asignacion, { foreignKey: 'id_ot' });
-  Asignacion.belongsTo(OrdenTrabajo, { foreignKey: 'id_ot', targetKey: 'id_ot' });
-  OrdenTrabajo.belongsTo(EstadoOT, { foreignKey: 'id_estado', targetKey: 'id_estado' });
+// Definición de relaciones
+OrdenTrabajo.belongsTo(EstadoOT, { 
+  foreignKey: 'id_estado',
+  targetKey: 'id_estado',
+  onDelete: 'SET NULL'
+});
 
+OrdenTrabajo.belongsTo(Cliente, { 
+  foreignKey: 'rut_cli',
+  targetKey: 'rut_cli',
+  onDelete: 'CASCADE'
+});
 
-  export default OrdenTrabajo;
+OrdenTrabajo.belongsTo(Equipo, { 
+  foreignKey: 'num_ser',
+  targetKey: 'num_ser'
+});
+
+OrdenTrabajo.belongsTo(Asignacion, { 
+  foreignKey: 'id_asig',
+  targetKey: 'id_asig'
+});
+
+export default OrdenTrabajo;

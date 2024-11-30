@@ -1,9 +1,26 @@
 import { Request, Response } from 'express';
 import EstadoOT from '../models/estado_ot';
+import { verificarToken, verificarRol } from '../middleware/autenticacion';
 
-// Obtener todos los estados de OT
+const ESTADOS_VALIDOS = [
+    'Cotización en curso',
+    'Verificando cotización',
+    'En progreso',
+    'Completada',
+    'Rechazada'
+] as const;
+
+type EstadoValido = typeof ESTADOS_VALIDOS[number];
+
 export const getEstadosOT = async (req: Request, res: Response) => {
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+
         const listEstados = await EstadoOT.findAll({
             attributes: ['id_estado', 'nom_estado']
         });
@@ -16,13 +33,17 @@ export const getEstadosOT = async (req: Request, res: Response) => {
     }
 };
 
-// Obtener un estado de OT por ID
 export const getEstadoOT = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const estado = await EstadoOT.findByPk(id, {
-            attributes: ['id_estado', 'nom_estado']
-        });
+        const decoded = await verificarToken(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+
+        const estado = await EstadoOT.findByPk(id);
         if (estado) {
             res.json(estado);
         } else {
@@ -38,14 +59,20 @@ export const getEstadoOT = async (req: Request, res: Response) => {
     }
 };
 
-// Crear un nuevo estado de OT
 export const postEstadoOT = async (req: Request, res: Response) => {
     const { nom_estado } = req.body;
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para crear estados de OT'
+            });
+        }
+
         // Verificar que el estado sea uno de los permitidos
-        if (!['Pendiente', 'En Proceso', 'Completada', 'Cancelada'].includes(nom_estado)) {
+        if (!ESTADOS_VALIDOS.includes(nom_estado as EstadoValido)) {
             return res.status(400).json({
-                msg: 'Estado no válido. Los estados permitidos son: Pendiente, En Proceso, Completada, Cancelada'
+                msg: `Estado no válido. Los estados permitidos son: ${ESTADOS_VALIDOS.join(', ')}`
             });
         }
 
@@ -61,11 +88,17 @@ export const postEstadoOT = async (req: Request, res: Response) => {
     }
 };
 
-// Actualizar un estado de OT
 export const updateEstadoOT = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { nom_estado } = req.body;
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para actualizar estados de OT'
+            });
+        }
+
         const estado = await EstadoOT.findByPk(id);
         if (!estado) {
             return res.status(404).json({
@@ -74,9 +107,9 @@ export const updateEstadoOT = async (req: Request, res: Response) => {
         }
 
         // Verificar que el estado sea uno de los permitidos
-        if (!['Pendiente', 'En Proceso', 'Completada', 'Cancelada'].includes(nom_estado)) {
+        if (!ESTADOS_VALIDOS.includes(nom_estado as EstadoValido)) {
             return res.status(400).json({
-                msg: 'Estado no válido. Los estados permitidos son: Pendiente, En Proceso, Completada, Cancelada'
+                msg: `Estado no válido. Los estados permitidos son: ${ESTADOS_VALIDOS.join(', ')}`
             });
         }
 
@@ -92,10 +125,16 @@ export const updateEstadoOT = async (req: Request, res: Response) => {
     }
 };
 
-// Eliminar un estado de OT
 export const deleteEstadoOT = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
+        const decoded = await verificarToken(req);
+        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para eliminar estados de OT'
+            });
+        }
+
         const estado = await EstadoOT.findByPk(id);
         if (!estado) {
             return res.status(404).json({
@@ -113,4 +152,4 @@ export const deleteEstadoOT = async (req: Request, res: Response) => {
             msg: 'Error al eliminar el estado de OT'
         });
     }
-}; 
+};
