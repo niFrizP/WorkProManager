@@ -14,21 +14,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteEquipo = exports.updateEquipo = exports.postEquipo = exports.getEquipo = exports.getEquipos = void 0;
 const equipo_1 = __importDefault(require("../models/equipo"));
-const cliente_1 = __importDefault(require("../models/cliente"));
-// Obtener todos los equipos
+const marca_1 = __importDefault(require("../models/marca"));
+const autenticacion_1 = require("../middleware/autenticacion");
 const getEquipos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
         const listEquipos = yield equipo_1.default.findAll({
             include: [{
-                    model: cliente_1.default,
-                    attributes: ['nombre_cliente']
+                    model: marca_1.default,
+                    attributes: ['nom_marca']
                 }],
             attributes: [
-                'numero_serie',
-                'tipo_equipo',
-                'marca',
-                'modelo',
-                'id_cliente'
+                'num_ser',
+                'tip_equ',
+                'mod_equ',
+                'id_marca'
             ]
         });
         res.json(listEquipos);
@@ -41,14 +46,19 @@ const getEquipos = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.getEquipos = getEquipos;
-// Obtener un equipo por número de serie
 const getEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
+    const { num_ser } = req.params;
     try {
-        const equipo = yield equipo_1.default.findByPk(id, {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+        const equipo = yield equipo_1.default.findByPk(num_ser, {
             include: [{
-                    model: cliente_1.default,
-                    attributes: ['nombre_cliente']
+                    model: marca_1.default,
+                    attributes: ['nom_marca']
                 }]
         });
         if (equipo) {
@@ -56,7 +66,7 @@ const getEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         else {
             res.status(404).json({
-                msg: `No existe un equipo con el número de serie ${id}`
+                msg: `No existe un equipo con el número de serie ${num_ser}`
             });
         }
     }
@@ -68,22 +78,36 @@ const getEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getEquipo = getEquipo;
-// Crear un nuevo equipo
 const postEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { tipo_equipo, marca, modelo, id_cliente } = req.body;
+    const { num_ser, tip_equ, mod_equ, id_marca } = req.body;
     try {
-        // Verificar si el cliente existe
-        const clienteExiste = yield cliente_1.default.findByPk(id_cliente);
-        if (!clienteExiste) {
-            return res.status(404).json({
-                msg: `No existe un cliente con el ID ${id_cliente}`
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1, 2])) { // Solo admin y gestor
+            return res.status(403).json({
+                msg: 'No tiene permisos para crear equipos'
             });
         }
+        // Verificar si ya existe el equipo
+        const equipoExiste = yield equipo_1.default.findByPk(num_ser);
+        if (equipoExiste) {
+            return res.status(400).json({
+                msg: `Ya existe un equipo con el número de serie ${num_ser}`
+            });
+        }
+        // Verificar si existe la marca
+        if (id_marca) {
+            const marcaExiste = yield marca_1.default.findByPk(id_marca);
+            if (!marcaExiste) {
+                return res.status(404).json({
+                    msg: `No existe una marca con el ID ${id_marca}`
+                });
+            }
+        }
         const equipo = yield equipo_1.default.create({
-            tipo_equipo,
-            marca,
-            modelo,
-            id_cliente
+            num_ser,
+            tip_equ,
+            mod_equ,
+            id_marca
         });
         res.json(equipo);
     }
@@ -95,31 +119,35 @@ const postEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.postEquipo = postEquipo;
-// Actualizar un equipo
 const updateEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const { tipo_equipo, marca, modelo, id_cliente } = req.body;
+    const { num_ser } = req.params;
+    const { tip_equ, mod_equ, id_marca } = req.body;
     try {
-        const equipo = yield equipo_1.default.findByPk(id);
-        if (!equipo) {
-            return res.status(404).json({
-                msg: `No existe un equipo con el número de serie ${id}`
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1, 2])) {
+            return res.status(403).json({
+                msg: 'No tiene permisos para actualizar equipos'
             });
         }
-        // Verificar si el nuevo cliente existe (si se está actualizando)
-        if (id_cliente) {
-            const clienteExiste = yield cliente_1.default.findByPk(id_cliente);
-            if (!clienteExiste) {
+        const equipo = yield equipo_1.default.findByPk(num_ser);
+        if (!equipo) {
+            return res.status(404).json({
+                msg: `No existe un equipo con el número de serie ${num_ser}`
+            });
+        }
+        // Verificar si existe la marca
+        if (id_marca) {
+            const marcaExiste = yield marca_1.default.findByPk(id_marca);
+            if (!marcaExiste) {
                 return res.status(404).json({
-                    msg: `No existe un cliente con el ID ${id_cliente}`
+                    msg: `No existe una marca con el ID ${id_marca}`
                 });
             }
         }
         yield equipo.update({
-            tipo_equipo,
-            marca,
-            modelo,
-            id_cliente
+            tip_equ,
+            mod_equ,
+            id_marca
         });
         res.json(equipo);
     }
@@ -131,14 +159,19 @@ const updateEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.updateEquipo = updateEquipo;
-// Eliminar un equipo
 const deleteEquipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
+    const { num_ser } = req.params;
     try {
-        const equipo = yield equipo_1.default.findByPk(id);
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para eliminar equipos'
+            });
+        }
+        const equipo = yield equipo_1.default.findByPk(num_ser);
         if (!equipo) {
             return res.status(404).json({
-                msg: `No existe un equipo con el número de serie ${id}`
+                msg: `No existe un equipo con el número de serie ${num_ser}`
             });
         }
         yield equipo.destroy();

@@ -5,31 +5,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
-const asignacion_1 = __importDefault(require("./asignacion"));
-const cliente_1 = __importDefault(require("./cliente"));
+const marca_1 = __importDefault(require("./marca"));
 const Equipo = connection_1.default.define('Equipo', {
-    numero_serie: {
-        type: sequelize_1.DataTypes.INTEGER,
-        autoIncrement: true,
+    num_ser: {
+        type: sequelize_1.DataTypes.STRING(30),
         primaryKey: true,
+        allowNull: false,
     },
-    tipo_equipo: {
+    tip_equ: {
         type: sequelize_1.DataTypes.STRING(50),
         allowNull: true,
     },
-    marca: {
+    mod_equ: {
         type: sequelize_1.DataTypes.STRING(50),
         allowNull: true,
     },
-    modelo: {
-        type: sequelize_1.DataTypes.STRING(50),
+    id_marca: {
+        type: sequelize_1.DataTypes.INTEGER,
         allowNull: true,
-    },
+        references: {
+            model: 'marca',
+            key: 'id_marca',
+        },
+    }
 }, {
-    tableName: 'equipo', // Nombre explícito de la tabla
-    timestamps: false, // No hay columnas createdAt/updatedAt
+    tableName: 'equipo',
+    timestamps: false,
 });
-Equipo.hasMany(asignacion_1.default, { foreignKey: 'numero_serie' });
-asignacion_1.default.belongsTo(Equipo, { foreignKey: 'numero_serie', targetKey: 'numero_serie' });
-Equipo.belongsTo(cliente_1.default, { foreignKey: 'id_cliente', targetKey: 'id_cliente' });
+Equipo.belongsTo(marca_1.default, { foreignKey: 'id_marca', targetKey: 'id_marca' });
 exports.default = Equipo;

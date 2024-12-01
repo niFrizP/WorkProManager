@@ -17,6 +17,10 @@ import routerAsignacion from '../routes/asignacion';
 import routerHistorialOrden from '../routes/historial_orden';
 import routerOrdenTrabajo from '../routes/orden_trabajo';
 import routerServicioOrden from '../routes/servicio_orden';
+import routerInsertarTrabajador from '../routes/insertar_trabajador';
+import routerInsertarOrden from '../routes/insertar_orden';
+import routerVistaOrdenes from '../routes/vista_ordenes';
+import routerMarca from '../routes/marca';
 
 class Server {
     public app: Application;
@@ -26,23 +30,12 @@ class Server {
         this.app = express();
         this.app.use(cors({ origin: 'http://localhost:4200', credentials: true }));
         this.port = process.env.PORT || '3001';
+        
         this.middlewares();
         this.dbConnect();
         this.routes();
     }
 
-    middlewares() {
-        // CORS
-        this.app.use(cors({
-            origin: ['http://localhost:4200', 'http://localhost:54351'],
-            credentials: true
-        }));
-
-        // Parsers
-        this.app.use(express.json());
-        this.app.use(cookieparser());
-        this.app.use(bodyparser.json());
-    }
 
     routes() {
         // Ruta base
@@ -57,29 +50,26 @@ class Server {
         this.app.use('/api/cliente', routerCliente);
         this.app.use('/api/estado_ot', routerEstadoOt);
         this.app.use('/api/servicio', routerServicio);
+        this.app.use('/api/insertar_trabajador', routerInsertarTrabajador);
+        this.app.use('/api/insertar_orden', routerInsertarOrden);
+        this.app.use('/api/vista_ordenes', routerVistaOrdenes);
+        this.app.use('/api/trabajador_rol', routerTrabajadorRol);
+        this.app.use('/api/equipo', routerEquipo);
+        this.app.use('/api/historial_orden', routerHistorialOrden);
+        this.app.use('/api/orden_trabajo', routerOrdenTrabajo);
+        this.app.use('/api/servicio_orden', routerServicioOrden);
+        this.app.use('/api/trabajador', routerTrabajador);
+        this.app.use('/api/asignacion', routerAsignacion);
+        this.app.use('/api/marca', routerMarca);
         // Continúa con las demás rutas...
     }
 
     middlewares() {
         this.app.use(express.json());
-            res.json({ msg: 'API Working' });
-        });
-
-        // Rutas de la API
-        this.configureRoute('/api/asignacion', routerAsignacion);
-        this.configureRoute('/api/cliente', routerCliente);
-        this.configureRoute('/api/equipo', routerEquipo);
-        this.configureRoute('/api/estado_ot', routerEstadoOt);
-        this.configureRoute('/api/historial_orden', routerHistorialOrden);
-        this.configureRoute('/api/historial_servicio_orden', routerHistorialServicioOrden);
-        this.configureRoute('/api/login', routerLogin);
-        this.configureRoute('/api/marca', routerMarca);
-        this.configureRoute('/api/orden_trabajo', routerOrdenTrabajo);
-        this.configureRoute('/api/servicio', routerServicio);
-        this.configureRoute('/api/servicio_orden', routerServicioOrden);
-        this.configureRoute('/api/trabajador', routerTrabajador);
-        this.configureRoute('/api/trabajador_rol', routerTrabajadorRol);
+        this.app.use(cookieparser());
+        this.app.use(bodyparser.json());
     }
+
 
     private configureRoute(path: string, router: any) {
         this.app.use(path, (req: Request, res: Response, next: NextFunction) => {

@@ -14,10 +14,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteServicio = exports.updateServicio = exports.postServicio = exports.getServicio = exports.getServicios = void 0;
 const servicio_1 = __importDefault(require("../models/servicio"));
+const autenticacion_1 = require("../middleware/autenticacion");
+// Obtener todos los servicios activos
 const getServicios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
         const listServicios = yield servicio_1.default.findAll({
-            where: { activo: true }
+            where: { activo: true },
+            attributes: ['id_serv', 'nom_serv', 'activo'],
+            order: [['nom_serv', 'ASC']]
         });
         res.json(listServicios);
     }
@@ -29,16 +39,23 @@ const getServicios = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getServicios = getServicios;
+// Obtener un servicio por ID
 const getServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
         const servicio = yield servicio_1.default.findByPk(id);
         if (servicio) {
             res.json(servicio);
         }
         else {
             res.status(404).json({
-                msg: `No existe un servicio con el id ${id}`
+                msg: `No existe un servicio con el ID ${id}`
             });
         }
     }
@@ -50,12 +67,27 @@ const getServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getServicio = getServicio;
+// Crear un nuevo servicio
 const postServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nombre_servicio, descripcion_servicio } = req.body;
+    const { nom_serv } = req.body;
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para crear servicios'
+            });
+        }
+        // Verificar si ya existe un servicio con el mismo nombre
+        const servicioExiste = yield servicio_1.default.findOne({
+            where: { nom_serv }
+        });
+        if (servicioExiste) {
+            return res.status(400).json({
+                msg: `Ya existe un servicio con el nombre ${nom_serv}`
+            });
+        }
         const servicio = yield servicio_1.default.create({
-            nombre_servicio,
-            descripcion_servicio,
+            nom_serv,
             activo: true
         });
         res.json(servicio);
@@ -68,20 +100,35 @@ const postServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.postServicio = postServicio;
+// Actualizar un servicio
 const updateServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { nombre_servicio, descripcion_servicio } = req.body;
+    const { nom_serv } = req.body;
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para actualizar servicios'
+            });
+        }
         const servicio = yield servicio_1.default.findByPk(id);
         if (!servicio) {
             return res.status(404).json({
-                msg: `No existe un servicio con el id ${id}`
+                msg: `No existe un servicio con el ID ${id}`
             });
         }
-        yield servicio.update({
-            nombre_servicio,
-            descripcion_servicio
-        });
+        // Verificar si el nuevo nombre ya existe en otro servicio
+        if (nom_serv) {
+            const servicioExiste = yield servicio_1.default.findOne({
+                where: { nom_serv }
+            });
+            if (servicioExiste && servicioExiste.getDataValue('id_serv') !== parseInt(id)) {
+                return res.status(400).json({
+                    msg: `Ya existe un servicio con el nombre ${nom_serv}`
+                });
+            }
+        }
+        yield servicio.update({ nom_serv });
         res.json(servicio);
     }
     catch (error) {
@@ -92,24 +139,31 @@ const updateServicio = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.updateServicio = updateServicio;
+// Desactivar un servicio (borrado lógico)
 const deleteServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para eliminar servicios'
+            });
+        }
         const servicio = yield servicio_1.default.findByPk(id);
         if (!servicio) {
             return res.status(404).json({
-                msg: `No existe un servicio con el id ${id}`
+                msg: `No existe un servicio con el ID ${id}`
             });
         }
         yield servicio.update({ activo: false });
         res.json({
-            msg: 'Servicio eliminado con éxito'
+            msg: 'Servicio desactivado con éxito'
         });
     }
     catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: 'Error al eliminar el servicio'
+            msg: 'Error al desactivar el servicio'
         });
     }
 });
