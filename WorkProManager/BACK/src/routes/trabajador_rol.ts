@@ -1,20 +1,21 @@
-import { Router, RequestHandler } from 'express';
-import {
-    getRoles,
-    getRol,
-    postRol,
-    updateRol,
-    deleteRol,
-    getTrabajadoresPorRol
-} from '../controllers/trabajador_rol';
+import { Router } from 'express';
+import { getTrabajadorRoles, getTrabajadorRol, postTrabajadorRol, updateTrabajadorRol, deleteTrabajadorRol } from '../controllers/trabajador_rol';
 
 const router = Router();
 
-router.get('/', getRoles as RequestHandler);
-router.get('/:id', getRol as RequestHandler);
-router.get('/:id/trabajadores', getTrabajadoresPorRol as RequestHandler);
-router.post('/', postRol as RequestHandler);
-router.put('/:id', updateRol as RequestHandler);
-router.delete('/:id', deleteRol as RequestHandler);
+// Ruta para obtener todos los roles de los trabajadores
+router.get('/', getTrabajadorRoles);
 
-export default router; 
+// Ruta para obtener un rol de trabajador por ID
+router.get('/:id', getTrabajadorRol);
+
+// Ruta para crear un nuevo rol de trabajador
+router.post('/', postTrabajadorRol);
+
+// Ruta para actualizar un rol de trabajador por ID
+router.put('/:id', updateTrabajadorRol);
+
+// Ruta para eliminar un rol de trabajador por ID
+router.delete('/:id', deleteTrabajadorRol);
+
+export default router;

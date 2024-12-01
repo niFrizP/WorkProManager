@@ -37,7 +37,11 @@ export interface newOrder {
       rut_usuario?: number; // Opcional según los datos
       nom_usu?: string; // Opcional según los datos
       ap_usu?: string; // Opcional según los datos
-    }
+    };
+    vista_tiempos_estimados_por_ot?: {
+      id_ot?: number; // Opcional, ya que no aparece en todos los casos
+      tiempo_estimado_total: number;
+    };
     fecha_rechazo?: Date;
     observaciones?: string;
   }

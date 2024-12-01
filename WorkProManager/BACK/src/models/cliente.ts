@@ -1,42 +1,55 @@
-import { DataTypes } from 'sequelize';
-import db from '../db/connection';
+import { DataTypes, Model } from 'sequelize';
+import db from '../db/connection'; // Connection to the database
 
-const Cliente = db.define('Cliente', {
-  rut_cli: {
+// Define the Cliente model
+class Cliente extends Model {
+  public rut_cli!: number;
+  public nom_cli!: string;
+  public dir_cli!: string | null;
+  public tel_cli!: string | null;
+  public email_cli!: string | null;
+  public ape_cli!: string | null;
+  public d_ver_cli!: string | null;
+}
+
+Cliente.init(
+  {
+    rut_cli: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
-  },
-  nom_cli: {
+    },
+    nom_cli: {
       type: DataTypes.STRING(255),
       allowNull: false,
-  },
-  ape_cli: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-  },
-  dir_cli: {
+    },
+    dir_cli: {
       type: DataTypes.STRING(255),
       allowNull: true,
-  },
-  tel_cli: {
+    },
+    tel_cli: {
       type: DataTypes.STRING(15),
       allowNull: true,
-  },
-  email_cli: {
+    },
+    email_cli: {
       type: DataTypes.STRING(100),
       allowNull: true,
-      validate: {
-          isEmail: true,
-      },
-  },
-  d_ver_cli: {
+    },
+    ape_cli: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    d_ver_cli: {
       type: DataTypes.STRING(1),
       allowNull: true,
+    },
+  },
+  {
+    sequelize: db,
+    modelName: 'Cliente',
+    tableName: 'cliente',
+    timestamps: false, // As the SQL definition doesn't include timestamps
   }
-}, {
-  tableName: 'cliente',
-  timestamps: false,
-});
+);
 
 export default Cliente;

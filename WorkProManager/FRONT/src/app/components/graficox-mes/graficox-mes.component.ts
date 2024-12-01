@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+/* import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { QueryService } from '../../services/query';
 import { Chart, ChartConfiguration, ChartType } from 'chart.js';
 import { CommonModule } from '@angular/common';
@@ -105,4 +105,4 @@ export class GraficoxMesComponent implements OnInit {
 
     this.chart = new Chart(this.chartCanvas.nativeElement, config);
   }
-}
+} */

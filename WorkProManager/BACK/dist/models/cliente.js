@@ -4,8 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
-const connection_1 = __importDefault(require("../db/connection"));
-const Cliente = connection_1.default.define('Cliente', {
+const connection_1 = __importDefault(require("../db/connection")); // Connection to the database
+// Define the Cliente model
+class Cliente extends sequelize_1.Model {
+}
+Cliente.init({
     rut_cli: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
@@ -14,10 +17,6 @@ const Cliente = connection_1.default.define('Cliente', {
     nom_cli: {
         type: sequelize_1.DataTypes.STRING(255),
         allowNull: false,
-    },
-    ape_cli: {
-        type: sequelize_1.DataTypes.STRING(100),
-        allowNull: true,
     },
     dir_cli: {
         type: sequelize_1.DataTypes.STRING(255),
@@ -30,16 +29,19 @@ const Cliente = connection_1.default.define('Cliente', {
     email_cli: {
         type: sequelize_1.DataTypes.STRING(100),
         allowNull: true,
-        validate: {
-            isEmail: true,
-        },
+    },
+    ape_cli: {
+        type: sequelize_1.DataTypes.STRING(100),
+        allowNull: true,
     },
     d_ver_cli: {
         type: sequelize_1.DataTypes.STRING(1),
         allowNull: true,
-    }
+    },
 }, {
+    sequelize: connection_1.default,
+    modelName: 'Cliente',
     tableName: 'cliente',
-    timestamps: false,
+    timestamps: false, // As the SQL definition doesn't include timestamps
 });
 exports.default = Cliente;

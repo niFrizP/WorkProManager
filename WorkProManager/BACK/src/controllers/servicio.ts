@@ -1,161 +1,73 @@
 import { Request, Response } from 'express';
 import Servicio from '../models/servicio';
-import { verificarToken, verificarRol } from '../middleware/autenticacion';
 
-// Obtener todos los servicios activos
+// Obtener todos los servicios
 export const getServicios = async (req: Request, res: Response) => {
     try {
-        const decoded = await verificarToken(req);
-        if (!decoded) {
-            return res.status(401).json({
-                msg: 'Token no válido'
-            });
-        }
-
-        const listServicios = await Servicio.findAll({
-            where: { activo: true },
-            attributes: ['id_serv', 'nom_serv', 'activo'],
-            order: [['nom_serv', 'ASC']]
-        });
-        res.json(listServicios);
+        const servicios = await Servicio.findAll();
+        res.json(servicios);
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al obtener los servicios'
-        });
+        res.status(500).json({ message: 'Error retrieving servicios', error });
     }
 };
 
 // Obtener un servicio por ID
-export const getServicio = async (req: Request, res: Response) => {
+export const getServicioById = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const decoded = await verificarToken(req);
-        if (!decoded) {
-            return res.status(401).json({
-                msg: 'Token no válido'
-            });
-        }
-
         const servicio = await Servicio.findByPk(id);
         if (servicio) {
             res.json(servicio);
         } else {
-            res.status(404).json({
-                msg: `No existe un servicio con el ID ${id}`
-            });
+            res.status(404).json({ message: 'Servicio not found' });
         }
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al obtener el servicio'
-        });
+        res.status(500).json({ message: 'Error retrieving servicio', error });
     }
 };
 
 // Crear un nuevo servicio
-export const postServicio = async (req: Request, res: Response) => {
-    const { nom_serv } = req.body;
+export const createServicio = async (req: Request, res: Response) => {
+    const { nom_serv, activo } = req.body;
     try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
-            return res.status(403).json({
-                msg: 'No tiene permisos para crear servicios'
-            });
-        }
-
-        // Verificar si ya existe un servicio con el mismo nombre
-        const servicioExiste = await Servicio.findOne({
-            where: { nom_serv }
-        });
-
-        if (servicioExiste) {
-            return res.status(400).json({
-                msg: `Ya existe un servicio con el nombre ${nom_serv}`
-            });
-        }
-
-        const servicio = await Servicio.create({
-            nom_serv,
-            activo: true
-        });
-        res.json(servicio);
+        const newServicio = await Servicio.create({ nom_serv, activo });
+        res.status(201).json(newServicio);
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al crear el servicio'
-        });
+        res.status(500).json({ message: 'Error creating servicio', error });
     }
 };
 
-// Actualizar un servicio
+// Actualizar un servicio existente
 export const updateServicio = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { nom_serv } = req.body;
+    const { nom_serv, activo } = req.body;
     try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
-            return res.status(403).json({
-                msg: 'No tiene permisos para actualizar servicios'
-            });
-        }
-
         const servicio = await Servicio.findByPk(id);
-        if (!servicio) {
-            return res.status(404).json({
-                msg: `No existe un servicio con el ID ${id}`
-            });
+        if (servicio) {
+            servicio.nom_serv = nom_serv;
+            servicio.activo = activo;
+            await servicio.save();
+            res.json(servicio);
+        } else {
+            res.status(404).json({ message: 'Servicio not found' });
         }
-
-        // Verificar si el nuevo nombre ya existe en otro servicio
-        if (nom_serv) {
-            const servicioExiste = await Servicio.findOne({
-                where: { nom_serv }
-            });
-
-            if (servicioExiste && servicioExiste.getDataValue('id_serv') !== parseInt(id)) {
-                return res.status(400).json({
-                    msg: `Ya existe un servicio con el nombre ${nom_serv}`
-                });
-            }
-        }
-
-        await servicio.update({ nom_serv });
-        res.json(servicio);
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al actualizar el servicio'
-        });
+        res.status(500).json({ message: 'Error updating servicio', error });
     }
 };
 
-// Desactivar un servicio (borrado lógico)
+// Eliminar un servicio
 export const deleteServicio = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
-            return res.status(403).json({
-                msg: 'No tiene permisos para eliminar servicios'
-            });
-        }
-
         const servicio = await Servicio.findByPk(id);
-        if (!servicio) {
-            return res.status(404).json({
-                msg: `No existe un servicio con el ID ${id}`
-            });
+        if (servicio) {
+            await servicio.destroy();
+            res.json({ message: 'Servicio deleted' });
+        } else {
+            res.status(404).json({ message: 'Servicio not found' });
         }
-
-        await servicio.update({ activo: false });
-        res.json({
-            msg: 'Servicio desactivado con éxito'
-        });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al desactivar el servicio'
-        });
+        res.status(500).json({ message: 'Error deleting servicio', error });
     }
 };

@@ -1,25 +1,37 @@
-import { DataTypes } from 'sequelize';
-import db from '../db/connection';
+import { DataTypes, Model } from 'sequelize';
+import db from '../db/connection'; // Connection to the database
 
-const EstadoOT = db.define('EstadoOT', {
-  id_estado: {
+// Define the EstadoOT model
+class EstadoOT extends Model {
+  public id_estado!: number;
+  public nom_estado!: 'Cotización y revisión' | 'Confirmando cotización con el cliente' | 'Servicios siendo realizados' | 'Orden Realizada' | 'Orden Rechazada';
+}
+
+EstadoOT.init(
+  {
+    id_estado: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
       primaryKey: true,
-  },
-  nom_estado: {
+      autoIncrement: true,
+      allowNull: false,
+    },
+    nom_estado: {
       type: DataTypes.ENUM(
-          'Cotización en curso',
-          'Verificando cotización',
-          'En progreso',
-          'Completada',
-          'Rechazada'
+        'Cotización y revisión',
+        'Confirmando cotización con el cliente',
+        'Servicios siendo realizados',
+        'Orden Realizada',
+        'Orden Rechazada'
       ),
       allowNull: false,
+    },
   },
-}, {
-  tableName: 'estado_ot',
-  timestamps: false,
-});
+  {
+    sequelize: db,
+    modelName: 'EstadoOT',
+    tableName: 'estado_ot',
+    timestamps: false, // As the SQL definition doesn't use timestamps
+  }
+);
 
 export default EstadoOT;

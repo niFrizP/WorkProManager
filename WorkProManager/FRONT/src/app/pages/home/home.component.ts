@@ -2,32 +2,24 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { newOrder } from '../../interfaces/newOrder';
-import { AuthService } from '../../services/auth.service';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgModel } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CookieManagementService } from '../../services/cookie.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from '../../services/auth_interceptor.service';
-import { QueryService } from '../../services/query';
+
 import { CommonModule } from '@angular/common';
-import { OrderService } from '../../services/order.service';
 import { ChartOptions, ChartType, ChartDataset } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
 
 @Component({
   standalone: true,
-  providers: [AuthService, CookieManagementService, {
-    provide: HTTP_INTERCEPTORS,
-    useClass: AuthInterceptor,
-    multi: true,
-  },],
+  providers: [FormsModule, CommonModule, NgChartsModule],
   imports: [FormsModule, CommonModule, NgChartsModule],
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  isLoading = true;
+/*   isLoading = true;
   showDashboard = false;
   startDate: string = '';
   endDate: string = '';
@@ -55,24 +47,21 @@ export class HomeComponent implements OnInit {
   public barChartData: ChartDataset<'bar'>[] = [
     { data: [], label: 'Órdenes Activas' },
     { data: [], label: 'Órdenes Completadas' }
-  ];
+  ]; */
 
   constructor(
-    private orderService: OrderService, 
-    public authService: AuthService, 
+
     private router: Router, 
-    private cookieService: CookieManagementService, 
-    private queryService: QueryService, 
+
     private http: HttpClient
   ) {}
 
   ngOnInit(): void {
-    this.inicializarComponentes();
-    this.verificarTokenUsuario();
-    this.loadChartData();
-  }
 
-  inicializarComponentes(): void {
+  }
+}
+
+ /*  inicializarComponentes(): void {
     this.rut_usuario = this.authService.getUserId() ?? 0;
     this.resetearContadores();
     this.obtenerOrdenesIniciales();
@@ -219,4 +208,4 @@ export class HomeComponent implements OnInit {
         console.error('Error al cargar datos para el gráfico', error);
       });
   }
-}
+} */

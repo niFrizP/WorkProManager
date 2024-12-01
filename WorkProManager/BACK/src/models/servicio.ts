@@ -1,24 +1,37 @@
-import { DataTypes } from 'sequelize';
-import db from '../db/connection';
+import { DataTypes, Model } from 'sequelize';
+import db from '../db/connection'; // Connection to the database
 
-const Servicio = db.define('Servicio', {
-  id_serv: {
+// Define the Servicio model
+class Servicio extends Model {
+  public id_serv!: number;
+  public nom_serv!: string;
+  public activo!: boolean;
+}
+
+Servicio.init(
+  {
+    id_serv: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
       primaryKey: true,
+      autoIncrement: true,
       allowNull: false,
-  },
-  nom_serv: {
+    },
+    nom_serv: {
       type: DataTypes.STRING(100),
       allowNull: false,
-  },
-  activo: {
+    },
+    activo: {
       type: DataTypes.BOOLEAN,
-      defaultValue: true,
+      defaultValue: true, // Default to '1' (active)
+      allowNull: false,
+    },
+  },
+  {
+    sequelize: db,
+    modelName: 'Servicio',
+    tableName: 'servicio',
+    timestamps: false, // No timestamp fields are defined in the table
   }
-}, {
-  tableName: 'servicio',
-  timestamps: false,
-});
+);
 
 export default Servicio;

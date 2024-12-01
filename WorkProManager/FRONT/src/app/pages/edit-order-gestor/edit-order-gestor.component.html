@@ -128,7 +128,7 @@
                           <label for="id_serv" class="block text-sm font-medium text-gray-700 mb-2">Selecciona un Servicio:</label>
                           <select id="id_serv" formControlName="id_serv" (change)="onServicioChange($event)" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
                               <option value="">Seleccione un servicio</option>
-                              <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">{{ servicio.nom_serv }}</option>
+                              <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">{{ servicio.nom_serv }} </option>
                           </select>
                       </div>
                       <div class="flex items-end justify-end">
@@ -148,11 +148,12 @@
                       <h3 class="font-semibold">Servicios Añadidos:</h3>
                       <ul>
                           <li *ngFor="let servicio of serviciosSeleccionados">
-                              {{ servicio.nom_serv }}
+                              {{ servicio.nom_serv }} {{servicio.tiempo_estimado}}
                               <button type="button" (click)="mostrarAlertaEliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button> <!-- Add type="button" -->
                           </li>
                       </ul>
                   </div>
+              
               </fieldset>
 
               <!-- Usuario -->
@@ -187,6 +188,15 @@
                           class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 sm:rows-3 lg:rows-5"
                           placeholder="Añade la descripción de la solicitud que realizarás al técnico...">
                       </textarea>
+                  </div>
+              </fieldset>
+
+              <!-- Fecha de Plazo -->
+              <fieldset class="border border-gray-200 p-4 rounded-lg">
+                  <legend class="text-lg font-semibold">Fecha Plazo</legend>
+                  <div>
+                      <label for="fecha_plazo" class="block text-sm font-medium text-gray-700">Fecha y Hora</label>
+                      <input type="datetime-local" id="fecha_plazo" formControlName="fecha_plazo" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" [min]="fechaHoy + 'T09:00'" [max]="fechaHoy + 'T17:00'" />
                   </div>
               </fieldset>
 

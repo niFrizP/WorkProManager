@@ -8,5 +8,6 @@ export interface DetalleOT {
     d_estado: number
     Servicio?: {
         nom_serv: string;
+        tiempo_estimado: number;
     } | undefined;
 }

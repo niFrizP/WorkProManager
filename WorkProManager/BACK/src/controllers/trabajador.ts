@@ -1,192 +1,173 @@
-import { Request, Response} from "express";
-import { Op } from "sequelize";
-import Trabajador from '../models/trabajador';
-import TrabajadorRol from '../models/trabajador_rol';
+import { Request, Response } from "express";
+import Trabajador from "../models/trabajador"; // Asegúrate de importar el modelo correcto
 import bcrypt from "bcrypt";
-import { verificarToken, verificarRol } from '../middleware/autenticacion';
+import jwt from "jsonwebtoken";
+import TrabajadorRol from "../models/trabajador_rol";
+import { where } from "sequelize";
 
-// Obtener todos los trabajadores activos
+// Obtener todos los trabajadores
 export const getTrabajadores = async (req: Request, res: Response) => {
     try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
-            return res.status(403).json({
-                msg: 'No tiene permisos para ver los trabajadores'
-            });
-        }
-
-        const trabajadores = await Trabajador.findAll({
-            where: { activo: true },
-            attributes: { exclude: ['clave'] },
-            include: [{
-                model: TrabajadorRol,
-                attributes: ['nom_rol']
-            }],
-            order: [['nom_trab', 'ASC']]
-        });
-        res.json(trabajadores);
+        const listTrabajadores = await Trabajador.findAll();
+        res.json(listTrabajadores);
     } catch (error) {
         console.log(error);
-        res.status(500).json({
-            msg: 'Error al obtener trabajadores'
-        });
+        res.status(500).json({ msg: "Error al obtener trabajadores" });
     }
 };
 
-// Obtener un trabajador por RUT
-export const getTrabajador = async (req: Request, res: Response) => {
-    const { rut } = req.params;
-    try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1])) {
-            return res.status(403).json({
-                msg: 'No tiene permisos para ver este trabajador'
-            });
-        }
 
-        const trabajador = await Trabajador.findByPk(rut, {
-            attributes: { exclude: ['clave'] },
+// Obtener todos los trabajadores con rol 2, de técnico
+export const getTecnicos = async (req: Request, res: Response) => {
+    try {
+        const listTrabajadores = await Trabajador.findAll({
+            where: {
+                id_rol: 2
+            }
+        });
+        res.json(listTrabajadores);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "Error al obtener trabajadores" });
+    }
+};
+
+// Obtener un trabajador por ID
+export const getTrabajador = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        // Realizando el join entre Trabajador y TrabajadorRol
+        const trabajador = await Trabajador.findByPk(id, {
             include: [{
                 model: TrabajadorRol,
-                attributes: ['nom_rol']
+                attributes: ['nom_rol'],  // Solo traemos el campo nom_rol
             }]
         });
 
-        if (!trabajador) {
-            return res.status(404).json({
-                msg: `No existe un trabajador con el RUT ${rut}`
-            });
+        if (trabajador) {
+            res.json(trabajador);
+        } else {
+            res.status(404).json({ msg: `No existe un trabajador con ese ID ${id}` });
         }
-        res.json(trabajador);
     } catch (error) {
         console.log(error);
+        res.status(500).json({ msg: "Error al obtener trabajador" });
+    }
+};
+
+
+// Eliminar un trabajador por ID
+export const deleteTrabajador = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const trabajador = await Trabajador.findByPk(id);
+        if (!trabajador) {
+            res.status(404).json({ msg: `No existe un trabajador con el id ${id}` });
+        } else {
+            await trabajador.destroy();
+            res.json({ msg: "El trabajador fue eliminado con éxito!" });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "Error al eliminar trabajador" });
+    }
+};
+
+export const loginUser = async (req: Request, res: Response) => {
+    try {
+        const { rut_trab, clave } = req.body;
+
+        // Verificar si el usuario existe
+        const trabajador: any = await Trabajador.findByPk(rut_trab);
+
+        if (!trabajador) {
+            res.status(400).json({
+                msg: `No existe un usuario con el RUT ${rut_trab} en la base de datos.`,
+            });
+        } else {
+            // Verificar contraseña
+            const passwordValid = await bcrypt.compare(clave, trabajador.clave);
+            if (!passwordValid) {
+                res.status(400).json({
+                    msg: `Contraseña incorrecta.`,
+                });
+            } else {
+                // Generar token
+                const token = jwt.sign(
+                    { rut_trab: trabajador.rut_trab },
+                    process.env.SECRET_KEY || 'pepito123',
+                    { expiresIn: '1h' }
+                );
+
+                // Almacenar el token en una cookie segura
+                res.cookie('token', token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                    maxAge: 60 * 60 * 1000,
+                });
+
+                // Enviar respuesta una sola vez
+                res.json({ msg: 'Inicio de sesión exitoso.' });
+            }
+        }
+    } catch (error) {
+        console.error('Error en el inicio de sesión:', error);
         res.status(500).json({
-            msg: 'Error al obtener el trabajador'
+            msg: 'Ocurrió un error inesperado.',
         });
     }
 };
 
 // Crear un nuevo trabajador
 export const postTrabajador = async (req: Request, res: Response) => {
-    const { rut_trab, nom_trab, ape_trab, id_rol, clave, d_veri_trab } = req.body;
-
+    const { rut_trab, d_veri_trab, nom_trab, ape_trab, clave, id_rol, activo } = req.body;
     try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1])) {
-            return res.status(403).json({
-                msg: 'No tiene permisos para crear trabajadores'
-            });
-        }
+        // Validamos si el trabajador ya existe en la base de datos
 
-        // Verificar si ya existe un trabajador con el mismo RUT
-        const trabajadorExiste = await Trabajador.findOne({
-            where: { rut_trab }
-        });
+        // Si no existe, encriptamos la clave
+        const hashedPassword = await bcrypt.hash(clave, 10); 
 
-        if (trabajadorExiste) {
-            return res.status(400).json({
-                msg: `Ya existe un trabajador con el RUT ${rut_trab}`
-            });
-        }
-
-        // Verificar si existe el rol
-        const rolExiste = await TrabajadorRol.findByPk(id_rol);
-        if (!rolExiste) {
-            return res.status(404).json({
-                msg: `No existe un rol con el ID ${id_rol}`
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(clave, 10);
-        const nuevoTrabajador = await Trabajador.create({
+        // Crear el nuevo trabajador
+        const newTrabajador = await Trabajador.create({
             rut_trab,
-            nom_trab,
-            ape_trab,
-            id_rol,
-            clave: hashedPassword,
             d_veri_trab,
-            activo: true
-        });
-
-        const { clave: _, ...trabajadorSinClave } = nuevoTrabajador.toJSON();
-        res.json(trabajadorSinClave);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al crear el trabajador'
-        });
-    }
-};
-
-// Actualizar un trabajador
-export const updateTrabajador = async (req: Request, res: Response) => {
-    const { rut } = req.params;
-    const { nom_trab, ape_trab, id_rol, clave, d_veri_trab } = req.body;
-    
-    try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1])) {
-            return res.status(403).json({
-                msg: 'No tiene permisos para actualizar trabajadores'
-            });
-        }
-
-        const trabajador = await Trabajador.findByPk(rut);
-        if (!trabajador) {
-            return res.status(404).json({
-                msg: `No existe un trabajador con el RUT ${rut}`
-            });
-        }
-
-        const updateData: any = {
             nom_trab,
             ape_trab,
+            clave: hashedPassword,
             id_rol,
-            d_veri_trab
-        };
+            activo: activo || true // Asignar valor por defecto si no se proporciona
+        });
 
-        if (clave) {
-            updateData.clave = await bcrypt.hash(clave, 10);
-        }
-
-        await trabajador.update(updateData);
-        
-        const { clave: _, ...trabajadorSinClave } = trabajador.toJSON();
-        res.json(trabajadorSinClave);
+        // Devolver respuesta exitosa
+         res.json({
+            msg: 'El trabajador fue agregado con éxito!',
+            trabajador: newTrabajador // Devuelve el nuevo trabajador, incluyendo el `rut_trab` generado
+        });
     } catch (error) {
         console.log(error);
-        res.status(500).json({
-            msg: 'Error al actualizar trabajador'
+        // Devolver respuesta de error general
+         res.status(500).json({
+            msg: 'Upps, ocurrió un error. Comuníquese con soporte.'
         });
     }
 };
 
-// Desactivar un trabajador
-export const deleteTrabajador = async (req: Request, res: Response) => {
-    const { rut } = req.params;
+
+// Actualizar un trabajador por ID
+export const updateTrabajador = async (req: Request, res: Response) => {
+    const { body } = req;
+    const { id } = req.params;
     try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1])) {
-            return res.status(403).json({
-                msg: 'No tiene permisos para eliminar trabajadores'
-            });
+        const trabajador = await Trabajador.findByPk(id);
+        if (trabajador) {
+            await trabajador.update(body);
+            res.json({ msg: "Trabajador actualizado con éxito" });
+        } else {
+            res.status(404).json({ msg: "No existe un trabajador con ese ID" });
         }
-
-        const trabajador = await Trabajador.findByPk(rut);
-        if (!trabajador) {
-            return res.status(404).json({
-                msg: `No existe un trabajador con el RUT ${rut}`
-            });
-        }
-
-        await trabajador.update({ activo: false });
-        res.json({
-            msg: 'Trabajador desactivado exitosamente'
-        });
     } catch (error) {
         console.log(error);
-        res.status(500).json({
-            msg: 'Error al desactivar trabajador'
-        });
+        res.status(500).json({ msg: "Error al actualizar trabajador" });
     }
 };

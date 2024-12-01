@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+/* import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder } from '@angular/forms';
 import { SolicitudService } from '../../services/solicitud.service';
@@ -81,3 +81,4 @@ export class ModalComponent implements OnInit, OnChanges {
     this.closed.emit();
   }
 }
+ */

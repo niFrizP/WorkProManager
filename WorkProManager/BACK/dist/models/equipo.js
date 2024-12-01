@@ -4,9 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
-const connection_1 = __importDefault(require("../db/connection"));
-const marca_1 = __importDefault(require("./marca"));
-const Equipo = connection_1.default.define('Equipo', {
+const connection_1 = __importDefault(require("../db/connection")); // Connection to the database
+// Define the Equipo model
+class Equipo extends sequelize_1.Model {
+}
+Equipo.init({
     num_ser: {
         type: sequelize_1.DataTypes.STRING(30),
         primaryKey: true,
@@ -22,15 +24,12 @@ const Equipo = connection_1.default.define('Equipo', {
     },
     id_marca: {
         type: sequelize_1.DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: 'marca',
-            key: 'id_marca',
-        },
-    }
+        allowNull: true, // Foreign key, nullable if not assigned
+    },
 }, {
+    sequelize: connection_1.default,
+    modelName: 'Equipo',
     tableName: 'equipo',
-    timestamps: false,
+    timestamps: false, // As the SQL definition doesn't use timestamps
 });
-Equipo.belongsTo(marca_1.default, { foreignKey: 'id_marca', targetKey: 'id_marca' });
 exports.default = Equipo;

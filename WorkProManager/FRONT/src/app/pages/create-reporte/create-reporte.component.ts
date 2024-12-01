@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+/* import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -313,4 +313,4 @@ if(this.solicitudes[0].isView == false){
   onPageChange(page: number): void {
     this.page = page;
   }
-}
+} */
