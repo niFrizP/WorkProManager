@@ -10,7 +10,7 @@ export const getMarcas = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error retrieving marcas', error });
     }
 };
-};
+
 
 // Get a single marca by ID
 export const getMarcaById = async (req: Request, res: Response) => {

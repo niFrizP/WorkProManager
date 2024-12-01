@@ -4,6 +4,10 @@ import routesTrabajador from '../routes/trabajador';
 import routesCotizacion from '../routes/insertarCotizacion';
 import routesServicio from '../routes/servicio';
 import routesMarca from '../routes/marca';
+import routesEquipo from '../routes/equipo';
+import routesServicioOrden from '../routes/insertar_servicio_orden';
+import routesEstadoOT from '../routes/estado_ot';
+import routesOrdenes from '../routes/orden_trabajo';
 
 
 // Importar los modelos
@@ -45,6 +49,10 @@ class Server {
         this.app.use('/api/cotizacion', routesCotizacion);
         this.app.use('/api/servicio', routesServicio);
         this.app.use('/api/marca', routesMarca);
+        this.app.use('/api/equipo', routesEquipo);
+        this.app.use('/api/servicio-orden', routesServicioOrden);
+        this.app.use('/api/estado-ot', routesEstadoOT);
+        this.app.use('/api/orden', routesOrdenes);
     }
 
     midlewares() {
@@ -79,11 +87,6 @@ class Server {
         }
     }
 
-    listen() {
-        this.app.listen(this.port, () => {
-            console.log(`Servidor corriendo en puerto ${this.port}`);
-        });
-    }
 }
 
 export default Server;

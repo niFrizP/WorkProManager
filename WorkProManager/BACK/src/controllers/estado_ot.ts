@@ -1,155 +1,72 @@
 import { Request, Response } from 'express';
-import EstadoOT from '../models/estado_ot';
-import { verificarToken, verificarRol } from '../middleware/autenticacion';
+import EstadoOT from '../models/estado_ot'; // Importar el modelo EstadoOT
 
-const ESTADOS_VALIDOS = [
-    'Cotización en curso',
-    'Verificando cotización',
-    'En progreso',
-    'Completada',
-    'Rechazada'
-] as const;
-
-type EstadoValido = typeof ESTADOS_VALIDOS[number];
-
+// Obtener todos los estados de orden de trabajo
 export const getEstadosOT = async (req: Request, res: Response) => {
-    try {
-        const decoded = await verificarToken(req);
-        if (!decoded) {
-            return res.status(401).json({
-                msg: 'Token no válido'
-            });
-        }
-
-        const listEstados = await EstadoOT.findAll({
-            attributes: ['id_estado', 'nom_estado']
-        });
-        res.json(listEstados);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al obtener los estados de OT'
-        });
-    }
+  try {
+    const estadosOT = await EstadoOT.findAll();
+    res.json(estadosOT);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving estados', error });
+  }
 };
 
-export const getEstadoOT = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    try {
-        const decoded = await verificarToken(req);
-        if (!decoded) {
-            return res.status(401).json({
-                msg: 'Token no válido'
-            });
-        }
-
-        const estado = await EstadoOT.findByPk(id);
-        if (estado) {
-            res.json(estado);
-        } else {
-            res.status(404).json({
-                msg: `No existe un estado de OT con el id ${id}`
-            });
-        }
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al obtener el estado de OT'
-        });
+// Obtener un estado de orden de trabajo por ID
+export const getEstadoOTById = async (req: Request, res: Response) => {
+  const { id_estado } = req.params;
+  try {
+    const estadoOT = await EstadoOT.findByPk(id_estado);
+    if (estadoOT) {
+      res.json(estadoOT);
+    } else {
+      res.status(404).json({ message: 'Estado de OT not found' });
     }
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving estado', error });
+  }
 };
 
-export const postEstadoOT = async (req: Request, res: Response) => {
-    const { nom_estado } = req.body;
-    try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
-            return res.status(403).json({
-                msg: 'No tiene permisos para crear estados de OT'
-            });
-        }
-
-        // Verificar que el estado sea uno de los permitidos
-        if (!ESTADOS_VALIDOS.includes(nom_estado as EstadoValido)) {
-            return res.status(400).json({
-                msg: `Estado no válido. Los estados permitidos son: ${ESTADOS_VALIDOS.join(', ')}`
-            });
-        }
-
-        const estado = await EstadoOT.create({
-            nom_estado
-        });
-        res.json(estado);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al crear el estado de OT'
-        });
-    }
+// Crear un nuevo estado de orden de trabajo
+export const createEstadoOT = async (req: Request, res: Response) => {
+  const { nom_estado } = req.body;
+  try {
+    const newEstadoOT = await EstadoOT.create({ nom_estado });
+    res.status(201).json(newEstadoOT);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating estado de OT', error });
+  }
 };
 
+// Actualizar un estado de orden de trabajo existente
 export const updateEstadoOT = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { nom_estado } = req.body;
-    try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
-            return res.status(403).json({
-                msg: 'No tiene permisos para actualizar estados de OT'
-            });
-        }
-
-        const estado = await EstadoOT.findByPk(id);
-        if (!estado) {
-            return res.status(404).json({
-                msg: `No existe un estado de OT con el id ${id}`
-            });
-        }
-
-        // Verificar que el estado sea uno de los permitidos
-        if (!ESTADOS_VALIDOS.includes(nom_estado as EstadoValido)) {
-            return res.status(400).json({
-                msg: `Estado no válido. Los estados permitidos son: ${ESTADOS_VALIDOS.join(', ')}`
-            });
-        }
-
-        await estado.update({
-            nom_estado
-        });
-        res.json(estado);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al actualizar el estado de OT'
-        });
+  const { id_estado } = req.params;
+  const { nom_estado } = req.body;
+  try {
+    const estadoOT = await EstadoOT.findByPk(id_estado);
+    if (estadoOT) {
+      estadoOT.nom_estado = nom_estado;
+      await estadoOT.save();
+      res.json(estadoOT);
+    } else {
+      res.status(404).json({ message: 'Estado de OT not found' });
     }
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating estado de OT', error });
+  }
 };
 
+// Eliminar un estado de orden de trabajo
 export const deleteEstadoOT = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
-            return res.status(403).json({
-                msg: 'No tiene permisos para eliminar estados de OT'
-            });
-        }
-
-        const estado = await EstadoOT.findByPk(id);
-        if (!estado) {
-            return res.status(404).json({
-                msg: `No existe un estado de OT con el id ${id}`
-            });
-        }
-
-        await estado.destroy();
-        res.json({
-            msg: 'Estado de OT eliminado con éxito'
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al eliminar el estado de OT'
-        });
+  const { id_estado } = req.params;
+  try {
+    const estadoOT = await EstadoOT.findByPk(id_estado);
+    if (estadoOT) {
+      await estadoOT.destroy();
+      res.json({ message: 'Estado de OT deleted' });
+    } else {
+      res.status(404).json({ message: 'Estado de OT not found' });
     }
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting estado de OT', error });
+  }
 };

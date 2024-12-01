@@ -1,8 +1,13 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../db/connection'; // Connection to the database
 
+// Importación de modelos relacionados
+import Cliente from './cliente'; // Modelo Cliente
+import Equipo from './equipo'; // Modelo Equipo
+import EstadoOT from './estado_ot'; // Modelo EstadoOT
+import Asignacion from './asignacion'; // Modelo Asignacion
 
-// Define the OrdenTrabajo model
+
 class OrdenTrabajo extends Model {
   public id_ot!: number;
   public fec_creacion!: Date;
@@ -16,6 +21,7 @@ class OrdenTrabajo extends Model {
   public id_asig!: number | null;
 }
 
+// Inicialización del modelo
 OrdenTrabajo.init(
   {
     id_ot: {
@@ -26,7 +32,7 @@ OrdenTrabajo.init(
     },
     fec_creacion: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW, // Default to current timestamp
+      defaultValue: DataTypes.NOW, // Valor por defecto: timestamp actual
       allowNull: false,
     },
     desc_ot: {
@@ -66,8 +72,14 @@ OrdenTrabajo.init(
     sequelize: db,
     modelName: 'OrdenTrabajo',
     tableName: 'orden_trabajo',
-    timestamps: false, // As the SQL definition doesn't include timestamps
+    timestamps: false, // La tabla no tiene columnas `createdAt` o `updatedAt`
   }
 );
+
+// Asociaciones del modelo
+OrdenTrabajo.belongsTo(Cliente, { foreignKey: 'rut_cli' });
+OrdenTrabajo.belongsTo(Equipo, { foreignKey: 'num_ser' });
+OrdenTrabajo.belongsTo(EstadoOT, { foreignKey: 'id_estado' });
+OrdenTrabajo.belongsTo(Asignacion, { foreignKey: 'id_asig' });
 
 export default OrdenTrabajo;

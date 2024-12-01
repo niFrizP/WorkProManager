@@ -6,7 +6,7 @@ export interface Trabajador {
     activo: boolean; // Estado de actividad del trabajador
     clave: string; // Clave encriptada
     d_veri_trab: string | null; // Indicador de verificación del trabajador (puede ser nulo)
-    TrabajadorRol: {
+    TrabajadorRol?: {
         nom_rol: string; // Nombre del rol
     }
   }

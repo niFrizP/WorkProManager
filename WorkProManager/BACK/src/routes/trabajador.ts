@@ -1,16 +1,21 @@
 import { Router } from 'express';
-import { getTrabajadores, getTrabajador,loginUser,postTrabajador, updateTrabajador, deleteTrabajador } from '../controllers/trabajador'; // Asegúrate de importar los controladores correctos
+import { getTrabajadores,getTecnicos,  getTrabajador,loginUser,postTrabajador, updateTrabajador, deleteTrabajador } from '../controllers/trabajador'; // Asegúrate de importar los controladores correctos
 
 
 const router = Router();
 
 router.post('/',postTrabajador );
 
-router.post('/login', loginUser)
+
+router.post('/login', loginUser);
 
 
 // Ruta para obtener todos los trabajadores
 router.get('/', getTrabajadores);
+
+
+// Ruta para obtener todos los tecnicos
+router.get('/tecnico', getTecnicos);
 
 // Ruta para obtener un trabajador por su ID
 router.get('/:id', getTrabajador);

@@ -1,16 +1,10 @@
 import { Router, RequestHandler } from 'express';
 import {
-    getOrdenesTrabajo,
-    getOrdenTrabajo,
-    postOrdenTrabajo,
-    updateOrdenTrabajo
+    getOrdenesConTrabajadores
 } from '../controllers/orden_trabajo';
 
 const router = Router();
 
-router.get('/', getOrdenesTrabajo as RequestHandler);
-router.get('/:id', getOrdenTrabajo as RequestHandler);
-router.post('/', postOrdenTrabajo as RequestHandler);
-router.put('/:id', updateOrdenTrabajo as RequestHandler);
+router.get('/:id', getOrdenesConTrabajadores);
 
 export default router; 

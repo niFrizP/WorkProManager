@@ -3,11 +3,28 @@ import Trabajador from "../models/trabajador"; // Asegúrate de importar el mode
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import TrabajadorRol from "../models/trabajador_rol";
+import { where } from "sequelize";
 
 // Obtener todos los trabajadores
 export const getTrabajadores = async (req: Request, res: Response) => {
     try {
         const listTrabajadores = await Trabajador.findAll();
+        res.json(listTrabajadores);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "Error al obtener trabajadores" });
+    }
+};
+
+
+// Obtener todos los trabajadores con rol 2, de técnico
+export const getTecnicos = async (req: Request, res: Response) => {
+    try {
+        const listTrabajadores = await Trabajador.findAll({
+            where: {
+                id_rol: 2
+            }
+        });
         res.json(listTrabajadores);
     } catch (error) {
         console.log(error);
@@ -37,6 +54,7 @@ export const getTrabajador = async (req: Request, res: Response) => {
         res.status(500).json({ msg: "Error al obtener trabajador" });
     }
 };
+
 
 // Eliminar un trabajador por ID
 export const deleteTrabajador = async (req: Request, res: Response) => {

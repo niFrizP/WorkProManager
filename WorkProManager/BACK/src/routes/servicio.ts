@@ -9,9 +9,9 @@ import {
 const router = Router();
 
 router.get('/', getServicios);
-router.get('/:id', getServicio);
+router.get('/:id', getServicioById);
 router.delete('/:id', deleteServicio);
-router.post('/', postServicio);
+router.post('/', createServicio);
 router.put('/:id', updateServicio);
 
 export default router; 

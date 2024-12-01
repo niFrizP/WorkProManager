@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../db/connection'; // Connection to the database
+import Trabajador from './trabajador';
 
 // Define the Asignacion model
 class Asignacion extends Model {
@@ -10,6 +11,8 @@ class Asignacion extends Model {
   public notas_asig!: string | null;
   public es_actual!: boolean;
 }
+
+
 
 Asignacion.init(
   {
@@ -49,5 +52,18 @@ Asignacion.init(
     timestamps: false, // As the SQL definition doesn't use timestamps
   }
 );
+
+// Asociación con el modelo Trabajador (para el técnico)
+Asignacion.belongsTo(Trabajador, {
+  foreignKey: 'rut_tec',
+  as: 'tecnico', // Alias para técnico
+});
+
+// Asociación con el modelo Trabajador (para el gestor)
+Asignacion.belongsTo(Trabajador, {
+  foreignKey: 'rut_ges',
+  as: 'gestor', // Alias para gestor
+});
+
 
 export default Asignacion;

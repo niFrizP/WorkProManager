@@ -1,18 +1,18 @@
 import { Router, RequestHandler } from 'express';
 import { 
     getEstadosOT, 
-    getEstadoOT, 
-    postEstadoOT, 
+    getEstadoOTById,
+    createEstadoOT,
     updateEstadoOT, 
     deleteEstadoOT 
 } from '../controllers/estado_ot';
 
 const router = Router();
 
-router.get('/', getEstadosOT as RequestHandler);
-router.get('/:id', getEstadoOT as RequestHandler);
-router.post('/', postEstadoOT as RequestHandler);
-router.put('/:id', updateEstadoOT as RequestHandler);
-router.delete('/:id', deleteEstadoOT as RequestHandler);
+router.get('/', getEstadosOT);
+router.get('/:id', getEstadoOTById);
+router.post('/', createEstadoOT);
+router.put('/:id', updateEstadoOT);
+router.delete('/:id', deleteEstadoOT);
 
 export default router; 
