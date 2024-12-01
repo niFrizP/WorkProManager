@@ -5,8 +5,7 @@ const marca_1 = require("../controllers/marca");
 const router = (0, express_1.Router)();
 router.get('/', marca_1.getMarcas);
 router.get('/:id', marca_1.getMarcaById);
+router.delete('/:id', marca_1.deleteMarca);
 router.post('/', marca_1.createMarca);
 router.put('/:id', marca_1.updateMarca);
-router.delete('/:id', marca_1.deleteMarca);
 exports.default = router;
-
