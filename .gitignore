@@ -1,0 +1,17 @@
+_metadata.json
+WorkProManager/FRONT/.angular/
+WorkProManager/FRONT/.angular/
+.tsbuildinfo
+node_modules
+/WorkProManager/BACK/dist
+node_modules/
+/dist/
+/node_modules
+/dist
+/tmp
+/out-tsc
+/bazel-out
+.tsbuildinfo
+node_modules/
+.config.ts
+/config.ts
