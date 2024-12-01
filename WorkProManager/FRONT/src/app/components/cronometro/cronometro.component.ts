@@ -11,7 +11,7 @@ import { interval, Subscription } from 'rxjs';
 })
 export class CronometroComponent implements OnInit, OnDestroy {
   @Input() fechaPlazo!: string | Date | null;
-  
+
   tiempoRestante: string = '';
   private subscription: Subscription = new Subscription();
 
@@ -39,7 +39,7 @@ export class CronometroComponent implements OnInit, OnDestroy {
       if (diferencia > 0) {
         this.tiempoRestante = this.calcularTiempoRestante(diferencia);
       } else {
-        this.tiempoRestante = 'Tiempo cumplido';
+        this.tiempoRestante = 'Plazo expirado';
         this.subscription.unsubscribe();
       }
     });
@@ -50,6 +50,15 @@ export class CronometroComponent implements OnInit, OnDestroy {
     const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
 
-    return `${dias}d ${horas}h ${minutos}m`;
+    // Lógica para mostrar solo días, días y horas, o horas y minutos
+    if (dias > 1) {
+      return `${dias} días restantes`;
+    } else if (dias === 1) {
+      return `${dias} día y ${horas} horas restantes`;
+    } else if (horas > 0) {
+      return `${horas} horas y ${minutos} minutos restantes`;
+    } else {
+      return `${minutos} minutos restantes`;
+    }
   }
 }

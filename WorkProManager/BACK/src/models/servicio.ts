@@ -1,27 +1,37 @@
-import { DataTypes } from 'sequelize';
-import db from '../db/connection';
-import Order from './orders';
-import vista_count_ot_por_servicio from './vista_count_ot_por_servicio';
+import { DataTypes, Model } from 'sequelize';
+import db from '../db/connection'; // Connection to the database
 
-// Definición del modelo Servicio en lugar de EstadoOT
-const Servicio = db.define('Servicio', {
+// Define the Servicio model
+class Servicio extends Model {
+  public id_serv!: number;
+  public nom_serv!: string;
+  public activo!: boolean;
+}
+
+Servicio.init(
+  {
     id_serv: {
-        type: DataTypes.INTEGER, // El tipo de dato es un entero
-        primaryKey: true, // Define que id_servicio es la clave primaria
-        autoIncrement: true // Indica que se incrementa automáticamente
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
     },
     nom_serv: {
-        type: DataTypes.STRING // Define el tipo de servicio como una cadena de caracteres
+      type: DataTypes.STRING(100),
+      allowNull: false,
     },
-
-}, {
-    tableName: 'servicio', // Especifica el nombre exacto de la tabla en la base de datos
-    createdAt: false, // Desactiva el timestamp de creación
-    updatedAt: false // Desactiva el timestamp de actualización
-});
-
-Servicio.hasMany(Servicio, { foreignKey: 'id_serv' });
-Servicio.belongsTo( vista_count_ot_por_servicio, {foreignKey: 'id_serv', targetKey: 'id_serv' });
-
+    activo: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true, // Default to '1' (active)
+      allowNull: false,
+    },
+  },
+  {
+    sequelize: db,
+    modelName: 'Servicio',
+    tableName: 'servicio',
+    timestamps: false, // No timestamp fields are defined in the table
+  }
+);
 
 export default Servicio;

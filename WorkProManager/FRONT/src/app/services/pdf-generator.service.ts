@@ -5,6 +5,7 @@ import { DetalleOT } from '../interfaces/detalle_ot';
 import { Solicitud } from '../interfaces/solicitud';
 import '../assets/fonts/IBMPlexSans-Regular-normal.js';
 
+
 @Injectable({
   providedIn: 'root',
 })
@@ -51,12 +52,39 @@ export class PdfGeneratorService {
         pdf.setFillColor(primaryColor);
         pdf.rect(x, y, width, height, 'F');
         pdf.setTextColor('#FFFFFF'); // Texto blanco
+
+
+
+
+
+
+
+
+
+
+
+
+
         pdf.setFontSize(12);
         pdf.setFont(font, 'normal');
         pdf.text(title, x + 5, y + 7);
         pdf.setTextColor('#000000'); // Restaurar color texto
         currentY += height;
       };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       // Información General
       checkPageOverflow(25);
@@ -97,10 +125,6 @@ export class PdfGeneratorService {
         pdf.rect(10, currentY, 190, 10);
         pdf.text(`${detalle.Servicio?.nom_serv || 'N/A'}`, 12, currentY + 7);
         pdf.text(`${detalle.desc_detalle}`, 80, currentY + 7);
-        checkPageOverflow(10);
-        pdf.rect(10, currentY, 190, 10);
-        pdf.text(`${detalle.Servicio?.nom_serv || 'N/A'}`, 12, currentY + 7);
-        pdf.text(`${detalle.desc_detalle}`, 80, currentY + 7);
         currentY += 10;
       });
 
@@ -108,29 +132,10 @@ export class PdfGeneratorService {
       checkPageOverflow(25);
       drawTableHeader(10, currentY + 7, 190, 10, 'SOLICITUDES ASOCIADAS');
 
+      const lineYPositions = [currentY + 13, currentY + 19, currentY + 25, currentY + 31, currentY + 37];
+
       solicitudes.forEach((solicitud) => {
         checkPageOverflow(36);
-
-        // Dibujar el recuadro para una solicitud
-        pdf.rect(10, currentY + 7, 190, 36); // Rectángulo principal
-
-        // Líneas internas
-        const lineYPositions = [currentY + 7, currentY + 12, currentY + 18, currentY + 24, currentY + 30];
-        lineYPositions.forEach((lineY) => {
-          pdf.line(10, lineY, 200, lineY); // Líneas horizontales
-        });
-
-        // Datos dentro del recuadro
-        pdf.text(`ID Solicitud: ${solicitud.id_sol}`, 15, currentY + 11);
-        pdf.text(`Descripción: ${solicitud.desc_sol || 'N/A'}`, 15, currentY + 17);
-        pdf.text(`Estado: ${solicitud.id_estado_ot || 'N/A'}`, 15, currentY + 22);
-        pdf.text(`Fecha de vista: ${solicitud.fecha_vista || 'N/A'}`, 15, currentY + 28);
-        pdf.text(`Fecha de emisión: ${solicitud.fecha_emision || 'N/A'}`, 15, currentY + 35);
-        pdf.text(`Fecha de término: ${solicitud.fecha_termino || 'N/A'}`, 15, currentY + 40);
-
-        // Espaciado entre solicitudes
-        currentY += 38; // Altura del recuadro más margen
-
         // Dibujar el recuadro para una solicitud
         pdf.rect(10, currentY + 7, 190, 36); // Rectángulo principal
         // Líneas internas

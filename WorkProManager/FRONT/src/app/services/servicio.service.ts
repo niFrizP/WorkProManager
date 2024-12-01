@@ -1,39 +1,22 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../environments/environment'; 
+import { environment } from '../environments/environment';
 import { Servicio } from '../interfaces/servicio';
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class ServicioService {
-  private myAppUrl: string;
-  private myApiUrl: string;
+  private apiUrl = environment.apiUrl; // Base URL de la API
 
-  constructor(private http: HttpClient) { 
-    this.myAppUrl = environment.endpoint;
-    this.myApiUrl = 'api/servicio/'
-  }
+  constructor(private http: HttpClient) {}
 
-  getListServicios(): Observable<Servicio[]> {
-   return this.http.get<Servicio[]>(`${this.myAppUrl}${this.myApiUrl}`);
-  }
-
-  deleteServicios(id_serv: number): Observable<Servicio> {
-    return this.http.delete<Servicio>(`${this.myAppUrl}${this.myApiUrl}${id_serv}`)
-  }
-
-  saveServicio(servicio: Servicio): Observable<Servicio> {
-    return this.http.post<Servicio>(`${this.myAppUrl}${this.myApiUrl}`,servicio)
-  }
-
-  getServicio(id_serv: number): Observable<Servicio> {
-    return this.http.get<Servicio>(`${this.myAppUrl}${this.myApiUrl}${id_serv}`)
-  }
-
-  updateOrder(id_serv: number, servicio: Servicio): Observable<void> {
-    return this.http.put<void>(`${this.myAppUrl}${this.myApiUrl}${id_serv}`, servicio);
+  /**
+   * Obtiene todos los trabajadores con rol de técnico.
+   * @returns {Observable<Trabajador[]>} Lista de técnicos.
+   */
+  getServicios(): Observable<Servicio[]> {
+    return this.http.get<Servicio[]>(`${this.apiUrl}/api/servicio`);
   }
 }

@@ -1,8 +1,6 @@
 {
-"files.exclude": {
-  "": true
-},
-"search.useGlobalIgnoreFiles": false,
-"search.useParentIgnoreFiles": false,
-"git.ignoreLimitWarning": true
+  "search.useGlobalIgnoreFiles": false,
+  "search.useParentIgnoreFiles": false
+  "search.useParentIgnoreFiles": false,
+  "git.ignoreLimitWarning": true
 }

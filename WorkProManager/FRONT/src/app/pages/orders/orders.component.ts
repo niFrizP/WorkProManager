@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+/* import { Component, OnInit } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -43,7 +43,7 @@ import { PdfGeneratorEliminadasService } from '../../services/pdf-generator-elim
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, MatIcon ,NgxPaginationModule,CronometroComponent, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, MatIcon, NgxPaginationModule, CronometroComponent, RouterModule, MatDatepickerModule, MatInputModule, MatNativeDateModule, FormsModule, ReactiveFormsModule],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css'],
   animations: [
@@ -63,7 +63,7 @@ import { PdfGeneratorEliminadasService } from '../../services/pdf-generator-elim
   ],
 })
 export class OrdersComponent implements OnInit {
-
+  filteredOrders: newOrder[] = [];
   rejectionForm: FormGroup;
   isRejectionModalOpen = false;
   isFiltrosOpen = false;
@@ -77,91 +77,110 @@ export class OrdersComponent implements OnInit {
   isClienteOpen = false;
   isEquipoOpen = false;
   showFilters = false; // Set to false by default
+  sortedColumn: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
 
-
-
-  menuAbierto: { [key: string]: boolean } = {
-    filtrosGenerales: false,
-    filtroEstado: false,
-    filtroUsuario: false,
-    filtroServicio: false,
-    filtroFecha: false,
-    filtrosCliente: false,
-    filtroEquipo: false
-  };
-
-
-
-  toggleMenu(menu: string): void {
-    this.menuAbierto[menu] = !this.menuAbierto[menu];
-    console.log(this.menuAbierto);
+  sortTable(column: string): void {
+    if (this.sortedColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortedColumn = column;
+      this.sortDirection = 'asc';
+    }
+    this.filteredOrders.sort((a, b) => {
+      const aValue = (a as any)[this.sortedColumn];
+      const bValue = (b as any)[this.sortedColumn];
+      if (aValue > bValue) {
+        return this.sortDirection === 'asc' ? 1 : -1;
+      } else if (aValue < bValue) {
+        return this.sortDirection === 'asc' ? -1 : 1;
+      } else {
+        return 0;
+      }
+    });
   }
 
-  numericError: string = '';  // Variable para almacenar el mensaje de error
+  menuAbierto: { [key: string]: boolean } = {
+      filtrosGenerales: false,
+      filtroEstado: false,
+      filtroUsuario: false,
+      filtroServicio: false,
+      filtroFecha: false,
+      filtrosCliente: false,
+      filtroEquipo: false
+    };
+
+
+
+    toggleMenu(menu: string): void {
+      this.menuAbierto[menu] = !this.menuAbierto[menu];
+      console.log(this.menuAbierto);
+    }
+
+    numericError: string = '';  // Variable para almacenar el mensaje de error
 
 
 
 
-  months = [
-    { value: 1, name: 'Enero' },
-    { value: 2, name: 'Febrero' },
-    { value: 3, name: 'Marzo' },
-    { value: 4, name: 'Abril' },
-    { value: 5, name: 'Mayo' },
-    { value: 6, name: 'Junio' },
-    { value: 7, name: 'Julio' },
-    { value: 8, name: 'Agosto' },
-    { value: 9, name: 'Septiembre' },
-    { value: 10, name: 'Octubre' },
-    { value: 11, name: 'Noviembre' },
-    { value: 12, name: 'Diciembre' }
-  ];
+    months = [
+      { value: 1, name: 'Enero' },
+      { value: 2, name: 'Febrero' },
+      { value: 3, name: 'Marzo' },
+      { value: 4, name: 'Abril' },
+      { value: 5, name: 'Mayo' },
+      { value: 6, name: 'Junio' },
+      { value: 7, name: 'Julio' },
+      { value: 8, name: 'Agosto' },
+      { value: 9, name: 'Septiembre' },
+      { value: 10, name: 'Octubre' },
+      { value: 11, name: 'Noviembre' },
+      { value: 12, name: 'Diciembre' }
+    ];
 
-  orders: Order[] = [];
-  newOrders: newOrder[] = [];
-  usuarios: Usuario[] = [];
-  clientes: Cliente[] = [];
-  servicios: Servicio[] = [];
-  solicitudes: Solicitud[] = [];
-  adjuducaciones: Adjudicacion[] = [];
-  estados: EstadoOT[] = [];
-  causasRechazo: CausaRechazo[] = [];
-  adjudicacionData: Adjudicacion[] = []
-  adjudicacion: Adjudicacion[] = []
-  id_ot: number | null = null;
-  selectedMonth: number = 0;
-  selectedYear: number = 0;
-  selectedEquipo: string = '';
-  selectedStatus: string = 'todas';
-  selectedUsuario: string = 'todos';
-  selectedDate: Date | null = null;
-  selectedServicio: string = 'todos';
-  initialUsuarioID: number | null = null;
-  equipo: Equipo = {};
-  form: FormGroup;
-  formFin: FormGroup;
-  formUser: FormGroup;
-  selectedUsuarioName = '';
-  selectedUsuarioSurname = '';
-  selectedUsuarioID: number | null = null;
-  selectedEstadoName = '';
-  searchRutCliente: string = '';
-  newSolicitudId: number | null = null;
-  selectedOtId: number | null = null;
-  searchEquipo: string = '';
-  searchUsuario: string = '';
-  rut_usuario_filtro: number = 0;
-  searchServicio: string = '';
-  isEstadoModalOpen = false;
-  previousUsuarioID: number | null = null;
-  searchRut: string = '';
-  filteredOrders: newOrder[] = []; // Cambiado a newOrder[]
-  filteredUsers: Usuario[] = [];
-  filteredServicios: Servicio[] = [];
-  newOrderId: number | null = null;
-  page = 1;
-  rut_usuario: number = 0;
-  itemsPerPage = 10;
+    orders: Order[] = [];
+    newOrders: newOrder[] = [];
+    usuarios: Usuario[] = [];
+    clientes: Cliente[] = [];
+    servicios: Servicio[] = [];
+    solicitudes: Solicitud[] = [];
+    adjuducaciones: Adjudicacion[] = [];
+    estados: EstadoOT[] = [];
+    causasRechazo: CausaRechazo[] = [];
+    adjudicacionData: Adjudicacion[] = []
+    adjudicacion: Adjudicacion[] = []
+    id_ot: number | null = null;
+    selectedMonth: number = 0;
+    selectedYear: number = 0;
+    selectedEquipo: string = '';
+    selectedStatus: string = 'todas';
+    selectedUsuario: string = 'todos';
+    selectedDate: Date | null = null;
+    selectedServicio: string = 'todos';
+    initialUsuarioID: number | null = null;
+    equipo: Equipo = {};
+    form: FormGroup;
+    formFin: FormGroup;
+    formUser: FormGroup;
+    selectedUsuarioName = '';
+    selectedUsuarioSurname = '';
+    selectedUsuarioID: number | null = null;
+    selectedEstadoName = '';
+    searchRutCliente: string = '';
+    newSolicitudId: number | null = null;
+    selectedOtId: number | null = null;
+    searchEquipo: string = '';
+    searchUsuario: string = '';
+    rut_usuario_filtro: number = 0;
+    searchServicio: string = '';
+    isEstadoModalOpen = false;
+    previousUsuarioID: number | null = null;
+    searchRut: string = '';
+    filteredUsers: Usuario[] = [];
+    filteredServicios: Servicio[] = [];
+    newOrderId: number | null = null;
+    page = 1;
+    rut_usuario: number = 0;
+    itemsPerPage = 10;
   public isModalOpen: boolean = false
   public fechaHoy: string = '';
   rol_id: number = 0;
@@ -187,9 +206,9 @@ export class OrdersComponent implements OnInit {
     private solictudService: SolicitudService,
     private detalleCausaRechazoService: DetalleCausaRechazoService,
     private causaRechazoService: CausaRechazoService,
-    private estadoOTService:EstadoOTService,
+    private estadoOTService: EstadoOTService,
     private adjudicacionService: AdjudicacionService,
-    private pdfGeneratorEliminadasService:PdfGeneratorEliminadasService
+    private pdfGeneratorEliminadasService: PdfGeneratorEliminadasService
 
   ) {
 
@@ -307,7 +326,7 @@ export class OrdersComponent implements OnInit {
     this.filterOrders();
   }
 
- 
+
 
   filterOrdersByStatus(status: string) {
     this.selectedStatus = status;
@@ -327,7 +346,7 @@ export class OrdersComponent implements OnInit {
 
 
 
-  
+
 
 
   showSolicitudModal(orderId: number) {
@@ -721,53 +740,53 @@ export class OrdersComponent implements OnInit {
     }
 
 
-}
+  }
 
 
-filterOrders() {
-  this.filteredOrders = this.newOrders
-    .filter(newOrder => 
-      this.selectedStatus === 'todas' || 
-      (newOrder.VistaSolicitud?.nom_estado_ot?.toLowerCase() === this.selectedStatus.toLowerCase())
-    )
-    .filter(newOrder => 
-      this.selectedMonth === 0 || 
-      (newOrder.fec_entrega && new Date(newOrder.fec_entrega).getMonth() + 1 === this.selectedMonth)
-    )
-    .filter(newOrder => 
-      this.selectedYear === 0 || 
-      (newOrder.fec_entrega && new Date(newOrder.fec_entrega).getFullYear() === this.selectedYear)
-    )
-    .filter(newOrder => 
-      !this.searchRutCliente || 
-      (newOrder.rut_cliente && newOrder.rut_cliente.toString().toLowerCase().includes(this.searchRutCliente.toLowerCase()))
-    )
-    .filter(newOrder => 
-      !this.selectedDate || 
-      (newOrder.fec_entrega && new Date(newOrder.fec_entrega).toDateString() === this.selectedDate?.toDateString())
-    )
-    .filter(newOrder => 
-      !this.searchEquipo || 
-      (newOrder.Equipo?.mod_equipo && newOrder.Equipo.mod_equipo.toString().toLowerCase().includes(this.searchEquipo.toLowerCase()))
-    )
-    .filter(newOrder => 
-      !this.searchUsuario || 
-      (newOrder.VistaUltimaAdjudicacion?.rut_usuario && newOrder.VistaUltimaAdjudicacion?.rut_usuario.toString().toLowerCase().includes(this.searchUsuario.toLowerCase()))
-    )
-    .filter(newOrder => 
-      this.selectedServicio === 'todos' || 
-      (newOrder.VistaSolicitud?.nom_estado_ot?.toLowerCase() === this.selectedServicio.toLowerCase())
-    );
-  this.filteredOrders = this.sortOrders(this.filteredOrders);
-}
+  filterOrders() {
+    this.filteredOrders = this.newOrders
+      .filter(newOrder =>
+        this.selectedStatus === 'todas' ||
+        (newOrder.VistaSolicitud?.nom_estado_ot?.toLowerCase() === this.selectedStatus.toLowerCase())
+      )
+      .filter(newOrder =>
+        this.selectedMonth === 0 ||
+        (newOrder.fec_entrega && new Date(newOrder.fec_entrega).getMonth() + 1 === this.selectedMonth)
+      )
+      .filter(newOrder =>
+        this.selectedYear === 0 ||
+        (newOrder.fec_entrega && new Date(newOrder.fec_entrega).getFullYear() === this.selectedYear)
+      )
+      .filter(newOrder =>
+        !this.searchRutCliente ||
+        (newOrder.rut_cliente && newOrder.rut_cliente.toString().toLowerCase().includes(this.searchRutCliente.toLowerCase()))
+      )
+      .filter(newOrder =>
+        !this.selectedDate ||
+        (newOrder.fec_entrega && new Date(newOrder.fec_entrega).toDateString() === this.selectedDate?.toDateString())
+      )
+      .filter(newOrder =>
+        !this.searchEquipo ||
+        (newOrder.Equipo?.mod_equipo && newOrder.Equipo.mod_equipo.toString().toLowerCase().includes(this.searchEquipo.toLowerCase()))
+      )
+      .filter(newOrder =>
+        !this.searchUsuario ||
+        (newOrder.VistaUltimaAdjudicacion?.rut_usuario && newOrder.VistaUltimaAdjudicacion?.rut_usuario.toString().toLowerCase().includes(this.searchUsuario.toLowerCase()))
+      )
+      .filter(newOrder =>
+        this.selectedServicio === 'todos' ||
+        (newOrder.VistaSolicitud?.nom_estado_ot?.toLowerCase() === this.selectedServicio.toLowerCase())
+      );
+    this.filteredOrders = this.sortOrders(this.filteredOrders);
+  }
 
-sortOrdersByDueDate(): void {
-  this.filteredOrders.sort((a, b) => {
-    const dateA = new Date(a.VistaSolicitud?.fecha_plazo ?? '').getTime();
-    const dateB = new Date(b.VistaSolicitud?.fecha_plazo ?? '').getTime();
-    return dateA - dateB;
-  });
-}
+  sortOrdersByDueDate(): void {
+    this.filteredOrders.sort((a, b) => {
+      const dateA = new Date(a.VistaSolicitud?.fecha_plazo ?? '').getTime();
+      const dateB = new Date(b.VistaSolicitud?.fecha_plazo ?? '').getTime();
+      return dateA - dateB;
+    });
+  }
 
 
   filterUsers() {
@@ -868,7 +887,7 @@ sortOrdersByDueDate(): void {
       if (!order || !order.Equipo?.mod_equipo) {
         throw new Error('Datos de orden incompletos');
       }
-  
+
       // Obtén los detalles de la orden y las solicitudes asociadas
       this.detalleOTService.getListDetalleOTByOTId(order.id_ot ?? 0).subscribe({
         next: (detalles: DetalleOT[]) => {
@@ -879,23 +898,23 @@ sortOrdersByDueDate(): void {
                   this.adjudicacionService.getListDetalleOTByOTId(order.id_ot ?? 0).subscribe({
                     next: (adjudicaciones: Adjudicacion[]) => {
 
-                  
 
 
-              const fileName = `OT_${order.id_ot}.pdf`;
-              // Genera el PDF con todos los datos
-              this.pdfGeneratorEliminadasService.generatePDFContent(order, detalles, solicitudes,detalleCausaRechazo, adjudicaciones, fileName);
+
+                      const fileName = `OT_${order.id_ot}.pdf`;
+                      // Genera el PDF con todos los datos
+                      this.pdfGeneratorEliminadasService.generatePDFContent(order, detalles, solicitudes, detalleCausaRechazo, adjudicaciones, fileName);
+                    },
+                    error: (error) => {
+                      console.error('Error al obtener adjudicaciones asociadas a la orden:');
+                    },
+                  });
+                },
+                error: (error) => {
+                  console.error('Error al obtener los detalles eliminados asociadas a la orden:');
+                },
+              });
             },
-            error: (error) => {
-              console.error('Error al obtener adjudicaciones asociadas a la orden:');
-            },
-          });
-        },
-            error: (error) => {
-              console.error('Error al obtener los detalles eliminados asociadas a la orden:');
-            },
-          });
-        },
 
             error: (error) => {
               console.error('Error al obtener solicitudes asociadas a la orden:');
@@ -912,7 +931,7 @@ sortOrdersByDueDate(): void {
   }
 
 
-  public openModal(id_ot:number): void {
+  public openModal(id_ot: number): void {
     this.updateSolicitudOnLoad(id_ot)
     this.id_ot = id_ot; // Asigna el `id_ot` a la propiedad `id_ot`
     this.isModalOpen = true;
@@ -1038,7 +1057,7 @@ sortOrdersByDueDate(): void {
     this.selectedStatus = state;
     this.filterOrders();
   }
-  
+
   onStateChange(event: Event): void {
     const selectedState = (event.target as HTMLSelectElement).value;
     this.filterOrdersByState(selectedState);
@@ -1048,7 +1067,7 @@ sortOrdersByDueDate(): void {
     const searchUsuario = (event.target as HTMLSelectElement).value;
     this.filterOrdersByRutUsuario(searchUsuario);
   }
-  
+
   onMonthChange(event: Event): void {
     const selectedMonth = parseInt((event.target as HTMLSelectElement).value, 10);
     this.filterOrdersByMonthYear(selectedMonth, this.selectedYear);
@@ -1095,5 +1114,6 @@ sortOrdersByDueDate(): void {
     const searchEquipo = (event.target as HTMLInputElement).value;
     this.filterOrdersByEquipo(searchEquipo);
   }
-  
+
 }
+ */

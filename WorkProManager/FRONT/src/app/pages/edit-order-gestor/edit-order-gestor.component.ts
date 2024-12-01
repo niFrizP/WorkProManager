@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+/* import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -96,7 +96,6 @@ tipos: Tipo[] = [];
 
 constructor(
   private fb: FormBuilder,
-  private _orderService: OrderService,
   private router: Router,
   private aRouter: ActivatedRoute,
   private detalleOTService:DetalleOTService,
@@ -106,7 +105,8 @@ constructor(
   private equipoService:EquipoService,
   private clienteService:ClienteService,
   private solicitudService:SolicitudService,
-  public authService: AuthService
+  public authService: AuthService,
+  private tipoService: TipoService,
   
 ) {
 
@@ -130,10 +130,14 @@ constructor(
       id_serv: [null, Validators.required],
     })]),
     rut_usuario: [null, Validators.required],
+    fec_creacion: [null, Validators.required],
+    fec_entrega: [null, Validators.required],
     nombre: ['', Validators.required],
     apellido: ['', Validators.required],
     celular: [null, Validators.required],
     correo: ['', Validators.required],
+    fecha_plazo: [null, Validators.required],
+    id_tipo: [null, Validators.required],
     tipo_equipo: ['', Validators.required],
     mod_equipo: ['', Validators.required],
     fec_fabric: ['', Validators.required],
@@ -165,6 +169,7 @@ ngOnInit(): void {
   this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
   this.loadOrder(this.id_ot);
   this.updateSolicitudOnLoad()
+  this.cargarTipoEquipo();
   this.loadDetalle(this.id_ot);
   console.log(this.id_ot);
   this.form.patchValue({ rut_usuario: this.form.get('rut_usuario')?.value });
@@ -202,6 +207,8 @@ onTipoChange(event: Event) {
 
   }
 }
+
+
 
 conseguirRolRemitente(rut_remitente: number): number | undefined {
   let rol: number | undefined;
@@ -253,24 +260,24 @@ loadOrder(id: number): void {
         fecha_creacion: data.fec_creacion,
         fecha: data.fec_entrega,
         descripcion: data.descripcion,
+        rut_cliente: data.VistaUltimaAdjudicacion?.rut_usuario,
         apellido: data.cliente?.ap_cli ?? '',
         tipo_equipo: data.Equipo?.mod_equipo ?? '',
+        id_marca: data.Equipo?.id_marca ?? null, // Ensure this line is added
+        id_tipo: data.Equipo?.id_tipo ?? null, // Ensure this line is added
         celular: data.cliente?.cel_cli,
         correo: data.cliente?.nom_cli,
         d_veri_cli: data.cliente?.d_veri_cli,
         ap_usu: data.VistaUltimaAdjudicacion?.ap_usu,
         nom_usu: data.VistaUltimaAdjudicacion?.nom_usu, // Cambia esto si el nombre no está directamente en 'Usuario'
-        rut_cliente: data.rut_cliente,
         nombre: data.cliente?.nom_cli,
         mod_equipo: data.Equipo?.mod_equipo, // Asegúrate de que esta propiedad exista
         num_equipo: data.num_equipo, // Asegúrate de que esta propiedad exista
+        fecha_entrega: data.fec_entrega,
         fec_fabric: data.Equipo?.fecha_fab,
-        id_marca: data.Equipo?.id_marca,
         servicios: this.fb.array([this.fb.group({
           id_serv: [null, Validators.required],
-        })])
-        
-
+        })]),
       });
       console.log("Datos cargados desde la API:");
       console.log(data); // Para verificar los datos cargados
@@ -347,6 +354,7 @@ private async createorupdateSolicitud(): Promise<Solicitud> {
     fecha_emision: new Date(),
     rut_usuario: this.form.get('rut_usuario')?.value,
     completada: false,
+    fecha_plazo: this.form.get('fecha_plazo')?.value,
     id_estado_ot: 3,
   };
   
@@ -491,7 +499,7 @@ async editProduct(): Promise<void> {
       confirmButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.router.navigate(['/']); // Redirige a la página principal
+        this.router.navigate(['/orders']); // Redirige a la página principal
       }
     });
   } catch (error) {
@@ -915,3 +923,4 @@ toggleSelectServicio(): void {
   this.mostrarSelectServicio = !this.mostrarSelectServicio;
 }
 }
+ */

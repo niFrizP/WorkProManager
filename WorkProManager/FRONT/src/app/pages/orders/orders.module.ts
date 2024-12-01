@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+/* import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Para usar directivas *ngFor y *ngIf
 import { NgxPaginationModule } from 'ngx-pagination'; // Para la paginación
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // Para el filtro si lo usas con formularios
@@ -28,3 +28,4 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   ],
 })
 export class OrdersModule {}
+ */

@@ -1,92 +1,73 @@
 import { Request, Response } from 'express';
-import Servicio from '../models/servicio'; // Asegúrate de tener el modelo de Servicio importado
-import vista_count_ot_por_servicio from '../models/vista_count_ot_por_servicio';
+import Servicio from '../models/servicio';
 
+// Obtener todos los servicios
 export const getServicios = async (req: Request, res: Response) => {
-    const listServicios = await Servicio.findAll(
-        {include: [{model: vista_count_ot_por_servicio}]}
-    );
-    res.json(listServicios);
+    try {
+        const servicios = await Servicio.findAll();
+        res.json(servicios);
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving servicios', error });
+    }
 };
 
-export const getServicio = async (req: Request, res: Response) => {
+// Obtener un servicio por ID
+export const getServicioById = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
         const servicio = await Servicio.findByPk(id);
-
         if (servicio) {
             res.json(servicio);
         } else {
-            res.status(404).json({
-                msg: `No existe un servicio con el id ${id}`
-            });
+            res.status(404).json({ message: 'Servicio not found' });
         }
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: `Error al obtener el servicio, contacta con soporte`
-        });
+        res.status(500).json({ message: 'Error retrieving servicio', error });
     }
 };
 
-export const deleteServicio = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const servicio = await Servicio.findByPk(id);
-
-    if (!servicio) {
-        res.status(404).json({
-            msg: `No existe un servicio con el id ${id}`
-        });
-    } else {
-        await servicio.destroy();
-        res.json({
-            msg: 'El servicio fue eliminado con éxito!'
-        });
-    }
-};
-
-export const postServicio = async (req: Request, res: Response) => {
-    const { nom_serv, precio } = req.body; // Extrae los datos relevantes
-
+// Crear un nuevo servicio
+export const createServicio = async (req: Request, res: Response) => {
+    const { nom_serv, activo } = req.body;
     try {
-        // Crear el nuevo servicio sin especificar `id_servicio`
-        const newServicio = await Servicio.create({
-            nom_serv,
-        });
-
-        res.json({
-            msg: 'El servicio fue agregado con éxito!',
-            servicio: newServicio // Devuelve el nuevo servicio, incluyendo el id_servicio generado
-        });
+        const newServicio = await Servicio.create({ nom_serv, activo });
+        res.status(201).json(newServicio);
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
-        });
+        res.status(500).json({ message: 'Error creating servicio', error });
     }
 };
 
+// Actualizar un servicio existente
 export const updateServicio = async (req: Request, res: Response) => {
-    const { body } = req;
     const { id } = req.params;
-
+    const { nom_serv, activo } = req.body;
     try {
         const servicio = await Servicio.findByPk(id);
-
         if (servicio) {
-            await servicio.update(body);
-            res.json({
-                msg: 'El servicio fue actualizado con éxito'
-            });
+            servicio.nom_serv = nom_serv;
+            servicio.activo = activo;
+            await servicio.save();
+            res.json(servicio);
         } else {
-            res.status(404).json({
-                msg: `No existe un servicio con el id ${id}`
-            });
+            res.status(404).json({ message: 'Servicio not found' });
         }
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: `Upps, ocurrió un error. Comuníquese con soporte`
-        });
+        res.status(500).json({ message: 'Error updating servicio', error });
+    }
+};
+
+// Eliminar un servicio
+export const deleteServicio = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const servicio = await Servicio.findByPk(id);
+        if (servicio) {
+            await servicio.destroy();
+            res.json({ message: 'Servicio deleted' });
+        } else {
+            res.status(404).json({ message: 'Servicio not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting servicio', error });
     }
 };

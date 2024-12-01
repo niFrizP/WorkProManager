@@ -12,97 +12,159 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCliente = exports.postCliente = exports.deleteCliente = exports.getCliente = exports.getClientes = void 0;
+exports.deleteCliente = exports.updateCliente = exports.postCliente = exports.getCliente = exports.getClientes = void 0;
 const cliente_1 = __importDefault(require("../models/cliente"));
+const autenticacion_1 = require("../middleware/autenticacion");
 const getClientes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const listClientes = yield cliente_1.default.findAll();
-    res.json(listClientes);
+    try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+        const listClientes = yield cliente_1.default.findAll({
+            attributes: [
+                'rut_cli',
+                'nom_cli',
+                'ape_cli',
+                'dir_cli',
+                'tel_cli',
+                'email_cli',
+                'd_ver_cli'
+            ]
+        });
+        res.json(listClientes);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al obtener los clientes'
+        });
+    }
 });
 exports.getClientes = getClientes;
 const getCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
+    const { rut } = req.params;
     try {
-        const cliente = yield cliente_1.default.findByPk(id);
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded) {
+            return res.status(401).json({
+                msg: 'Token no válido'
+            });
+        }
+        const cliente = yield cliente_1.default.findByPk(rut);
         if (cliente) {
             res.json(cliente);
         }
         else {
             res.status(404).json({
-                msg: `No existe un cliente con el id ${id}`
+                msg: `No existe un cliente con el RUT ${rut}`
             });
         }
     }
     catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: `Error al obtener el cliente, contacta con soporte`
+            msg: 'Error al obtener el cliente'
         });
     }
 });
 exports.getCliente = getCliente;
-const deleteCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const cliente = yield cliente_1.default.findByPk(id);
-    if (!cliente) {
-        res.status(404).json({
-            msg: `No existe un cliente con el id ${id}`
-        });
-    }
-    else {
-        yield cliente.destroy();
-        res.json({
-            msg: 'El cliente fue eliminado con éxito!'
-        });
-    }
-});
-exports.deleteCliente = deleteCliente;
 const postCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { rut_cliente, nom_cli, ap_cli, email_cli, cel_cli, d_veri_cli } = req.body; // Extrae los datos relevantes
+    const { rut_cli, nom_cli, ape_cli, dir_cli, tel_cli, email_cli, d_ver_cli } = req.body;
     try {
-        // Crear el nuevo cliente sin especificar `id_cliente`
-        const newCliente = yield cliente_1.default.create({
-            rut_cliente,
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1, 2])) { // Solo admin y gestor
+            return res.status(403).json({
+                msg: 'No tiene permisos para crear clientes'
+            });
+        }
+        // Verificar si ya existe el cliente
+        const clienteExistente = yield cliente_1.default.findByPk(rut_cli);
+        if (clienteExistente) {
+            return res.status(400).json({
+                msg: `Ya existe un cliente con el RUT ${rut_cli}`
+            });
+        }
+        const cliente = yield cliente_1.default.create({
+            rut_cli,
             nom_cli,
-            ap_cli,
+            ape_cli,
+            dir_cli,
+            tel_cli,
             email_cli,
-            cel_cli,
-            d_veri_cli
+            d_ver_cli
         });
-        res.json({
-            msg: 'El cliente fue agregado con éxito!',
-            cliente: newCliente // Devuelve el nuevo cliente, incluyendo el id_cliente generado
-        });
+        res.json(cliente);
     }
     catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
+            msg: 'Error al crear el cliente'
         });
     }
 });
 exports.postCliente = postCliente;
 const updateCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
-    const { id } = req.params;
+    const { rut } = req.params;
+    const { nom_cli, ape_cli, dir_cli, tel_cli, email_cli, d_ver_cli } = req.body;
     try {
-        const cliente = yield cliente_1.default.findByPk(id);
-        if (cliente) {
-            yield cliente.update(body);
-            res.json({
-                msg: 'El cliente fue actualizado con éxito'
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1, 2])) {
+            return res.status(403).json({
+                msg: 'No tiene permisos para actualizar clientes'
             });
         }
-        else {
-            res.status(404).json({
-                msg: `No existe un cliente con el id ${id}`
+        const cliente = yield cliente_1.default.findByPk(rut);
+        if (!cliente) {
+            return res.status(404).json({
+                msg: `No existe un cliente con el RUT ${rut}`
             });
         }
+        yield cliente.update({
+            nom_cli,
+            ape_cli,
+            dir_cli,
+            tel_cli,
+            email_cli,
+            d_ver_cli
+        });
+        res.json(cliente);
     }
     catch (error) {
         console.log(error);
-        res.json({
-            msg: `Upps, ocurrió un error. Comuníquese con soporte`
+        res.status(500).json({
+            msg: 'Error al actualizar el cliente'
         });
     }
 });
 exports.updateCliente = updateCliente;
+const deleteCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { rut } = req.params;
+    try {
+        const decoded = yield (0, autenticacion_1.verificarToken)(req);
+        if (!decoded || !(0, autenticacion_1.verificarRol)(decoded, [1])) { // Solo admin
+            return res.status(403).json({
+                msg: 'No tiene permisos para eliminar clientes'
+            });
+        }
+        const cliente = yield cliente_1.default.findByPk(rut);
+        if (!cliente) {
+            return res.status(404).json({
+                msg: `No existe un cliente con el RUT ${rut}`
+            });
+        }
+        yield cliente.destroy();
+        res.json({
+            msg: 'Cliente eliminado con éxito'
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error al eliminar el cliente'
+        });
+    }
+});
+exports.deleteCliente = deleteCliente;

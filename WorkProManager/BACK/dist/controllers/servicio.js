@@ -12,15 +12,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateServicio = exports.postServicio = exports.deleteServicio = exports.getServicio = exports.getServicios = void 0;
-const servicio_1 = __importDefault(require("../models/servicio")); // Asegúrate de tener el modelo de Servicio importado
-const vista_count_ot_por_servicio_1 = __importDefault(require("../models/vista_count_ot_por_servicio"));
+exports.deleteServicio = exports.updateServicio = exports.createServicio = exports.getServicioById = exports.getServicios = void 0;
+const servicio_1 = __importDefault(require("../models/servicio"));
+// Obtener todos los servicios
 const getServicios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const listServicios = yield servicio_1.default.findAll({ include: [{ model: vista_count_ot_por_servicio_1.default }] });
-    res.json(listServicios);
+    try {
+        const servicios = yield servicio_1.default.findAll();
+        res.json(servicios);
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Error retrieving servicios', error });
+    }
 });
 exports.getServicios = getServicios;
-const getServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+// Obtener un servicio por ID
+const getServicioById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
         const servicio = yield servicio_1.default.findByPk(id);
@@ -28,77 +34,62 @@ const getServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             res.json(servicio);
         }
         else {
-            res.status(404).json({
-                msg: `No existe un servicio con el id ${id}`
-            });
+            res.status(404).json({ message: 'Servicio not found' });
         }
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: `Error al obtener el servicio, contacta con soporte`
-        });
+        res.status(500).json({ message: 'Error retrieving servicio', error });
     }
 });
-exports.getServicio = getServicio;
-const deleteServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const servicio = yield servicio_1.default.findByPk(id);
-    if (!servicio) {
-        res.status(404).json({
-            msg: `No existe un servicio con el id ${id}`
-        });
-    }
-    else {
-        yield servicio.destroy();
-        res.json({
-            msg: 'El servicio fue eliminado con éxito!'
-        });
-    }
-});
-exports.deleteServicio = deleteServicio;
-const postServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nom_serv, precio } = req.body; // Extrae los datos relevantes
+exports.getServicioById = getServicioById;
+// Crear un nuevo servicio
+const createServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { nom_serv, activo } = req.body;
     try {
-        // Crear el nuevo servicio sin especificar `id_servicio`
-        const newServicio = yield servicio_1.default.create({
-            nom_serv,
-        });
-        res.json({
-            msg: 'El servicio fue agregado con éxito!',
-            servicio: newServicio // Devuelve el nuevo servicio, incluyendo el id_servicio generado
-        });
+        const newServicio = yield servicio_1.default.create({ nom_serv, activo });
+        res.status(201).json(newServicio);
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte'
-        });
+        res.status(500).json({ message: 'Error creating servicio', error });
     }
 });
-exports.postServicio = postServicio;
+exports.createServicio = createServicio;
+// Actualizar un servicio existente
 const updateServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
+    const { id } = req.params;
+    const { nom_serv, activo } = req.body;
+    try {
+        const servicio = yield servicio_1.default.findByPk(id);
+        if (servicio) {
+            servicio.nom_serv = nom_serv;
+            servicio.activo = activo;
+            yield servicio.save();
+            res.json(servicio);
+        }
+        else {
+            res.status(404).json({ message: 'Servicio not found' });
+        }
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Error updating servicio', error });
+    }
+});
+exports.updateServicio = updateServicio;
+// Eliminar un servicio
+const deleteServicio = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
         const servicio = yield servicio_1.default.findByPk(id);
         if (servicio) {
-            yield servicio.update(body);
-            res.json({
-                msg: 'El servicio fue actualizado con éxito'
-            });
+            yield servicio.destroy();
+            res.json({ message: 'Servicio deleted' });
         }
         else {
-            res.status(404).json({
-                msg: `No existe un servicio con el id ${id}`
-            });
+            res.status(404).json({ message: 'Servicio not found' });
         }
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: `Upps, ocurrió un error. Comuníquese con soporte`
-        });
+        res.status(500).json({ message: 'Error deleting servicio', error });
     }
 });
-exports.updateServicio = updateServicio;
+exports.deleteServicio = deleteServicio;

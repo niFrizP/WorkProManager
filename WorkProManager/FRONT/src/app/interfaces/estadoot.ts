@@ -1,4 +1,4 @@
 export interface EstadoOT {
-    id_estado_ot?: number;
-    nom_estado_ot: string;
+    id_estado: number;
+    nom_estado: string;
 }

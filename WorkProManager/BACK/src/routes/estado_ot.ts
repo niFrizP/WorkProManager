@@ -1,12 +1,18 @@
-import { Router } from 'express';
-import { getEstadoOT, getEstadosOT, updateEstadoOT, deleteEstadoOT, postEstadoOT } from '../controllers/estado_ot';
+import { Router, RequestHandler } from 'express';
+import { 
+    getEstadosOT, 
+    getEstadoOTById,
+    createEstadoOT,
+    updateEstadoOT, 
+    deleteEstadoOT 
+} from '../controllers/estado_ot';
 
 const router = Router();
 
 router.get('/', getEstadosOT);
-router.get('/:id', getEstadoOT);
-router.delete('/:id', deleteEstadoOT);
-router.post('/', postEstadoOT);
+router.get('/:id', getEstadoOTById);
+router.post('/', createEstadoOT);
 router.put('/:id', updateEstadoOT);
+router.delete('/:id', deleteEstadoOT);
 
-export default router;
+export default router; 

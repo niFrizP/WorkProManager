@@ -1,14 +1,18 @@
 import { Router } from 'express';
-import { getEquipo, getEquipos, updateEquipo, deleteEquipo, postEquipo } from '../controllers/equipo';
+import {
+    getEquipos,
+    getEquipoByNumSer,
+    createEquipo,
+    updateEquipo,
+    deleteEquipo,
+} from '../controllers/equipo';
 
 const router = Router();
 
 router.get('/', getEquipos);
-
-router.get('/:id', getEquipo);
-
-router.delete('/:id', deleteEquipo);
-router.post('/', postEquipo);
-router.put('/:id', updateEquipo);
+router.get('/:num_ser', getEquipoByNumSer);
+router.post('/', createEquipo);
+router.put('/:num_ser', updateEquipo);
+router.delete('/:num_ser', deleteEquipo);
 
 export default router;

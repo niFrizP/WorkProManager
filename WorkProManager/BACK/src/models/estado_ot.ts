@@ -1,22 +1,37 @@
-import { DataTypes } from 'sequelize';
-import db from '../db/connection';
-import Order from './orders';
+import { DataTypes, Model } from 'sequelize';
+import db from '../db/connection'; // Connection to the database
 
-// Definición del modelo EstadoOT en lugar de Equipo
-const EstadoOT = db.define('EstadoOT', {
-    id_estado_ot: {
-        type: DataTypes.INTEGER, // El tipo de dato es un entero
-        primaryKey: true, // Define que id_estado es la clave primaria
-        autoIncrement: true // Indica que se incrementa automáticamente
+// Define the EstadoOT model
+class EstadoOT extends Model {
+  public id_estado!: number;
+  public nom_estado!: 'Cotización y revisión' | 'Confirmando cotización con el cliente' | 'Servicios siendo realizados' | 'Orden Realizada' | 'Orden Rechazada';
+}
+
+EstadoOT.init(
+  {
+    id_estado: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
     },
-    nom_estado_ot: {
-        type: DataTypes.STRING // Define el tipo de estado como una cadena de caracteres
-    }
-}, {
-    tableName: 'estado_ot', // Especifica el nombre exacto de la tabla en la base de datos
-    createdAt: false, // Desactiva el timestamp de creación
-    updatedAt: false // Desactiva el timestamp de actualización
-});
+    nom_estado: {
+      type: DataTypes.ENUM(
+        'Cotización y revisión',
+        'Confirmando cotización con el cliente',
+        'Servicios siendo realizados',
+        'Orden Realizada',
+        'Orden Rechazada'
+      ),
+      allowNull: false,
+    },
+  },
+  {
+    sequelize: db,
+    modelName: 'EstadoOT',
+    tableName: 'estado_ot',
+    timestamps: false, // As the SQL definition doesn't use timestamps
+  }
+);
 
-EstadoOT.hasMany(EstadoOT, { foreignKey: 'id_estado_ot' });
 export default EstadoOT;
