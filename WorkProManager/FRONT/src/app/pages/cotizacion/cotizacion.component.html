@@ -1,160 +1,281 @@
 <div class="wpm-custom-gradient p-6 sm:p-4 lg:p-8 rounded-lg shadow-md">
     <div class="contenedor px-4 sm:px-6 lg:px-8">
-      <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-4 text-center">Crear Cotización</h2>
-        <form [formGroup]="cotizacionForm" (ngSubmit)="onSubmit()" class="space-y-6 sm:space-y-4 lg:space-y-8" >
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <!-- Datos Cliente -->
-            <fieldset class="col-span-2 border border-gray-200 p-4 rounded-lg">
-              <legend class="text-lg font-semibold">Datos del Cliente</legend>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="form-group flex items-end">
-                    <div class="w-3/4">
-                        <label for="rut_cli" class="block text-sm font-medium text-gray-700">RUT:</label>
-                        <input id="rut_cli" formControlName="rut_cli" type="number" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                        <span *ngIf="cotizacionForm.get('rut_cli')?.touched && cotizacionForm.get('rut_cli')?.hasError('required')" class="text-red-500 text-sm">El RUT es obligatorio.</span>
-                        <span *ngIf="cotizacionForm.get('rut_cli')?.touched && cotizacionForm.get('rut_cli')?.hasError('pattern')" class="text-red-500 text-sm">Solo se permiten números.</span>
-                    </div>
-                    
-                    <div class="w-1/4 ml-2">
-                        <label for="d_ver_cli" class="block text-sm font-medium text-gray-700">DV:</label>
-                        <input id="d_ver_cli" formControlName="d_ver_cli" type="text" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                        <span *ngIf="cotizacionForm.get('d_ver_cli')?.touched && cotizacionForm.get('d_ver_cli')?.hasError('required')" class="text-red-500 text-sm">El DV es obligatorio.</span>
-                        <span *ngIf="cotizacionForm.get('d_ver_cli')?.touched && cotizacionForm.get('d_ver_cli')?.hasError('pattern')" class="text-red-500 text-sm">Solo se permiten números o 'K'.</span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="email_cli" class="block text-sm font-medium text-gray-700">Email:</label>
-                    <input id="email_cli" formControlName="email_cli" type="email" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                    <span *ngIf="cotizacionForm.get('email_cli')?.touched && cotizacionForm.get('email_cli')?.hasError('required')" class="text-red-500 text-sm">El email es obligatorio.</span>
-                    <span *ngIf="cotizacionForm.get('email_cli')?.touched && cotizacionForm.get('email_cli')?.hasError('email')" class="text-red-500 text-sm">Formato de email inválido.</span>
-                </div>
-                <div class="form-group">
-                  <label for="nom_cli" class="block text-sm font-medium text-gray-700">Nombre:</label>
-                  <input id="nom_cli" formControlName="nom_cli" type="text" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                  <span *ngIf="cotizacionForm.get('nom_cli')?.touched && cotizacionForm.get('nom_cli')?.hasError('required')" class="text-red-500 text-sm">El nombre es obligatorio.</span>
-                  <span *ngIf="cotizacionForm.get('nom_cli')?.touched && cotizacionForm.get('nom_cli')?.hasError('pattern')" class="text-red-500 text-sm">Solo se permiten letras.</span>
-                </div>
-                <div class="form-group">
-                  <label for="ape_cli" class="block text-sm font-medium text-gray-700">Apellido:</label>
-                  <input id="ape_cli" formControlName="ape_cli" type="text" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                  <span *ngIf="cotizacionForm.get('ape_cli')?.touched && cotizacionForm.get('ape_cli')?.hasError('required')" class="text-red-500 text-sm">El apellido es obligatorio.</span>
-                  <span *ngIf="cotizacionForm.get('ape_cli')?.touched && cotizacionForm.get('ape_cli')?.hasError('pattern')" class="text-red-500 text-sm">Solo se permiten letras.</span>
-                </div>
-                <div class="form-group col-span-2">
-                  <label for="dir_cli" class="block text-sm font-medium text-gray-700">Dirección:</label>
-                  <input id="dir_cli" formControlName="dir_cli" type="text" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                  <span *ngIf="cotizacionForm.get('dir_cli')?.touched && cotizacionForm.get('dir_cli')?.hasError('required')" class="text-red-500 text-sm">La dirección es obligatoria.</span>
-                </div>
-                <div class="form-group w-1/2">
-                  <label for="tel_cli" class="block text-sm font-medium text-gray-700">Teléfono:</label>
-                  <input id="tel_cli" formControlName="tel_cli" type="text" maxlength="9" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                  <span *ngIf="cotizacionForm.get('tel_cli')?.touched && cotizacionForm.get('tel_cli')?.hasError('required')" class="text-red-500 text-sm">El teléfono es obligatorio.</span>
-                  <span *ngIf="cotizacionForm.get('tel_cli')?.touched && cotizacionForm.get('tel_cli')?.hasError('pattern')" class="text-red-500 text-sm">Debe tener 9 dígitos.</span>
-                </div>
-                
-              </div>
-            </fieldset>
-
-            <!-- Datos del Equipo -->
-            <fieldset class="col-span-2 border border-gray-200 p-4 rounded-lg">
-                <legend class="text-lg font-semibold">Datos del Equipo</legend>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label for="num_ser" class="block text-sm font-medium text-gray-700">Número de Serie:</label>
-                        <input id="num_ser" formControlName="num_ser" type="text" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                    </div>
-                    <div class="form-group">
-                        <label for="id_marca" class="block text-sm font-medium text-gray-700">ID Marca:</label>
-                        <input id="id_marca" formControlName="id_marca" type="number" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                        <span *ngIf="cotizacionForm.get('id_marca')?.touched && cotizacionForm.get('id_marca')?.hasError('required')" class="text-red-500 text-sm">El ID de la marca es obligatorio.</span>
-                    </div>
-                    <div class="form-group">
-                        <label for="tip_equ" class="block text-sm font-medium text-gray-700">Tipo de Equipo:</label>
-                        <input id="tip_equ" formControlName="tip_equ" type="text" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                    </div>
-                </div>
-            </fieldset>
-
-            <!-- Datos Orden de Trabajo -->
-            <fieldset class="col-span-2 border border-gray-200 p-4 rounded-lg">
-              <legend class="text-lg font-semibold">Datos de la Orden de Trabajo</legend>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="form-group">
-                  <label for="fec_ter" class="block text-sm font-medium text-gray-700">Fecha de Término:</label>
-                  <input id="fec_ter" formControlName="fec_ter" type="date" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                  <span *ngIf="cotizacionForm.get('fec_ter')?.touched && cotizacionForm.get('fec_ter')?.hasError('required')" class="text-red-500 text-sm">La fecha de término es obligatoria.</span>
-                </div>
-                <div class="form-group col-span-2">
-                  <label for="desc_ot" class="block text-sm font-medium text-gray-700">Descripción:</label>
-                  <textarea id="desc_ot" formControlName="desc_ot" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" rows="5"></textarea>
-                  <span *ngIf="cotizacionForm.get('desc_ot')?.touched && cotizacionForm.get('desc_ot')?.hasError('required')" class="text-red-500 text-sm">La descripción es obligatoria.</span>
-                </div>
-                <div class="form-group col-span-2">
-                  <label for="det_adic" class="block text-sm font-medium text-gray-700">Detalles Adicionales:</label>
-                  <textarea id="det_adic" formControlName="det_adic" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" rows="3"></textarea>
-                </div>
-              </div>
-            </fieldset>
-
-            <!-- Datos del Servicio -->
-            <fieldset class="col-span-2 border border-gray-200 p-4 rounded-lg mx-auto w-3/4">
-              <legend class="text-lg font-semibold text-center">Datos del Servicio</legend>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label for="id_serv" class="block text-sm font-medium text-gray-700 mb-2">Selecciona un Servicio:</label>
-                  <select id="id_serv" formControlName="id_serv" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                    <!-- Opciones del dropdown -->
-                    <option *ngFor="let servicio of servicios" [value]="servicio.id">{{ servicio.nombre }}</option>
-                  </select>
-                  <span *ngIf="cotizacionForm.get('id_serv')?.touched && cotizacionForm.get('id_serv')?.hasError('required')" class="text-red-500 text-sm">Selecciona un servicio.</span>
-                </div>
-                <div class="flex items-end justify-end">
-                  <button type="button" (click)="anadirServicio()" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">Añadir Servicio</button>
-                </div>
-              </div>
-
-              <!-- Lista de servicios añadidos -->
-              <div *ngIf="alertVisible" class="alert">
-                <p>¿Estás seguro que deseas eliminar el servicio de "<strong>{{ servicioAEliminar?.nombre }}</strong>"?</p>
-                <div class="flex justify-end">
-                  <button type="button" (click)="confirmarEliminarServicio()" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 mr-2">Sí</button>
-                  <button type="button" (click)="cancelarEliminarServicio()" class="bg-yellow-500 text-white font-bold py-2 px-4 rounded hover:bg-yellow-600">No</button>
-                </div>
-              </div>
-              <div *ngIf="serviciosAnadidos.length > 0" class="mt-4">
-                <h3 class="font-semibold">Servicios Añadidos:</h3>
-                <ul>
-                  <li *ngFor="let servicio of serviciosAnadidos">
-                    {{ servicio.nombre }}
-                    <button type="button" (click)="mostrarAlertaEliminarServicio(servicio)" class="text-red-500 ml-4">Eliminar</button>
-                  </li>
-                </ul>
-              </div>
-            </fieldset>
-
-            <!-- Datos de Asignación -->
-            <fieldset class="col-span-2 border border-gray-200 p-4 rounded-lg">
-              <legend class="text-lg font-semibold">Datos de Asignación</legend>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- Eliminar el campo RUT Gestor -->
-                <div class="form-group">
-                  <label for="rut_tec" class="block text-sm font-medium text-gray-700">RUT Técnico:</label>
-                  <input id="rut_tec" formControlName="rut_tec" type="number" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                </div>
-                <div class="form-group col-span-2">
-                  <label for="notas_asig" class="block text-sm font-medium text-gray-700">Notas Asignadas:</label>
-                  <input id="notas_asig" formControlName="notas_asig" type="text" class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
-                </div>
-              </div>
-            </fieldset>
-
-            <!-- Botón para Enviar -->
-            <div class="col-span-2 text-center mt-4">
-              <button type="submit" [disabled]="cotizacionForm.invalid" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">Enviar Cotización</button>
+        <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+            <!-- Alert for successful creation -->
+            <div *ngIf="ordenCreada" class="alert bg-white border-l-4 border-yellow-500 border-r-4 border-blue-500 text-gray-700 p-4 rounded-lg">
+                Orden de trabajo con número {{newOrderId}} creada con éxito
             </div>
-          </div>
-        </form>
-      </div>
+            <!-- Leyenda de descripción -->
+            <p class="text-md text-gray-600 mb-4">
+                Completa el siguiente formulario para crear una nueva Orden de Trabajo. Asegúrate de proporcionar todos
+                los detalles requeridos.
+            </p>
+
+            <form class="space-y-6 sm:space-y-4 lg:space-y-8" [formGroup]="form" (ngSubmit)="addProduct()">
+                <div class="mt-4">
+                    <label for="fecha" class="block text-sm font-medium text-gray-700 mb-2">Fecha y Hora de Entrega:</label>
+                    <div class="relative">
+                        <input type="date" id="fecha" formControlName="fecha"
+                            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 appearance-none bg-white"
+                            [min]="fechaHoy" />
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-2xl font-semibold text-gray-700">{{ operacion }} una Orden de Trabajo</p>
+
+                <!-- Descripción de la OT -->
+                <fieldset class="border border-gray-200 p-4 rounded-lg">
+                    <legend class="text-lg font-semibold">Descripción de la orden de trabajo</legend>
+
+
+                    <div>
+                        <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+                        <textarea id="descripcion" formControlName="descripcion" rows="4"
+                            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 sm:rows-3 lg:rows-5"
+                            placeholder="Añade una descripción detallada de la Orden de Trabajo...">
+                    </textarea>
+                    </div>
+                </fieldset>
+
+                <!-- Detalle Cliente -->
+                <fieldset class="border border-gray-200 p-4 rounded-lg">
+                    <legend class="text-lg font-semibold">Detalle Cliente</legend>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+                            <input type="text" id="nombre" formControlName="nombre" title="Nombre del cliente"
+                                placeholder="Ingrese el nombre del cliente"
+                                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
+                            <span *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('required')"
+                                class="text-red-500 text-sm">El nombre es obligatorio.</span>
+                            <span *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('pattern')"
+                                class="text-red-500 text-sm">Solo se permiten letras.</span>
+                        </div>
+                        <div>
+                            <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
+                            <input type="text" id="apellido" formControlName="apellido" title="Apellido del cliente"
+                                placeholder="Ingrese el apellido del cliente"
+                                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
+                            <span *ngIf="form.get('apellido')?.touched && form.get('apellido')?.hasError('required')"
+                                class="text-red-500 text-sm">El apellido es obligatorio.</span>
+                            <span *ngIf="form.get('apellido')?.touched && form.get('apellido')?.hasError('pattern')"
+                                class="text-red-500 text-sm">Solo se permiten letras.</span>
+                        </div>
+                        <div>
+                            <label for="rut_cliente" class="block text-sm font-medium text-gray-700">Run</label>
+                            <input type="text" id="rut_cliente" formControlName="rut_cliente"
+                                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+                                placeholder="11111111" />
+                            <span
+                                *ngIf="form.get('rut_cliente')?.touched && form.get('rut_cliente')?.hasError('required')"
+                                class="text-red-500 text-sm">El rut es obligatorio.</span>
+                            <span
+                                *ngIf="form.get('rut_cliente')?.touched && form.get('rut_cliente')?.hasError('pattern')"
+                                class="text-red-500 text-sm">Solo se permiten numeros.</span>
+                        </div>
+                        <div class="w-16">
+                            <label for="d_veri_cli" class="block text-sm font-medium text-gray-700">DV</label>
+                            <input type="text" id="d_veri_cli" formControlName="d_veri_cli"
+                                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+                                maxlength="1" placeholder="K" />
+                            <span
+                                *ngIf="form.get('d_veri_cli')?.touched && form.get('d_veri_cli')?.hasError('required')"
+                                class="text-red-500 text-sm">Ingrese el digito verificador.</span>
+                        </div>
+                        <div>
+                            <label for="correo" class="block text-sm font-medium text-gray-700">Correo</label>
+                            <input type="email" id="correo" formControlName="correo"
+                                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+                                placeholder="correo.ejemplo@gmail.com" />
+                        </div>
+                        <div>
+                            <label for="celular" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                            <input type="tel" id="celular" formControlName="celular"
+                                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+                                placeholder="123456789" />
+                            <span *ngIf="form.get('celular')?.touched && form.get('celular')?.hasError('required')"
+                                class="text-red-500 text-sm">Por favor ingrese un numero de celular.</span>
+                            <span *ngIf="form.get('celular')?.touched && form.get('celular')?.hasError('pattern')"
+                                class="text-red-500 text-sm">Solo se permiten numeros.</span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Detalle Equipo -->
+                <fieldset class="border border-gray-200 p-4 rounded-lg">
+                    <legend class="text-lg font-semibold">Detalle Equipo</legend>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label for="mod_equipo" class="block text-sm font-medium text-gray-700">Modelo</label>
+                            <input type="text" id="mod_equipo" formControlName="mod_equipo"
+                                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500"
+                                placeholder="Ingrese modelo del equipo" />
+                            <span
+                                *ngIf="form.get('mod_equipo')?.touched && form.get('mod_equipo')?.hasError('required')"
+                                class="text-red-500 text-sm">Por favor el modelo del equipo.</span>
+                        </div>
+                        <div>
+                            <label for="id_marca" class="block text-sm font-medium text-gray-700 mb-2">Selecciona una
+                                marca:</label>
+                            <div class="relative">
+                                <select id="id_marca" title="Selecciona una marca" formControlName="id_marca"
+                                    (change)="onMarcaChange($event)"
+                                    class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 appearance-none bg-white">
+                                    <option value="">Seleccione una marca</option>
+                                    <option *ngFor="let marca of marcas" [value]="marca.id_marca">{{ marca.nom_marca }}
+                                    </option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20">
+                                        <path
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="id_tipo" class="block text-sm font-medium text-gray-700 mb-2">Selecciona el tipo
+                                de equipo:</label>
+                            <div class="relative">
+                                <select id="id_tipo" title="Selecciona el tipo de equipo" formControlName="id_tipo"
+                                    (change)="onTipoChange($event)"
+                                    class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 appearance-none bg-white">
+                                    <option value="">Seleccione el tipo de equipo</option>
+                                    <option *ngFor="let tipo of tipos" [value]="tipo.id_tipo">{{ tipo.nom_tipo }}
+                                    </option>
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20">
+                                        <path
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="num_equipo" class="block text-sm font-medium text-gray-700">S/N</label>
+                            <input type="text" id="num_equipo" formControlName="num_equipo"
+                                title="Número de serie del equipo" placeholder="Ingrese el número de serie del equipo"
+                                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
+                            <span
+                                *ngIf="form.get('num_equipo')?.touched && form.get('num_equipo')?.hasError('required')"
+                                class="text-red-500 text-sm">Por favor el S/N del equipo.</span>
+                        </div>
+                        <div>
+                            <label for="fec_fabric" class="block text-sm font-medium text-gray-700">Fecha de
+                                fabricación</label>
+                            <input type="date" id="fec_fabric" formControlName="fec_fabric"
+                                title="Fecha de fabricación del equipo" placeholder="Ingrese la fecha de fabricación"
+                                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500" />
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Sección de Servicios -->
+                <fieldset class="border border-gray-200 p-4 rounded-lg">
+                    <legend class="text-lg font-semibold">Servicios</legend>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="id_serv" class="block text-sm font-medium text-gray-700 mb-2">Selecciona un
+                                Servicio:</label>
+                            <select id="id_serv" formControlName="id_serv" (change)="onServicioChange($event)"
+                                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500">
+                                <option value="">Seleccione un servicio</option>
+                                <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">{{
+                                    servicio.nom_serv }}</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end justify-end">
+                            <button type="button" (click)="agregarServicio($event)"
+                                class="boton-wpm text-white font-bold py-2 px-4 rounded">Añadir
+                                Servicio</button>
+                        </div>
+                    </div>
+
+                    <!-- Lista de servicios añadidos -->
+                    <div *ngIf="alertVisible" class="alert">
+                        <p>¿Estás seguro que deseas eliminar el servicio de "<strong>{{ servicioAEliminar.nom_serv
+                                }}</strong>"?</p>
+                        <div class="flex justify-end">
+                            <button type="button" (click)="confirmarEliminarServicio()"
+                                class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 mr-2">Sí</button>
+                            <button type="button" (click)="cancelarEliminarServicio()"
+                                class="bg-yellow-500 text-white font-bold py-2 px-4 rounded hover:bg-yellow-600">No</button>
+                        </div>
+                    </div>
+                    <div *ngIf="serviciosSeleccionados.length > 0" class="mt-4">
+                        <h3 class="font-semibold">Servicios Añadidos:</h3>
+                        <ul>
+                            <li *ngFor="let servicio of serviciosSeleccionados">
+                                {{ servicio.nom_serv }}
+                                <button type="button" (click)="mostrarAlertaEliminarServicio(servicio)"
+                                    class="text-red-500 ml-4">Eliminar</button>
+                            </li>
+                        </ul>
+                    </div>
+                </fieldset>
+
+                <!-- Usuario -->
+                <fieldset class="border border-gray-200 p-4 rounded-lg">
+                    <legend class="text-lg font-semibold">Usuario</legend>
+                    <div>
+                        <label for="usuarios" class="block text-sm font-medium text-gray-700 mb-2">Selecciona un
+                            Usuario:</label>
+                        <div class="relative">
+                            <select id="usuarios" formControlName="rut_usuario" (change)="onUserChange($event)"
+                                class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 appearance-none bg-white">
+                                <option value="">Seleccione un usuario</option>
+                                <option *ngFor="let usuario of usuarios" [value]="usuario.rut_usuario">{{
+                                    usuario.nom_usu }} {{ usuario.ap_usu }}</option>
+                            </select>
+                            <div
+                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20">
+                                    <path
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="selectedUsuarioName !== null">
+                        <p>Precio del usuario seleccionado: <strong>{{ selectedUsuarioName }} {{ selectedUsuarioSurname
+                                }}</strong></p>
+                    </div>
+                </fieldset>
+
+                <!-- Descripción de la OT -->
+                <fieldset class="border border-gray-200 p-4 rounded-lg">
+                    <legend class="text-lg font-semibold">Descripción de la solicitud</legend>
+                    <div>
+                        <label for="desc_sol" class="block text-sm font-medium text-gray-700">Descripción</label>
+                        <textarea id="desc_sol" formControlName="desc_sol" rows="4"
+                            class="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 sm:rows-3 lg:rows-5"
+                            placeholder="Añade la descripción de la solicitud que realizarás al técnico...">
+                        </textarea>
+                    </div>
+                </fieldset>
+
+                <!-- Botón para enviar el formulario -->
+                <div class="flex justify-end">
+                    <button type="submit"
+                        class="boton-wpm text-white font-bold py-2 px-4 rounded  text-sm sm:text-base lg:text-lg"
+                        [disabled]="form.get('isSubmitting')?.value">
+                        {{ form.get('isSubmitting')?.value ? 'Guardando...' : 'Guardar Orden de Trabajo' }}
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
   </div>

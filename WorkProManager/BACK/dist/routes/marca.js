@@ -9,3 +9,4 @@ router.post('/', marca_1.createMarca);
 router.put('/:id', marca_1.updateMarca);
 router.delete('/:id', marca_1.deleteMarca);
 exports.default = router;
+

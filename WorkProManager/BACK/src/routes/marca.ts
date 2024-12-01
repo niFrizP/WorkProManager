@@ -4,9 +4,9 @@ import { getMarcas, getMarcaById, createMarca, updateMarca, deleteMarca } from '
 const router = Router();
 
 router.get('/', getMarcas);
-router.get('/:id', getMarcaById);
-router.post('/', createMarca);
-router.put('/:id', updateMarca);
+router.get('/:id', getMarca);
 router.delete('/:id', deleteMarca);
+router.post('/', postMarca);
+router.put('/:id', updateMarca);
 
 export default router;

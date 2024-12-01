@@ -78,6 +78,12 @@ class Server {
             console.error('Unable to connect to the database:', error);
         }
     }
+
+    listen() {
+        this.app.listen(this.port, () => {
+            console.log(`Servidor corriendo en puerto ${this.port}`);
+        });
+    }
 }
 
 export default Server;

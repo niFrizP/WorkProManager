@@ -80,6 +80,7 @@ export class LoginComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
+  // Método que se llama cuando el usuario envía el formulario de inicio de sesión
   onSubmit() {
     // Llamada al servicio de autenticación
     this.authService.login({ rut_trab: this.rut_trab, clave: this.clave }).subscribe(

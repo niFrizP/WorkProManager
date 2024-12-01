@@ -8,7 +8,7 @@
 // @Component({
 //   selector: 'app-sidebar',
 //   standalone: true,
-//   imports: [CommonModule, RouterOutlet, RouterModule],
+//   imports: [CommonModule, RouterModule],
 //   templateUrl: './sidebar.component.html',
 //   styleUrls: ['./sidebar.component.css'],
 // })
@@ -23,28 +23,33 @@
 //   contarTecnico: number = 0;
 //   contarTecnicoReportes: number = 0;
 
-//   count: number = 0;
-//   constructor(public authService: AuthService, public cookieService: CookieManagementService , public orderService: OrderService) {
-//     this.initializeResources();
-//   }
+
+  count: number = 0;
+  constructor(public authService: AuthService, public cookieService: CookieManagementService, public orderService: OrderService) {
+    this.initializeResources();
+  }
 
 //   ngOnInit(): void {
 //     console.log('Sidebar Component Initialized');
 
-//     this.contarNotificaciones()
-//     this.countOrderNotificacionesOrdersByRut()
+    this.contarNotificaciones()
+    this.contarNotificacionesReportes()
+    this.contarNotifiacionesFinalizadas()
+    this.contarNotificacionesRechazadas()
+    this.countOrderNotificationsCotizacionesByRut()
+    this.countOrderNotificacionesOrdersByRut()
 
 //     this.initializeResources();
 
 //   }
 
-//   contarNotificaciones() {
-//    this.orderService.countOrderNotifications().subscribe((data) => {
-//       this.contar = data.count;
-//       console.log('Conteo de notificaciones:', this.contar);
-//     }); 
-    
-//   }
+  contarNotificaciones() {
+    this.orderService.countOrderNotifications().subscribe((data) => {
+      this.contar = data.count;
+      console.log('Conteo de notificaciones:', this.contar);
+    });
+
+  }
 
 //   countOrderNotificacionesOrdersByRut() {
 //     const rut = this.authService.getIdLocal();
@@ -63,41 +68,43 @@
 //     });
 //   }
 
-//   contarNotificacionesReportes() {
-//     this.orderService.countOrderNotificationsReportes().subscribe((data) => {
-//        this.contarReportes = data.count;
-//        console.log('Conteo de notificaciones:', this.contar);
-//      }); 
-//     }
+  contarNotificacionesReportes() {
+    this.orderService.countOrderNotificationsReportes().subscribe((data) => {
+      this.contarReportes = data.count;
+      console.log('Conteo de notificaciones:', this.contar);
+    });
+  }
 
-//     contarNotifiacionesFinalizadas() {
-//       this.orderService.countOrderNotificationsFinalizadas().subscribe((data) => {
-//         this.contarFinalizadas = data.count;
-//         console.log('Conteo de notificaciones:', this.contarFinalizadas);
-//       }); 
-//     }
+  contarNotifiacionesFinalizadas() {
+    this.orderService.countOrderNotificationsFinalizadas().subscribe((data) => {
+      this.contarFinalizadas = data.count;
+      console.log('Conteo de notificaciones:', this.contarFinalizadas);
+    });
+  }
 
-//     contarNotificacionesRechazadas() {
-//       this.orderService.countOrderNotificationsRechazadas().subscribe((data) => {
-//         this.contarRechazadas = data.count;
-//         console.log('Conteo de notificaciones:', this.contarRechazadas);
-//       });
-//     }
-  
-//   initializeResources() {
-//     const userRole = this.authService.getRolIdLocal() // Obtén el rol del usuario actual
-//     console.log('User Role:', userRole); // Verifica el rol del usuario
+  contarNotificacionesRechazadas() {
+    this.orderService.countOrderNotificationsRechazadas().subscribe((data) => {
+      this.contarRechazadas = data.count;
+      console.log('Conteo de notificaciones:', this.contarRechazadas);
+    });
+  }
 
-//     // Define los recursos con roles permitidos
-//     this.resources = [
-//       { name: 'Inicio', link: './home', icon: 'fas fa-home', requiredRoles: [1, 2, 3] },
-//       { name: 'Ordenes', link: './orders', icon: 'fas fa-box', requiredRoles: [1, 2, 3] },
-//       { name: 'Usuarios', link: './usuarios', icon: 'fas fa-user', requiredRoles: [1 ] },
-//       { name: 'Cotización', link: './cotizacion', icon: 'fas fa-dollar-sign', requiredRoles: [1, 3 ] },
-//       {name: 'Marca', link: './marca', icon: 'fas fa-check', requiredRoles: [1] },
-//       {name: 'Servicios', link: './servicios', icon: 'fas fa-check', requiredRoles: [1] },
-//       {name: 'Causa', link: './causa', icon: 'fas fa-check', requiredRoles: [1] },
-//     ];
+
+  initializeResources() {
+    const userRole = this.authService.getRolIdLocal() // Obtén el rol del usuario actual
+    console.log('User Role:', userRole); // Verifica el rol del usuario
+
+
+    // Define los recursos con roles permitidos
+    this.resources = [
+      { name: 'Inicio', link: './home', icon: 'fas fa-home', requiredRoles: [1, 2, 3] },
+      { name: 'Ordenes', link: './orders', icon: 'fas fa-box', requiredRoles: [1, 2, 3] },
+      { name: 'Usuarios', link: './usuarios', icon: 'fas fa-user', requiredRoles: [1] },
+      { name: 'Cotización', link: './cotizacion', icon: 'fas fa-dollar-sign', requiredRoles: [1, 3] },
+      { name: 'Marca', link: './marca', icon: 'fas fa-copyright', requiredRoles: [1] },
+      { name: 'Servicios', link: './servicios', icon: 'fas fa-toolbox', requiredRoles: [1] },
+      { name: 'Causa', link: './causa', icon: 'fas fa-scroll', requiredRoles: [1] },
+    ];
 
 //     // Filtra los recursos en función del rol del usuario
 //     this.resources = this.resources.filter(resource =>
