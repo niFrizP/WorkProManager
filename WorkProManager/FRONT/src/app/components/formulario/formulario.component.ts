@@ -23,7 +23,6 @@ import { vistaServicio } from '../../interfaces/vistaServicio';
   styleUrls: ['./formulario.component.css'],
 })
 export class FormularioComponent implements OnInit {
-
   servicios: Servicio[] = [];
   tecnicos: Trabajador[] = [];
   marcas: Marca[] = [];
