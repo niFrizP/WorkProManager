@@ -24,13 +24,12 @@ import Swal from 'sweetalert2';
   styleUrls: ['./formulario.component.css'],
 })
 export class FormularioComponent implements OnInit {
-
   servicios: Servicio[] = [];
   tecnicos: Trabajador[] = [];
   marcas: Marca[] = [];
   estados: EstadoOT[] = [];
 
-  vistaServicio:vistaServicio[] = [];
+  vistaServicio: vistaServicio[] = [];
   vistaOrden: vistaOrden[] = [];
   cotizacionForm!: FormGroup;
 
@@ -212,7 +211,7 @@ export class FormularioComponent implements OnInit {
     event.preventDefault();
     const selectedId = (event.target as HTMLSelectElement).value;
     const selectedService = this.servicios?.find(servicio => servicio.id_serv?.toString() === selectedId);
-    
+
     // Comprobar si el servicio seleccionado existe antes de acceder a su precio
     if (selectedService) {
       this.selectedServiceID = selectedService.id_serv ?? null;
@@ -229,7 +228,7 @@ export class FormularioComponent implements OnInit {
   }
 
   // Agregar servicio seleccionado a la lista
-  agregarServicio(event:Event) {
+  agregarServicio(event: Event) {
     event.preventDefault();
     if (this.servicioSeleccionado) {
       // Encontrar el servicio completo según el ID

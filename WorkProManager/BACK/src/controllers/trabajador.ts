@@ -95,16 +95,16 @@ export const loginUser = async (req: Request, res: Response) => {
                 // Generar token
                 const token = jwt.sign(
                     { rut_trab: trabajador.rut_trab },
-                    process.env.SECRET_KEY || 'pepito123',
+                    process.env['SECRET_KEY'] || 'pepito123',  // Aquí se cambia la notación
                     { expiresIn: '1h' }
                 );
 
                 // Almacenar el token en una cookie segura
                 res.cookie('token', token, {
                     httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
+                    secure: process.env['NODE_ENV'] === 'production',  // Aquí se cambia la notación
                     sameSite: 'strict',
-                    maxAge: 60 * 60 * 1000,
+                    maxAge: 60 * 60 * 1000,  // 1 hora
                 });
 
                 // Enviar respuesta una sola vez
@@ -119,6 +119,7 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 };
 
+
 // Crear un nuevo trabajador
 export const postTrabajador = async (req: Request, res: Response) => {
     const { rut_trab, d_veri_trab, nom_trab, ape_trab, clave, id_rol, activo } = req.body;
@@ -126,7 +127,7 @@ export const postTrabajador = async (req: Request, res: Response) => {
         // Validamos si el trabajador ya existe en la base de datos
 
         // Si no existe, encriptamos la clave
-        const hashedPassword = await bcrypt.hash(clave, 10); 
+        const hashedPassword = await bcrypt.hash(clave, 10);
 
         // Crear el nuevo trabajador
         const newTrabajador = await Trabajador.create({
@@ -140,14 +141,14 @@ export const postTrabajador = async (req: Request, res: Response) => {
         });
 
         // Devolver respuesta exitosa
-         res.json({
+        res.json({
             msg: 'El trabajador fue agregado con éxito!',
             trabajador: newTrabajador // Devuelve el nuevo trabajador, incluyendo el `rut_trab` generado
         });
     } catch (error) {
         console.log(error);
         // Devolver respuesta de error general
-         res.status(500).json({
+        res.status(500).json({
             msg: 'Upps, ocurrió un error. Comuníquese con soporte.'
         });
     }

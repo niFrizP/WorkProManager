@@ -199,15 +199,6 @@
                   Las notas asignadas son inválidas.
                 </div>
               </div>
-              <div class="form-group">
-                <label for="id_estado" class="block text-sm font-medium text-gray-700">Estado Asignado:</label>
-                <select id="id_estado" formControlName="id_estado" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                  <option *ngFor="let estado of estados" [value]="estado.id_estado">{{ estado.nom_estado }}</option>
-                </select>
-                <div *ngIf="cotizacionForm.get('id_estado')?.invalid && cotizacionForm.get('id_estado')?.touched" class="text-red-500 text-xs mt-1">
-                  Debe elegir un estado de OT.
-                </div>
-              </div>
             </div>
           </fieldset>
   
@@ -233,4 +224,4 @@
       </div>
     </div>
   </div>
-  
+</div>
