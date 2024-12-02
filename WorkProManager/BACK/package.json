@@ -30,6 +30,7 @@
     "ngx-cookie-service": "^18.0.0",
     "sequelize": "^6.37.5",
     "socket.io": "^4.8.1",
+    "sweetalert2": "^11.14.5",
     "winston": "^3.17.0"
   },
   "devDependencies": {
