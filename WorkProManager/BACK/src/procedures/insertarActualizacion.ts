@@ -12,7 +12,7 @@ interface OrdenTrabajoInput {
   email_cli: string;
   ape_cli: string;
   rut_cli: number;
-  d_ver_cli: string;
+  d_ver_cli: string;  // Se ajusta el tipo de d_ver_cli a VARCHAR(1)
   desc_ot: string;
   fec_ter: Date;
   det_adic: string;
@@ -25,12 +25,9 @@ interface OrdenTrabajoInput {
   rut_tec: number;
   rut_ges: number;
   notas_asig: string;
-  fecha_asig: Date;
-  es_actual: boolean;
-  id_asig: number;
 }
 
-export const insertarOrdenClienteEquipoAsig = async (data: OrdenTrabajoInput) => {
+export const actualizarOrdenClienteEquipoAsig = async (data: OrdenTrabajoInput) => {
   try {
     // Validar que el trabajador con rut_tec tenga rol 2
     const valid_tec = await Trabajador.count({
@@ -51,14 +48,12 @@ export const insertarOrdenClienteEquipoAsig = async (data: OrdenTrabajoInput) =>
     // Verificar si el equipo existe, si existe hacer un UPDATE, si no, insertar
     let equipo = await Equipo.findOne({ where: { num_ser: data.num_ser } });
     if (equipo) {
-      // Si el equipo ya existe, actualizamos
       equipo = await equipo.update({
         tip_equ: data.tip_equ || equipo.tip_equ,
         mod_equ: data.mod_equ || equipo.mod_equ,
         id_marca: data.id_marca || equipo.id_marca,
       });
     } else {
-      // Si el equipo no existe, lo creamos
       equipo = await Equipo.create({
         num_ser: data.num_ser,
         tip_equ: data.tip_equ,
@@ -70,7 +65,6 @@ export const insertarOrdenClienteEquipoAsig = async (data: OrdenTrabajoInput) =>
     // Verificar si el cliente existe, si existe hacer un UPDATE, si no, insertar
     let cliente = await Cliente.findOne({ where: { rut_cli: data.rut_cli } });
     if (cliente) {
-      // Si el cliente ya existe, actualizamos
       cliente = await cliente.update({
         nom_cli: data.nom_cli || cliente.nom_cli,
         dir_cli: data.dir_cli || cliente.dir_cli,
@@ -80,7 +74,6 @@ export const insertarOrdenClienteEquipoAsig = async (data: OrdenTrabajoInput) =>
         d_ver_cli: data.d_ver_cli || cliente.d_ver_cli,
       });
     } else {
-      // Si el cliente no existe, lo creamos
       cliente = await Cliente.create({
         nom_cli: data.nom_cli,
         dir_cli: data.dir_cli,
@@ -92,26 +85,34 @@ export const insertarOrdenClienteEquipoAsig = async (data: OrdenTrabajoInput) =>
       });
     }
 
-    // Insertar Orden de Trabajo
-    const ordenTrabajo = await OrdenTrabajo.create({
-      desc_ot: data.desc_ot,
-      fec_ter: data.fec_ter,
-      det_adic: data.det_adic,
-      num_ser: data.num_ser,
-      id_estado: data.id_estado,
-      motiv_rec: data.motiv_rec,
-      rut_cli: data.rut_cli,
-    });
-
-    // Obtener el ID de la orden de trabajo creada
-    const id_ot = ordenTrabajo.id_ot;
+    // Verificar si la orden de trabajo existe, si existe hacer un UPDATE, si no, insertar
+    let ordenTrabajo = await OrdenTrabajo.findOne({ where: { num_ser: data.num_ser } });
+    if (ordenTrabajo) {
+      ordenTrabajo = await ordenTrabajo.update({
+        desc_ot: data.desc_ot || ordenTrabajo.desc_ot,
+        fec_ter: data.fec_ter || ordenTrabajo.fec_ter,
+        det_adic: data.det_adic || ordenTrabajo.det_adic,
+        id_estado: data.id_estado || ordenTrabajo.id_estado,
+        motiv_rec: data.motiv_rec || ordenTrabajo.motiv_rec,
+      });
+    } else {
+      ordenTrabajo = await OrdenTrabajo.create({
+        desc_ot: data.desc_ot,
+        fec_ter: data.fec_ter,
+        det_adic: data.det_adic,
+        num_ser: data.num_ser,
+        id_estado: data.id_estado,
+        motiv_rec: data.motiv_rec,
+        rut_cli: data.rut_cli,
+      });
+    }
 
     // Insertar Asignación con el id_ot obtenido
     const asignacion = await Asignacion.create({
       rut_tec: data.rut_tec,
       rut_ges: data.rut_ges,
       notas_asig: data.notas_asig,
-      id_ot: id_ot,
+      id_ot: ordenTrabajo.id_ot,
     });
 
     return ordenTrabajo;

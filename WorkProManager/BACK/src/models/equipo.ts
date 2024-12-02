@@ -38,5 +38,4 @@ Equipo.init(
 );
 
 
-
 export default Equipo;

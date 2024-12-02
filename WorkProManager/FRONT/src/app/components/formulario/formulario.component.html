@@ -74,6 +74,13 @@
                 </div>
               </div>
               <div class="form-group">
+                <label for="mod_equ" class="block text-sm font-medium text-gray-700">Modelo del equipo:</label>
+                <input id="mod_equ" formControlName="mod_equ" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <div *ngIf="cotizacionForm.get('mod_equ')?.invalid && cotizacionForm.get('mod_equ')?.touched" class="text-red-500 text-xs mt-1">
+                  Rellene este campo
+                </div>
+              </div>
+              <div class="form-group">
                 <label for="tip_equ" class="block text-sm font-medium text-gray-700">Tipo de Equipo (Celular/Computador):</label>
                 <select id="tip_equ" formControlName="tip_equ" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
                   <option value="" disabled selected>Seleccione un tipo de equipo</option>
@@ -160,41 +167,9 @@
             </div>
           </fieldset>
   
-          <!-- Datos de Asignación -->
-          <fieldset class="border border-gray-300 rounded-md p-4">
-            <legend class="text-lg font-semibold px-2">Datos de Asignación</legend>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="form-group">
-                <label for="rut_tec" class="block text-sm font-medium text-gray-700">Técnico Asignado:</label>
-                <select id="rut_tec" formControlName="rut_tec" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                  <option *ngFor="let tecnico of tecnicos" [value]="tecnico.rut_trab">{{ tecnico.nom_trab }} {{ tecnico.ape_trab }}</option>
-                </select>
-                <div *ngIf="cotizacionForm.get('rut_tec')?.invalid && cotizacionForm.get('rut_tec')?.touched" class="text-red-500 text-xs mt-1">
-                  El RUT del técnico es inválido.
-                </div>
-              </div>
-              <div class="form-group col-span-2">
-                <label for="notas_asig" class="block text-sm font-medium text-gray-700">Mensaje de asignación:</label>
-                <input id="notas_asig" formControlName="notas_asig" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                <div *ngIf="cotizacionForm.get('notas_asig')?.invalid && cotizacionForm.get('notas_asig')?.touched" class="text-red-500 text-xs mt-1">
-                  Las notas asignadas son inválidas.
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="id_estado" class="block text-sm font-medium text-gray-700">Estado Asignado:</label>
-                <select id="id_estado" formControlName="id_estado" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                  <option *ngFor="let estado of estados" [value]="estado.id_estado">{{ estado.nom_estado }}</option>
-                </select>
-                <div *ngIf="cotizacionForm.get('id_estado')?.invalid && cotizacionForm.get('id_estado')?.touched" class="text-red-500 text-xs mt-1">
-                  Debe elegir un estado de OT.
-                </div>
-              </div>
-            </div>
-          </fieldset>
-  
           <!-- Botón para Enviar -->
           <div class="text-center mt-6">
-            <button type="button" (click)="mostrarConfirmacion()" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <button type="button" (click)="mostrarConfirmacion()" [disabled]="!cotizacionForm.valid" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
               Enviar Cotización
             </button>
           </div>
@@ -202,6 +177,37 @@
           <div *ngIf="confirmModalVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div class="bg-white p-6 rounded-lg shadow-lg">
               <h3 class="text-lg font-semibold mb-4">¿Estás seguro de querer crear esta orden de trabajo?</h3>
+              <!-- Datos de Asignación -->
+              <fieldset class="border border-gray-300 rounded-md p-4 mb-4">
+                <legend class="text-lg font-semibold px-2">Datos de Asignación</legend>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="asignacionForm">
+                  <div class="form-group">
+                    <label for="rut_tec" class="block text-sm font-medium text-gray-700">Técnico Asignado:</label>
+                    <select id="rut_tec" formControlName="rut_tec" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                      <option *ngFor="let tecnico of tecnicos" [value]="tecnico.rut_trab">{{ tecnico.nom_trab }} {{ tecnico.ape_trab }}</option>
+                    </select>
+                    <div *ngIf="asignacionForm.get('rut_tec')?.invalid && asignacionForm.get('rut_tec')?.touched" class="text-red-500 text-xs mt-1">
+                      El RUT del técnico es inválido.
+                    </div>
+                  </div>
+                  <div class="form-group col-span-2">
+                    <label for="notas_asig" class="block text-sm font-medium text-gray-700">Mensaje de asignación:</label>
+                    <input id="notas_asig" formControlName="notas_asig" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <div *ngIf="asignacionForm.get('notas_asig')?.invalid && asignacionForm.get('notas_asig')?.touched" class="text-red-500 text-xs mt-1">
+                      Las notas asignadas son inválidas.
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="id_estado" class="block text-sm font-medium text-gray-700">Estado Asignado:</label>
+                    <select id="id_estado" formControlName="id_estado" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                      <option *ngFor="let estado of estados" [value]="estado.id_estado">{{ estado.nom_estado }}</option>
+                    </select>
+                    <div *ngIf="asignacionForm.get('id_estado')?.invalid && asignacionForm.get('id_estado')?.touched" class="text-red-500 text-xs mt-1">
+                      Debe elegir un estado de OT.
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
               <div class="flex justify-end">
                 <button type="button" (click)="confirmarCreacion()" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 mr-2">Aceptar</button>
                 <button type="button" (click)="cancelarCreacion()" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">Cancelar</button>
@@ -212,4 +218,3 @@
       </div>
     </div>
   </div>
-  

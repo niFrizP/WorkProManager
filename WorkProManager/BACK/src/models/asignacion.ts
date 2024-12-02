@@ -1,6 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../db/connection'; // Connection to the database
 import Trabajador from './trabajador';
+import OrdenTrabajo from './orden_trabajo';
 
 // Define the Asignacion model
 class Asignacion extends Model {
@@ -10,6 +11,7 @@ class Asignacion extends Model {
   public fecha_asig!: Date;
   public notas_asig!: string | null;
   public es_actual!: boolean;
+  public id_ot!: number | null;
 }
 
 
@@ -44,6 +46,10 @@ Asignacion.init(
       defaultValue: true, // Default to 1 (true)
       allowNull: false,
     },
+    id_ot: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   },
   {
     sequelize: db,
@@ -64,6 +70,13 @@ Asignacion.belongsTo(Trabajador, {
   foreignKey: 'rut_ges',
   as: 'gestor', // Alias para gestor
 });
+
+// Asignación tiene un técnico y un gestor
+Asignacion.belongsTo(Trabajador, { foreignKey: 'rut_tec' });
+Asignacion.belongsTo(Trabajador, { foreignKey: 'rut_ges' });
+
+Asignacion.belongsTo(OrdenTrabajo, { foreignKey: 'id_ot' });
+OrdenTrabajo.hasMany(Asignacion, { foreignKey: 'id_ot' });  // Una orden de trabajo tiene muchas asignaciones
 
 
 export default Asignacion;

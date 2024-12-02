@@ -17,6 +17,8 @@ export const getTrabajadores = async (req: Request, res: Response) => {
 };
 
 
+
+
 // Obtener todos los trabajadores con rol 2, de técnico
 export const getTecnicos = async (req: Request, res: Response) => {
     try {
@@ -94,7 +96,7 @@ export const loginUser = async (req: Request, res: Response) => {
             } else {
                 // Generar token
                 const token = jwt.sign(
-                    { rut_trab: trabajador.rut_trab },
+                    { rut_trab: trabajador.rut_trab, id_rol: trabajador.id_rol },
                     process.env.SECRET_KEY || 'pepito123',
                     { expiresIn: '1h' }
                 );
@@ -117,6 +119,34 @@ export const loginUser = async (req: Request, res: Response) => {
             msg: 'Ocurrió un error inesperado.',
         });
     }
+};
+
+
+
+export const verifyToken = (req: Request, res: Response) => {
+    const token = req.cookies['token'];  // Recuperar el token desde las cookies
+
+    if (!token) {
+         res.status(401).json({ msg: 'Acceso denegado. No se encontró token.' });
+    }
+
+    try {
+        const decoded: any = jwt.verify(token, process.env.SECRET_KEY || 'pepito123');
+        res.status(200).json({ msg: 'Token válido', user: decoded });
+    } catch (error) {
+         res.status(401).json({ msg: 'Token no válido o expirado.' });
+    }
+};
+
+export const logoutUser = (req: Request, res: Response) => {
+    // Eliminar la cookie del token
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Solo en producción
+        sameSite: 'strict',
+    });
+
+    res.status(200).json({ msg: 'Sesión cerrada correctamente.' });
 };
 
 // Crear un nuevo trabajador

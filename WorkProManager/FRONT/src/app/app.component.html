@@ -2,12 +2,14 @@
   <ng-container *ngIf="!isPage"> <!-- Si no estamos en el login, muestra el resto -->
     <aside>
       <div>
+        <app-header></app-header>
       </div>
     </aside>
 
     <header>
     </header>
   </ng-container>
+  <app-sidebar></app-sidebar>
 
   <!-- Main con router outlet -->
   <main>

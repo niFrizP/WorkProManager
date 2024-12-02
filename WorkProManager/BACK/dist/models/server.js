@@ -22,6 +22,7 @@ const equipo_1 = __importDefault(require("../routes/equipo"));
 const insertar_servicio_orden_1 = __importDefault(require("../routes/insertar_servicio_orden"));
 const estado_ot_1 = __importDefault(require("../routes/estado_ot"));
 const orden_trabajo_1 = __importDefault(require("../routes/orden_trabajo"));
+const servicio_orden_1 = __importDefault(require("../routes/servicio_orden"));
 // Importar los modelos
 const trabajador_2 = __importDefault(require("./trabajador"));
 const trabajador_rol_1 = __importDefault(require("./trabajador_rol"));
@@ -32,9 +33,10 @@ const equipo_2 = __importDefault(require("./equipo"));
 const estado_ot_2 = __importDefault(require("./estado_ot"));
 const servicio_2 = __importDefault(require("./servicio"));
 const orden_trabajo_2 = __importDefault(require("./orden_trabajo"));
-const servicio_orden_1 = __importDefault(require("./servicio_orden"));
+const servicio_orden_2 = __importDefault(require("./servicio_orden"));
 const historial_orden_1 = __importDefault(require("./historial_orden"));
 const historial_servicio_orden_1 = __importDefault(require("./historial_servicio_orden"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
@@ -58,6 +60,7 @@ class Server {
         this.app.use('/api/servicio-orden', insertar_servicio_orden_1.default);
         this.app.use('/api/estado-ot', estado_ot_1.default);
         this.app.use('/api/orden', orden_trabajo_1.default);
+        this.app.use('/api/get-servicio-orden', servicio_orden_1.default);
     }
     midlewares() {
         // Parseo body
@@ -66,6 +69,8 @@ class Server {
             origin: 'http://localhost:4200', // Reemplaza con la URL de tu frontend
             credentials: true, // Permitir el envío de cookies y encabezados de autorización
         }));
+        // Analizar cookies
+        this.app.use((0, cookie_parser_1.default)()); // <--- Aquí
         // Parseo del body
         this.app.use(express_1.default.json());
     }
@@ -81,7 +86,7 @@ class Server {
                 yield estado_ot_2.default.sync();
                 yield servicio_2.default.sync();
                 yield orden_trabajo_2.default.sync();
-                yield servicio_orden_1.default.sync();
+                yield servicio_orden_2.default.sync();
                 yield historial_orden_1.default.sync();
                 yield historial_servicio_orden_1.default.sync();
             }

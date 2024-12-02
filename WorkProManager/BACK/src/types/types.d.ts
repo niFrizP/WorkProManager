@@ -1,11 +1,13 @@
+// src/types/express.d.ts
 import { Request } from 'express';
 
-// Extiende la interfaz Request de Express
 declare global {
-    namespace Express {
-        interface Request {
-            rut_usuario: string; // Tipo adecuado para el rut del usuario
-            id_rol: any; // Tipo adecuado para el rol del usuario
-        }
+  namespace Express {
+    interface Request {
+      user?: { 
+        rut_trab: number;  // o number, según el tipo de rut_trab
+        id_rol: number;
+      };
     }
+  }
 }

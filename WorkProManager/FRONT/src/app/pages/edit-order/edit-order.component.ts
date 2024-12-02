@@ -1,827 +1,249 @@
-/* import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule, FormArray } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
+import { CotizacionService } from '../../services/cotizacion.service';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { firstValueFrom } from 'rxjs';
 
-// Interfaces
-import { Order } from '../../interfaces/order';
-import { Servicio } from '../../interfaces/servicio';
-import { Usuario } from '../../interfaces/usuario';
+import { vistaOrden } from '../../interfaces/vistaOrden';
+import { Trabajador } from '../../interfaces/trabajador';
 import { Marca } from '../../interfaces/marca';
-import { Equipo } from '../../interfaces/equipo';
-import { Cliente } from '../../interfaces/cliente';
-import { DetalleOT } from '../../interfaces/detalle_ot';
-import { newOrder } from '../../interfaces/newOrder';
-import { AuthService } from '../../services/auth.service';
+import { Servicio } from '../../interfaces/servicio';
+import { EstadoOT } from '../../interfaces/estadoot';
+import { vistaServicio } from '../../interfaces/vistaServicio';
+import { ListasOrdenTrabajo } from '../../interfaces/listaOT';
+import { vistaServicioResponse } from '../../interfaces/vistaServicio';
 
-// Services
-import { OrderService } from '../../services/order.service';
-import { ServicioService } from '../../services/servicio.service';
-import { UsuarioService } from '../../services/usuario.service';
+
 import { MarcaService } from '../../services/marca.service';
-import { ClienteService } from '../../services/cliente.service';
-import { EquipoService } from '../../services/equipo.service';
-import { SolicitudService } from '../../services/solicitud.service';
-import { TipoService } from '../../services/tipo';
-// Components
-import { SidebarComponent } from '../../components/sidebar/sidebar.component';
-import { DetalleOTService } from '../../services/detalle_ot.service';
-import { error } from 'console';
-import { Solicitud } from '../../interfaces/solicitud';
-import { ModalComponent } from '../../components/modal/modal.component';
-import { Tipo } from '../../interfaces/tipo';
-import Swal from 'sweetalert2';
+import { TrabajadorService } from '../../services/trabajador.service';
+import { ServicioService } from '../../services/servicio.service';
+import { EstadoOTService } from '../../services/estado-ot.service';
+import { ServicioOrdenService } from '../../services/insertarServicio.service';
+import { OrdenTrabajoService } from '../../services/orden-trabajo.service';
+
 
 @Component({
-  selector: 'app-edit-order',
+  selector: 'app-formulario',
   standalone: true,
-  imports: [ReactiveFormsModule, HttpClientModule, CommonModule, FormsModule, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './edit-order.component.html',
-  styleUrls: ['./edit-order.component.css'] // Add this line
+  styleUrls: ['./edit-order.component.css'],
 })
 export class EditOrderComponent implements OnInit {
-  mostrarSelectServicio: boolean = false; 
-    solicitudForm: FormGroup;  // Define el FormGroup para el formulario
 
-  solicitudes: Solicitud[] = [];
-  solicitudesInvertidas: Solicitud[] = [];
-  servicios: Servicio[] = []; // Inicialización como array vacío
-  serviciosArray: FormArray<FormGroup> = new FormArray<FormGroup>([]);
-  serviciosSeleccionados: any = []; // Cambia 'any' por el tipo adecuado
-  servicioSeleccionado: number | null = null;
-  usuarios: Usuario[] = [];
-  newSolicitudId: number | null = null;
+  servicios: Servicio[] = [];
+  tecnicos: Trabajador[] = [];
   marcas: Marca[] = [];
-  newOrders: newOrder[] = [];
-  selectedUsuarioName: string | null = null;
-  selectedUsuarioSurname: string | null = null;
-  selectedServicePrecio: number | null = null;
-  selectedMarcaNombre: string | null = null;
+  estados: EstadoOT[] = [];
+  listasOT: ListasOrdenTrabajo[] = [];
+  listasServicios: vistaServicioResponse[] = [];
+
+  vistaServicio:vistaServicio[] = [];
+  vistaOrden: vistaOrden[] = [];
+  cotizacionForm!: FormGroup;
+  asignacionForm!: FormGroup;
+
+
+  // Array para los servicios añadidos con id_serv y nom_serv
   selectedServiceID: number | null = null;
-  selectedUsuarioID: number | null = null;  // Add this line
-  form: FormGroup;
-  formDetalleOT: FormGroup;
-  loading: boolean = false;
-  id_ot: number ;
-  conseguirUsuarioReceptor: number | null = 0;
-  conseguirUsuarioRemisor: number | null = 0;
-  nuevoServicio: string = ''; // Variable para almacenar el nuevo servicio
-  operacion: string = 'Agregar ';
-  isSubmitting: boolean = false;
-  orderId: number | undefined;
-  newOrderId: number | null = null; // Variable para almacenar el ID de la nueva orden
-  orderDetails: newOrder | null = null;
-  detalleOT: DetalleOT[] = [];
-  isModalOpen = true;
-  cargando = true;
-  rut_remitente: number | null = 0;
-  rut_receptorActual: number | null = 0;
-  rut_receptor: number | null = 0;
-  soli : number | null = 0;
-  fechaHoy: string = ''; // Variable para almacenar la fecha actual
-  cambiarSolicitud: number | null = 0;
-  rolid: number | null = 0;
-  userid: number | null = 0;
-  selectedTipoNombre: string | null = null;
-  alertVisible: boolean = false; // Add this line
-  servicioAEliminar: any = null; // Add this line
-  tipos: Tipo[] = [];
-  ordenCreada: boolean = false;
+  serviciosArray: FormArray;
+  serviciosSeleccionados: any[] = []; // Store selected services
+  servicioSeleccionado: number | null = null; // Store selected service ID
+  alertVisible: boolean = false; // Flag to control alert visibility
+  servicioAEliminar: any = null; // Store service to delete
+  confirmModalVisible: boolean = false; // Flag to control modal visibility
   
 
-
-
+  //Sacar ID de la OT desde la URL
+  id_ot: number | null = 0;
   constructor(
     private fb: FormBuilder,
-    private _orderService: OrderService,
+    private cotizacionService: CotizacionService,
     private router: Router,
-    private aRouter: ActivatedRoute,
-    private detalleOTService:DetalleOTService,
-    private servicioService:ServicioService,
-    private usuarioService:UsuarioService,
-    private marcaService:MarcaService,
-    private equipoService:EquipoService,
-    private clienteService:ClienteService,
-    private solicitudService:SolicitudService,
-    public authService: AuthService,
-    private tipoService: TipoService 
-    
+    private route: ActivatedRoute,
+    private trabajadorService: TrabajadorService,
+    private marcaService: MarcaService,
+    private servicioService: ServicioService,
+    private estadoService: EstadoOTService,
+  
+    private servicioOrdenService: ServicioOrdenService,
+    private ordenTrabajoService: OrdenTrabajoService,
   ) {
-
-    this.solicitudForm = this.fb.group({
-      id_sol: [null],
-      id_ot: [null],
-      desc_sol: [''],
+    // Inicializa el formulario con un array de servicios
+    this.cotizacionForm = this.fb.group({
+      serviciosArray: this.fb.array([]) // Form array for selected services
     });
-
-    const orden_id = this.aRouter.snapshot.paramMap.get('id_ot');
-
-
-    this.form = this.fb.group({
-      id_ot: [null, Validators.required],
-      num_equipo: [null, Validators.required],
-      costo: [null, Validators.required],
-      fecha: [null, Validators.required],
-      descripcion: ['', Validators.required],
-      rut_cliente: [null, Validators.required],
-      servicios: this.fb.array([this.fb.group({
-        id_serv: [null, Validators.required],
-      })]),
-      rut_usuario: [null, Validators.required],
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
-      celular: [null, Validators.required],
-      id_tipo: [null, Validators.required],
-      correo: ['', Validators.required],
-      tipo_equipo: ['', Validators.required],
-      mod_equipo: ['', Validators.required],
-      fec_entrega: ['', Validators.required],
-      fec_fabric: ['', Validators.required],
-      fec_creacion: ['', Validators.required],
-      id_marca: [null, Validators.required],
-      d_veri_cli: ['', Validators.required],
-      desc_sol: ['', Validators.required],
-      rut_receptor: [null, Validators.required],
-      rut_remitente: [null, Validators.required],
-      
-    });
+    this.serviciosArray = this.cotizacionForm.get('serviciosArray') as FormArray;
     
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
-
-
-    this.formDetalleOT = this.fb.group({
-      servicios: this.fb.array([this.fb.group({
-        id_serv: [null, Validators.required],
-      })]),
-    });
   }
 
-  ngOnInit(): void {
-
+  ngOnInit() {
+     this.id_ot = parseInt(this.route.snapshot.paramMap.get('id') || '0', 10);
     
-    this.rolid = this.authService.getRolIdLocal();
-    this.userid = this.authService.getIdLocal();
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id'));
-    this.serviciosSeleccionados = [];
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
-    this.loadOrder(this.id_ot);
-    this.updateSolicitudOnLoad()
-    this.loadDetalle(this.id_ot);
-    this.cargarTipoEquipo();
-    console.log(this.id_ot);
-    this.form.patchValue({ rut_usuario: this.form.get('rut_usuario')?.value });
-    this.cargarServicios();
-    this.cargarUsuarios();
+    // Cargar datos iniciales
+    this.cargarTecnicos();
     this.cargarMarcas();
-    this.getot(this.id_ot);
-    this.rut_remitente = this.authService.getIdLocal()
-    console.log(this.rut_remitente);
-    this.rut_receptorActual = this.authService.getIdLocal()
-    console.log(this.updateeee() );
-    console.log(this.soli);
-    console.log(this.postEstadoSoliciud());
-    console.log(this.cambiarSolicitud);
-    this.cambiarSolicitud = this.postEstadoSoliciud() ?? 0;
-    
+    this.cargarServiciosAsociados(this.id_ot); // Cargar servicios seleccionados primero
+    this.cargarServicios(); // Luego cargar servicios disponibles
+    this.cargarEstados();
+    this.cargarOrdenTrabajo(this.id_ot);
 
-    if (this.id_ot !== 0) {
-      this.operacion = 'Editar ';
-      
-    }
-  }
-
-  onTipoChange(event: Event) {
-    const selectedId = (event.target as HTMLSelectElement).value;
-    const selectedUser = this.tipos.find(tipo => tipo.id_tipo?.toString() === selectedId);
-    
-    // Comprobar si el usuario seleccionado existe antes de acceder a su precio
-    if (selectedUser) {
-      this.selectedTipoNombre = selectedUser.nom_tipo // Usa la propiedad precio o lo que necesites
-     
-    } else {
-      this.selectedTipoNombre = null// Usa la propiedad precio o lo que necesites
-
-
-    }
-  }
-
-
-  conseguirRolRemitente(rut_remitente: number): number | undefined {
-    let rol: number | undefined;
-    this.usuarioService.getUsuario(rut_remitente).subscribe((data: Usuario) => {
-      console.log(data);
-      rol = data.id_rol;
+    // Inicializa el formulario de cotización con validaciones
+    this.cotizacionForm = this.fb.group({
+      nom_cli: ['', [Validators.required, Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$')]], // Permitir tildes y ñ
+      dir_cli: ['', Validators.required],
+      tel_cli: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
+      email_cli: ['', [Validators.required, Validators.email]],
+      ape_cli: ['', [Validators.required, Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$')]], // Permitir tildes y ñ
+      rut_cli: [null, [Validators.required, Validators.pattern('^[0-9]+$')]],
+      d_ver_cli: ['', [Validators.required, Validators.pattern('^[0-9kK]$')]],
+      desc_ot: ['', Validators.required],
+      fec_ter: [null, Validators.required],
+      det_adic: [''],
+      num_ser: [null, Validators.required],
+      id_marca: [null, Validators.required],
+      tip_equ: [null, Validators.required],
+      mod_equ: [''],
+      desc_serv: ['']
     });
-    return rol;
+
+    // Inicializa el formulario de asignación con validaciones
+    this.asignacionForm = this.fb.group({
+      rut_ges: [78901234],
+      rut_tec: [null, Validators.required],
+      notas_asig: [''],
+      id_estado: [null, Validators.required]
+    });
+
+    // Actualiza el servicio seleccionado cuando cambia el valor
+    this.cotizacionForm.get('id_serv')?.valueChanges.subscribe(value => {
+      this.servicioSeleccionado = value;
+    });
   }
 
-  postEstadoSoliciud():number | undefined{
-    if(this.authService.getRolIdLocal() == 2){
-      return this.cambiarSolicitud = 2;
-    }
-    else{
-      return this.cambiarSolicitud = 3;
-    }
-  }
-  
-  updateeee() {
- 
-    this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
-      this.solicitudes = data
-      this.solicitudesInvertidas = data.reverse();
-      console.log(this.solicitudes);}
-
-      
-    )
-
-
- 
-    
-
-  
-
-
-}
-
-cargarTipoEquipo() {
-  this.tipoService.getListTipos().subscribe({
-    next: (data: Tipo[]) => {
-      this.tipos = data; // Asigna la respuesta a la variable
-    },
-    error: (error) => {
-      console.error('Error al cargar tipos:', error); // Manejo de errores
-    },
-    complete: () => {
-      console.log('Carga de tipos completada'); // (Opcional) Mensaje de finalización
-    }
-  });
-}
-
-
-
-  private log(){
-    console.log(this.id_ot);
-  }
-
-  loadOrder(id: number): void {
-    this._orderService.getNewOrder(id).subscribe(
-      (data: newOrder) => {
-        // Asumiendo que 'data' tiene la estructura necesaria
-        this.form.patchValue({
-          id_ot: data.id_ot,
-          fecha_creacion: data.fec_creacion,
-          fecha: data.fec_entrega,
-          descripcion: data.descripcion,
-          apellido: data.cliente?.ap_cli ?? '',
-          tipo_equipo: data.Equipo?.mod_equipo ?? '',
-          celular: data.cliente?.cel_cli,
-          correo: data.cliente?.nom_cli,
-          d_veri_cli: data.cliente?.d_veri_cli,
-          ap_usu: data.VistaUltimaAdjudicacion?.ap_usu,
-          nom_usu: data.VistaUltimaAdjudicacion?.nom_usu, // Cambia esto si el nombre no está directamente en 'Usuario'
-          rut_cliente: data.rut_cliente,
-          nombre: data.cliente?.nom_cli,
-          id_tipo: data.Equipo?.id_tipo ?? null, // Ensure this line is added
-          mod_equipo: data.Equipo?.mod_equipo, // Asegúrate de que esta propiedad exista
-          num_equipo: data.num_equipo, // Asegúrate de que esta propiedad exista
-          fec_fabric: data.Equipo?.fecha_fab,
-          id_marca: data.Equipo?.id_marca,
-          servicios: this.fb.array([this.fb.group({
-            id_serv: [null, Validators.required],
-          })])
-          
-
-        });
-        console.log("Datos cargados desde la API:");
-        console.log(data); // Para verificar los datos cargados
+  // Cargar la lista de técnicos
+  cargarTecnicos(): void {
+    this.trabajadorService.getTecnicos().subscribe({
+      next: (data) => {
+        this.tecnicos = data;
+        console.log('Técnicos obtenidos:', data);
       },
-      (error) => {
-        console.error('Error fetching order', error);
+      error: (err) => {
+        console.error('Error al obtener técnicos:', err);
       }
-    );
+    });
   }
 
-  loadDetalle(id: number): Promise<DetalleOT[]> {
-    return new Promise((resolve, reject) => {
-      this.detalleOTService.getListDetalleOTByOTId(id).subscribe(
-        (data: DetalleOT[]) => {
-          console.log(data);
-          resolve(data);  // Resolviendo la promesa con los datos recibidos
-          console.log('DetalleOT Data:', data);
-  
-          // Filtrar y extraer los servicios a partir de los datos obtenidos
-          this.serviciosSeleccionados = data.map((detalle: DetalleOT) => ({
-            id_serv: detalle.id_serv,
-            nom_serv: detalle.desc_detalle, // Asegúrate de que esta propiedad exista o ajústala según tu API
-            fecha_detalle: detalle.fecha_detalle
-          }));
-  
-          console.log('Servicios seleccionados:', this.serviciosSeleccionados);
-  
-          resolve(data); // Resolviendo la promesa con los datos recibidos
+  // Cargar la lista de marcas
+  cargarMarcas(): void {
+    this.marcaService.getMarcas().subscribe({
+      next: (data) => {
+        this.marcas = data;
+        console.log('Marcas obtenidas:', data);
+      },
+      error: (err) => {
+        console.error('Error al obtener marcas:', err);
+      }
+    });
+  }
+
+
+  //Cargar lista de estado de OTS
+
+  cargarEstados(): void {
+    this.estadoService.getEstadoOTs().subscribe({
+      next: (data) => {
+        this.estados = data;
+        console.log('Estados obtenidos:', data);
+      },
+      error: (err) => {
+        console.error('Error al obtener estados:', err);
+      }
+    });
+  }
+
+  // Cargar la lista de servicios
+  cargarServicios(): void {
+    this.servicioService.getServicios().subscribe({
+      next: (data) => {
+        this.servicios = data.filter(servicio => !this.serviciosSeleccionados.some(s => s.id_serv === servicio.id_serv)).sort((a, b) => a.nom_serv.localeCompare(b.nom_serv));
+        console.log('Servicios obtenidos:', this.servicios);
+      },
+      error: (err) => {
+        console.error('Error al obtener servicios:', err);
+      }
+    });
+  }
+
+  cargarOrdenTrabajo(id_ot: number | null): void {
+    if (id_ot) {
+      this.ordenTrabajoService.getOrdenById(id_ot).subscribe({
+        next: (data) => {
+          this.listasOT = [data];
+          console.log('Datos de la orden de trabajo:', this.listasOT); // Verifica los datos recibidos
+
+          // Convertir la fecha al formato yyyy-MM-dd
+          const formattedDate = this.listasOT[0]?.fec_ter ? new Date(this.listasOT[0]?.fec_ter).toISOString().split('T')[0] : null;
+
+          this.cotizacionForm.patchValue({
+            nom_cli: this.listasOT[0]?.Cliente.nom_cli,
+            dir_cli: this.listasOT[0]?.Cliente.dir_cli,
+            tel_cli: this.listasOT[0]?.Cliente.tel_cli,
+            email_cli: this.listasOT[0]?.Cliente.email_cli,
+            ape_cli: this.listasOT[0]?.Cliente.ape_cli,
+            rut_cli: this.listasOT[0]?.Cliente.rut_cli,
+            d_ver_cli: this.listasOT[0]?.Cliente.d_ver_cli,
+            desc_ot: this.listasOT[0]?.desc_ot,
+            fec_ter: formattedDate,
+            det_adic: this.listasOT[0]?.det_adic,
+            num_ser: this.listasOT[0]?.num_ser,
+            id_marca: this.listasOT[0]?.Equipo.id_marca,
+            tip_equ: this.listasOT[0]?.Equipo.tip_equ,
+            mod_equ: this.listasOT[0]?.Equipo.mod_equ,
+            rut_tec: this.listasOT[0]?.Asignacions[0].rut_tec,
+            notas_asig: this.listasOT[0]?.Asignacions[0].notas_asig,
+            id_estado: this.listasOT[0]?.id_estado
+          });
+          this.asignacionForm.patchValue({
+            rut_ges: 78901234,
+            rut_tec: this.listasOT[0]?.Asignacions[0].rut_tec,
+            notas_asig: this.listasOT[0]?.Asignacions[0].notas_asig,
+            id_estado: this.listasOT[0]?.id_estado
+          });
         },
-        (error) => {
-          reject(error);  // Rechazando la promesa en caso de error
-          console.error('Error al cargar los detalles:', error);
-          reject(error); // Rechazando la promesa en caso de error
-        }
-      );
-    });
-  }
-  
-  getot(id_ot: number) {
-    this.solicitudService.getSolByOt(id_ot).subscribe((data: Solicitud[]) => {
-      this.solicitudes = data;
-      console.log(this.solicitudes);
-
-      // Usa patchValue para actualizar los valores del formulario con la primera solicitud obtenida
-      if (this.solicitudes.length > 0) {
-        this.solicitudForm.patchValue(this.solicitudes[0]);
-      }
-    });
-  }
-
-  openModal(event:Event) {
-
-    this.isModalOpen = true;
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
-    console.log('Abriendo modal con id_ot:', this.id_ot);  // Verifica que el id_ot se pasa al abrir el modal
-
-  }
-
-  closeModal() {
-    this.isModalOpen = false;
-  }
-
-  private async createorupdateSolicitud(): Promise<Solicitud> {
-
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
-
-    
-
-
-    const solicitudData: Solicitud = {
-      id_ot: this.id_ot,
-      desc_sol: this.form.get('desc_sol')?.value,
-      isView: false,
-      fecha_emision: new Date(),
-      rut_usuario: this.form.get('rut_usuario')?.value,
-      completada: false,
-      id_estado_ot: 2,
-    };
-    
-    console.log('Solicitud data:')
-    console.log(JSON.stringify(solicitudData, null, 2));
-
-    this.solicitudService.updateSolicitudByFechaTermino(this.solicitudes[0].id_sol!, new Date).subscribe({
-      next: () => {
-        console.log('Solicitud updated successfully');
-      }
-    });
-
-    this.solicitudService.updateSolicitudByCompletada(this.solicitudes[0].id_sol!, true).subscribe({
-      next: () => {
-        console.log('Solicitud updated successfully');
-      }
-    });
-
-
-    
-  
-    
-        return new Promise((resolve, reject) => {
-          this.solicitudService.saveSolicitud(solicitudData).subscribe({
-            next: (response: any) => {
-              console.log('Response from server:', response);
-  
-              // Asegúrate de que la respuesta tiene la estructura esperada
-              const newSolicitud = response?.solicitud; // Accede al objeto 'solicitud'
-  
-              if (newSolicitud) {
-                this.newSolicitudId = newSolicitud?.id_sol; // Accede a la propiedad 'id_sol'
-  
-                if (this.newSolicitudId) {
-                  console.log('New solicitud ID:', this.newSolicitudId);
-                } else {
-                  console.warn('No solicitud ID found in response');
-                }
-  
-                resolve(newSolicitud); // Devuelve la solicitud creada
-              } else {
-                console.warn('Solicitud object not found in response');
-                reject(new Error('Solicitud object not found in response'));
-              }
-            },
-            error: (error) => {
-              console.error('Error creating solicitud:', error);
-              reject(error);
-            }
-          });
-        });
-      }
-
-
-      updateSolicitudOnLoad() {
-
-        
-
-        this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
-        this.authService.getIdLocal();
-        this.authService.getRolIdLocal();
-
-          
-
-        this.solicitudService.getSolByOt(this.id_ot).subscribe((data: Solicitud[]) => {
-          this.solicitudes = data;
-          this.solicitudesInvertidas = data.reverse();
-          console.log(this.solicitudes[0].isView);
-
-        
-    if(this.solicitudesInvertidas[0].isView == false){
-       this.solicitudService.updateSolicitudByView(this.solicitudes[0].id_sol!, true).subscribe({
-          next: () => {
-            console.log('Solicitud updated successfully');
-          },
-        });   
-
-
-        this.solicitudService.updateSolicitudByFecha(this.solicitudes[0].id_sol!, new Date).subscribe({
-          next: () => {
-            console.log('Solicitud updated successfully');
-          },
-        });   
- 
-  
-      }else(
-        console.log("Solicitud ya vista")
-      )
-      
-      });
-    
-    }
-    
-    
-  
-  async editProduct(): Promise<void> {
-    this.loading = true;
-
-    if (this.isSubmitting) return; // Si ya se está enviando, no hacer nada
-    this.isSubmitting = true; // Desactivar el botón
-
-    try {
-      // 1. Create or update cliente
-      const cliente = await this.createOrUpdateCliente();
-
-      // 2. Create or update equipo
-      const equipo = await this.createOrUpdateEquipo();
-
-      const order = await this.createOrUpdateOrder();
-
-
-      const detalleOT = await this.createOrUpdateDetalleOT();
-
-      const solicitud = await this.createorupdateSolicitud();
-
-
-      console.log(order);
-
-      // Log the JSON representation of the order
-
-      const id = this.form.get('id_ot')?.value; // Asegúrate de obtener el ID de la orden de trabajo (ot)
-
-      Swal.fire({
-        title: 'La cotización fue agregada con éxito!',
-        text: `La cotización correspondiente al número de OT ${id} fue creada con éxito.`,
-        icon: 'success',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#3085d6'
-      });
-  
-      this.loading = false;
-      this.ordenCreada = true;
-  
-      // Redirigir después de aceptar el mensaje
-      Swal.fire({
-        title: 'La cotización fue agregada con éxito!',
-        text: `La cotización correspondiente al número de OT ${id} fue creada con éxito.`,
-        icon: 'success',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#3085d6'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.router.navigate(['/orders']); // Redirige a la página principal
+        error: (err) => {
+          console.error('Error al obtener la orden de trabajo:', err);
         }
       });
-    } catch (error) {
-      console.error('Error creating order:', error);
-      this.loading = false;
-  
-      // Manejar error con SweetAlert2
-      Swal.fire({
-        title: 'Error',
-        text: 'Ocurrió un error al crear la orden. Por favor, inténtalo de nuevo.',
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#d33'
+    }
+  }
+
+  // Cargar los servicios asociados a la orden de trabajo
+  cargarServiciosAsociados(id_ot: number | null): void {
+    if (id_ot) {
+      this.servicioOrdenService.getServiciosOrden(id_ot).subscribe({
+        next: (data: vistaServicioResponse[]) => {
+          this.listasServicios = data;
+          console.log('Servicios asociados obtenidos:', this.listasServicios);
+
+          // Incluir los servicios asociados en el array de servicios seleccionados
+          this.serviciosSeleccionados = this.listasServicios.map(servicio => ({
+            id_serv: servicio.id_serv,
+            nom_serv: servicio.Servicio.nom_serv
+          }));
+        },
+        error: (err: any) => {
+          console.error('Error al obtener servicios asociados:', err);
+        }
       });
     }
   }
 
-  private async createOrUpdateCliente(): Promise<Cliente> {
-    const clienteData: Cliente = {
-        rut_cliente: this.form.get('rut_cliente')?.value,
-        d_veri_cli: this.form.get('d_veri_cli')?.value,
-        apellido: this.form.get('apellido')?.value,
-        ap_cli: this.form.get('apellido')?.value,
-        nom_cli: this.form.get('nombre')?.value,
-        cel_cli: this.form.get('celular')?.value,
-        email_cli: this.form.get('correo')?.value,
-    };
-
-    console.log('Cliente data:', JSON.stringify(clienteData, null, 2));
-
-    try {
-        // Attempt to get the existing client
-        const existingCliente = await this.clienteService.getCliente(clienteData.rut_cliente!).toPromise().catch((error) => {
-            if (error.status === 404) {
-                return null; // No client found, proceed to create
-            }
-            throw error; // Rethrow other errors
-        });
-
-        if (existingCliente) {
-            // Update existing client
-            const updatedCliente = await this.clienteService.updateCliente(clienteData.rut_cliente!, clienteData).toPromise();
-            if (!updatedCliente) throw new Error('Failed to update cliente');
-            return updatedCliente;
-        } else {
-            // Create a new client
-            console.log('Attempting to create new client:', clienteData);
-            return new Promise((resolve, reject) => {
-                this.clienteService.saveCliente(clienteData).subscribe({
-                    next: (newCliente) => {
-                        console.log('New client created:', newCliente);
-                        resolve(newCliente);
-                    },
-                    error: (error) => {
-                        console.error('Error creating client:', error);
-                        reject(error);
-                    }
-                });
-            });
-        }
-    } catch (error) {
-        console.error('Error al crear o actualizar el cliente:', error);
-        throw error;
-    }
-}
-
-  
-  private async createOrUpdateEquipo(): Promise<Equipo> {
-    const equipoData: Equipo = {
-      num_equipo: this.form.get('num_equipo')?.value,
-      mod_equipo: this.form.get('mod_equipo')?.value,
-      id_marca: this.form.get('id_marca')?.value
-    };
-  
-    console.log('Equipo data:', JSON.stringify(equipoData, null, 2));
-
-
-    
-    try {
-      // Attempt to get the existing client
-      const existingEquipo = await this.equipoService.getEquipo(equipoData.num_equipo!).toPromise().catch((error) => {
-          if (error.status === 404) {
-              return null; // No client found, proceed to create
-          }
-          throw error; // Rethrow other errors
-      });
-
-      if (existingEquipo) {
-          // Update existing client
-          const updateEquipo = await this.equipoService.updateEquipo(equipoData.num_equipo!, equipoData).toPromise();
-          if (!updateEquipo) throw new Error('Failed to update equipo');
-          return updateEquipo;
-      } else {
-          // Create a new client
-          console.log('Attempting to create new device:', equipoData);
-          return new Promise((resolve, reject) => {
-              this.equipoService.saveEquipo(equipoData).subscribe({
-                  next: (newEquipo) => {
-                      console.log('New device created:', newEquipo);
-                      resolve(newEquipo);
-                  },
-                  error: (error) => {
-                      console.error('Error creating device :', error);
-                      reject(error);
-                  }
-              });
-          });
-      }
-  } catch (error) {
-      console.error('Error al crear o actualizar el equipo:', error);
-      throw error;
-  }
-}
-  // ... (resto del código sin cambios)
-
-  private async createOrUpdateOrder(): Promise<newOrder> {
-    // Usar this.id_ot en lugar de obtenerlo del formulario
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
-
-
-    const orderData: newOrder = {
-        id_ot: this.id_ot,
-        num_equipo: this.form.get('num_equipo')?.value,
-        fec_creacion: new Date(),
-        fec_entrega: this.form.get('fecha')?.value,
-        descripcion: this.form.get('descripcion')?.value,
-        rut_cliente: this.form.get('rut_cliente')?.value,
-    };
-
-    try {
-        const existingOrder = await this._orderService.getOrder(orderData.id_ot!).toPromise().catch((error) => {
-            if (error.status === 404) {
-                return null; // No order found, proceed to create
-            }
-            throw error; // Rethrow other errors
-        });
-
-        if (existingOrder) {
-            // Update existing order
-            const updateOrder = await this._orderService.updateOrder(orderData.id_ot!, orderData).toPromise();
-            if (!updateOrder) throw new Error('Failed to update order');
-            return updateOrder;
-        } else {
-          console.log("No existe la orden");
-          console.log(orderData);
-            // Create a new order
-            return new Promise((resolve, reject) => {
-                this._orderService.saveOrder(orderData).subscribe({
-                    next: (response: any) => {  // Usamos 'any' para acceder a la respuesta completa
-                        console.log('Response from server:', response);
-
-                        // Asegúrate de que la respuesta tiene la estructura esperada
-                        const newOrder = response?.order; // Accede al objeto 'order'
-
-                        if (newOrder) {
-                            this.newOrderId = newOrder?.id_ot; // Accede a la propiedad 'id_ot'
-
-                            if (this.newOrderId) {
-                                console.log('New order ID:', this.newOrderId);
-                            } else {
-                                console.warn('No order ID found in response');
-                            }
-
-                            resolve(newOrder); // Devuelve la orden creada
-                        } else {
-                            console.warn('Order object not found in response');
-                            reject(new Error('Order object not found in response'));
-                        }
-                    },
-                    error: (error) => {
-                        console.error('Error creating order:', error);
-                        reject(error);
-                    }
-                });
-            });
-        }
-    } catch (error) {
-        console.error('Error creating or updating the order:', error);
-        throw error;
-    }
-}
-
-  private async createOrUpdateDetalleOT(): Promise<DetalleOT[]> {
-    this.id_ot = Number(this.aRouter.snapshot.paramMap.get('id_ot'));
-
-    // Crea un array de detalles OT a partir de servicios seleccionados
-    const detalleOTData: DetalleOT[] = this.serviciosSeleccionados.map((servicio: Servicio) => ({
-      id_ot: this.id_ot, // Asegúrate de que newOrderId esté definido
-      id_serv: servicio.id_serv!,
-      fecha_detalle: new Date(),
-      desc_detalle: servicio.nom_serv!,
-      rut_usuario: this.form.get('rut_usuario')?.value,
-    }));
-  
-    console.log('DetalleOT data:', JSON.stringify(detalleOTData, null, 2));
-  
-    const detalleOTResponses: DetalleOT[] = []; // Almacenará las respuestas de detalleOT
-  
-    try {
-      // Itera sobre cada detalle OT
-      for (const detalle of detalleOTData) {
-        const existingDetalleOT = await this.detalleOTService
-          .getListDetalleOTByOT(detalle.id_ot!, detalle.id_serv!)
-          .toPromise()
-          .catch((error) => {
-            if (error.status === 404) {
-              return null; // No detalleOT found, proceed to create
-            }
-            throw error; // Rethrow other errors
-          });
-  
-        if (existingDetalleOT) {
-          // Update existing detalleOT
-          const updateDetalleOT = await this.detalleOTService
-            .updateDetalleOT(detalle.id_ot!, detalle.id_serv!, detalle)
-            .toPromise();
-  
-          if (!updateDetalleOT) throw new Error('Failed to update detalleOT');
-          detalleOTResponses.push(updateDetalleOT); // Agregar a las respuestas
-        } else {
-          // Create a new detalleOT
-          const newDetalleOT = await this.detalleOTService.saveDetalleOT(detalle).toPromise();
-  
-          if (!newDetalleOT) throw new Error('Failed to create detalleOT');
-          console.log('New detalleOT created:', newDetalleOT);
-          detalleOTResponses.push(newDetalleOT); // Agregar a las respuestas
-        }
-      }
-  
-      return detalleOTResponses; // Devuelve todas las respuestas de detalleOT
-    } catch (error) {
-      console.error('Error creating or updating the detalleOT:', error);
-      throw error;
-    }
-  }
-  
-  
-
-  cargarServicios() {
-    this.servicioService.getListServicios().subscribe({
-      next: (data: Servicio[]) => {
-        this.servicios = data; // Asigna la respuesta a la variable
-      },
-      error: (error) => {
-        console.error('Error al cargar servicios:', error); // Manejo de errores
-      },
-      complete: () => {
-        console.log('Carga de servicios completada'); // (Opcional) Mensaje de finalización
-      }
-    });
-  }
-  
- 
-  onServicioChange(event: any) {
-    event.preventDefault();
-    const servicioId = event.target.value;
-    this.servicioSeleccionado = servicioId ? parseInt(servicioId) : null;
-  }
-
-  agregarServicio(event:Event) {
-    event.preventDefault();
-    if (this.servicioSeleccionado) {
-      // Encontrar el servicio completo según el ID
-      const servicio = this.servicios.find(serv => serv.id_serv === this.servicioSeleccionado);
-
-      // Verificar si ya ha sido agregado
-      if (servicio && !this.serviciosSeleccionados.includes(servicio)) {
-        this.serviciosSeleccionados.push(servicio);
-      }
-
-      // Limpiar la selección para permitir agregar otro servicio
-      this.servicioSeleccionado = null;
-    }
-  }
-
-  eliminarServicio(event: Event, servicio: any) {
-    event.preventDefault(); // Add this line
-    console.log(servicio);
-    this.deleteDetalleOT(this.id_ot, servicio.id_serv);
-    this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: { id_serv: any }) => s.id_serv !== servicio.id_serv);
-  }
-
-  mostrarAlertaEliminarServicio(servicio: any) { // Add this method
-    this.servicioAEliminar = servicio;
-    this.alertVisible = true;
-  }
-
-  confirmarEliminarServicio() { // Add this method
-    this.eliminarServicio(new Event('click'), this.servicioAEliminar);
-    this.alertVisible = false;
-    this.servicioAEliminar = null;
-  }
-
-  cancelarEliminarServicio() { // Add this method
-    this.alertVisible = false;
-    this.servicioAEliminar = null;
-  }
-
-  deleteDetalleOT(id_ot: number, id_serv: number) {
-    this.detalleOTService.deleteDetalleOT(id_ot, id_serv).subscribe({
-      next: () => {
-        console.log('DetalleOT deleted successfully');
-      },
-    });
-  }
-
+  // Manejar cambio de servicio seleccionado
   serviceID(event: Event) {
     event.preventDefault();
     const selectedId = (event.target as HTMLSelectElement).value;
-    const selectedService = this.servicios.find(servicio => servicio.id_serv?.toString() === selectedId);
+    const selectedService = this.servicios?.find(servicio => servicio.id_serv?.toString() === selectedId);
     
     // Comprobar si el servicio seleccionado existe antes de acceder a su precio
     if (selectedService) {
@@ -831,132 +253,173 @@ cargarTipoEquipo() {
     }
   }
 
-
-
-  cargarUsuarios() {
-    this.usuarioService.getListUsuarios().subscribe({
-      next: (data: Usuario[]) => {
-        this.usuarios = data; // Asigna la respuesta a la variable
-      },
-      error: (error) => {
-        console.error('Error al cargar usuarios:', error); // Manejo de errores
-      },
-      complete: () => {
-        console.log('Carga de usuarios completada'); // (Opcional) Mensaje de finalización
-      }
-    });
-
-  }
-
-  onSubmit(event: Event) {
+  // Manejar cambio de servicio en el formulario
+  onServicioChange(event: any) {
     event.preventDefault();
-    this.isSubmitting = true;
-
-    // Simula un proceso de guardado (esto puede ser una llamada a tu servicio)
-    setTimeout(() => {
-      this.isSubmitting = false;
-      this.editProduct()
-      // Aquí puedes agregar lógica para manejar la respuesta de tu API
-    }, 2000);
+    const servicioId = event.target.value;
+    this.servicioSeleccionado = servicioId ? parseInt(servicioId) : null;
   }
-  
-  
 
-  onUserChange(event: Event) {
-    const selectedId = (event.target as HTMLSelectElement).value;
-    const selectedUser = this.usuarios.find(usuario => usuario.rut_usuario?.toString() === selectedId);
-    
-    if (selectedUser) {
-      this.selectedUsuarioName = selectedUser.nom_usu;
-      this.selectedUsuarioSurname = selectedUser.ap_usu;
-      this.selectedUsuarioID = selectedUser.rut_usuario ?? null;
-      this.form.patchValue({ rut_usuario: this.selectedUsuarioID });
-    } else {
-      this.selectedUsuarioName = null;
-      this.selectedUsuarioSurname = null;
-      this.selectedUsuarioID = null;
-      this.form.patchValue({ rut_usuario: null });
+  // Agregar servicio seleccionado a la lista
+  agregarServicio(event: Event) {
+    event.preventDefault();
+    if (this.servicioSeleccionado) {
+      // Encontrar el servicio completo según el ID
+      const servicio = this.servicios.find(serv => serv.id_serv === this.servicioSeleccionado);
+
+      // Verificar si ya ha sido agregado
+      if (servicio && !this.serviciosSeleccionados.includes(servicio)) {
+        this.serviciosSeleccionados.push(servicio);
+        this.servicios = this.servicios.filter(s => s.id_serv !== servicio.id_serv);
+      }
+
+      // Limpiar la selección para permitir agregar otro servicio
+      this.servicioSeleccionado = null;
+      this.cotizacionForm.get('id_serv')?.setValue(null); // Restablecer el valor del selector
     }
   }
-  
-  cargarMarcas() {
-    this.marcaService.getListMarcas().subscribe({
-      next: (data: Marca[]) => {
-        this.marcas = data; // Asigna la respuesta a la variable
-      },
-      error: (error) => {
-        console.error('Error al cargar marcas:', error); // Manejo de errores
-      },
-      complete: () => {
-        console.log('Carga de marcas completada'); // (Opcional) Mensaje de finalización
+
+  // Eliminar servicio de la lista
+  eliminarServicio(event: Event, servicio: any) {
+    event.preventDefault();
+    console.log(servicio);
+    
+    // Llamar al servicio para eliminar el servicio de la orden de trabajo
+    if (this.id_ot && servicio.id_serv) {
+      this.servicioOrdenService.eliminarServicioOrden(this.id_ot, servicio.id_serv).subscribe({
+        next: () => {
+          console.log('Servicio eliminado exitosamente');
+          this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: { id_serv: any }) => s.id_serv !== servicio.id_serv);
+          this.servicios.push(servicio); // Reincorporar el servicio eliminado a la lista de servicios disponibles
+          this.servicios.sort((a, b) => a.nom_serv.localeCompare(b.nom_serv)); // Ordenar alfabéticamente
+          this.cotizacionForm.get('id_serv')?.setValue(null); // Restablecer el valor del selector
+        },
+        error: (err) => {
+          console.error('Error al eliminar el servicio:', err);
+        }
+      });
+    }
+  }
+
+  // Mostrar alerta para confirmar eliminación de servicio
+  mostrarAlertaEliminarServicio(servicio: any) {
+    this.servicioAEliminar = servicio;
+    this.alertVisible = true;
+  }
+
+  // Confirmar eliminación de servicio
+  confirmarEliminarServicio() {
+    this.eliminarServicio(new Event('click'), this.servicioAEliminar);
+    this.alertVisible = false;
+    this.servicioAEliminar = null;
+  }
+
+  // Cancelar eliminación de servicio
+  cancelarEliminarServicio() {
+    this.alertVisible = false;
+    this.servicioAEliminar = null;
+  }
+
+  // Mostrar modal de confirmación
+  mostrarConfirmacion() {
+    this.confirmModalVisible = true;
+  }
+
+  // Confirmar creación de la orden de trabajo
+  confirmarCreacion() {
+    if (this.asignacionForm.valid) {
+      this.confirmModalVisible = false;
+      this.onSubmit();
+    } else {
+      console.error('Formulario de asignación no válido');
+      this.logFormErrors();
+    }
+  }
+
+  // Cancelar creación de la orden de trabajo
+  cancelarCreacion() {
+    this.confirmModalVisible = false;
+  }
+
+  // Enviar el formulario
+  onSubmit() {
+    if (this.cotizacionForm.valid && this.asignacionForm.valid) {
+      const formValues: vistaOrden = {
+        ...this.cotizacionForm.value,
+        ...this.asignacionForm.value
+      };
+      console.log('Datos del formulario:', formValues);
+
+      this.cotizacionService.insertarCotizacion(formValues).toPromise()
+        .then(response => {
+          console.log('Cotización enviada exitosamente:', response);
+          const id_ot = response?.id_ot; // Obtener el ID de la orden de trabajo creada
+
+          // Insertar los servicios seleccionados
+          const promises = this.serviciosSeleccionados.map(servicio => {
+            return new Promise((resolve, reject) => {
+              const servicioData = {
+                id_ot: id_ot,
+                id_serv: servicio.id_serv,
+                desc_serv: null,
+                fec_inicio_serv: null,
+                fec_ter_serv: null
+              };
+              this.servicioOrdenService.insertarServicioOrden(servicioData).toPromise()
+                .then((res: unknown) => {
+                  console.log('Servicio insertado exitosamente:', res);
+                  resolve(res);
+                })
+                .catch((err: any) => {
+                  console.error('Error al insertar servicio:', err);
+                  reject(err);
+                });
+            });
+          });
+
+          return Promise.all(promises);
+        })
+        .then(() => {
+          console.log('Todos los servicios fueron insertados exitosamente');
+          this.router.navigate(['/success']);
+        })
+        .catch(error => {
+          console.error('Error al enviar cotización o insertar servicios:', error);
+        });
+    } else {
+      console.error('Formulario no válido');
+      this.logFormErrors();
+    }
+  }
+
+  // Función para depurar errores de validación del formulario
+  logFormErrors() {
+    Object.keys(this.cotizacionForm.controls).forEach(key => {
+      const controlErrors = this.cotizacionForm.get(key)?.errors;
+      if (controlErrors) {
+        console.error(`Error en el campo ${key}:`, controlErrors);
       }
     });
-  }
-  
-  onMarcaChange(event: Event) {
-    const selectedId = (event.target as HTMLSelectElement).value;
-    const selectedUser = this.marcas.find(marca => marca.id_marca?.toString() === selectedId);
-    
-    // Comprobar si el usuario seleccionado existe antes de acceder a su precio
-    if (selectedUser) {
-      this.selectedMarcaNombre = selectedUser.nom_marca // Usa la propiedad precio o lo que necesites
-     
-    } else {
-      this.selectedMarcaNombre = null// Usa la propiedad precio o lo que necesites
-
-
-    }
-  }
-
-  loadOrders(id: number): void {
-    this._orderService.getlistnewOrders().subscribe(
-      (data: newOrder[]) => {
-        this.newOrders = data;
-        console.log(this.newOrders.map(newOrder => ({
-          id: newOrder.id_ot,      // Asegúrate de que 'id' esté disponible en newOrder
-          Equipo: newOrder.Equipo
-        })));
-      },
-      (error) => {
-        console.error('Error fetching orders', error);
-      }
-    );
-  }
-  
-  getOrderIdFromUrl(): number {
-    const urlSegments = window.location.pathname.split('/');
-    return Number(urlSegments[urlSegments.length - 1]); // Asegúrate de que este índice sea correcto
-  }
-  
-  toggleSelectServicio(): void {
-    this.mostrarSelectServicio = !this.mostrarSelectServicio;
-  }
-
-  validateDateTime(event: any): void {
-    const selectedDateTime = new Date(event.target.value);
-    const day = selectedDateTime.getUTCDay();
-    const hours = selectedDateTime.getUTCHours();
-  
-    // Check if the selected day is Saturday (6) or Sunday (0)
-    if (day === 6 || day === 0) {
-        alert('No se permiten fechas en sábado o domingo.');
-        event.target.value = '';
-        return;
-    }
-  
-    // Check if the selected time is outside 9 AM to 5 PM
-    if (hours < 9 && hours >= 17) {
-        alert('La hora debe estar entre las 9:00 y las 17:00.');
-        event.target.value = '';
-        return;
-    }
-  
-    // Check if the selected date and time is in the past
-    const now = new Date();
-    if (selectedDateTime < now) {
-        alert('No se permiten fechas y horas anteriores a la actual.');
-        event.target.value = '';
-    }
+    console.log('Datos esperados en el formulario:', {
+      nom_cli: 'Nombre del cliente',
+      dir_cli: 'Dirección del cliente',
+      tel_cli: 'Teléfono del cliente',
+      email_cli: 'Email del cliente',
+      ape_cli: 'Apellido del cliente',
+      rut_cli: 'Rut del cliente',
+      d_ver_cli: 'Dígito verificador',
+      desc_ot: 'Descripción de la orden de trabajo',
+      fec_ter: 'Fecha de término',
+      det_adic: 'Detalles adicionales',
+      num_ser: 'Número de serie',
+      id_estado: 'ID del estado',
+      id_marca: 'ID de la marca',
+      tip_equ: 'Tipo de equipo',
+      mod_equ: 'Modelo de equipo',
+      rut_tec: 'RUT del técnico',
+      notas_asig: 'Notas de asignación',
+      id_serv: 'ID del servicio',
+      desc_serv: 'Descripción del servicio'
+    });
   }
 }
- */

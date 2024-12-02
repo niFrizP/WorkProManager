@@ -1,241 +1,130 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import ServicioOrden from '../models/servicio_orden';
 import Servicio from '../models/servicio';
-import OrdenTrabajo from '../models/orden_trabajo';
-import { verificarToken, verificarRol } from '../middleware/autenticacion';
 
-// Obtener todos los servicios asignados a órdenes
-export const getServiciosOrden = async (req: Request, res: Response) => {
+
+export const getServiciosOrdenPorIdOT = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const decoded = await verificarToken(req);
-        if (!decoded) {
-            return res.status(401).json({
-                msg: 'Token no válido'
-            });
-        }
-
-        const serviciosOrden = await ServicioOrden.findAll({
+      // Verifica si req.user está definido y tiene id_rol y rut_trab válidos
+      if (!req.user) {
+        return res.status(401).json({ msg: 'No se encontró el rol del usuario en el token o el rol es inválido.' });
+      }
+  
+      const user = req.user as { id_rol: number; rut_trab: string } | null;
+      const userRole = user?.id_rol;
+      const userRut = user?.rut_trab;
+  
+      // El id_ot que queremos consultar se toma de la URL
+      const { id_ot } = req.params; 
+  
+      let servicioOrdenes;
+  
+      // Si el rol es 1 o 3, puede ver todas las órdenes
+      if (userRole === 1 || userRole === 3) {
+        // Consulta con findAll por id_ot
+        servicioOrdenes = await ServicioOrden.findAll({
             include: [
                 {
                     model: Servicio,
-                    attributes: ['id_serv', 'nom_serv']
+                    attributes: ['nom_serv'],
                 },
-                {
-                    model: OrdenTrabajo,
-                    attributes: ['id_ot', 'desc_ot']
-                }
             ],
-            order: [['fec_inicio_serv', 'DESC']]
+          where: {
+            id_ot: id_ot, // Filtra por el id_ot proporcionado en la URL
+          }
         });
-        res.json(serviciosOrden);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al obtener los servicios de órdenes'
-        });
-    }
-};
-
-// Obtener servicios por ID de orden de trabajo
-export const getServiciosPorOrden = async (req: Request, res: Response) => {
-    const { id_ot } = req.params;
-    try {
-        const decoded = await verificarToken(req);
-        if (!decoded) {
-            return res.status(401).json({
-                msg: 'Token no válido'
-            });
+  
+        if (!servicioOrdenes || servicioOrdenes.length === 0) {
+          return res.status(404).json({ msg: 'No se encontraron servicios para esta orden.' });
         }
-
-        const serviciosOrden = await ServicioOrden.findAll({
-            where: { id_ot },
-            include: [
-                {
-                    model: Servicio,
-                    attributes: ['id_serv', 'nom_serv']
-                }
-            ],
-            order: [['fec_inicio_serv', 'DESC']]
+  
+        return res.status(200).json(servicioOrdenes); // Devuelve los servicios encontrados
+      }
+  
+      // Si el rol es 2, puede ver solo las órdenes asignadas al trabajador logueado
+      if (userRole === 2) {
+        if (!userRut) {
+          return res.status(400).json({ msg: 'El rut del trabajador no está disponible.' });
+        }
+  
+        // Consulta con findAll por id_ot
+        servicioOrdenes = await ServicioOrden.findAll({
+          include: [
+            {
+              model: Servicio,
+              attributes: ['nom_serv'],
+            },
+          ],
+          where: {
+            id_ot: id_ot, // Filtra por el id_ot proporcionado en la URL
+          }
         });
-        res.json(serviciosOrden);
+  
+        if (!servicioOrdenes || servicioOrdenes.length === 0) {
+          return res.status(404).json({ msg: 'No se encontraron servicios para esta orden.' });
+        }
+  
+        return res.status(200).json(servicioOrdenes); // Devuelve los servicios encontrados
+      }
+  
+      // Si el rol no está permitido para acceder a las órdenes
+      res.status(403).json({ msg: 'Acceso denegado. Rol no permitido.' });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al obtener los servicios de la orden'
-        });
+      console.error(error);
+      next(error); // Llama a `next` para pasar el error al manejador global
     }
-};
+  };
 
-// Obtener un servicio-orden específico
-export const getServicioOrden = async (req: Request, res: Response) => {
+export const eliminarServicioOrden = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Verifica si req.user está definido y tiene id_rol y rut_trab válidos
+    if (!req.user) {
+      return res.status(401).json({ msg: 'No se encontró el rol del usuario en el token o el rol es inválido.' });
+    }
+
+    const user = req.user as { id_rol: number; rut_trab: string } | null;
+    const userRole = user?.id_rol;
+
+    // Los parámetros de la URL (id_ot y id_serv)
     const { id_ot, id_serv } = req.params;
-    try {
-        const decoded = await verificarToken(req);
-        if (!decoded) {
-            return res.status(401).json({
-                msg: 'Token no válido'
-            });
-        }
 
-        const servicioOrden = await ServicioOrden.findOne({
-            where: { id_ot, id_serv },
-            include: [
-                {
-                    model: Servicio,
-                    attributes: ['id_serv', 'nom_serv']
-                },
-                {
-                    model: OrdenTrabajo,
-                    attributes: ['id_ot', 'desc_ot']
-                }
-            ]
-        });
-
-        if (servicioOrden) {
-            res.json(servicioOrden);
-        } else {
-            res.status(404).json({
-                msg: `No existe un servicio-orden con OT ${id_ot} y servicio ${id_serv}`
-            });
+    // Si el rol es 1 o 3, puede eliminar cualquier servicio de la orden
+    if (userRole === 1 || userRole === 3) {
+      // Eliminar el servicio con id_ot e id_serv
+      const resultado = await ServicioOrden.destroy({
+        where: {
+          id_ot: id_ot,      // Filtra por id_ot
+          id_serv: id_serv,  // Filtra por id_serv
         }
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al obtener el servicio-orden'
-        });
+      });
+
+      if (resultado === 0) {
+        return res.status(404).json({ msg: 'No se encontró el servicio para eliminar.' });
+      }
+
+      return res.status(200).json({ msg: 'Servicio eliminado correctamente.' });
+    }else if (userRole === 2) {
+
+
+      // Eliminar el servicio con id_ot e id_serv
+      const resultado = await ServicioOrden.destroy({
+        where: {
+          id_ot: id_ot,      // Filtra por id_ot
+          id_serv: id_serv,  // Filtra por id_serv
+        }
+      });
+
+      if (resultado === 0) {
+        return res.status(404).json({ msg: 'No se encontró el servicio para eliminar.' });
+      }
+
+      return res.status(200).json({ msg: 'Servicio eliminado correctamente.' });
     }
+
+    // Si el rol no está permitido para realizar la eliminación
+    res.status(403).json({ msg: 'Acceso denegado. Rol no permitido.' });
+  } catch (error) {
+    console.error(error);
+    next(error); // Llama a `next` para pasar el error al manejador global
+  }
 };
-
-// Crear un nuevo servicio-orden
-export const postServicioOrden = async (req: Request, res: Response) => {
-    const {
-        id_ot,
-        id_serv,
-        desc_serv,
-        fec_inicio_serv,
-        fec_ter_serv,
-        activo_serv,
-        completado_serv
-    } = req.body;
-
-    try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1, 2])) { // Solo admin y gestor
-            return res.status(403).json({
-                msg: 'No tiene permisos para crear servicios-orden'
-            });
-        }
-
-        // Verificar si la orden existe
-        const ordenExiste = await OrdenTrabajo.findByPk(id_ot);
-        if (!ordenExiste) {
-            return res.status(404).json({
-                msg: `No existe una orden de trabajo con el ID ${id_ot}`
-            });
-        }
-
-        // Verificar si el servicio existe
-        const servicioExiste = await Servicio.findByPk(id_serv);
-        if (!servicioExiste) {
-            return res.status(404).json({
-                msg: `No existe un servicio con el ID ${id_serv}`
-            });
-        }
-
-        const servicioOrden = await ServicioOrden.create({
-            id_ot,
-            id_serv,
-            desc_serv,
-            fec_inicio_serv: fec_inicio_serv || new Date(),
-            fec_ter_serv,
-            activo_serv: activo_serv ?? true,
-            completado_serv: completado_serv ?? false
-        });
-
-        res.json(servicioOrden);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al crear el servicio-orden'
-        });
-    }
-};
-
-// Actualizar un servicio-orden
-export const updateServicioOrden = async (req: Request, res: Response) => {
-    const { id_ot, id_serv } = req.params;
-    const {
-        desc_serv,
-        fec_inicio_serv,
-        fec_ter_serv,
-        activo_serv,
-        completado_serv
-    } = req.body;
-
-    try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1, 2])) { // Solo admin y gestor
-            return res.status(403).json({
-                msg: 'No tiene permisos para actualizar servicios-orden'
-            });
-        }
-
-        const servicioOrden = await ServicioOrden.findOne({
-            where: { id_ot, id_serv }
-        });
-        
-        if (!servicioOrden) {
-            return res.status(404).json({
-                msg: `No existe un servicio-orden con OT ${id_ot} y servicio ${id_serv}`
-            });
-        }
-
-        await servicioOrden.update({
-            desc_serv,
-            fec_inicio_serv,
-            fec_ter_serv,
-            activo_serv,
-            completado_serv
-        });
-
-        res.json(servicioOrden);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al actualizar el servicio-orden'
-        });
-    }
-};
-
-// Eliminar un servicio-orden
-export const deleteServicioOrden = async (req: Request, res: Response) => {
-    const { id_ot, id_serv } = req.params;
-    try {
-        const decoded = await verificarToken(req);
-        if (!decoded || !verificarRol(decoded, [1])) { // Solo admin
-            return res.status(403).json({
-                msg: 'No tiene permisos para eliminar servicios-orden'
-            });
-        }
-
-        const servicioOrden = await ServicioOrden.findOne({
-            where: { id_ot, id_serv }
-        });
-        
-        if (!servicioOrden) {
-            return res.status(404).json({
-                msg: `No existe un servicio-orden con OT ${id_ot} y servicio ${id_serv}`
-            });
-        }
-
-        await servicioOrden.destroy();
-        res.json({
-            msg: 'Servicio-orden eliminado con éxito'
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Error al eliminar el servicio-orden'
-        });
-    }
-}; 

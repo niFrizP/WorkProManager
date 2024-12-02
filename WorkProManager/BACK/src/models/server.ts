@@ -8,6 +8,8 @@ import routesEquipo from '../routes/equipo';
 import routesServicioOrden from '../routes/insertar_servicio_orden';
 import routesEstadoOT from '../routes/estado_ot';
 import routesOrdenes from '../routes/orden_trabajo';
+import routesGetServicioOrden from '../routes/servicio_orden';
+
 
 
 // Importar los modelos
@@ -23,6 +25,7 @@ import OrdenTrabajo from './orden_trabajo';
 import ServicioOrden from './servicio_orden';
 import HistorialOrden from './historial_orden';
 import HistorialServicioOrden from './historial_servicio_orden';
+import cookieParser from 'cookie-parser';
 
 class Server {
     private app: Application;
@@ -53,6 +56,7 @@ class Server {
         this.app.use('/api/servicio-orden', routesServicioOrden);
         this.app.use('/api/estado-ot', routesEstadoOT);
         this.app.use('/api/orden', routesOrdenes);
+        this.app.use('/api/get-servicio-orden', routesGetServicioOrden);
     }
 
     midlewares() {
@@ -62,6 +66,9 @@ class Server {
     origin: 'http://localhost:4200', // Reemplaza con la URL de tu frontend
     credentials: true, // Permitir el envío de cookies y encabezados de autorización
   }));
+
+   // Analizar cookies
+   this.app.use(cookieParser()); // <--- Aquí
 
   // Parseo del body
   this.app.use(express.json());
