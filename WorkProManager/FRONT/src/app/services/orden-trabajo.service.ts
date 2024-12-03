@@ -14,6 +14,11 @@ export class OrdenTrabajoService {
 
   constructor(private http: HttpClient) { }
 
+  // Obtener todas las órdenes de trabajo
+  getAllOrdenesTrabajo(): Observable<OrdenTrabajo[]> {
+    return this.http.get<OrdenTrabajo[]>(this.apiUrl);
+  }
+
   // Obtener una orden de trabajo por su id
   getOrdenTrabajoById(id: number): Observable<OrdenTrabajo> {
     return this.http.get<OrdenTrabajo>(`${this.apiUrl}/${id}`);
