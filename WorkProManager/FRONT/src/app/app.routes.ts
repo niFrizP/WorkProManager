@@ -10,6 +10,7 @@ import { EditOrderComponent } from './pages/edit-order/edit-order.component';
 import { MarcasComponent } from './pages/marcas/marcas.component';
 import { ServicioComponent } from './pages/servicio/servicio.component';
 import { UsuariosComponent } from './pages/usuarios/usuarios.component';
+import { CreateTrabajadorComponent } from './components/create-usuario/create-usuario.component';
 
 import { AuthGuard } from './auth.guard';
 
@@ -23,6 +24,7 @@ export const routes: Routes = [
   { path: 'marcas', component: MarcasComponent, canActivate: [AuthGuard] },
   { path: 'servicios', component: ServicioComponent, canActivate: [AuthGuard] },
   { path: 'usuarios', component: UsuariosComponent, canActivate: [AuthGuard] },
+  { path: 'create-usuario', component: CreateTrabajadorComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '/login' }
 ];
 
