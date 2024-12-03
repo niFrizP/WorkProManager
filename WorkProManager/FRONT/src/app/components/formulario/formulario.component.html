@@ -1,220 +1,268 @@
-<div class="wpm-custom-gradient p-6 sm:p-4 lg:p-8 rounded-lg shadow-md">
-    <div class="contenedor px-4 sm:px-6 lg:px-8">
-      <div class="main max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-6 text-center">Crear Cotización</h2>
-        <form [formGroup]="cotizacionForm" (ngSubmit)="onSubmit()" class="space-y-6">
-          
-          <!-- Datos Cliente -->
-          <fieldset class="border border-gray-300 rounded-md p-4">
-            <legend class="text-lg font-semibold px-2">Datos del Cliente</legend>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="form-group flex items-end">
-                <div class="w-3/4 mr-2">
-                  <label for="rut_cli" class="block text-sm font-medium text-gray-700">Rut del cliente:</label>
-                  <input id="rut_cli" formControlName="rut_cli" type="number" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                  <div *ngIf="cotizacionForm.get('rut_cli')?.invalid && cotizacionForm.get('rut_cli')?.touched" class="text-red-500 text-xs mt-1">
-                    El rut del cliente es inválido.
-                  </div>
-                </div>
-                <div class="w-1/4">
-                  <label for="d_ver_cli" class="block text-sm font-medium text-gray-700">DV:</label>
-                  <input id="d_ver_cli" formControlName="d_ver_cli" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                  <div *ngIf="cotizacionForm.get('d_ver_cli')?.invalid && cotizacionForm.get('d_ver_cli')?.touched" class="text-red-500 text-xs mt-1">
-                    El dígito verificador es inválido.
-                  </div>
+<div class="wpm-custom-gradient p-3 sm:p-4 lg:p-6 min-h-screen">
+  <div class="contenedor px-2 sm:px-4 lg:px-6">
+    <div class="main max-w-4xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-md">
+      <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center">Crear Cotización</h2>
+      <form [formGroup]="cotizacionForm" (ngSubmit)="onSubmit()" class="space-y-4 sm:space-y-6">
+
+        <!-- Datos Cliente -->
+        <fieldset class="border border-gray-300 rounded-md p-3 sm:p-4">
+          <legend class="text-base sm:text-lg font-semibold px-2">Datos del Cliente</legend>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div class="form-group flex items-start sm:col-span-1">
+              <div class="w-3/4 mr-2">
+                <label for="rut_cli" class="block text-sm font-medium text-gray-700">Rut del cliente:</label>
+                <input id="rut_cli" formControlName="rut_cli" type="number"
+                  placeholder="Ingrese RUT sin puntos ni guión"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <div *ngIf="cotizacionForm.get('rut_cli')?.invalid && cotizacionForm.get('rut_cli')?.touched"
+                  class="text-red-500 text-xs mt-1">
+                  {{ getErrorMessage('rut_cli') }}
                 </div>
               </div>
-              <div class="form-group">
-                <label for="email_cli" class="block text-sm font-medium text-gray-700">Email del cliente:</label>
-                <input id="email_cli" formControlName="email_cli" type="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                <div *ngIf="cotizacionForm.get('email_cli')?.invalid && cotizacionForm.get('email_cli')?.touched" class="text-red-500 text-xs mt-1">
-                  El email es inválido.
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="nom_cli" class="block text-sm font-medium text-gray-700">Nombre del cliente:</label>
-                <input id="nom_cli" formControlName="nom_cli" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                <div *ngIf="cotizacionForm.get('nom_cli')?.invalid && cotizacionForm.get('nom_cli')?.touched" class="text-red-500 text-xs mt-1">
-                  El nombre es inválido.
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="ape_cli" class="block text-sm font-medium text-gray-700">Apellido del cliente</label>
-                <input id="ape_cli" formControlName="ape_cli" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                <div *ngIf="cotizacionForm.get('ape_cli')?.invalid && cotizacionForm.get('ape_cli')?.touched" class="text-red-500 text-xs mt-1">
-                  El apellido es inválido.
-                </div>
-              </div>
-              <div class="form-group col-span-2">
-                <label for="dir_cli" class="block text-sm font-medium text-gray-700">Dirección del cliente:</label>
-                <input id="dir_cli" formControlName="dir_cli" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                <div *ngIf="cotizacionForm.get('dir_cli')?.invalid && cotizacionForm.get('dir_cli')?.touched" class="text-red-500 text-xs mt-1">
-                  La dirección es inválida.
-                </div>
-              </div>
-              <div class="form-group w-1/2">
-                <label for="tel_cli" class="block text-sm font-medium text-gray-700">Teléfono del cliente:</label>
-                <input id="tel_cli" formControlName="tel_cli" type="text" maxlength="9" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                <div *ngIf="cotizacionForm.get('tel_cli')?.invalid && cotizacionForm.get('tel_cli')?.touched" class="text-red-500 text-xs mt-1">
-                  El teléfono es inválido.
+              <div class="w-1/4">
+                <label for="d_ver_cli" class="block text-sm font-medium text-gray-700">DV:</label>
+                <input id="d_ver_cli" formControlName="d_ver_cli" type="text" placeholder="K o 0-9"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <div *ngIf="cotizacionForm.get('d_ver_cli')?.invalid && cotizacionForm.get('d_ver_cli')?.touched"
+                  class="text-red-500 text-xs mt-1">
+                  {{ getErrorMessage('d_ver_cli') }}
                 </div>
               </div>
             </div>
-          </fieldset>
-  
-          <!-- Datos del Equipo -->
-          <fieldset class="border border-gray-300 rounded-md p-4">
-            <legend class="text-lg font-semibold px-2">Datos del Equipo</legend>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="form-group">
-                <label for="num_ser" class="block text-sm font-medium text-gray-700">Número de Serie del equipo:</label>
-                <input id="num_ser" formControlName="num_ser" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                <div *ngIf="cotizacionForm.get('num_ser')?.invalid && cotizacionForm.get('num_ser')?.touched" class="text-red-500 text-xs mt-1">
-                  El número de serie es inválido.
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="mod_equ" class="block text-sm font-medium text-gray-700">Modelo del equipo:</label>
-                <input id="mod_equ" formControlName="mod_equ" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                <div *ngIf="cotizacionForm.get('mod_equ')?.invalid && cotizacionForm.get('mod_equ')?.touched" class="text-red-500 text-xs mt-1">
-                  Rellene este campo
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="tip_equ" class="block text-sm font-medium text-gray-700">Tipo de Equipo (Celular/Computador):</label>
-                <select id="tip_equ" formControlName="tip_equ" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                  <option value="" disabled selected>Seleccione un tipo de equipo</option>
-                  <option value="Celular">Celular</option>
-                  <option value="Computador">Computador</option>
-                </select>
-                <div *ngIf="cotizacionForm.get('tip_equ')?.invalid && cotizacionForm.get('tip_equ')?.touched" class="text-red-500 text-xs mt-1">
-                  El tipo de equipo es inválido.
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="id_marca" class="block text-sm font-medium text-gray-700">Selecciona la marca del equipo:</label>
-                <select id="id_marca" formControlName="id_marca" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                  <option value="" disabled selected>Selecciona la marca del equipo</option>
-                  <option *ngFor="let marca of marcas" [value]="marca.id_marca">{{ marca.nom_marca }}</option>
-                </select>
-                <div *ngIf="cotizacionForm.get('id_marca')?.invalid && cotizacionForm.get('id_marca')?.touched" class="text-red-500 text-xs mt-1">
-                  El ID de la marca es inválido.
-                </div>
+            <div class="form-group sm:col-span-2">
+              <label for="email_cli" class="block text-sm font-medium text-gray-700">Email del cliente:</label>
+              <input id="email_cli" formControlName="email_cli" type="email" placeholder="ejemplo@correo.com"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <div *ngIf="cotizacionForm.get('email_cli')?.invalid && cotizacionForm.get('email_cli')?.touched"
+                class="text-red-500 text-xs mt-1">
+                {{ getErrorMessage('email_cli') }}
               </div>
             </div>
-          </fieldset>
-  
-          <!-- Datos Orden de Trabajo -->
-          <fieldset class="border border-gray-300 rounded-md p-4">
-            <legend class="text-lg font-semibold px-2">Datos de la Orden de Trabajo</legend>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="form-group">
-                <label for="fec_ter" class="block text-sm font-medium text-gray-700">Fecha de término de la orden de trabajo:</label>
-                <input id="fec_ter" formControlName="fec_ter" type="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                <div *ngIf="cotizacionForm.get('fec_ter')?.invalid && cotizacionForm.get('fec_ter')?.touched" class="text-red-500 text-xs mt-1">
-                  La fecha de término es inválida.
-                </div>
-              </div>
-              <div class="form-group col-span-2">
-                <label for="desc_ot" class="block text-sm font-medium text-gray-700">Descripción de la orden de trabajo:</label>
-                <textarea id="desc_ot" formControlName="desc_ot" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500" rows="3"></textarea>
-                <div *ngIf="cotizacionForm.get('desc_ot')?.invalid && cotizacionForm.get('desc_ot')?.touched" class="text-red-500 text-xs mt-1">
-                  La descripción es inválida.
-                </div>
-              </div>
-              <div class="form-group col-span-2">
-                <label for="det_adic" class="block text-sm font-medium text-gray-700">Detalles Adicionales:</label>
-                <textarea id="det_adic" formControlName="det_adic" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500" rows="3"></textarea>
-                <div *ngIf="cotizacionForm.get('det_adic')?.invalid && cotizacionForm.get('det_adic')?.touched" class="text-red-500 text-xs mt-1">
-                  Los detalles adicionales son inválidos.
-                </div>
+            <div class="form-group sm:col-span-2">
+              <label for="nom_cli" class="block text-sm font-medium text-gray-700">Nombre del cliente:</label>
+              <input id="nom_cli" formControlName="nom_cli" type="text" placeholder="Ingrese nombre"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <div *ngIf="cotizacionForm.get('nom_cli')?.invalid && cotizacionForm.get('nom_cli')?.touched"
+                class="text-red-500 text-xs mt-1">
+                {{ getErrorMessage('nom_cli') }}
               </div>
             </div>
-          </fieldset>
-  
-          <!-- Sección de Servicios -->
-          <fieldset class="border border-gray-300 rounded-md p-4">
-            <legend class="text-lg font-semibold px-2">Servicios</legend>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label for="id_serv" class="block text-sm font-medium text-gray-700 mb-2">Selecciona los servicios que se le aplicarán al equipo:</label>
-                <select id="id_serv" formControlName="id_serv" (change)="onServicioChange($event)" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                  <option value="" selected>Seleccione un servicio</option>
-                  <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">{{ servicio.nom_serv }}</option>
-                </select>
-              </div>
-              <div class="flex items-end justify-end">
-                <button type="button" (click)="agregarServicio($event)" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Añadir Servicio</button>
+            <div class="form-group sm:col-span-2">
+              <label for="ape_cli" class="block text-sm font-medium text-gray-700">Apellido del cliente</label>
+              <input id="ape_cli" formControlName="ape_cli" type="text" placeholder="Ingrese apellido"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <div *ngIf="cotizacionForm.get('ape_cli')?.invalid && cotizacionForm.get('ape_cli')?.touched"
+                class="text-red-500 text-xs mt-1">
+                {{ getErrorMessage('ape_cli') }}
               </div>
             </div>
-  
-            <!-- Lista de servicios añadidos -->
-            <div *ngIf="alertVisible" class="mt-4 p-4 bg-yellow-100 border border-yellow-400 rounded-md">
-              <p>¿Estás seguro que deseas eliminar el servicio de "<strong>{{ servicioAEliminar.nom_serv }}</strong>"?</p>
-              <div class="flex justify-end mt-2">
-                <button type="button" (click)="confirmarEliminarServicio()" class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600 mr-2">Sí</button>
-                <button type="button" (click)="cancelarEliminarServicio()" class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-600">No</button>
+            <div class="form-group sm:col-span-2">
+              <label for="dir_cli" class="block text-sm font-medium text-gray-700">Dirección del cliente:</label>
+              <input id="dir_cli" formControlName="dir_cli" type="text" placeholder="Ingrese dirección completa"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <div *ngIf="cotizacionForm.get('dir_cli')?.invalid && cotizacionForm.get('dir_cli')?.touched"
+                class="text-red-500 text-xs mt-1">
+                {{ getErrorMessage('dir_cli') }}
               </div>
             </div>
-            <div *ngIf="serviciosSeleccionados.length > 0" class="mt-4">
-              <h3 class="font-semibold mb-2">Servicios Añadidos:</h3>
-              <ul class="space-y-2">
-                <li *ngFor="let servicio of serviciosSeleccionados" class="flex justify-between items-center border-b border-gray-200 py-2">
-                  {{ servicio.nom_serv }}
-                  <button type="button" (click)="mostrarAlertaEliminarServicio(servicio)" class="text-red-500 hover:text-red-700">Eliminar</button>
-                </li>
-              </ul>
-            </div>
-          </fieldset>
-  
-          <!-- Botón para Enviar -->
-          <div class="text-center mt-6">
-            <button type="button" (click)="mostrarConfirmacion()" [disabled]="!cotizacionForm.valid" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
-              Enviar Cotización
-            </button>
-          </div>
-          <!-- Modal de Confirmación -->
-          <div *ngIf="confirmModalVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-              <h3 class="text-lg font-semibold mb-4">¿Estás seguro de querer crear esta orden de trabajo?</h3>
-              <!-- Datos de Asignación -->
-              <fieldset class="border border-gray-300 rounded-md p-4 mb-4">
-                <legend class="text-lg font-semibold px-2">Datos de Asignación</legend>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="asignacionForm">
-                  <div class="form-group">
-                    <label for="rut_tec" class="block text-sm font-medium text-gray-700">Técnico Asignado:</label>
-                    <select id="rut_tec" formControlName="rut_tec" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                      <option *ngFor="let tecnico of tecnicos" [value]="tecnico.rut_trab">{{ tecnico.nom_trab }} {{ tecnico.ape_trab }}</option>
-                    </select>
-                    <div *ngIf="asignacionForm.get('rut_tec')?.invalid && asignacionForm.get('rut_tec')?.touched" class="text-red-500 text-xs mt-1">
-                      El RUT del técnico es inválido.
-                    </div>
-                  </div>
-                  <div class="form-group col-span-2">
-                    <label for="notas_asig" class="block text-sm font-medium text-gray-700">Mensaje de asignación:</label>
-                    <input id="notas_asig" formControlName="notas_asig" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <div *ngIf="asignacionForm.get('notas_asig')?.invalid && asignacionForm.get('notas_asig')?.touched" class="text-red-500 text-xs mt-1">
-                      Las notas asignadas son inválidas.
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="id_estado" class="block text-sm font-medium text-gray-700">Estado Asignado:</label>
-                    <select id="id_estado" formControlName="id_estado" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                      <option *ngFor="let estado of estados" [value]="estado.id_estado">{{ estado.nom_estado }}</option>
-                    </select>
-                    <div *ngIf="asignacionForm.get('id_estado')?.invalid && asignacionForm.get('id_estado')?.touched" class="text-red-500 text-xs mt-1">
-                      Debe elegir un estado de OT.
-                    </div>
-                  </div>
-                </div>
-              </fieldset>
-              <div class="flex justify-end">
-                <button type="button" (click)="confirmarCreacion()" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 mr-2">Aceptar</button>
-                <button type="button" (click)="cancelarCreacion()" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">Cancelar</button>
+            <div class="form-group sm:col-span-2">
+              <label for="tel_cli" class="block text-sm font-medium text-gray-700">Teléfono del cliente:</label>
+              <input id="tel_cli" formControlName="tel_cli" type="text" maxlength="9" placeholder="912345678"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <div *ngIf="cotizacionForm.get('tel_cli')?.invalid && cotizacionForm.get('tel_cli')?.touched"
+                class="text-red-500 text-xs mt-1">
+                {{ getErrorMessage('tel_cli') }}
               </div>
             </div>
           </div>
-        </form>
-      </div>
+        </fieldset>
+
+        <!-- Datos del Equipo -->
+        <fieldset class="border border-gray-300 rounded-md p-3 sm:p-4">
+          <legend class="text-base sm:text-lg font-semibold px-2">Datos del Equipo</legend>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div class="form-group">
+              <label for="num_ser" class="block text-sm font-medium text-gray-700">Número de Serie del equipo:</label>
+              <input id="num_ser" formControlName="num_ser" type="text" placeholder="Ingrese número de serie del equipo"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <div *ngIf="cotizacionForm.get('num_ser')?.invalid && cotizacionForm.get('num_ser')?.touched"
+                class="text-red-500 text-xs mt-1">
+                El número de serie es inválido.
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="mod_equ" class="block text-sm font-medium text-gray-700">Modelo del equipo:</label>
+              <input id="mod_equ" formControlName="mod_equ" type="text"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <div *ngIf="cotizacionForm.get('mod_equ')?.invalid && cotizacionForm.get('mod_equ')?.touched"
+                class="text-red-500 text-xs mt-1">
+                Rellene este campo
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="tip_equ" class="block text-sm font-medium text-gray-700">Tipo de Equipo
+                (Celular/Computador):</label>
+              <select id="tip_equ" formControlName="tip_equ"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <option value="" disabled selected>Seleccione un tipo de equipo</option>
+                <option value="Celular">Celular</option>
+                <option value="Computador">Computador</option>
+              </select>
+              <div *ngIf="cotizacionForm.get('tip_equ')?.invalid && cotizacionForm.get('tip_equ')?.touched"
+                class="text-red-500 text-xs mt-1">
+                {{ getErrorMessage('tip_equ') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="id_marca" class="block text-sm font-medium text-gray-700">Selecciona la marca del
+                equipo:</label>
+              <select id="id_marca" formControlName="id_marca"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <option value="" disabled selected>Selecciona la marca del equipo</option>
+                <option *ngFor="let marca of marcas" [value]="marca.id_marca">{{ marca.nom_marca }}</option>
+              </select>
+              <div *ngIf="cotizacionForm.get('id_marca')?.invalid && cotizacionForm.get('id_marca')?.touched"
+                class="text-red-500 text-xs mt-1">
+                {{ getErrorMessage('id_marca') }}
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Datos Orden de Trabajo -->
+        <fieldset class="border border-gray-300 rounded-md p-3 sm:p-4">
+          <legend class="text-base sm:text-lg font-semibold px-2">Datos de la Orden de Trabajo</legend>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div class="form-group">
+              <label for="fec_ter" class="block text-sm font-medium text-gray-700">Fecha de término de la orden de
+                trabajo:</label>
+              <input id="fec_ter" formControlName="fec_ter" type="date"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <div *ngIf="cotizacionForm.get('fec_ter')?.invalid && cotizacionForm.get('fec_ter')?.touched"
+                class="text-red-500 text-xs mt-1">
+                {{ getErrorMessage('fec_ter') }}
+              </div>
+            </div>
+            <div class="form-group sm:col-span-2">
+              <label for="desc_ot" class="block text-sm font-medium text-gray-700">Descripción:</label>
+              <textarea id="desc_ot" formControlName="desc_ot" placeholder="Describa el problema o servicio requerido"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                rows="3"></textarea>
+              <div *ngIf="cotizacionForm.get('desc_ot')?.invalid && cotizacionForm.get('desc_ot')?.touched"
+                class="text-red-500 text-xs mt-1">
+                {{ getErrorMessage('desc_ot') }}
+              </div>
+            </div>
+            <div class="form-group sm:col-span-2">
+              <label for="det_adic" class="block text-sm font-medium text-gray-700">Detalles Adicionales:</label>
+              <textarea id="det_adic" formControlName="det_adic" placeholder="Ingrese detalles adicionales relevantes"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                rows="3"></textarea>
+              <div *ngIf="cotizacionForm.get('det_adic')?.invalid && cotizacionForm.get('det_adic')?.touched"
+                class="text-red-500 text-xs mt-1">
+                {{ getErrorMessage('det_adic') }}
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Sección de Servicios -->
+        <fieldset class="border border-gray-300 rounded-md p-3 sm:p-4">
+          <legend class="text-base sm:text-lg font-semibold px-2">Servicios</legend>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
+              <select id="id_serv" formControlName="id_serv" (change)="onServicioChange($event)"
+                class="w-full sm:w-auto border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <option value="" selected>Seleccione un servicio</option>
+                <option *ngFor="let servicio of servicios" [value]="servicio.id_serv">{{ servicio.nom_serv }}</option>
+              </select>
+              <button type="button" (click)="agregarServicio($event)"
+                class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Añadir
+                Servicio</button>
+            </div>
+          </div>
+
+          <!-- Lista de servicios añadidos -->
+          <div *ngIf="alertVisible" class="mt-4 p-4 bg-yellow-100 border border-yellow-400 rounded-md">
+            <p>¿Estás seguro que deseas eliminar el servicio de "<strong>{{ servicioAEliminar.nom_serv }}</strong>"?</p>
+            <div class="flex justify-end mt-2">
+              <button type="button" (click)="confirmarEliminarServicio()"
+                class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600 mr-2">Sí</button>
+              <button type="button" (click)="cancelarEliminarServicio()"
+                class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-600">No</button>
+            </div>
+          </div>
+          <div *ngIf="serviciosSeleccionados.length > 0" class="mt-4">
+            <h3 class="font-semibold mb-2">Servicios Añadidos:</h3>
+            <ul class="space-y-2">
+              <li *ngFor="let servicio of serviciosSeleccionados"
+                class="flex justify-between items-center border-b border-gray-200 py-2">
+                {{ servicio.nom_serv }}
+                <button type="button" (click)="mostrarAlertaEliminarServicio(servicio)"
+                  class="text-red-500 hover:text-red-700">Eliminar</button>
+              </li>
+            </ul>
+          </div>
+        </fieldset>
+
+        <!-- Botón para Enviar -->
+        <div class="text-center mt-6">
+          <button type="button" (click)="mostrarConfirmacion()" [disabled]="!cotizacionForm.valid"
+            class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            Enviar Cotización
+          </button>
+        </div>
+        <!-- Modal de Confirmación -->
+        <div *ngIf="confirmModalVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-semibold mb-4">¿Estás seguro de querer crear esta orden de trabajo?</h3>
+            <!-- Datos de Asignación -->
+            <fieldset class="border border-gray-300 rounded-md p-4 mb-4">
+              <legend class="text-lg font-semibold px-2">Datos de Asignación</legend>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="asignacionForm">
+                <div class="form-group">
+                  <label for="rut_tec" class="block text-sm font-medium text-gray-700">Técnico Asignado:</label>
+                  <select id="rut_tec" formControlName="rut_tec"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option *ngFor="let tecnico of tecnicos" [value]="tecnico.rut_trab">{{ tecnico.nom_trab }} {{
+                      tecnico.ape_trab }}</option>
+                  </select>
+                  <div *ngIf="asignacionForm.get('rut_tec')?.invalid && asignacionForm.get('rut_tec')?.touched"
+                    class="text-red-500 text-xs mt-1">
+                    El RUT del técnico es inválido.
+                  </div>
+                </div>
+                <div class="form-group col-span-2">
+                  <label for="notas_asig" class="block text-sm font-medium text-gray-700">Mensaje de asignación:</label>
+                  <input id="notas_asig" formControlName="notas_asig" type="text"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                  <div *ngIf="asignacionForm.get('notas_asig')?.invalid && asignacionForm.get('notas_asig')?.touched"
+                    class="text-red-500 text-xs mt-1">
+                    Las notas asignadas son inválidas.
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="id_estado" class="block text-sm font-medium text-gray-700">Estado Asignado:</label>
+                  <select id="id_estado" formControlName="id_estado"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option *ngFor="let estado of estados" [value]="estado.id_estado">{{ estado.nom_estado }}</option>
+                  </select>
+                  <div *ngIf="asignacionForm.get('id_estado')?.invalid && asignacionForm.get('id_estado')?.touched"
+                    class="text-red-500 text-xs mt-1">
+                    Debe elegir un estado de OT.
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+            <div class="flex justify-end">
+              <button type="button" (click)="confirmarCreacion()"
+                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 mr-2">Aceptar</button>
+              <button type="button" (click)="cancelarCreacion()"
+                class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
+</div>

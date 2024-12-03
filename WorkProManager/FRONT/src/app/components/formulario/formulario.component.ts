@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CotizacionService } from '../../services/cotizacion.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -14,6 +14,7 @@ import { EstadoOTService } from '../../services/estado-ot.service';
 import { EstadoOT } from '../../interfaces/estadoot';
 import { ServicioOrdenService } from '../../services/insertarServicio.service';
 import { vistaServicio } from '../../interfaces/vistaServicio';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-formulario',
@@ -23,13 +24,12 @@ import { vistaServicio } from '../../interfaces/vistaServicio';
   styleUrls: ['./formulario.component.css'],
 })
 export class FormularioComponent implements OnInit {
-
   servicios: Servicio[] = [];
   tecnicos: Trabajador[] = [];
   marcas: Marca[] = [];
   estados: EstadoOT[] = [];
 
-  vistaServicio:vistaServicio[] = [];
+  vistaServicio: vistaServicio[] = [];
   vistaOrden: vistaOrden[] = [];
   cotizacionForm!: FormGroup;
   asignacionForm!: FormGroup;
@@ -162,7 +162,7 @@ export class FormularioComponent implements OnInit {
     event.preventDefault();
     const selectedId = (event.target as HTMLSelectElement).value;
     const selectedService = this.servicios?.find(servicio => servicio.id_serv?.toString() === selectedId);
-    
+
     // Comprobar si el servicio seleccionado existe antes de acceder a su precio
     if (selectedService) {
       this.selectedServiceID = selectedService.id_serv ?? null;
@@ -179,6 +179,7 @@ export class FormularioComponent implements OnInit {
   }
 
   // Agregar servicio seleccionado a la lista
+  agregarServicio(event: Event) {
   agregarServicio(event: Event) {
     event.preventDefault();
     if (this.servicioSeleccionado) {
@@ -226,7 +227,20 @@ export class FormularioComponent implements OnInit {
 
   // Mostrar modal de confirmación
   mostrarConfirmacion() {
-    this.confirmModalVisible = true;
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "¿Deseas crear esta orden de trabajo?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, crear',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.onSubmit();
+      }
+    });
   }
 
   // Confirmar creación de la orden de trabajo
@@ -325,5 +339,60 @@ export class FormularioComponent implements OnInit {
       id_serv: 'ID del servicio',
       desc_serv: 'Descripción del servicio'
     });
+  }
+
+  // Validador personalizado para fecha futura
+  private fechaFuturaValidator() {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null;
+      }
+      const fecha = new Date(control.value);
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+
+      if (fecha < hoy) {
+        return { fechaPasada: true };
+      }
+      return null;
+    };
+  }
+
+  // Método para mostrar mensajes de error específicos
+  getErrorMessage(fieldName: string): string {
+    const control = this.cotizacionForm.get(fieldName);
+    if (control?.errors) {
+      if (control.errors['required']) {
+        return 'Este campo es obligatorio';
+      }
+      if (control.errors['email']) {
+        return 'Debe ingresar un email válido';
+      }
+      if (control.errors['pattern']) {
+        switch (fieldName) {
+          case 'tel_cli':
+            return 'Debe ingresar 9 dígitos numéricos';
+          case 'nom_cli':
+          case 'ape_cli':
+            return 'Solo se permiten letras y espacios';
+          case 'rut_cli':
+            return 'Debe ingresar un RUT válido sin puntos ni guión';
+          case 'd_ver_cli':
+            return 'Debe ingresar un dígito verificador válido (0-9 o K)';
+          default:
+            return 'Formato inválido';
+        }
+      }
+      if (control.errors['minlength']) {
+        return `Mínimo ${control.errors['minlength'].requiredLength} caracteres`;
+      }
+      if (control.errors['maxlength']) {
+        return `Máximo ${control.errors['maxlength'].requiredLength} caracteres`;
+      }
+      if (control.errors['fechaPasada']) {
+        return 'La fecha debe ser futura';
+      }
+    }
+    return '';
   }
 }

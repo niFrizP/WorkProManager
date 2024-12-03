@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 
 // const sequelize
-const sequelize = new Sequelize('workpromanager', 'root', 'pelota50', {
+const sequelize = new Sequelize('workpromanager', 'root', 'Mugiwara1$', {
     host: 'localhost',
     dialect: 'mysql',
 
