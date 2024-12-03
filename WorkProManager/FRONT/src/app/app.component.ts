@@ -29,8 +29,8 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
     MatSnackBarModule,
     HeaderComponent,
     SidebarComponent
-    
-],
+
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
@@ -39,11 +39,11 @@ export class AppComponent implements OnInit {
   isPage: boolean = false;
   title = 'WorkProManager';
 
-  constructor( private router: Router) { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     console.log('App Component Initialized');
- 
+
     // Detecta cuando cambia la ruta
     const Pages = ['/', '/login',];
     this.router.events.subscribe(event => {

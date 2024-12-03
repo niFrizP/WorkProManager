@@ -81,7 +81,7 @@ class Server {
     midlewares() {
         // Configuración de CORS
         this.app.use((0, cors_1.default)({
-            origin: 'http://localhost:4200', // Reemplaza con la URL de tu frontend
+            origin: 'http://localhost:3001', // Reemplaza con la URL de tu frontend
             credentials: true, // Permitir el envío de cookies y encabezados de autorización
         }));
         // Parseo del body
