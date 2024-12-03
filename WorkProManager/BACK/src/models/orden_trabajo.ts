@@ -1,12 +1,9 @@
 import { DataTypes, Model } from 'sequelize';
-import db from '../db/connection'; // Connection to the database
-
-// Importación de modelos relacionados
-import Cliente from './cliente'; // Modelo Cliente
-import Equipo from './equipo'; // Modelo Equipo
-import EstadoOT from './estado_ot'; // Modelo EstadoOT
-import Asignacion from './asignacion'; // Modelo Asignacion
-
+import db from '../db/connection';
+import Cliente from './cliente';
+import EstadoOT from './estado_ot';
+import Equipo from './equipo';
+import Asignacion from './asignacion';
 
 class OrdenTrabajo extends Model {
   public id_ot!: number;
@@ -14,14 +11,12 @@ class OrdenTrabajo extends Model {
   public desc_ot!: string | null;
   public fec_ter!: Date | null;
   public det_adic!: string | null;
-  public num_ser!: string;
   public id_estado!: number | null;
   public motiv_rec!: string | null;
-  public rut_cli!: number;
-  public id_asig!: number | null;
+  public id_equipo!: number;
+  public id_cliente!: number;
 }
 
-// Inicialización del modelo
 OrdenTrabajo.init(
   {
     id_ot: {
@@ -32,7 +27,7 @@ OrdenTrabajo.init(
     },
     fec_creacion: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW, // Valor por defecto: timestamp actual
+      defaultValue: DataTypes.NOW,
       allowNull: false,
     },
     desc_ot: {
@@ -47,10 +42,6 @@ OrdenTrabajo.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    num_ser: {
-      type: DataTypes.STRING(30),
-      allowNull: false,
-    },
     id_estado: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -59,27 +50,44 @@ OrdenTrabajo.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    rut_cli: {
+    id_equipo: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: 'equipo', // Relación con la tabla Equipo
+        key: 'id_equipo',
+      },
     },
-    id_asig: {
+    id_cliente: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-    },
+      allowNull: false,
+      references: {
+        model: 'cliente', // Relación con la tabla Cliente
+        key: 'id_cliente',
+      },
+    }
   },
   {
     sequelize: db,
     modelName: 'OrdenTrabajo',
     tableName: 'orden_trabajo',
-    timestamps: false, // La tabla no tiene columnas `createdAt` o `updatedAt`
+    timestamps: false,
   }
 );
 
-// Asociaciones del modelo
-OrdenTrabajo.belongsTo(Cliente, { foreignKey: 'rut_cli' });
-OrdenTrabajo.belongsTo(Equipo, { foreignKey: 'num_ser' });
-OrdenTrabajo.belongsTo(EstadoOT, { foreignKey: 'id_estado' });
-OrdenTrabajo.belongsTo(Asignacion, { foreignKey: 'id_asig' });
+// Relationships
+OrdenTrabajo.belongsTo(Cliente, {
+  foreignKey: 'id_cliente',
+});
+
+OrdenTrabajo.belongsTo(EstadoOT, {
+  foreignKey: 'id_estado'
+});
+
+OrdenTrabajo.belongsTo(Equipo, {
+  foreignKey: 'id_equipo'
+});
+
+
 
 export default OrdenTrabajo;

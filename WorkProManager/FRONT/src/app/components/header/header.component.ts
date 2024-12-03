@@ -1,11 +1,11 @@
-/* import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../services/autenticacion.service';
 
 
 @Component({
@@ -71,12 +71,16 @@ export class HeaderComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']).then(() => {
-      window.location.reload();
+    this.authService.logout().subscribe({
+      next: () => {
+        // Redirigir al login después de un logout exitoso
+        this.router.navigate(['/login']);  // Asegúrate de importar Router y de tener acceso a él
+      },
+      error: (err) => {
+        console.error('Error durante el logout:', err);
+      }
     });
   }
   
 
 }
- */

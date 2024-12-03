@@ -1,104 +1,60 @@
-/* // import { Component, OnInit } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-// import { RouterModule, RouterOutlet } from '@angular/router';
-// import { AuthService } from '../../services/auth.service';
-// import { CookieManagementService } from '../../services/cookie.service';
-// import { OrderService } from '../../services/order.service';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/autenticacion.service';
+import { HttpClient } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
-// @Component({
-//   selector: 'app-sidebar',
-//   standalone: true,
-//   imports: [CommonModule, RouterModule],
-//   templateUrl: './sidebar.component.html',
-//   styleUrls: ['./sidebar.component.css'],
-// })
-// export class SidebarComponent implements OnInit {
-//   sidebarOpen = false;
-//   resources: any[] = [];
-//   array: any[] = [];
-//   contar: number = 0;
-//   contarReportes: number = 0;
-//   contarFinalizadas: number = 0;
-//   contarRechazadas: number = 0;
-//   contarTecnico: number = 0;
-//   contarTecnicoReportes: number = 0;
+@Component({
+  selector: 'app-sidebar',
+  standalone: true,
+  imports: [RouterModule, CommonModule],
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.css'],
+})
+export class SidebarComponent implements OnInit {
+  sidebarOpen = false;
+  resources: any[] = [];
+  userRole: number | null = null; // Variable para almacenar el rol del usuario
+  userRut: string | null = null; // Variable para almacenar el RUT del usuario
 
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+    private http: HttpClient
+  ) {}
 
-  count: number = 0;
-  constructor(public authService: AuthService, public cookieService: CookieManagementService, public orderService: OrderService) {
-    this.initializeResources();
+  ngOnInit(): void {
+    console.log('Sidebar Component Initialized');
+    this.getUserRole(); // Cargar rol y rut del usuario y inicializar los recursos
   }
 
-//   ngOnInit(): void {
-//     console.log('Sidebar Component Initialized');
-
-    this.contarNotificaciones()
-    this.contarNotificacionesReportes()
-    this.contarNotifiacionesFinalizadas()
-    this.contarNotificacionesRechazadas()
-    this.countOrderNotificationsCotizacionesByRut()
-    this.countOrderNotificacionesOrdersByRut()
-
-//     this.initializeResources();
-
-//   }
-
-  contarNotificaciones() {
-    this.orderService.countOrderNotifications().subscribe((data) => {
-      this.contar = data.count;
-      console.log('Conteo de notificaciones:', this.contar);
-    });
-
+  // Obtener el rol y rut del usuario desde el backend
+  getUserRole() {
+    this.authService.verifyToken().subscribe(
+      (response) => {
+        this.userRole = response.userRole;
+        this.userRut = response.userRut;
+        this.initializeResources(); // Inicializa los recursos basados en el rol
+      },
+      (error) => {
+        console.error('Error al obtener el rol del usuario', error);
+        this.userRole = null; // En caso de error, el rol será nulo
+      }
+    );
   }
 
-//   countOrderNotificacionesOrdersByRut() {
-//     const rut = this.authService.getIdLocal();
-//     this.orderService.countOrderNotificationsReportesByRut(rut ?? 0).subscribe((data) => {
-//       this.contarTecnicoReportes = data.count;
-//       console.log('Conteo de notificaciones:', this.contarTecnicoReportes);
-//     }
-//     );
-//   }
-
-//   countOrderNotificationsCotizacionesByRut() {
-//     const rut = this.authService.getIdLocal();
-//     this.orderService.countOrderNotificationsCotizacionesByRut(rut ?? 0).subscribe((data) => {
-//       this.contarTecnico = data.count;
-//       console.log('Conteo de notificaciones:', this.count);
-//     });
-//   }
-
-  contarNotificacionesReportes() {
-    this.orderService.countOrderNotificationsReportes().subscribe((data) => {
-      this.contarReportes = data.count;
-      console.log('Conteo de notificaciones:', this.contar);
-    });
-  }
-
-  contarNotifiacionesFinalizadas() {
-    this.orderService.countOrderNotificationsFinalizadas().subscribe((data) => {
-      this.contarFinalizadas = data.count;
-      console.log('Conteo de notificaciones:', this.contarFinalizadas);
-    });
-  }
-
-  contarNotificacionesRechazadas() {
-    this.orderService.countOrderNotificationsRechazadas().subscribe((data) => {
-      this.contarRechazadas = data.count;
-      console.log('Conteo de notificaciones:', this.contarRechazadas);
-    });
-  }
-
-
+  // Inicializar los recursos según el rol del usuario
   initializeResources() {
-    const userRole = this.authService.getRolIdLocal() // Obtén el rol del usuario actual
-    console.log('User Role:', userRole); // Verifica el rol del usuario
-
+    if (this.userRole === null) {
+      return; // Si el rol no está disponible, no hacer nada
+    }
+    console.log('User Role:', this.userRole); // Verifica el rol del usuario
 
     // Define los recursos con roles permitidos
     this.resources = [
       { name: 'Inicio', link: './home', icon: 'fas fa-home', requiredRoles: [1, 2, 3] },
-      { name: 'Ordenes', link: './orders', icon: 'fas fa-box', requiredRoles: [1, 2, 3] },
+      { name: 'Ordenes', link: './ordenes', icon: 'fas fa-box', requiredRoles: [1, 2, 3] },
       { name: 'Usuarios', link: './usuarios', icon: 'fas fa-user', requiredRoles: [1] },
       { name: 'Cotización', link: './cotizacion', icon: 'fas fa-dollar-sign', requiredRoles: [1, 3] },
       { name: 'Marca', link: './marca', icon: 'fas fa-copyright', requiredRoles: [1] },
@@ -106,22 +62,22 @@
       { name: 'Causa', link: './causa', icon: 'fas fa-scroll', requiredRoles: [1] },
     ];
 
-//     // Filtra los recursos en función del rol del usuario
-//     this.resources = this.resources.filter(resource =>
-//       resource.requiredRoles ? resource.requiredRoles.includes(userRole) : true
-//     );
+    // Filtra los recursos en función del rol del usuario
+    this.resources = this.resources.filter(resource =>
+      resource.requiredRoles ? resource.requiredRoles.includes(this.userRole) : true
+    );
 
-//     console.log('Filtered Resources:', this.resources); // Verifica los recursos filtrados
+    console.log('Filtered Resources:', this.resources); // Verifica los recursos filtrados
+  }
 
-//   }
+  // Función para alternar la visibilidad del sidebar en pantallas pequeñas
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
 
-//   toggleSidebar() {
-//     this.sidebarOpen = !this.sidebarOpen;
-//   }
-
-//   public refreshSidebar() {
-//     console.log('Refreshing Sidebar...');
-//     this.initializeResources(); // Llama a la función para refrescar los recursos
-//   }
-// }
- */
+  // Función para refrescar los recursos
+  public refreshSidebar() {
+    console.log('Refreshing Sidebar...');
+    this.initializeResources(); // Llama a la función para refrescar los recursos
+  }
+}

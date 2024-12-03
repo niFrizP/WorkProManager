@@ -1,7 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../db/connection';
 import TrabajadorRol from './trabajador_rol'; // Importa el modelo trabajador_rol
-import Asignacion from './asignacion';
 
 // Definición del modelo Trabajador
 class Trabajador extends Model {

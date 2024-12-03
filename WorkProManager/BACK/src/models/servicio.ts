@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../db/connection'; // Connection to the database
+import ServicioOrden from './servicio_orden';
 
 // Define the Servicio model
 class Servicio extends Model {
@@ -33,5 +34,6 @@ Servicio.init(
     timestamps: false, // No timestamp fields are defined in the table
   }
 );
+
 
 export default Servicio;

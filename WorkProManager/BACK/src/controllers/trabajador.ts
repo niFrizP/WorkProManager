@@ -3,7 +3,6 @@ import Trabajador from "../models/trabajador"; // Asegúrate de importar el mode
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import TrabajadorRol from "../models/trabajador_rol";
-import { where } from "sequelize";
 
 // Obtener todos los trabajadores
 export const getTrabajadores = async (req: Request, res: Response) => {
@@ -15,6 +14,8 @@ export const getTrabajadores = async (req: Request, res: Response) => {
         res.status(500).json({ msg: "Error al obtener trabajadores" });
     }
 };
+
+
 
 
 // Obtener todos los trabajadores con rol 2, de técnico
@@ -94,8 +95,8 @@ export const loginUser = async (req: Request, res: Response) => {
             } else {
                 // Generar token
                 const token = jwt.sign(
-                    { rut_trab: trabajador.rut_trab },
-                    process.env['SECRET_KEY'] || 'pepito123',  // Aquí se cambia la notación
+                    { rut_trab: trabajador.rut_trab, id_rol: trabajador.id_rol },
+                    process.env.SECRET_KEY || 'pepito123',
                     { expiresIn: '1h' }
                 );
 
@@ -119,6 +120,33 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 };
 
+
+
+export const verifyToken = (req: Request, res: Response) => {
+    const token = req.cookies['token'];  // Recuperar el token desde las cookies
+
+    if (!token) {
+        res.status(401).json({ msg: 'Acceso denegado. No se encontró token.' });
+    }
+
+    try {
+        const decoded: any = jwt.verify(token, process.env.SECRET_KEY || 'pepito123');
+        res.status(200).json({ msg: 'Token válido', user: decoded });
+    } catch (error) {
+        res.status(401).json({ msg: 'Token no válido o expirado.' });
+    }
+};
+
+export const logoutUser = (req: Request, res: Response) => {
+    // Eliminar la cookie del token
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Solo en producción
+        sameSite: 'strict',
+    });
+
+    res.status(200).json({ msg: 'Sesión cerrada correctamente.' });
+};
 
 // Crear un nuevo trabajador
 export const postTrabajador = async (req: Request, res: Response) => {

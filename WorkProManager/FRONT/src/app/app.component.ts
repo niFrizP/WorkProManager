@@ -9,6 +9,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router, NavigationEnd } from '@angular/router';
+import { HeaderComponent } from "./components/header/header.component";
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 
 @Component({
@@ -24,8 +26,11 @@ import { Router, NavigationEnd } from '@angular/router';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatSnackBarModule
-  ],
+    MatSnackBarModule,
+    HeaderComponent,
+    SidebarComponent
+    
+],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })

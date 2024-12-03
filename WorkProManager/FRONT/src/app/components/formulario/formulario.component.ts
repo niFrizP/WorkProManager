@@ -32,6 +32,8 @@ export class FormularioComponent implements OnInit {
   vistaServicio: vistaServicio[] = [];
   vistaOrden: vistaOrden[] = [];
   cotizacionForm!: FormGroup;
+  asignacionForm!: FormGroup;
+
 
   // Array para los servicios añadidos con id_serv y nom_serv
   selectedServiceID: number | null = null;
@@ -41,6 +43,7 @@ export class FormularioComponent implements OnInit {
   alertVisible: boolean = false; // Flag to control alert visibility
   servicioAEliminar: any = null; // Store service to delete
   confirmModalVisible: boolean = false; // Flag to control modal visibility
+  
 
   constructor(
     private fb: FormBuilder,
@@ -57,6 +60,7 @@ export class FormularioComponent implements OnInit {
       serviciosArray: this.fb.array([]) // Form array for selected services
     });
     this.serviciosArray = this.cotizacionForm.get('serviciosArray') as FormArray;
+    
   }
 
   ngOnInit() {
@@ -66,84 +70,31 @@ export class FormularioComponent implements OnInit {
     this.cargarServicios();
     this.cargarEstados();
 
-    // Inicializa el formulario con validaciones
+    // Inicializa el formulario de cotización con validaciones
     this.cotizacionForm = this.fb.group({
-      nom_cli: ['', [
-        Validators.required,
-        Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$'),
-        Validators.minLength(2),
-        Validators.maxLength(50)
-      ]],
-      dir_cli: ['', [
-        Validators.required,
-        Validators.minLength(5),
-        Validators.maxLength(100)
-      ]],
-      tel_cli: ['', [
-        Validators.required,
-        Validators.pattern('^[0-9]{9}$'),
-        Validators.minLength(9),
-        Validators.maxLength(9)
-      ]],
-      email_cli: ['', [
-        Validators.required,
-        Validators.email,
-        Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')
-      ]],
-      ape_cli: ['', [
-        Validators.required,
-        Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$'),
-        Validators.minLength(2),
-        Validators.maxLength(50)
-      ]],
-      rut_cli: [null, [
-        Validators.required,
-        Validators.pattern('^[0-9]{7,8}$'),
-      ]],
-      d_ver_cli: ['', [
-        Validators.required,
-        Validators.pattern('^[0-9kK]$')
-      ]],
+      nom_cli: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]+$')]],
+      dir_cli: ['', Validators.required],
+      tel_cli: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
+      email_cli: ['', [Validators.required, Validators.email]],
+      ape_cli: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]+$')]],
+      rut_cli: [null, [Validators.required, Validators.pattern('^[0-9]+$')]],
+      d_ver_cli: ['', [Validators.required, Validators.pattern('^[0-9kK]$')]],
+      desc_ot: ['', Validators.required],
+      fec_ter: [null, Validators.required],
+      det_adic: [''],
+      num_ser: [null, Validators.required],
+      id_marca: [null, Validators.required],
+      tip_equ: [null, Validators.required],
+      mod_equ: [''],
+      desc_serv: ['']
+    });
 
-      // Validaciones para datos del equipo
-      num_ser: ['', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(50),
-        Validators.pattern('^[a-zA-Z0-9-]*$')
-      ]],
-      tip_equ: ['', [
-        Validators.required
-      ]],
-      id_marca: [null, [
-        Validators.required
-      ]],
-
-      // Validaciones para la orden de trabajo
-      desc_ot: ['', [
-        Validators.required,
-        Validators.minLength(10),
-        Validators.maxLength(500)
-      ]],
-      fec_ter: [null, [
-        Validators.required,
-        this.fechaFuturaValidator()
-      ]],
-      det_adic: ['', [
-        Validators.maxLength(500)
-      ]],
-
-      // Validaciones para asignación
-      id_estado: [null, [
-        Validators.required
-      ]],
-      rut_tec: [null, [
-        Validators.required
-      ]],
+    // Inicializa el formulario de asignación con validaciones
+    this.asignacionForm = this.fb.group({
       rut_ges: [78901234],
+      rut_tec: [null, Validators.required],
       notas_asig: [''],
-      id_serv: [null],
-      desc_serv: [''],
+      id_estado: [null, Validators.required]
     });
 
     // Actualiza el servicio seleccionado cuando cambia el valor
@@ -241,6 +192,7 @@ export class FormularioComponent implements OnInit {
 
       // Limpiar la selección para permitir agregar otro servicio
       this.servicioSeleccionado = null;
+      this.cotizacionForm.get('id_serv')?.setValue(null); // Restablecer el valor del selector
     }
   }
 
@@ -249,6 +201,8 @@ export class FormularioComponent implements OnInit {
     event.preventDefault();
     console.log(servicio);
     this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: { id_serv: any }) => s.id_serv !== servicio.id_serv);
+    this.servicios.push(servicio); // Reincorporar el servicio eliminado a la lista de servicios disponibles
+    this.cotizacionForm.get('id_serv')?.setValue(null); // Restablecer el valor del selector
   }
 
   // Mostrar alerta para confirmar eliminación de servicio
@@ -290,8 +244,13 @@ export class FormularioComponent implements OnInit {
 
   // Confirmar creación de la orden de trabajo
   confirmarCreacion() {
-    this.confirmModalVisible = false;
-    this.onSubmit();
+    if (this.asignacionForm.valid) {
+      this.confirmModalVisible = false;
+      this.onSubmit();
+    } else {
+      console.error('Formulario de asignación no válido');
+      this.logFormErrors();
+    }
   }
 
   // Cancelar creación de la orden de trabajo
@@ -301,8 +260,11 @@ export class FormularioComponent implements OnInit {
 
   // Enviar el formulario
   onSubmit() {
-    if (this.cotizacionForm.valid) {
-      const formValues: vistaOrden = this.cotizacionForm.value;
+    if (this.cotizacionForm.valid && this.asignacionForm.valid) {
+      const formValues: vistaOrden = {
+        ...this.cotizacionForm.value,
+        ...this.asignacionForm.value
+      };
       console.log('Datos del formulario:', formValues);
 
       this.cotizacionService.insertarCotizacion(formValues).toPromise()

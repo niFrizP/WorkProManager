@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../db/connection'; // Connection to the database
+import Servicio from './servicio';
 
 // Define the ServicioOrden model
 class ServicioOrden extends Model {
@@ -55,6 +56,6 @@ ServicioOrden.init(
   }
 );
 
-
+ServicioOrden.belongsTo(Servicio, { foreignKey: 'id_serv' });
 
 export default ServicioOrden;
