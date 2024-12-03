@@ -2,42 +2,77 @@
   <div class="contenedor">
     <h1 class="text-2xl font-bold text-center mb-4">Usuarios</h1>
     <div class="flex justify-between items-center mb-4">
-
       <button [routerLink]="['/usuarios/create-usuario']" class="boton-wpm text-white p-2 rounded new-ot-butt">
         <i class="fa-solid fa-user-plus"></i> Nuevo Usuario
       </button>
     </div>
 
+    <!-- Vista móvil (cards) -->
+    <div class="md:hidden">
+      <div *ngFor="let usuario of usuarios | paginate : { itemsPerPage: itemsPerPage, currentPage: page }" 
+           class="bg-white rounded-lg shadow-md p-4 mb-4">
+        <div class="grid grid-cols-2 gap-2">
+          <div class="font-bold">Rut:</div>
+          <div>{{usuario.rut_usuario}}</div>
+          
+          <div class="font-bold">Nombre:</div>
+          <div>{{ usuario.nom_usu }} {{ usuario.ap_usu }}</div>
+          
+          <div class="font-bold">Correo:</div>
+          <div>{{ usuario.email_usu}}</div>
+        </div>
+        
+        <div class="mt-4 flex justify-end space-x-2">
+          <button [routerLink]="['create-usuario/', usuario.rut_usuario]" 
+                  class="bg-yellow-500 text-white p-2 rounded">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </button>
+          <button (click)="usuario.rut_usuario !== undefined ? deleteUsuario(usuario.rut_usuario) : null" 
+                  class="bg-red-500 text-white p-2 rounded">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
 
-    <table class="w-full border-collapse">
-      <thead>
-        <tr class="col-start-auto">
-          <th class="border p-2">Rut</th>
-          <th class="border p-2">Nombre</th>
-          <th class="border p-2">Correo</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="
-                  let usuario of usuarios
-                  | paginate : { itemsPerPage: itemsPerPage, currentPage: page }
-              ">
-          <td>{{usuario.rut_usuario}}</td>
-          <td>{{ usuario.nom_usu }} {{ usuario.ap_usu }}</td>
-          <td>{{ usuario.email_usu}}</td>
-          <td>
-            <!-- Botón para editar la OT -->
-            <button [routerLink]="['create-usuario/', usuario.rut_usuario]">✏️</button>
-            <button (click)="usuario.rut_usuario !== undefined ? deleteUsuario(usuario.rut_usuario) : null">🗑️</button>
-
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Vista desktop (tabla) -->
+    <div class="hidden md:block overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="col-start-auto">
+            <th class="border p-2">Rut</th>
+            <th class="border p-2">Nombre</th>
+            <th class="border p-2">Correo</th>
+            <th class="border p-2">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let usuario of usuarios | paginate : { itemsPerPage: itemsPerPage, currentPage: page }">
+            <td class="border p-2">{{usuario.rut_usuario}}</td>
+            <td class="border p-2">{{ usuario.nom_usu }} {{ usuario.ap_usu }}</td>
+            <td class="border p-2">{{ usuario.email_usu}}</td>
+            <td class="border p-2 flex justify-center space-x-2">
+              <button [routerLink]="['create-usuario/', usuario.rut_usuario]" 
+                      class="bg-yellow-500 text-white p-2 rounded">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button (click)="usuario.rut_usuario !== undefined ? deleteUsuario(usuario.rut_usuario) : null" 
+                      class="bg-red-500 text-white p-2 rounded">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <div class="flex justify-center mt-4">
-      <pagination-controls (pageChange)="onPageChange($event)" class="mt-4" previousLabel="Anterior"
-        nextLabel="Siguiente"></pagination-controls>
+      <pagination-controls 
+        (pageChange)="onPageChange($event)" 
+        class="mt-4" 
+        previousLabel="Anterior"
+        nextLabel="Siguiente">
+      </pagination-controls>
     </div>
   </div>
 </div>

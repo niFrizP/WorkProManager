@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ListasOrdenTrabajo } from '../interfaces/listaOT'; 
+import { OrdenTrabajo } from '../interfaces/ordenTrabajo';
 
 @Injectable({
   providedIn: 'root'

@@ -21,12 +21,13 @@ import { EstadoOTService } from '../../services/estado-ot.service';
 import { ServicioOrdenService } from '../../services/insertarServicio.service';
 import { OrdenTrabajoService } from '../../services/orden-trabajo.service';
 import { SocketService } from '../../services/socketIO.service'; // Asegúrate de la ruta correcta
+import { HistorialOrdenComponent } from '../../components/historial-orden/historial-orden.component';
 
 
 @Component({
   selector: 'app-formulario',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, HistorialOrdenComponent],
   templateUrl: './edit-order.component.html',
   styleUrls: ['./edit-order.component.css'],
 })
@@ -63,6 +64,9 @@ export class EditOrderComponent implements OnInit {
 
   //Sacar ID de la OT desde la URL
   id_ot: number | null = 0;
+  modalHistorialVisible = false;
+  idOrdenActual?: number;
+
   constructor(
     private fb: FormBuilder,
     private cotizacionService: CotizacionService,
@@ -589,6 +593,14 @@ export class EditOrderComponent implements OnInit {
       id_serv: 'ID del servicio',
       desc_serv: 'Descripción del servicio'
     });
+  }
+
+  mostrarHistorial() {
+    this.modalHistorialVisible = true;
+  }
+
+  cerrarHistorial() {
+    this.modalHistorialVisible = false;
   }
 }
 

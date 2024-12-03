@@ -3,7 +3,24 @@ import OrdenTrabajo from '../models/orden_trabajo';
 import Asignacion from '../models/asignacion';
 import { Op } from 'sequelize';
 
-export const insertarOrdenTrabajo = async (data) => {
+interface OrdenTrabajoData {
+  p_nom_cli: string;
+  p_dir_cli: string;
+  p_tel_cli: string;
+  p_email_cli: string;
+  p_ape_cli: string;
+  p_d_ver_cli: string;
+  p_desc_ot: string;
+  p_fec_ter: Date;
+  p_det_adic: string;
+  p_id_estado: number;
+  p_motiv_rec: string;
+  p_id_equipo: number;
+  p_rut_tec: string;
+  p_rut_ges: string;
+}
+
+export const insertarOrdenTrabajo = async (data: OrdenTrabajoData) => {
   try {
     const {
       p_nom_cli,

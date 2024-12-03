@@ -16,68 +16,127 @@
 
       <div *ngIf="showFilters" class="filters-container p-4 border rounded mb-4">
         <h2 class="filters-title text-lg font-semibold mb-4">Filtros</h2>
-        <div class="filter-group mb-4">
-          <h3 class="filter-header text-sm font-medium mb-2">Filtrar por estado</h3>
-          <select class="filter-select w-full p-2 border rounded" title="Filtrar por estado">
-            <option value="todas">Todas las ordenes de trabajo</option>
-            <option value="pendiente">Pendiente de cotización</option>
-            <option value="en proceso">Aprobación de la cotización</option>
-            <option value="incompleto">En proceso</option>
-            <option value="completo">Completada</option>
-            <option value="finalizado">Finalizada</option>
-            <option value="rechazado">Rechazada</option>
-          </select>
-        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Estado -->
+          <div class="filter-group">
+            <h3 class="filter-header text-sm font-medium mb-2">Estado de la Orden</h3>
+            <select [(ngModel)]="filtros.estado" (change)="aplicarFiltros()" class="filter-select w-full p-2 border rounded">
+              <option value="">Todas las ordenes de trabajo</option>
+              <option value="pendiente">Pendiente de cotización</option>
+              <option value="aprobacion">Aprobación de la cotización</option>
+              <option value="proceso">En proceso</option>
+              <option value="completada">Completada</option>
+              <option value="finalizada">Finalizada</option>
+              <option value="rechazada">Rechazada</option>
+            </select>
+          </div>
 
-        <div class="filter-group mb-4">
-          <h3 class="filter-header text-sm font-medium mb-2">Filtrar por usuario</h3>
-          <select class="filter-select w-full p-2 border rounded" title="Filtrar por usuario">
-            <option value="">Todos los usuarios</option>
-            <option value="usuario1">Usuario 1</option>
-            <option value="usuario2">Usuario 2</option>
-          </select>
-        </div>
+          <!-- Fechas -->
+          <div class="filter-group col-span-1 sm:col-span-2 lg:col-span-1">
+            <h3 class="filter-header text-sm font-medium mb-2">Rango de Fechas</h3>
+            <div class="flex space-x-2">
+              <mat-form-field appearance="fill" class="w-1/2">
+                <mat-label>Desde</mat-label>
+                <input matInput [matDatepicker]="pickerDesde" [(ngModel)]="filtros.fechaDesde">
+                <mat-datepicker-toggle matSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+                <mat-datepicker #pickerDesde></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="w-1/2">
+                <mat-label>Hasta</mat-label>
+                <input matInput [matDatepicker]="pickerHasta" [(ngModel)]="filtros.fechaHasta">
+                <mat-datepicker-toggle matSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+                <mat-datepicker #pickerHasta></mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
 
-        <div class="filter-group mb-4">
-          <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Fecha</h3>
-          <div class="date-filters flex space-x-4">
-            <div class="date-filter w-1/2">
-              <label for="monthSelect" class="block text-sm font-medium mb-1">Mes</label>
-              <select id="monthSelect" class="filter-select w-full p-2 border rounded">
-                <option value="0">Todos</option>
-                <option value="1">Enero</option>
-                <option value="2">Febrero</option>
-              </select>
-            </div>
-            <div class="date-filter w-1/2">
-              <label for="yearSelect" class="block text-sm font-medium mb-1">Año</label>
-              <select id="yearSelect" class="filter-select w-full p-2 border rounded">
-                <option value="0">Todos</option>
-                <option value="2023">2023</option>
-                <option value="2024">2024</option>
-              </select>
-            </div>
+          <!-- Cliente -->
+          <div class="filter-group">
+            <h3 class="filter-header text-sm font-medium mb-2">Cliente</h3>
+            <mat-form-field class="w-full">
+              <mat-label>Buscar cliente</mat-label>
+              <input matInput [(ngModel)]="filtros.cliente" [matAutocomplete]="autoCliente">
+              <mat-autocomplete #autoCliente="matAutocomplete">
+                <mat-option *ngFor="let cliente of clientesFiltrados" [value]="cliente.rut_cli">
+                  {{cliente.nom_cli}} {{cliente.ape_cli}} - {{cliente.rut_cli}}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+
+          <!-- Técnico -->
+          <div class="filter-group">
+            <h3 class="filter-header text-sm font-medium mb-2">Técnico Asignado</h3>
+            <mat-form-field class="w-full">
+              <mat-label>Buscar técnico</mat-label>
+              <input matInput [(ngModel)]="filtros.tecnico" [matAutocomplete]="autoTecnico">
+              <mat-autocomplete #autoTecnico="matAutocomplete">
+                <mat-option *ngFor="let tecnico of tecnicosFiltrados" [value]="tecnico.rut_trab">
+                  {{tecnico.nom_trab}} {{tecnico.ape_trab}} - {{tecnico.rut_trab}}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+
+          <!-- Equipo -->
+          <div class="filter-group">
+            <h3 class="filter-header text-sm font-medium mb-2">Equipo</h3>
+            <mat-form-field class="w-full">
+              <mat-label>Número de serie o modelo</mat-label>
+              <input matInput [(ngModel)]="filtros.equipo" placeholder="Buscar por número de serie o modelo">
+            </mat-form-field>
           </div>
         </div>
 
-        <div class="filter-group mb-4">
-          <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Cliente</h3>
-          <input type="text" placeholder="Buscar por RUT Cliente" class="search-input w-full p-2 border rounded" />
-        </div>
-
-        <div class="filter-group mb-4">
-          <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Usuario</h3>
-          <input type="text" placeholder="Buscar por RUT Usuario" class="search-input w-full p-2 border rounded" />
-        </div>
-
-        <div class="filter-group mb-4">
-          <h3 class="filter-header text-sm font-medium mb-2">Filtrar por Equipo</h3>
-          <input type="text" placeholder="Buscar equipo por número de serie" class="search-input w-full p-2 border rounded" />
+        <!-- Botones de acción -->
+        <div class="flex justify-end space-x-2 mt-4">
+          <button mat-button color="warn" (click)="limpiarFiltros()">
+            <mat-icon>clear</mat-icon> Limpiar filtros
+          </button>
+          <button mat-raised-button color="primary" (click)="aplicarFiltros()">
+            <mat-icon>search</mat-icon> Aplicar filtros
+          </button>
         </div>
       </div>
 
       <div class="overflow-x-auto">
-        <table class="w-full border-collapse">
+        <!-- Vista móvil (cards) -->
+        <div class="md:hidden">
+          <div *ngFor="let orden of OrdenTrabajo" class="bg-white rounded-lg shadow-md p-4 mb-4">
+            <div class="grid grid-cols-2 gap-2">
+              <div class="font-bold">N° de orden:</div>
+              <div>{{ orden.id_ot }}</div>
+              
+              <div class="font-bold">Estado:</div>
+              <div>{{ orden.EstadoOT.nom_estado }}</div>
+              
+              <div class="font-bold">Cliente:</div>
+              <div>{{ orden.Cliente?.nom_cli ?? 'No disponible' }} {{ orden.Cliente?.ape_cli ?? 'No disponible' }}</div>
+              
+              <div class="font-bold">Equipo:</div>
+              <div>{{ orden.Equipo.tip_equ }} - {{ orden.Equipo.mod_equ }}</div>
+              
+              <div class="font-bold">Técnico:</div>
+              <div>{{ orden.Asignacions?.[0]?.tecnico?.nom_trab ?? 'No disponible' }}</div>
+            </div>
+            
+            <div class="mt-4 flex justify-end space-x-2">
+              <button class="bg-blue-500 text-white p-2 rounded" title="Descargar PDF">
+                <i class="fa-solid fa-download"></i>
+              </button>
+              <button class="bg-yellow-500 text-white p-2 rounded" title="Editar Orden" [routerLink]="['/ordenes', orden.id_ot]">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button class="bg-red-500 text-white p-2 rounded" title="Rechazar Orden">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vista desktop (tabla) -->
+        <table class="w-full border-collapse hidden md:table">
           <thead>
             <tr>
               <th class="border p-1 text-center">N° de orden</th>

@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgChartsModule} from 'ng2-charts';
-import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [],
@@ -10,7 +9,6 @@ import { RouterModule } from '@angular/router';
     CommonModule,
     BrowserModule,
     NgChartsModule,
-    RouterModule,
   ],
 
 })

@@ -16,6 +16,8 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const http_1 = __importDefault(require("http"));
 const socket_io_1 = __importDefault(require("socket.io"));
+const lusca_1 = __importDefault(require("lusca")); // Importa lusca
+const express_session_1 = __importDefault(require("express-session"));
 const trabajador_1 = __importDefault(require("../routes/trabajador"));
 const insertarCotizacion_1 = __importDefault(require("../routes/insertarCotizacion"));
 const servicio_1 = __importDefault(require("../routes/servicio"));
@@ -82,10 +84,35 @@ class Server {
             origin: 'http://localhost:4200', // Reemplaza con la URL de tu frontend
             credentials: true, // Permitir el envío de cookies y encabezados de autorización
         }));
-        // Analizar cookies
-        this.app.use((0, cookie_parser_1.default)()); // <--- Aquí
         // Parseo del body
         this.app.use(express_1.default.json());
+        // Analizar cookies
+        this.app.use((0, cookie_parser_1.default)());
+        // Configurar sesión (debe ir antes de lusca)
+        this.app.use((0, express_session_1.default)({
+            secret: '123', // Cambia esto por una clave secreta segura
+            resave: false,
+            saveUninitialized: true,
+            cookie: {
+                secure: process.env.NODE_ENV === 'production',
+                httpOnly: true
+            }
+        }));
+        // Opción 1: Deshabilitar CSRF temporalmente y mantener otras protecciones
+        this.app.use((0, lusca_1.default)({
+            xframe: 'SAMEORIGIN',
+            xssProtection: true
+        }));
+        // Opción 2: O si prefieres mantener CSRF pero con configuración más permisiva
+        /*
+        this.app.use(lusca({
+            csrf: {
+                angular: true // Esto es específico para aplicaciones Angular
+            },
+            xframe: 'SAMEORIGIN',
+            xssProtection: true
+        }));
+        */
     }
     dbConnect() {
         return __awaiter(this, void 0, void 0, function* () {

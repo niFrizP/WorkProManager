@@ -1,58 +1,30 @@
-/* import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { RouterModule } from '@angular/router';
-import { UsuarioService } from '../../services/usuario.service';
-import { Order } from '../../interfaces/order';
-import { EquipoService } from '../../services/equipo.service';
-import { ClienteService } from '../../services/cliente.service';
-import { Usuario } from '../../interfaces/usuario';
-import { ServicioService } from '../../services/servicio.service';
-import { newOrder } from '../../interfaces/newOrder';
-import { UsuarioEliminadoService } from '../../services/usuarioeliminado';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, NgxPaginationModule, RouterModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    NgxPaginationModule,
+  ],
   templateUrl: './usuarios.component.html',
-  styleUrl: './usuarios.component.css'
+  styleUrls: ['./usuarios.component.css']
 })
 export class UsuariosComponent {
+  usuarios: any[] = [];
+  itemsPerPage: number = 10;
+  page: number = 1;
 
-  onFilterChange($event: Event) {
-    throw new Error('Method not implemented.');
-    }
-  
-      usuarios: Usuario[] = [];
-    
-      
-      
-    
-    
-      filteredusuarios = this.usuarios;
-      page = 1;
-      itemsPerPage = 10;
-    
-      constructor(private usuarioservice: UsuarioService ,private usuarioService: UsuarioService, private equipoService: EquipoService, private clienteService: ClienteService, private servicioService: ServicioService) {}
-    
-      ngOnInit(): void {
-      }
-    
+  deleteUsuario(rut: string) {
+    // Implementa la lógica para eliminar el usuario
+    console.log('Eliminando usuario con RUT:', rut);
+  }
 
-     
-      filterusuarios(filter: string | null): void {
-        if (filter === 'todas') {
-          this.filteredusuarios = this.usuarios;
-        } else {
-        }
-        this.page = 1; // Reiniciar a la primera página después del filtrado
-      }
-    
-      onPageChange(page: number): void {
-        this.page = page;
-      }
-
-    }
-    
- */
+  onPageChange(event: number) {
+    this.page = event;
+  }
+}
