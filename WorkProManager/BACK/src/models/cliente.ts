@@ -1,9 +1,8 @@
 import { DataTypes, Model } from 'sequelize';
-import db from '../db/connection'; // Connection to the database
+import db from '../db/connection';
 
-// Define the Cliente model
 class Cliente extends Model {
-  public rut_cli!: number;
+  public id_clientente!: number;
   public nom_cli!: string;
   public dir_cli!: string | null;
   public tel_cli!: string | null;
@@ -14,9 +13,10 @@ class Cliente extends Model {
 
 Cliente.init(
   {
-    rut_cli: {
+    id_cliente: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
       allowNull: false,
     },
     nom_cli: {
@@ -48,7 +48,7 @@ Cliente.init(
     sequelize: db,
     modelName: 'Cliente',
     tableName: 'cliente',
-    timestamps: false, // As the SQL definition doesn't include timestamps
+    timestamps: false,
   }
 );
 

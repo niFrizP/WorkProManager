@@ -5,15 +5,15 @@ export interface ListasOrdenTrabajo {
   fec_ter: Date | string;     // Fecha de término de la orden
   det_adic: string;           // Detalles adicionales de la orden
   num_ser: string;            // Número de servicio
-  id_estado: string;          // Estado de la orden
+  id_estado: number;          // Estado de la orden
   motiv_rec: string | null;   // Motivo de la recepción (puede ser null)
   EstadoOT: {                 // Estado de la orden de trabajo
     nom_estado: string;       // Nombre del estado de la orden
   };
-  Cliente: {                  // Información del cliente
+  Cliente?: {                  // Información del cliente
     nom_cli: string;          // Nombre del cliente
     dir_cli: string;          // Dirección del cliente
-    tel_cli: string;          // Teléfono del cliente
+    tel_cli: number;          // Teléfono del cliente
     email_cli: string;        // Email del cliente
     ape_cli: string;          // Apellido del cliente
     rut_cli: number;          // RUT del cliente
@@ -24,7 +24,7 @@ export interface ListasOrdenTrabajo {
     mod_equ: string;          // Modelo de equipo
     id_marca: number;         // Marca del equipo
   };
-  Asignacions: {              // Asignaciones relacionadas a esta orden
+  Asignacions?: {              // Asignaciones relacionadas a esta orden
     id_asig: number;          // ID de la asignación
     rut_tec: number;          // RUT del técnico
     rut_ges: number;          // RUT del gestor
@@ -47,3 +47,7 @@ export interface ListasOrdenTrabajo {
     };
   }[];
 }
+
+
+
+

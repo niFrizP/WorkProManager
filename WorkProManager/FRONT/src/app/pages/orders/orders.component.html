@@ -98,7 +98,9 @@
               <th class="border p-1 text-center">Nombre del técnico</th>
               <th class="border p-1 text-center">Rol del técnico</th>
               <th class="border p-1 text-center">Tiempo restante</th>
-
+              <th class="border p-1 text-center">Descripción</th>
+              <th class="border p-1 text-center">Detalles Adicionales</th>
+              <th class="border p-1 text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -108,24 +110,27 @@
               <td class="border p-1">{{ formatDate(orden.fec_ter) }}</td>
               <td class="border p-1">{{ orden.num_ser }}</td>
               <td class="border p-1">{{ orden.EstadoOT.nom_estado }}</td>
-              <td class="border p-1">{{ orden.Cliente.nom_cli }} {{ orden.Cliente.ape_cli }}</td>
-              <td class="border p-1">{{ orden.Cliente.dir_cli }}</td>
-              <td class="border p-1">{{ orden.Cliente.tel_cli }}</td>
-              <td class="border p-1">{{ orden.Cliente.email_cli }}</td>
-              <td class="border p-1">{{ orden.Cliente.rut_cli }} - {{ orden.Cliente.d_ver_cli }}</td>
+              <td class="border p-1">{{ orden.Cliente?.nom_cli ?? 'No disponible' }} {{ orden.Cliente?.ape_cli ?? 'No disponible' }}</td>
+              <td class="border p-1">{{ orden.Cliente?.dir_cli ?? 'No disponible' }}</td>
+              <td class="border p-1">{{ orden.Cliente?.tel_cli ?? 'No disponible' }}</td>
+              <td class="border p-1">{{ orden.Cliente?.email_cli ?? 'No disponible' }}</td>
+              <td class="border p-1">{{ orden.Cliente?.rut_cli ?? 'No disponible' }} - {{ orden.Cliente?.d_ver_cli ?? 'No disponible' }}</td>
               <td class="border p-1">{{ orden.Equipo.tip_equ }}</td>
               <td class="border p-1">{{ orden.Equipo.mod_equ }}</td>
-              <td class="border p-1">{{ formatAsignacionDate(orden.Asignacions[0].fecha_asig) }}</td>
-              <td class="border p-1">{{ orden.Asignacions[0].notas_asig }}</td>
-              <td class="border p-1">{{ orden.Asignacions[0].tecnico.rut_trab }} - {{ orden.Asignacions[0].tecnico.d_veri_trab }}</td>
-              <td class="border p-1"> {{ orden.Asignacions[0].tecnico.nom_trab }} {{ orden.Asignacions[0].tecnico.ape_trab }}</td>
-
+              <td class="border p-1">{{ orden.Asignacions?.[0]?.fecha_asig ? formatAsignacionDate(orden.Asignacions?.[0]?.fecha_asig ?? '') : 'No disponible' }}</td>
+              <td class="border p-1">{{ orden.Asignacions?.[0]?.notas_asig ?? 'No disponible' }}</td>
+              <td class="border p-1">{{ orden.Asignacions?.[0]?.tecnico?.rut_trab ?? 'No disponible' }} - {{ orden.Asignacions?.[0]?.tecnico?.d_veri_trab ?? 'No disponible' }}</td>
+              <td class="border p-1">
+                {{ orden.Asignacions?.[0]?.tecnico?.nom_trab ?? 'No disponible' }} {{ orden.Asignacions?.[0]?.tecnico?.ape_trab ?? 'No disponible' }}
+              </td>
               <td class="border p-1">
                 <app-cronometro [fechaPlazo]="orden.fec_ter"></app-cronometro>
               </td>
+              <td class="border p-1">{{ orden.desc_ot }}</td>
+              <td class="border p-1">{{ orden.det_adic }}</td>
               <td class="border p-1">
                 <button class="bg-blue-500 text-white p-1 rounded" title="Descargar PDF"><i class="fa-solid fa-download"></i></button>
-                <button  class="bg-yellow-500 text-white p-1 rounded" title="Editar Orden" [routerLink]="['/ordenes', orden.id_ot]"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="bg-yellow-500 text-white p-1 rounded" title="Editar Orden" [routerLink]="['/ordenes', orden.id_ot]"><i class="fa-solid fa-pen-to-square"></i></button>
                 <button class="bg-red-500 text-white p-1 rounded" title="Rechazar Orden"><i class="fa-solid fa-xmark"></i></button>
               </td>
             </tr>

@@ -22,6 +22,6 @@ export class CotizacionService {
 
 
   actualizarCotizacion(data: vistaOrden): Observable<vistaOrden> {
-    return this.http.post<vistaOrden>(this.apiUrlUpd, data, {withCredentials:true});
+    return this.http.put<vistaOrden>(this.apiUrlUpd, data, {withCredentials:true});
   }
 }

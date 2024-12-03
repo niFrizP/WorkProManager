@@ -1,9 +1,9 @@
 import { DataTypes, Model } from 'sequelize';
-import db from '../db/connection'; // Conexión a la base de datos
+import db from '../db/connection';
 import Cliente from './cliente';
 import EstadoOT from './estado_ot';
 import Equipo from './equipo';
-import Asignacion from './asignacion'; // Si quieres la relación con Asignacion
+import Asignacion from './asignacion';
 
 class OrdenTrabajo extends Model {
   public id_ot!: number;
@@ -11,11 +11,10 @@ class OrdenTrabajo extends Model {
   public desc_ot!: string | null;
   public fec_ter!: Date | null;
   public det_adic!: string | null;
-  public num_ser!: string;
   public id_estado!: number | null;
   public motiv_rec!: string | null;
-  public rut_cli!: number;
-  public id_asig!: number | null;
+  public id_equipo!: number;
+  public id_cliente!: number;
 }
 
 OrdenTrabajo.init(
@@ -28,87 +27,66 @@ OrdenTrabajo.init(
     },
     fec_creacion: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW, // Fecha de creación, por defecto la fecha actual
+      defaultValue: DataTypes.NOW,
       allowNull: false,
     },
     desc_ot: {
       type: DataTypes.STRING(255),
-      allowNull: true, // Puede ser nulo si no se proporciona una descripción
+      allowNull: true,
     },
     fec_ter: {
       type: DataTypes.DATE,
-      allowNull: true, // Puede ser nulo si no se ha establecido una fecha de terminación
+      allowNull: true,
     },
     det_adic: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    num_ser: {
-      type: DataTypes.STRING(30),
-      allowNull: true, // No se permite nulo, ya que es la clave foránea
-    },
     id_estado: {
       type: DataTypes.INTEGER,
-      allowNull: true, // Puede ser nulo si no se proporciona un estado
+      allowNull: true,
     },
     motiv_rec: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    rut_cli: {
+    id_equipo: {
       type: DataTypes.INTEGER,
-      allowNull: false, // No se permite nulo, ya que es la clave foránea
+      allowNull: false,
+      references: {
+        model: 'equipo', // Relación con la tabla Equipo
+        key: 'id_equipo',
+      },
     },
-
+    id_cliente: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'cliente', // Relación con la tabla Cliente
+        key: 'id_cliente',
+      },
+    }
   },
   {
     sequelize: db,
     modelName: 'OrdenTrabajo',
     tableName: 'orden_trabajo',
-    timestamps: false, // Ya que no usamos `createdAt` ni `updatedAt`
+    timestamps: false,
   }
 );
 
-// Relaciones
-
-// Relación con la tabla `cliente` (cliente que creó la orden)
+// Relationships
 OrdenTrabajo.belongsTo(Cliente, {
-  foreignKey: 'rut_cli',
-  as: 'cliente', // Alias para cliente
+  foreignKey: 'id_cliente',
 });
 
-// Relación con la tabla `estado_ot` (estado de la orden)
-OrdenTrabajo.belongsTo(EstadoOT, {
-  foreignKey: 'id_estado',
-  as: 'estado', 
-});
-
-// Relación con la tabla `equipo` (equipo asociado a la orden)
-OrdenTrabajo.belongsTo(Equipo, {
-  foreignKey: 'num_ser',
-  as: 'equipo', // Alias para equipo
-});
-
-
-
-// Relaciones
-
-// Relación con la tabla `cliente` (cliente que creó la orden)
-OrdenTrabajo.belongsTo(Cliente, {
-  foreignKey: 'rut_cli'
-});
-
-// Relación con la tabla `estado_ot` (estado de la orden)
 OrdenTrabajo.belongsTo(EstadoOT, {
   foreignKey: 'id_estado'
 });
 
-// Relación con la tabla `equipo` (equipo asociado a la orden)
 OrdenTrabajo.belongsTo(Equipo, {
-  foreignKey: 'num_ser'
+  foreignKey: 'id_equipo'
 });
-
-
 
 
 

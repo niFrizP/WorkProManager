@@ -1,0 +1,25 @@
+
+<div class="servicios-container">
+  <!-- ...existing code... -->
+
+  <h3>Servicios Habilitados</h3>
+  <ul>
+    <li *ngFor="let servicio of serviciosHabilitados">
+      {{ servicio.nombre }}
+    </li>
+  </ul>
+
+  <h3>Servicios Deshabilitados</h3>
+  <ul>
+    <li *ngFor="let servicio of serviciosDeshabilitados">
+      {{ servicio.nombre }}
+    </li>
+  </ul>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <!-- ...existing code... -->
+</div>

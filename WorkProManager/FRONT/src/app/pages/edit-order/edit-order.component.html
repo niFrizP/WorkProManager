@@ -148,7 +148,21 @@
             </div>
           </div>
 
+          
+
           <!-- Lista de servicios añadidos -->
+          <div *ngIf="serviciosSeleccionados.length > 0" class="mt-4">
+            <h3 class="font-semibold mb-2">Servicios Añadidos:</h3>
+            <ul class="space-y-2">
+              <li *ngFor="let servicio of serviciosSeleccionados" class="flex justify-between items-center border-b border-gray-200 py-2">
+                {{ servicio.nom_serv }}
+                <button type="button" (click)="mostrarAlertaEliminarServicio(servicio, $event)" class="text-red-500 hover:text-red-700">Eliminar</button>
+              </li>
+            </ul>
+          </div>
+
+
+          <!-- Alerta de servicios -->
           <div *ngIf="alertVisible" class="mt-4 p-4 bg-yellow-100 border border-yellow-400 rounded-md">
             <p>¿Estás seguro que deseas eliminar el servicio de "<strong>{{ servicioAEliminar.nom_serv }}</strong>"?</p>
             <div class="flex justify-end mt-2">
@@ -156,14 +170,50 @@
               <button type="button" (click)="cancelarEliminarServicio()" class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-600">No</button>
             </div>
           </div>
-          <div *ngIf="serviciosSeleccionados.length > 0" class="mt-4">
-            <h3 class="font-semibold mb-2">Servicios Añadidos:</h3>
+
+
+
+
+           <!-- Alerta de servicios -->
+           <div *ngIf="alertVisibleLocal" class="mt-4 p-4 bg-yellow-100 border border-yellow-400 rounded-md">
+            <p>¿Estás seguro que deseas eliminar el servicio de "<strong>{{ servicioAEliminar.nom_serv }}</strong>"?</p>
+            <div class="flex justify-end mt-2">
+              <button type="button" (click)="confirmarEliminarServicioLocal()" class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600 mr-2">Sí</button>
+              <button type="button" (click)="cancelarEliminarServicio()" class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-600">No</button>
+            </div>
+          </div>
+
+          <!-- Lista de servicios sugeridos -->
+          <div *ngIf="serviciosSugeridos.length > 0" class="mt-4">
+            <h3 class="font-semibold mb-2">Servicios Sugeridos:</h3>
             <ul class="space-y-2">
-              <li *ngFor="let servicio of serviciosSeleccionados" class="flex justify-between items-center border-b border-gray-200 py-2">
-                {{ servicio.nom_serv }}
-                <button type="button" (click)="mostrarAlertaEliminarServicio(servicio)" class="text-red-500 hover:text-red-700">Eliminar</button>
+              <li *ngFor="let servicio of serviciosSugeridos" class="flex justify-between items-center border-b border-gray-200 py-2">
+                {{ servicio.Servicio.nom_serv }}
+                <button type="button" (click)="mostrarAlertaEliminarServicioSugerido(servicio)" class="text-red-500 hover:text-red-700">Eliminar</button>
               </li>
             </ul>
+          </div>
+
+
+          
+          <!-- Lista de servicios deshabilitados -->
+          <div *ngIf="deshabilitados.length > 0" class="mt-4">
+            <h3 class="font-semibold mb-2">Servicios Deshabilitados:</h3>
+            <ul class="space-y-2 bg-gray-100 p-4 rounded-md">
+              <li *ngFor="let servicio of deshabilitados" class="flex justify-between items-center border-b border-gray-200 py-2 text-gray-500">
+                <span>{{ servicio.nom_serv }}</span>
+                <button type="button" (click)="mostrarAlertaEliminarServicioDeshabilitado(servicio)" class="text-green-500 hover:text-green-700">Habilitar</button>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Alerta de servicios deshabilitados -->
+          <div *ngIf="alertVisibleDeshabilitado" class="mt-4 p-4 bg-yellow-100 border border-yellow-400 rounded-md">
+            <p>¿Estás seguro que deseas habilitar el servicio de "<strong>{{ servicioAEliminar?.nom_serv }}</strong>"?</p>
+            <div class="flex justify-end mt-2">
+              <button type="button" (click)="confirmarEliminarServicioDeshabilitado()" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600 mr-2">Sí</button>
+              <button type="button" (click)="cancelarEliminarServicioDeshabilitado()" class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-600">No</button>
+            </div>
           </div>
         </fieldset>
 

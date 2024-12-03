@@ -20,6 +20,7 @@ import { ServicioService } from '../../services/servicio.service';
 import { EstadoOTService } from '../../services/estado-ot.service';
 import { ServicioOrdenService } from '../../services/insertarServicio.service';
 import { OrdenTrabajoService } from '../../services/orden-trabajo.service';
+import { SocketService } from '../../services/socketIO.service'; // Asegúrate de la ruta correcta
 
 
 @Component({
@@ -38,6 +39,8 @@ export class EditOrderComponent implements OnInit {
   listasOT: ListasOrdenTrabajo[] = [];
   listasServicios: vistaServicioResponse[] = [];
 
+  serviciosSugeridos: vistaServicioResponse[] = [];
+
   vistaServicio:vistaServicio[] = [];
   vistaOrden: vistaOrden[] = [];
   cotizacionForm!: FormGroup;
@@ -51,7 +54,11 @@ export class EditOrderComponent implements OnInit {
   servicioSeleccionado: number | null = null; // Store selected service ID
   alertVisible: boolean = false; // Flag to control alert visibility
   servicioAEliminar: any = null; // Store service to delete
+  alertVisibleLocal: boolean = false;
   confirmModalVisible: boolean = false; // Flag to control modal visibility
+  deshabilitados: any[] = []; // Array para los servicios deshabilitados
+  alertVisibleDeshabilitado: boolean = false; // Flag para controlar la visibilidad de la alerta
+  isServicioSugerido: boolean = false; // Añadir esta bandera
   
 
   //Sacar ID de la OT desde la URL
@@ -59,15 +66,15 @@ export class EditOrderComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private cotizacionService: CotizacionService,
+    private servicioOrdenService: ServicioOrdenService, // Asegúrate de inyectar el servicio
     private router: Router,
     private route: ActivatedRoute,
     private trabajadorService: TrabajadorService,
     private marcaService: MarcaService,
     private servicioService: ServicioService,
     private estadoService: EstadoOTService,
-  
-    private servicioOrdenService: ServicioOrdenService,
     private ordenTrabajoService: OrdenTrabajoService,
+    private socketService: SocketService, // Inyectar SocketService
   ) {
     // Inicializa el formulario con un array de servicios
     this.cotizacionForm = this.fb.group({
@@ -78,15 +85,28 @@ export class EditOrderComponent implements OnInit {
   }
 
   ngOnInit() {
-     this.id_ot = parseInt(this.route.snapshot.paramMap.get('id') || '0', 10);
-    
+    // Eliminar la asignación inicial usando snapshot
+    // this.id_ot = parseInt(this.route.snapshot.paramMap.get('id') || '0', 10);
+    // console.log('id_ot inicial en ngOnInit:', this.id_ot); // Log para verificar id_ot
+
+    // Suscribirse a los cambios de los parámetros de la ruta
+    this.route.paramMap.subscribe(params => {
+      const idParam = params.get('id');
+      this.id_ot = idParam ? parseInt(idParam, 10) : null;
+      console.log('id_ot actualizado en suscripción:', this.id_ot);
+      
+      if (this.id_ot) {
+        this.cargarOrdenTrabajo(this.id_ot);
+      } else {
+        console.warn('id_ot es null o undefined en suscripción.');
+      }
+    });
+
     // Cargar datos iniciales
     this.cargarTecnicos();
     this.cargarMarcas();
-    this.cargarServiciosAsociados(this.id_ot); // Cargar servicios seleccionados primero
     this.cargarServicios(); // Luego cargar servicios disponibles
     this.cargarEstados();
-    this.cargarOrdenTrabajo(this.id_ot);
 
     // Inicializa el formulario de cotización con validaciones
     this.cotizacionForm = this.fb.group({
@@ -119,6 +139,8 @@ export class EditOrderComponent implements OnInit {
     this.cotizacionForm.get('id_serv')?.valueChanges.subscribe(value => {
       this.servicioSeleccionado = value;
     });
+
+   
   }
 
   // Cargar la lista de técnicos
@@ -166,7 +188,10 @@ export class EditOrderComponent implements OnInit {
   cargarServicios(): void {
     this.servicioService.getServicios().subscribe({
       next: (data) => {
-        this.servicios = data.filter(servicio => !this.serviciosSeleccionados.some(s => s.id_serv === servicio.id_serv)).sort((a, b) => a.nom_serv.localeCompare(b.nom_serv));
+        this.servicios = data.filter(servicio => 
+          !this.serviciosSeleccionados.some(s => s.id_serv === servicio.id_serv) &&
+          !this.serviciosSugeridos.some(s => s.id_serv === servicio.id_serv)
+        ).sort((a, b) => a.nom_serv.localeCompare(b.nom_serv));
         console.log('Servicios obtenidos:', this.servicios);
       },
       error: (err) => {
@@ -186,13 +211,13 @@ export class EditOrderComponent implements OnInit {
           const formattedDate = this.listasOT[0]?.fec_ter ? new Date(this.listasOT[0]?.fec_ter).toISOString().split('T')[0] : null;
 
           this.cotizacionForm.patchValue({
-            nom_cli: this.listasOT[0]?.Cliente.nom_cli,
-            dir_cli: this.listasOT[0]?.Cliente.dir_cli,
-            tel_cli: this.listasOT[0]?.Cliente.tel_cli,
-            email_cli: this.listasOT[0]?.Cliente.email_cli,
-            ape_cli: this.listasOT[0]?.Cliente.ape_cli,
-            rut_cli: this.listasOT[0]?.Cliente.rut_cli,
-            d_ver_cli: this.listasOT[0]?.Cliente.d_ver_cli,
+            nom_cli: this.listasOT[0]?.Cliente?.nom_cli,
+            dir_cli: this.listasOT[0]?.Cliente?.dir_cli,
+            tel_cli: this.listasOT[0]?.Cliente?.tel_cli,
+            email_cli: this.listasOT[0]?.Cliente?.email_cli,
+            ape_cli: this.listasOT[0]?.Cliente?.ape_cli,
+            rut_cli: this.listasOT[0]?.Cliente?.rut_cli,
+            d_ver_cli: this.listasOT[0]?.Cliente?.d_ver_cli,
             desc_ot: this.listasOT[0]?.desc_ot,
             fec_ter: formattedDate,
             det_adic: this.listasOT[0]?.det_adic,
@@ -200,42 +225,43 @@ export class EditOrderComponent implements OnInit {
             id_marca: this.listasOT[0]?.Equipo.id_marca,
             tip_equ: this.listasOT[0]?.Equipo.tip_equ,
             mod_equ: this.listasOT[0]?.Equipo.mod_equ,
-            rut_tec: this.listasOT[0]?.Asignacions[0].rut_tec,
-            notas_asig: this.listasOT[0]?.Asignacions[0].notas_asig,
+            rut_tec: this.listasOT[0]?.Asignacions?.[0]?.rut_tec ?? null,
+            notas_asig: this.listasOT[0]?.Asignacions?.[0]?.notas_asig ?? '',
             id_estado: this.listasOT[0]?.id_estado
           });
-          this.asignacionForm.patchValue({
-            rut_ges: 78901234,
-            rut_tec: this.listasOT[0]?.Asignacions[0].rut_tec,
-            notas_asig: this.listasOT[0]?.Asignacions[0].notas_asig,
+
+          // Log de los valores patchados
+          console.log('Valores patchados en cotizacionForm:', this.cotizacionForm.value);
+
+          // Mover los valores eliminados a la lista de deshabilitados
+          this.deshabilitados.push({
+            nom_cli: this.listasOT[0]?.Cliente?.nom_cli,
+            dir_cli: this.listasOT[0]?.Cliente?.dir_cli,
+            tel_cli: this.listasOT[0]?.Cliente?.tel_cli,
+            email_cli: this.listasOT[0]?.Cliente?.email_cli,
+            ape_cli: this.listasOT[0]?.Cliente?.ape_cli,
+            rut_cli: this.listasOT[0]?.Cliente?.rut_cli,
+            d_ver_cli: this.listasOT[0]?.Cliente?.d_ver_cli,
+            desc_ot: this.listasOT[0]?.desc_ot,
+            fec_ter: formattedDate,
+            det_adic: this.listasOT[0]?.det_adic,
+            num_ser: this.listasOT[0]?.num_ser,
+            id_marca: this.listasOT[0]?.Equipo.id_marca,
+            tip_equ: this.listasOT[0]?.Equipo.tip_equ,
+            mod_equ: this.listasOT[0]?.Equipo.mod_equ,
+            rut_tec: this.listasOT[0]?.Asignacions?.[0]?.rut_tec ?? null,
+            notas_asig: this.listasOT[0]?.Asignacions?.[0]?.notas_asig ?? '',
             id_estado: this.listasOT[0]?.id_estado
           });
+
+          console.log('Servicios deshabilitados actualizados:', this.deshabilitados);
         },
         error: (err) => {
           console.error('Error al obtener la orden de trabajo:', err);
         }
       });
-    }
-  }
-
-  // Cargar los servicios asociados a la orden de trabajo
-  cargarServiciosAsociados(id_ot: number | null): void {
-    if (id_ot) {
-      this.servicioOrdenService.getServiciosOrden(id_ot).subscribe({
-        next: (data: vistaServicioResponse[]) => {
-          this.listasServicios = data;
-          console.log('Servicios asociados obtenidos:', this.listasServicios);
-
-          // Incluir los servicios asociados en el array de servicios seleccionados
-          this.serviciosSeleccionados = this.listasServicios.map(servicio => ({
-            id_serv: servicio.id_serv,
-            nom_serv: servicio.Servicio.nom_serv
-          }));
-        },
-        error: (err: any) => {
-          console.error('Error al obtener servicios asociados:', err);
-        }
-      });
+    } else {
+      console.warn('id_ot es null o undefined en cargarOrdenTrabajo.');
     }
   }
 
@@ -279,20 +305,46 @@ export class EditOrderComponent implements OnInit {
     }
   }
 
-  // Eliminar servicio de la lista
+  confirmarEliminarServicioLocal() {
+    this.eliminarServicioLocal(new Event('click'), this.servicioAEliminar);
+    this.servicioAEliminar = false;
+  }
+
+  eliminarServicioLocal(event: Event, servicio: any) {
+    event.preventDefault();
+    console.log('Eliminando servicio local:', servicio);
+    if (servicio && servicio.id_serv) { // Verificación adicional
+      this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: { id_serv: any }) => s.id_serv !== servicio.id_serv);
+      // Reintegrar el servicio eliminado a la lista de servicios disponibles
+      this.servicios.push(servicio);
+      this.servicios.sort((a, b) => a.nom_serv.localeCompare(b.nom_serv)); // Ordenar alfabéticamente
+      // Restablecer el valor del selector
+      this.cotizacionForm.get('id_serv')?.setValue(null);
+    } else {
+      console.error('Servicio a eliminar es inválido:', servicio);
+    }
+  }
+
   eliminarServicio(event: Event, servicio: any) {
     event.preventDefault();
     console.log(servicio);
     
     // Llamar al servicio para eliminar el servicio de la orden de trabajo
     if (this.id_ot && servicio.id_serv) {
-      this.servicioOrdenService.eliminarServicioOrden(this.id_ot, servicio.id_serv).subscribe({
+      this.servicioOrdenService.desactivarServicioOrden(this.id_ot, servicio.id_serv).subscribe({
         next: () => {
           console.log('Servicio eliminado exitosamente');
-          this.serviciosSeleccionados = this.serviciosSeleccionados.filter((s: { id_serv: any }) => s.id_serv !== servicio.id_serv);
-          this.servicios.push(servicio); // Reincorporar el servicio eliminado a la lista de servicios disponibles
-          this.servicios.sort((a, b) => a.nom_serv.localeCompare(b.nom_serv)); // Ordenar alfabéticamente
-          this.cotizacionForm.get('id_serv')?.setValue(null); // Restablecer el valor del selector
+
+          // Actualizar la lista de servicios sugeridos
+          this.serviciosSugeridos = this.serviciosSugeridos.filter((s: { id_serv: any }) => s.id_serv !== servicio.id_serv);
+
+          // Actualizar el formulario al eliminar el servicio
+          this.cotizacionForm.get('id_serv')?.setValue(null);
+          // Mover el servicio eliminado a la lista de deshabilitados
+          this.deshabilitados.push(servicio);
+
+          // Restablecer el valor del selector
+          this.cotizacionForm.get('id_serv')?.setValue(null);
         },
         error: (err) => {
           console.error('Error al eliminar el servicio:', err);
@@ -301,22 +353,78 @@ export class EditOrderComponent implements OnInit {
     }
   }
 
+
+
   // Mostrar alerta para confirmar eliminación de servicio
-  mostrarAlertaEliminarServicio(servicio: any) {
+  mostrarAlertaEliminarServicio(servicio: any, event: Event) {
+    event.preventDefault();
     this.servicioAEliminar = servicio;
+    this.isServicioSugerido = false; // Es un servicio añadido localmente
     this.alertVisible = true;
+  }
+
+   // Mostrar alerta para confirmar eliminación de servicio
+   mostrarAlertaEliminarServicioLocal(servicio: any) {
+    this.servicioAEliminar = servicio;
+    this.alertVisibleLocal = true;
+  }
+
+
+   // Mostrar alerta para confirmar eliminación de servicio sugerido
+   mostrarAlertaEliminarServicioSugerido(servicio: any) {
+    this.servicioAEliminar = servicio;
+    this.isServicioSugerido = true; // Es un servicio sugerido
+    this.alertVisible = true;
+  }
+
+  mostrarAlertaEliminarServicioDeshabilitado(servicio: any) {
+    this.servicioAEliminar = servicio;
+    this.alertVisibleDeshabilitado = true;
   }
 
   // Confirmar eliminación de servicio
   confirmarEliminarServicio() {
-    this.eliminarServicio(new Event('click'), this.servicioAEliminar);
+    if (this.isServicioSugerido) {
+        this.eliminarServicio(new Event('click'), this.servicioAEliminar);
+    } else {
+        this.eliminarServicioLocal(new Event('click'), this.servicioAEliminar);
+    }
     this.alertVisible = false;
+    this.servicioAEliminar = null;
+    this.isServicioSugerido = false; // Restablecer la bandera
+  }
+
+  confirmarEliminarServicioDeshabilitado() {
+    console.log('confirmarEliminarServicioDeshabilitado called');
+    console.log('id_ot:', this.id_ot);
+    console.log('servicioAEliminar:', this.servicioAEliminar);
+
+    if (this.id_ot && this.servicioAEliminar && this.servicioAEliminar.id_serv) {
+      console.log('Activando servicio con id_serv:', this.servicioAEliminar.id_serv);
+      this.servicioOrdenService.activarServicioOrden(this.id_ot, this.servicioAEliminar.id_serv).subscribe({
+        next: () => {
+          console.log('Servicio habilitado exitosamente:', this.servicioAEliminar);
+          // ...existing code...
+        },
+        error: (err) => {
+          console.error('Error al habilitar el servicio:', err);
+        }
+      });
+    } else {
+      console.error('id_ot o servicioAEliminar es inválido:', { id_ot: this.id_ot, servicioAEliminar: this.servicioAEliminar });
+    }
+    this.alertVisibleDeshabilitado = false;
     this.servicioAEliminar = null;
   }
 
   // Cancelar eliminación de servicio
   cancelarEliminarServicio() {
     this.alertVisible = false;
+    this.servicioAEliminar = null;
+  }
+
+  cancelarEliminarServicioDeshabilitado() {
+    this.alertVisibleDeshabilitado = false;
     this.servicioAEliminar = null;
   }
 
@@ -348,44 +456,104 @@ export class EditOrderComponent implements OnInit {
         ...this.cotizacionForm.value,
         ...this.asignacionForm.value
       };
-      console.log('Datos del formulario:', formValues);
+      
+      // Console.logs para depuración
+      console.log('--- Inicio del Submit ---');
+      console.log('Datos de Cotización:', this.cotizacionForm.value);
+      console.log('Datos de Asignación:', this.asignacionForm.value);
+      console.log('Servicios Seleccionados:', this.serviciosSeleccionados);
+      console.log('Servicios Sugeridos:', this.serviciosSugeridos);
+      console.log('Servicios Deshabilitados:', this.deshabilitados);
+      console.log('id_ot actual:', this.id_ot);
+      console.log('-------------------------');
 
-      this.cotizacionService.insertarCotizacion(formValues).toPromise()
-        .then(response => {
-          console.log('Cotización enviada exitosamente:', response);
-          const id_ot = response?.id_ot; // Obtener el ID de la orden de trabajo creada
+      if (this.id_ot && this.id_ot !== 0) {
+        // Log antes de actualizar
+        console.log('Actualizando cotización con ID:', this.id_ot);
+        console.log('Datos enviados para actualizar:', formValues);
 
-          // Insertar los servicios seleccionados
-          const promises = this.serviciosSeleccionados.map(servicio => {
-            return new Promise((resolve, reject) => {
-              const servicioData = {
-                id_ot: id_ot,
+        // Actualizar cotización existente
+        this.cotizacionService.actualizarCotizacion(formValues).toPromise()
+          .then(response => {
+            console.log('Cotización actualizada exitosamente:', response);      
+            // Actualizar id_ot en el componente
+            console.log('id_ot actualizado en el componente:', this.id_ot);
+            
+            // Actualizar los servicios sugeridos
+            const updatePromises = this.serviciosSugeridos.map(servicio => {
+              console.log('Actualizando servicio sugerido:', servicio);
+              const servicioData: vistaServicio = {
+                id_serv: servicio.id_serv,
+                fec_inicio_serv: new Date(),
+
+                // ...otros campos necesarios
+              };
+              if (this.id_ot !== undefined && this.id_ot !== null) {
+                return this.servicioOrdenService.actualizarServicioOrden(this.id_ot, servicio.id_serv, servicioData).toPromise();
+              } else {
+                console.error('id_ot es undefined o null al actualizar servicio:', servicio);
+                return Promise.reject('id_ot es inválido.');
+              }
+            });
+
+            // Insertar los servicios seleccionados usando ServicioOrdenService
+            const insertPromises = this.serviciosSeleccionados.map(servicio => {
+              console.log('Insertando servicio seleccionado:', servicio);
+              const servicioData: vistaServicio = {
+                id_ot: this.id_ot || 0,
                 id_serv: servicio.id_serv,
                 desc_serv: null,
                 fec_inicio_serv: null,
                 fec_ter_serv: null
               };
-              this.servicioOrdenService.insertarServicioOrden(servicioData).toPromise()
-                .then((res: unknown) => {
-                  console.log('Servicio insertado exitosamente:', res);
-                  resolve(res);
-                })
-                .catch((err: any) => {
-                  console.error('Error al insertar servicio:', err);
-                  reject(err);
-                });
+              return this.servicioOrdenService.insertarServicioOrden(servicioData).toPromise();
             });
-          });
 
-          return Promise.all(promises);
-        })
-        .then(() => {
-          console.log('Todos los servicios fueron insertados exitosamente');
-          this.router.navigate(['/success']);
-        })
-        .catch(error => {
-          console.error('Error al enviar cotización o insertar servicios:', error);
-        });
+            console.log('Promesas de actualización y inserción:', updatePromises, insertPromises);
+            
+            return Promise.all([...updatePromises, ...insertPromises]);
+          })
+          .then(() => {
+            console.log('Todas las actualizaciones fueron exitosas');
+            this.router.navigate(['/success']);
+          })
+          .catch(error => {
+            console.error('Error al actualizar cotización o servicios:', error);
+          });
+      } else {
+        // Log antes de crear nueva cotización
+        console.log('Creando nueva cotización con datos:', formValues);
+
+        // Crear nueva cotización
+        this.cotizacionService.actualizarCotizacion(formValues).toPromise()
+          .then(response => {
+            console.log('Cotización creada exitosamente:', response);
+     
+            // Insertar los servicios seleccionados usando ServicioOrdenService
+            const promises = this.serviciosSeleccionados.map(servicio => {
+              console.log('Insertando servicio seleccionado:', servicio);
+              const servicioData: vistaServicio = {
+                id_ot: this.id_ot ?? undefined,
+                id_serv: servicio.id_serv,
+                desc_serv: null,
+                fec_inicio_serv: null,
+                fec_ter_serv: null
+              };
+              return this.servicioOrdenService.insertarServicioOrden(servicioData).toPromise();
+            });
+
+            console.log('Promesas de inserción de servicios:', promises);
+            
+            return Promise.all(promises);
+          })
+          .then(() => {
+            console.log('Todos los servicios fueron insertados exitosamente');
+            this.router.navigate(['/success']);
+          })
+          .catch(error => {
+            console.error('Error al crear cotización o servicios:', error);
+          });
+      }
     } else {
       console.error('Formulario no válido');
       this.logFormErrors();
@@ -423,3 +591,6 @@ export class EditOrderComponent implements OnInit {
     });
   }
 }
+
+
+

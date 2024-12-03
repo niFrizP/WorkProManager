@@ -4,7 +4,7 @@ export interface vistaOrden {
   // Datos de Cliente
   nom_cli: string;
   dir_cli: string;
-  tel_cli: string;
+  tel_cli: number;
   email_cli: string;
   ape_cli: string;
   rut_cli: number;
