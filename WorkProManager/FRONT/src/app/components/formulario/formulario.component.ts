@@ -180,7 +180,6 @@ export class FormularioComponent implements OnInit {
 
   // Agregar servicio seleccionado a la lista
   agregarServicio(event: Event) {
-  agregarServicio(event: Event) {
     event.preventDefault();
     if (this.servicioSeleccionado) {
       // Encontrar el servicio completo según el ID

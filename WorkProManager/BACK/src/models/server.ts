@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import http from 'http';
 import socketIo from 'socket.io';
+import lusca from 'lusca'; // Importa lusca
 import routesTrabajador from '../routes/trabajador';
 import routesCotizacion from '../routes/insertarCotizacion';
 import routesServicio from '../routes/servicio';
@@ -37,7 +38,7 @@ class Server {
     constructor() {
         this.app = express();
         this.port = process.env.PORT || '3001';
-        
+
         // Configurar el servidor HTTP para usar con Socket.IO
         this.server = http.createServer(this.app);
         this.io = new socketIo.Server(this.server, {
@@ -83,7 +84,10 @@ class Server {
         }));
 
         // Analizar cookies
-        this.app.use(cookieParser()); // <--- Aquí
+        this.app.use(cookieParser());
+
+        // Protección CSRF con lusca
+        this.app.use(lusca.csrf()); // implementación de CSRF con Lusca
 
         // Parseo del body
         this.app.use(express.json());
@@ -111,15 +115,15 @@ class Server {
     private socketEvents() {
         this.io.on('connection', (socket) => {
             console.log('Un cliente se ha conectado', socket.id);
-    
+
             // Enviar un mensaje de bienvenida al cliente
             socket.emit('mensaje', '¡Hola desde el servidor!');
-    
+
             // Recibir mensaje desde el cliente
             socket.on('mensajeCliente', (data) => {
                 console.log('Mensaje recibido del cliente:', data);
             });
-    
+
             // Evento para obtener servicios habilitados
             socket.on('getServiciosHabilitados', async (id_ot: string) => {
                 try {
@@ -134,7 +138,7 @@ class Server {
                     console.error(error);
                 }
             });
-    
+
             // Evento para obtener servicios deshabilitados
             socket.on('getServiciosDeshabilitados', async (id_ot: string) => {
                 try {
@@ -149,7 +153,7 @@ class Server {
                     console.error(error);
                 }
             });
-    
+
             // Evento cuando un cliente se desconecta
             socket.on('disconnect', () => {
                 console.log('Un cliente se ha desconectado', socket.id);

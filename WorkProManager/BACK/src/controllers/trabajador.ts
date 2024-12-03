@@ -3,7 +3,6 @@ import Trabajador from "../models/trabajador"; // Asegúrate de importar el mode
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import TrabajadorRol from "../models/trabajador_rol";
-import { where } from "sequelize";
 
 // Obtener todos los trabajadores
 export const getTrabajadores = async (req: Request, res: Response) => {
@@ -127,14 +126,14 @@ export const verifyToken = (req: Request, res: Response) => {
     const token = req.cookies['token'];  // Recuperar el token desde las cookies
 
     if (!token) {
-         res.status(401).json({ msg: 'Acceso denegado. No se encontró token.' });
+        res.status(401).json({ msg: 'Acceso denegado. No se encontró token.' });
     }
 
     try {
         const decoded: any = jwt.verify(token, process.env.SECRET_KEY || 'pepito123');
         res.status(200).json({ msg: 'Token válido', user: decoded });
     } catch (error) {
-         res.status(401).json({ msg: 'Token no válido o expirado.' });
+        res.status(401).json({ msg: 'Token no válido o expirado.' });
     }
 };
 
