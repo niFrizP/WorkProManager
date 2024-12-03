@@ -69,7 +69,7 @@
     <div class="bg-white p-6 rounded-lg shadow-md">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold">Últimas Órdenes de Trabajo</h2>
-        <button [routerLink]="['/orders']" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+        <button (click)="navegarAOrdenes()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
           Ver todas
         </button>
       </div>

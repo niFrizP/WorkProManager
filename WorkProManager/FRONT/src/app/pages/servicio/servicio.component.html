@@ -2,37 +2,77 @@
     <div class="contenedor">
         <h1 class="text-2xl font-bold text-center mb-4">Servicios</h1>
         <div class="flex justify-between items-center mb-4">
-            <form [formGroup]="serviciosForm" (ngSubmit)="onSubmit()">
-                <input formControlName="nom_serv" type="text" id="nom_serv" class="p-2 rounded border border-gray-300 flex-grow" placeholder="Ingresa Servicio" required>
-                <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
-                    + Nueva
-                </button>
+            <form [formGroup]="serviciosForm" (ngSubmit)="onSubmit()" class="w-full sm:w-auto">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input 
+                        formControlName="nom_serv" 
+                        type="text" 
+                        id="nom_serv" 
+                        class="p-2 rounded border border-gray-300 w-full sm:w-auto" 
+                        placeholder="Ingresa Servicio" 
+                        required>
+                    <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 w-full sm:w-auto">
+                        <i class="fa-solid fa-plus"></i> Nueva
+                    </button>
+                </div>
             </form>
-            
         </div>
 
-        <table class="w-full border-collapse">
-            <thead>
-                <tr class="col-start-auto">
-                    <th class="border p-2">Nombre</th>
-                    <th class="border p-2">Total de servicios adjudicados a OT</th>
-                    <th>Eliminar</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let servicio of servicios | paginate : { itemsPerPage: itemsPerPage, currentPage: page }">
-                    <td>{{ servicio.nom_serv }}</td>
-                    <td>{{servicio.vista_count_ot_por_servicio?.total_ot ?? 0}}</td>
-                    <td>
-                        <button (click)="servicio.id_serv !== undefined ? deleteServicio(servicio.id_serv) : null">🗑️</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- Vista móvil (cards) -->
+        <div class="md:hidden">
+            <div *ngFor="let servicio of servicios | paginate : { itemsPerPage: itemsPerPage, currentPage: page }" 
+                 class="bg-white rounded-lg shadow-md p-4 mb-4">
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="font-bold">Nombre:</div>
+                    <div>{{ servicio.nom_serv }}</div>
+                    
+                    <div class="font-bold">Total OT:</div>
+                    <div>{{servicio.vista_count_ot_por_servicio?.total_ot ?? 0}}</div>
+                </div>
+                
+                <div class="mt-4 flex justify-end">
+                    <button (click)="servicio.id_serv !== undefined ? deleteServicio(servicio.id_serv) : null"
+                            class="bg-red-500 text-white p-2 rounded">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista desktop (tabla) -->
+        <div class="hidden md:block overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="col-start-auto">
+                        <th class="border p-2">Nombre</th>
+                        <th class="border p-2">Total de servicios adjudicados a OT</th>
+                        <th class="border p-2">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let servicio of servicios | paginate : { itemsPerPage: itemsPerPage, currentPage: page }">
+                        <td class="border p-2">{{ servicio.nom_serv }}</td>
+                        <td class="border p-2 text-center">{{servicio.vista_count_ot_por_servicio?.total_ot ?? 0}}</td>
+                        <td class="border p-2">
+                            <div class="flex justify-center">
+                                <button (click)="servicio.id_serv !== undefined ? deleteServicio(servicio.id_serv) : null"
+                                        class="bg-red-500 text-white p-2 rounded">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
         <div class="flex justify-center mt-4">
-            <pagination-controls (pageChange)="onPageChange($event)" class="mt-4"
-            previousLabel="Anterior" nextLabel="Siguiente"></pagination-controls>
+            <pagination-controls 
+                (pageChange)="onPageChange($event)" 
+                class="mt-4"
+                previousLabel="Anterior" 
+                nextLabel="Siguiente">
+            </pagination-controls>
         </div>
     </div>
 </div>

@@ -1,0 +1,105 @@
+<!-- Modal Backdrop -->
+<div *ngIf="isOpen" 
+     class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+     (click)="close()">
+  
+  <!-- Modal Content -->
+  <div class="relative top-20 mx-auto p-5 border w-3/4 max-w-4xl shadow-lg rounded-md bg-white"
+       (click)="$event.stopPropagation()">
+    
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center mb-4 border-b pb-4">
+      <h3 class="text-xl font-medium">Historial de Cambios - Orden #{{idOt}}</h3>
+      <button class="text-gray-400 hover:text-gray-500" (click)="close()">
+        <span class="text-2xl">&times;</span>
+      </button>
+    </div>
+
+    <!-- Timeline -->
+    <div class="flow-root">
+      <ul role="list" class="-mb-8">
+        <li *ngFor="let cambio of historial; let last = last">
+          <div class="relative pb-8">
+            <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" 
+                  *ngIf="!last" aria-hidden="true"></span>
+            <div class="relative flex space-x-3">
+              <!-- Dot -->
+              <div>
+                <span class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
+                  <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm0 12a5 5 0 100-10 5 5 0 000 10z" clip-rule="evenodd" />
+                  </svg>
+                </span>
+              </div>
+              <!-- Content -->
+              <div class="flex min-w-0 flex-1 flex-col space-y-2 pt-1.5">
+                <div class="flex justify-between">
+                  <p class="text-sm font-medium text-gray-900">Cambio #{{cambio.id_hist_ot}}</p>
+                  <time class="text-sm text-gray-500">{{cambio.fec_cambio | date:'dd/MM/yyyy HH:mm'}}</time>
+                </div>
+
+                <!-- Cambios en la descripción -->
+                <div *ngIf="cambio.desc_ot_old !== cambio.desc_ot_new" class="text-sm">
+                  <p class="font-medium">Descripción:</p>
+                  <p class="text-red-600">- {{cambio.desc_ot_old}}</p>
+                  <p class="text-green-600">+ {{cambio.desc_ot_new}}</p>
+                </div>
+
+                <!-- Cambios en la fecha de término -->
+                <div *ngIf="cambio.fec_ter_old !== cambio.fec_ter_new" class="text-sm">
+                  <p class="font-medium">Fecha de término:</p>
+                  <p class="text-red-600">- {{cambio.fec_ter_old | date:'dd/MM/yyyy'}}</p>
+                  <p class="text-green-600">+ {{cambio.fec_ter_new | date:'dd/MM/yyyy'}}</p>
+                </div>
+
+                <!-- Cambios en detalles adicionales -->
+                <div *ngIf="cambio.det_adic_old !== cambio.det_adic_new" class="text-sm">
+                  <p class="font-medium">Detalles adicionales:</p>
+                  <p class="text-red-600">- {{cambio.det_adic_old}}</p>
+                  <p class="text-green-600">+ {{cambio.det_adic_new}}</p>
+                </div>
+
+                <!-- Cambios en número de serie -->
+                <div *ngIf="cambio.num_ser_old !== cambio.num_ser_new" class="text-sm">
+                  <p class="font-medium">Número de serie:</p>
+                  <p class="text-red-600">- {{cambio.num_ser_old}}</p>
+                  <p class="text-green-600">+ {{cambio.num_ser_new}}</p>
+                </div>
+
+                <!-- Cambios en estado -->
+                <div *ngIf="cambio.id_estado_old !== cambio.id_estado_new" class="text-sm">
+                  <p class="font-medium">Estado:</p>
+                  <p class="text-red-600">- Estado {{cambio.id_estado_old}}</p>
+                  <p class="text-green-600">+ Estado {{cambio.id_estado_new}}</p>
+                </div>
+
+                <!-- Cambios en motivo -->
+                <div *ngIf="cambio.motiv_rec_old !== cambio.motiv_rec_new" class="text-sm">
+                  <p class="font-medium">Motivo:</p>
+                  <p class="text-red-600">- {{cambio.motiv_rec_old}}</p>
+                  <p class="text-green-600">+ {{cambio.motiv_rec_new}}</p>
+                </div>
+
+                <!-- Cambios en RUT cliente -->
+                <div *ngIf="cambio.old_rut_cli !== cambio.new_rut_cli" class="text-sm">
+                  <p class="font-medium">RUT Cliente:</p>
+                  <p class="text-red-600">- {{cambio.old_rut_cli}}</p>
+                  <p class="text-green-600">+ {{cambio.new_rut_cli}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="mt-6 flex justify-end">
+      <button type="button"
+              (click)="close()"
+              class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>

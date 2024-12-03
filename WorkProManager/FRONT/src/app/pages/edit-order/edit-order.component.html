@@ -264,6 +264,16 @@
             </div>
           </div>
         </div>
+        <button type="button" 
+                (click)="mostrarHistorial()" 
+                class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+          Ver Historial
+        </button>
+        <app-historial-orden
+          [isOpen]="modalHistorialVisible"
+          [idOt]="idOrdenActual"
+          (closeModal)="cerrarHistorial()">
+        </app-historial-orden>
       </form>
     </div>
   </div>

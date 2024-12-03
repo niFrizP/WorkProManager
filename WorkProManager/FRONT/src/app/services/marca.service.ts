@@ -19,4 +19,8 @@ export class MarcaService {
   getMarcas(): Observable<Marca[]> {
     return this.http.get<Marca[]>(`${this.apiUrl}/api/marca`);
   }
+
+  deleteMarca(id: number) {
+    return this.http.delete(`${this.apiUrl}/marcas/${id}`);
+  }
 }

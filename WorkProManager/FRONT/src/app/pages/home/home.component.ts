@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CronometroComponent } from '../../components/cronometro/cronometro.component';
 
 @Component({
@@ -26,10 +26,14 @@ export class HomeComponent implements OnInit {
   totalOrders: number = 0;
   recentOrders: any[] = [];
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
     this.loadMockData();
+  }
+
+  navegarAOrdenes() {
+    this.router.navigate(['/ordenes']);
   }
 
   loadMockData() {

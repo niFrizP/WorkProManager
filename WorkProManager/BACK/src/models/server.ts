@@ -3,6 +3,7 @@ import cors from 'cors';
 import http from 'http';
 import socketIo from 'socket.io';
 import lusca from 'lusca'; // Importa lusca
+import session from 'express-session';
 import routesTrabajador from '../routes/trabajador';
 import routesCotizacion from '../routes/insertarCotizacion';
 import routesServicio from '../routes/servicio';
@@ -83,14 +84,39 @@ class Server {
             credentials: true, // Permitir el envío de cookies y encabezados de autorización
         }));
 
+        // Parseo del body
+        this.app.use(express.json());
+
         // Analizar cookies
         this.app.use(cookieParser());
 
-        // Protección CSRF con lusca
-        this.app.use(lusca.csrf()); // implementación de CSRF con Lusca
+        // Configurar sesión (debe ir antes de lusca)
+        this.app.use(session({
+            secret: '123', // Cambia esto por una clave secreta segura
+            resave: false,
+            saveUninitialized: true,
+            cookie: {
+                secure: process.env.NODE_ENV === 'production',
+                httpOnly: true
+            }
+        }));
 
-        // Parseo del body
-        this.app.use(express.json());
+        // Opción 1: Deshabilitar CSRF temporalmente y mantener otras protecciones
+        this.app.use(lusca({
+            xframe: 'SAMEORIGIN',
+            xssProtection: true
+        }));
+
+        // Opción 2: O si prefieres mantener CSRF pero con configuración más permisiva
+        /*
+        this.app.use(lusca({
+            csrf: {
+                angular: true // Esto es específico para aplicaciones Angular
+            },
+            xframe: 'SAMEORIGIN',
+            xssProtection: true
+        }));
+        */
     }
 
     async dbConnect() {
