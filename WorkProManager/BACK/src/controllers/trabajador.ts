@@ -96,7 +96,7 @@ export const loginUser = async (req: Request, res: Response) => {
                 // Generar token
                 const token = jwt.sign(
                     { rut_trab: trabajador.rut_trab, id_rol: trabajador.id_rol },
-                    process.env.SECRET_KEY || 'pepito123',
+                    process.env['SECRET_KEY'] || 'pepito123',
                     { expiresIn: '1h' }
                 );
 
@@ -130,7 +130,7 @@ export const verifyToken = (req: Request, res: Response) => {
     }
 
     try {
-        const decoded: any = jwt.verify(token, process.env.SECRET_KEY || 'pepito123');
+        const decoded: any = jwt.verify(token, process.env['SECRET_KEY'] || 'pepito123');
         res.status(200).json({ msg: 'Token válido', user: decoded });
     } catch (error) {
         res.status(401).json({ msg: 'Token no válido o expirado.' });
@@ -141,7 +141,7 @@ export const logoutUser = (req: Request, res: Response) => {
     // Eliminar la cookie del token
     res.clearCookie('token', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Solo en producción
+        secure: process.env['NODE_ENV'] === 'production', // Solo en producción
         sameSite: 'strict',
     });
 

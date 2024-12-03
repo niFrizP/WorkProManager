@@ -9,16 +9,25 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Trabajador } from '../../interfaces/trabajador';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { TrabajadorService } from '../../services/trabajador.service';
 import { getTrabajadores } from '../../../../../BACK/src/controllers/trabajador';
 
 @Component({
-  selector: 'app-create-trabajador',
-  standalone: true,
+  selector: 'app-create-usuario',
   templateUrl: './create-usuario.component.html',
   styleUrls: ['./create-usuario.component.css'],
-  imports: [MatCardModule, MatInputModule, MatSelectModule, MatButtonModule, MatSnackBarModule, ReactiveFormsModule, CommonModule]
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatCardModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatSnackBarModule,
+    ReactiveFormsModule
+  ]
 })
 export class CreateTrabajadorComponent implements OnInit {
   userForm: FormGroup;
@@ -59,7 +68,7 @@ export class CreateTrabajadorComponent implements OnInit {
             duration: 3000
           });
           console.log('trabajador creado o actualizado:', trabajador);
-          this.router.navigate(['/orders']);
+          this.router.navigate(['/usuarios']);
         }
       ).catch(
         (error) => {

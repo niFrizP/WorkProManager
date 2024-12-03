@@ -8,7 +8,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h3 class="text-lg font-semibold text-gray-700">Cotización y revisión</h3>
-            <p class="text-3xl font-bold text-blue-600">{{ cotizacionCount }}</p>
+            <p class="text-3xl font-bold text-blue-600">{{ contadores.cotizacion }}</p>
           </div>
           <div class="text-blue-600">
             <i class="fas fa-file-invoice text-3xl"></i>
@@ -20,7 +20,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h3 class="text-lg font-semibold text-gray-700">Confirmando cotización</h3>
-            <p class="text-3xl font-bold text-purple-600">{{ confirmandoCount }}</p>
+            <p class="text-3xl font-bold text-purple-600">{{ contadores.confirmando }}</p>
           </div>
           <div class="text-purple-600">
             <i class="fas fa-handshake text-3xl"></i>
@@ -32,7 +32,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h3 class="text-lg font-semibold text-gray-700">Servicios en proceso</h3>
-            <p class="text-3xl font-bold text-yellow-600">{{ enProcesoCount }}</p>
+            <p class="text-3xl font-bold text-yellow-600">{{ contadores.enProceso }}</p>
           </div>
           <div class="text-yellow-600">
             <i class="fas fa-cogs text-3xl"></i>
@@ -44,7 +44,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h3 class="text-lg font-semibold text-gray-700">Orden Realizada</h3>
-            <p class="text-3xl font-bold text-green-600">{{ realizadaCount }}</p>
+            <p class="text-3xl font-bold text-green-600">{{ contadores.realizada }}</p>
           </div>
           <div class="text-green-600">
             <i class="fas fa-check-circle text-3xl"></i>
@@ -56,7 +56,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h3 class="text-lg font-semibold text-gray-700">Orden Rechazada</h3>
-            <p class="text-3xl font-bold text-red-600">{{ rechazadaCount }}</p>
+            <p class="text-3xl font-bold text-red-600">{{ contadores.rechazada }}</p>
           </div>
           <div class="text-red-600">
             <i class="fas fa-times-circle text-3xl"></i>
@@ -85,25 +85,19 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr *ngFor="let order of recentOrders" class="hover:bg-gray-50">
+            <tr *ngFor="let order of ordenesRecientes" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap">{{ order.id_ot }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ order.rut_cliente }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ order.Cliente?.nom_cli }} {{ order.Cliente?.ape_cli }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span [ngClass]="{
-                  'px-2 py-1 text-sm rounded-full': true,
-                  'bg-yellow-200 text-yellow-800': order.VistaSolicitud?.nom_estado_ot === 'En proceso',
-                  'bg-green-200 text-green-800': order.VistaSolicitud?.nom_estado_ot === 'Completada',
-                  'bg-red-200 text-red-800': order.VistaSolicitud?.nom_estado_ot === 'Rechazada',
-                  'bg-blue-200 text-blue-800': order.VistaSolicitud?.nom_estado_ot === 'Pendiente'
-                }">
-                  {{ order.VistaSolicitud?.nom_estado_ot }}
+                <span [ngClass]="getEstadoClase(order.id_estado)">
+                  {{ order.EstadoOT.nom_estado }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <app-cronometro [fechaPlazo]="order.VistaSolicitud?.fecha_plazo | date:'yyyy-MM-ddTHH:mm'"></app-cronometro>
+                <app-cronometro [fechaPlazo]="order.fec_ter"></app-cronometro>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <button [routerLink]="['/orders']" 
+                <button [routerLink]="['/order']" 
                         class="text-blue-600 hover:text-blue-800 mr-2">
                   <i class="fas fa-eye"></i>
                 </button>

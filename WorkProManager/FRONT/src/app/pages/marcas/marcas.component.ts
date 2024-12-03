@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ReactiveFormsModule, FormGroup, FormBuilder } from '@angular/forms';
@@ -11,11 +12,12 @@ import { MarcaService } from '../../services/marca.service';
     CommonModule,
     NgxPaginationModule,
     ReactiveFormsModule,
+    RouterModule,
   ],
   templateUrl: './marcas.component.html',
   styleUrls: ['./marcas.component.css']
 })
-export class MarcasComponent {
+export class MarcasComponent implements OnInit {
   marcaForm: FormGroup;
   marcas: any[] = [];
   itemsPerPage: number = 10;
@@ -23,11 +25,26 @@ export class MarcasComponent {
 
   constructor(
     private fb: FormBuilder,
-    private marcaService: MarcaService
+    private marcaService: MarcaService,
+    private router: Router
   ) {
     this.marcaForm = this.fb.group({
       nom_marca: ['']
     });
+  }
+
+  ngOnInit() {
+    // Verificar tanto el userId como el token
+    const rut_trab = localStorage.getItem('rut_trab');
+    const token = localStorage.getItem('token'); // Asumiendo que guardas el token
+
+    if (!rut_trab || !token) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    // Si la autenticación es correcta, obtener las marcas
+    this.getMarcas();
   }
 
   onPageChange(event: number) {
