@@ -15,3 +15,5 @@ node_modules/
 node_modules/
 .config.ts
 /config.ts
+WorkProManager/BACK/dist/db/connection.js
+WorkProManager/BACK/dist/models/server.js

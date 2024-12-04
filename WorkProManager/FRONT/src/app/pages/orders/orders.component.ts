@@ -23,8 +23,8 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./orders.component.css'],
   standalone: true,
   imports: [
-    MatIconModule, 
-    CommonModule, 
+    MatIconModule,
+    CommonModule,
     CronometroComponent,
     RouterModule,
     NgxPaginationModule,
@@ -52,26 +52,26 @@ export class OrdersComponent implements OnInit {
     equipo: ''
   };
 
-  constructor(
-    private ordenTrabajoService: OrdenTrabajoService,
-    private clienteService: ClienteService,
-    private trabajadorService: TrabajadorService
-  ) {}
-
   showFilters: boolean = false;
   OrdenTrabajo: any[] = [];
-
-  // Variables para almacenar las listas originales
   ordenesOriginales: any[] = [];
   clientesList: any[] = [];
   tecnicosList: any[] = [];
 
-  // Controls para autocomplete
+  // Variables para el buscador y autocomplete
   clienteControl = new FormControl('');
   tecnicoControl = new FormControl('');
-
   clientesFiltrados: any[] = [];
   tecnicosFiltrados: any[] = [];
+
+  // Buscador OT
+  busquedaOT: string = '';
+
+  constructor(
+    private ordenTrabajoService: OrdenTrabajoService,
+    private clienteService: ClienteService,
+    private trabajadorService: TrabajadorService
+  ) { }
 
   ngOnInit() {
     // Cargar datos iniciales
@@ -101,7 +101,7 @@ export class OrdersComponent implements OnInit {
 
   private filtrarClientes(valor: string) {
     const filtro = valor.toLowerCase();
-    this.clientesFiltrados = this.clientesList.filter(cliente => 
+    this.clientesFiltrados = this.clientesList.filter(cliente =>
       cliente.nom_cli.toLowerCase().includes(filtro) ||
       cliente.rut_cli.toLowerCase().includes(filtro)
     );
@@ -109,7 +109,7 @@ export class OrdersComponent implements OnInit {
 
   private filtrarTecnicos(valor: string) {
     const filtro = valor.toLowerCase();
-    this.tecnicosFiltrados = this.tecnicosList.filter(tecnico => 
+    this.tecnicosFiltrados = this.tecnicosList.filter(tecnico =>
       tecnico.nom_trab.toLowerCase().includes(filtro) ||
       tecnico.rut_trab.toLowerCase().includes(filtro)
     );
@@ -120,7 +120,7 @@ export class OrdersComponent implements OnInit {
 
     // Filtrar por estado
     if (this.filtros.estado) {
-      ordenesFiltradas = ordenesFiltradas.filter(orden => 
+      ordenesFiltradas = ordenesFiltradas.filter(orden =>
         orden.EstadoOT.nom_estado.toLowerCase() === this.filtros.estado.toLowerCase()
       );
     }
@@ -129,7 +129,7 @@ export class OrdersComponent implements OnInit {
     if (this.filtros.fechaDesde && this.filtros.fechaHasta) {
       const fechaDesde = new Date(this.filtros.fechaDesde);
       const fechaHasta = new Date(this.filtros.fechaHasta);
-      
+
       ordenesFiltradas = ordenesFiltradas.filter(orden => {
         const fechaOrden = new Date(orden.fec_creacion);
         return fechaOrden >= fechaDesde && fechaOrden <= fechaHasta;
@@ -138,7 +138,7 @@ export class OrdersComponent implements OnInit {
 
     // Filtrar por cliente
     if (this.filtros.cliente) {
-      ordenesFiltradas = ordenesFiltradas.filter(orden => 
+      ordenesFiltradas = ordenesFiltradas.filter(orden =>
         orden.Cliente?.rut_cli === this.filtros.cliente ||
         orden.Cliente?.nom_cli.toLowerCase().includes(this.filtros.cliente.toLowerCase())
       );
@@ -146,7 +146,7 @@ export class OrdersComponent implements OnInit {
 
     // Filtrar por técnico
     if (this.filtros.tecnico) {
-      ordenesFiltradas = ordenesFiltradas.filter(orden => 
+      ordenesFiltradas = ordenesFiltradas.filter(orden =>
         orden.Asignacions?.[0]?.tecnico?.rut_trab === this.filtros.tecnico ||
         orden.Asignacions?.[0]?.tecnico?.nom_trab.toLowerCase().includes(this.filtros.tecnico.toLowerCase())
       );
@@ -155,9 +155,19 @@ export class OrdersComponent implements OnInit {
     // Filtrar por equipo
     if (this.filtros.equipo) {
       const equipoFiltro = this.filtros.equipo.toLowerCase();
-      ordenesFiltradas = ordenesFiltradas.filter(orden => 
+      ordenesFiltradas = ordenesFiltradas.filter(orden =>
         orden.num_ser?.toLowerCase().includes(equipoFiltro) ||
         orden.Equipo?.mod_equ?.toLowerCase().includes(equipoFiltro)
+      );
+    }
+
+    // Filtrar por el valor ingresado en el buscador de OT
+    if (this.busquedaOT) {
+      const busqueda = this.busquedaOT.toLowerCase();
+      ordenesFiltradas = ordenesFiltradas.filter(orden =>
+        orden.id_ot.toString().includes(busqueda) || // Filtrar por ID OT
+        orden.Cliente?.nom_cli.toLowerCase().includes(busqueda) || // Filtrar por nombre del cliente
+        orden.Equipo?.mod_equ?.toLowerCase().includes(busqueda) // Filtrar por modelo del equipo
       );
     }
 
@@ -204,11 +214,11 @@ export class OrdersComponent implements OnInit {
       tecnico: '',
       equipo: ''
     };
-    
+
     // Resetear los controles de autocomplete
     this.clienteControl.reset();
     this.tecnicoControl.reset();
-    
+
     // Restaurar la lista original
     this.OrdenTrabajo = [...this.ordenesOriginales];
   }

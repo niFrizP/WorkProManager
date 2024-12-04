@@ -22,7 +22,7 @@ export class SidebarComponent implements OnInit {
     public authService: AuthService,
     private router: Router,
     private http: HttpClient
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     console.log('Sidebar Component Initialized');
@@ -57,9 +57,9 @@ export class SidebarComponent implements OnInit {
       { name: 'Ordenes', link: './ordenes', icon: 'fas fa-box', requiredRoles: [1, 2, 3] },
       { name: 'Usuarios', link: './usuarios', icon: 'fas fa-user', requiredRoles: [1] },
       { name: 'Cotización', link: './cotizacion', icon: 'fas fa-dollar-sign', requiredRoles: [1, 3] },
-      { name: 'Marca', link: './marca', icon: 'fas fa-copyright', requiredRoles: [1] },
+      { name: 'Marca', link: './marcas', icon: 'fas fa-copyright', requiredRoles: [1] },
       { name: 'Servicios', link: './servicios', icon: 'fas fa-toolbox', requiredRoles: [1] },
-      { name: 'Causa', link: './causa', icon: 'fas fa-scroll', requiredRoles: [1] },
+      { name: 'Causa', link: './causas', icon: 'fas fa-scroll', requiredRoles: [1] },
     ];
 
     // Filtra los recursos en función del rol del usuario
