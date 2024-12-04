@@ -22,13 +22,13 @@
           <!-- Estado -->
           <div class="filter-group">
             <h3 class="filter-header text-sm font-medium mb-2">Estado de la Orden</h3>
-            <select [(ngModel)]="filtros.estado" (change)="aplicarFiltros()"
+            <select title="aplicar filtros" [(ngModel)]="filtros.estado" (change)="aplicarFiltros()"
               class="filter-select w-full p-2 border rounded">
               <option value="">Todas las ordenes de trabajo</option>
               <option value="pendiente">Pendiente de cotización</option>
-              <option value="aprobacion">Aprobación de la cotización</option>
+              <option value="aprobacion" title="Aprobación">Aprobación de la cotización</option>
               <option value="proceso">En proceso</option>
-              <option value="completada">Completada</option>
+              <option value="completada" title="completada">Completada</option>
               <option value="finalizada">Finalizada</option>
               <option value="rechazada">Rechazada</option>
             </select>
@@ -40,13 +40,15 @@
             <div class="flex space-x-2">
               <mat-form-field appearance="fill" class="w-1/2">
                 <mat-label>Desde</mat-label>
-                <input matInput [matDatepicker]="pickerDesde" [(ngModel)]="filtros.fechaDesde">
+                <input matInput [matDatepicker]="pickerDesde" [(ngModel)]="filtros.fechaDesde"
+                  placeholder="Ingrese una fecha">
                 <mat-datepicker-toggle matSuffix [for]="pickerDesde"></mat-datepicker-toggle>
                 <mat-datepicker #pickerDesde></mat-datepicker>
               </mat-form-field>
               <mat-form-field appearance="fill" class="w-1/2">
                 <mat-label>Hasta</mat-label>
-                <input matInput [matDatepicker]="pickerHasta" [(ngModel)]="filtros.fechaHasta">
+                <input matInput [matDatepicker]="pickerHasta" [(ngModel)]="filtros.fechaHasta"
+                  placeholder="Ingrese una fecha">
                 <mat-datepicker-toggle matSuffix [for]="pickerHasta"></mat-datepicker-toggle>
                 <mat-datepicker #pickerHasta></mat-datepicker>
               </mat-form-field>
@@ -58,7 +60,7 @@
             <h3 class="filter-header text-sm font-medium mb-2">Cliente</h3>
             <mat-form-field class="w-full">
               <mat-label>Buscar cliente</mat-label>
-              <input matInput [(ngModel)]="filtros.cliente" [matAutocomplete]="autoCliente">
+              <input matInput [(ngModel)]="filtros.cliente" [matAutocomplete]="autoCliente" placeholder="Ej: John Doe">
               <mat-autocomplete #autoCliente="matAutocomplete">
                 <mat-option *ngFor="let cliente of clientesFiltrados" [value]="cliente.rut_cli">
                   {{cliente.nom_cli}} {{cliente.ape_cli}} - {{cliente.rut_cli}}
@@ -72,7 +74,7 @@
             <h3 class="filter-header text-sm font-medium mb-2">Técnico Asignado</h3>
             <mat-form-field class="w-full">
               <mat-label>Buscar técnico</mat-label>
-              <input matInput [(ngModel)]="filtros.tecnico" [matAutocomplete]="autoTecnico">
+              <input matInput [(ngModel)]="filtros.tecnico" [matAutocomplete]="autoTecnico" placeholder="Ej: John Doe">
               <mat-autocomplete #autoTecnico="matAutocomplete">
                 <mat-option *ngFor="let tecnico of tecnicosFiltrados" [value]="tecnico.rut_trab">
                   {{tecnico.nom_trab}} {{tecnico.ape_trab}} - {{tecnico.rut_trab}}

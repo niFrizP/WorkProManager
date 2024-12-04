@@ -1,12 +1,10 @@
 <!-- Modal Backdrop -->
-<div *ngIf="isOpen" 
-     class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
-     (click)="close()">
-  
+<div *ngIf="isOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+  (click)="close()">
+
   <!-- Modal Content -->
-  <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
-       (click)="$event.stopPropagation()">
-    
+  <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white" (click)="$event.stopPropagation()">
+
     <!-- Modal Header -->
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-lg font-medium">Servicio Orden</h3>
@@ -21,69 +19,66 @@
         <!-- ID OT -->
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700">ID OT</label>
-          <input type="number" 
-                 formControlName="id_ot"
-                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          <input type="number" formControlName="id_ot"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            placeholder="0000000">
         </div>
 
         <!-- ID Servicio -->
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700">ID Servicio</label>
-          <input type="number" 
-                 formControlName="id_serv"
-                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          <input type="number" formControlName="id_serv"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            placeholder="000000">
         </div>
 
         <!-- Descripción -->
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700">Descripción</label>
           <textarea formControlName="desc_serv"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    rows="3"></textarea>
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            rows="3" placeholder="Ingrese una descripción"></textarea>
         </div>
 
         <!-- Fecha Inicio -->
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700">Fecha Inicio</label>
-          <input type="datetime-local" 
-                 formControlName="fec_inicio_serv"
-                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          <input type="datetime-local" formControlName="fec_inicio_serv"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            placeholder="Ingrese una fecha">
         </div>
 
         <!-- Fecha Término -->
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700">Fecha Término</label>
-          <input type="datetime-local" 
-                 formControlName="fec_ter_serv"
-                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          <input type="datetime-local" formControlName="fec_ter_serv"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            placeholder="Ingrese una fecha">
         </div>
 
         <!-- Checkboxes -->
         <div class="form-group flex space-x-4">
           <div class="flex items-center">
-            <input type="checkbox" 
-                   formControlName="activo_serv"
-                   class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+            <input type="checkbox" formControlName="activo_serv"
+              class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" title="¿La OT esta activa?">
             <label class="ml-2 text-sm text-gray-700">Activo</label>
           </div>
           <div class="flex items-center">
-            <input type="checkbox" 
-                   formControlName="completado_serv"
-                   class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-            <label class="ml-2 text-sm text-gray-700">Completado</label>
+            <input type="checkbox" formControlName="completado_serv" placeholder="Ingrese una fecha"
+              class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+            <label class="ml-2 text-sm text-gray-700" title="¿La Ot se encuentra completada?">Completado</label>
           </div>
         </div>
       </div>
 
       <!-- Modal Footer -->
       <div class="flex justify-end space-x-2">
-        <button type="button"
-                (click)="close()"
-                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300">
+        <button type="button" (click)="close()"
+          class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300">
           Cancelar
         </button>
         <button type="submit"
-                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
           Guardar
         </button>
       </div>
