@@ -9,26 +9,26 @@
 
     <!-- Vista móvil (cards) -->
     <div class="md:hidden">
-      <div *ngFor="let usuario of usuarios | paginate : { itemsPerPage: itemsPerPage, currentPage: page }" 
-           class="bg-white rounded-lg shadow-md p-4 mb-4">
+      <div *ngFor="let usuario of usuarios | paginate : { itemsPerPage: itemsPerPage, currentPage: page }"
+        class="bg-white rounded-lg shadow-md p-4 mb-4">
         <div class="grid grid-cols-2 gap-2">
           <div class="font-bold">RUT:</div>
           <div>{{ usuario.rut_trab }}</div>
-          
+
           <div class="font-bold">Nombre:</div>
           <div>{{ usuario.nom_trab }} {{ usuario.ape_trab }}</div>
-          
+
           <div class="font-bold">Rol:</div>
           <div>{{ usuario.id_rol }}</div>
         </div>
-        
+
         <div class="mt-4 flex justify-end space-x-2">
-          <button [routerLink]="['create-usuario/', usuario.rut_trab]" 
-                  class="bg-yellow-500 text-white p-2 rounded">
+          <button [routerLink]="['create-usuario/', usuario.rut_trab]" title="Editar"
+            class="bg-yellow-500 text-white p-2 rounded">
             <i class="fa-solid fa-pen-to-square"></i>
           </button>
-          <button (click)="usuario.rut_trab !== undefined ? deleteUsuario(usuario.rut_trab) : null" 
-                  class="bg-red-500 text-white p-2 rounded">
+          <button (click)="usuario.rut_trab !== undefined ? deleteUsuario(usuario.rut_trab) : null" title="Eliminar"
+            class="bg-red-500 text-white p-2 rounded">
             <i class="fa-solid fa-trash"></i>
           </button>
         </div>
@@ -52,12 +52,12 @@
             <td class="border p-2">{{ usuario.nom_trab }} {{ usuario.ape_trab }}</td>
             <td class="border p-2">{{ usuario.id_rol }}</td>
             <td class="border p-2 flex justify-center space-x-2">
-              <button [routerLink]="['create-usuario/', usuario.rut_trab]" 
-                      class="bg-yellow-500 text-white p-2 rounded">
+              <button [routerLink]="['create-usuario/', usuario.rut_trab]" title="Editar"
+                class="bg-yellow-500 text-white p-2 rounded">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button (click)="usuario.rut_trab !== undefined ? deleteUsuario(usuario.rut_trab) : null" 
-                      class="bg-red-500 text-white p-2 rounded">
+              <button (click)="usuario.rut_trab !== undefined ? deleteUsuario(usuario.rut_trab) : null" title="Eliminar"
+                class="bg-red-500 text-white p-2 rounded">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </td>
@@ -67,10 +67,7 @@
     </div>
 
     <div class="flex justify-center mt-4">
-      <pagination-controls 
-        (pageChange)="onPageChange($event)" 
-        class="mt-4" 
-        previousLabel="Anterior"
+      <pagination-controls (pageChange)="onPageChange($event)" class="mt-4" previousLabel="Anterior"
         nextLabel="Siguiente">
       </pagination-controls>
     </div>

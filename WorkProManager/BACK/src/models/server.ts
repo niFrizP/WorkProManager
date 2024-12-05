@@ -1,9 +1,12 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import http from 'http';
-import socketIo from 'socket.io';
-import lusca from 'lusca'; // Importa lusca
+import { Server as SocketIoServer } from 'socket.io';
+import lusca from 'lusca';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
+
+// Rutas
 import routesTrabajador from '../routes/trabajador';
 import routesCotizacion from '../routes/insertarCotizacion';
 import routesServicio from '../routes/servicio';
@@ -14,7 +17,7 @@ import routesEstadoOT from '../routes/estado_ot';
 import routesOrdenes from '../routes/orden_trabajo';
 import routesGetServicioOrden from '../routes/servicio_orden';
 
-// Importar los modelos
+// Modelos
 import Trabajador from './trabajador';
 import TrabajadorRol from './trabajador_rol';
 import Asignacion from './asignacion';
@@ -27,24 +30,25 @@ import OrdenTrabajo from './orden_trabajo';
 import ServicioOrden from './servicio_orden';
 import HistorialOrden from './historial_orden';
 import HistorialServicioOrden from './historial_servicio_orden';
-import cookieParser from 'cookie-parser';
-import { fetchServiciosHabilitados, fetchServiciosDeshabilitados } from '../controllers/servicio_orden'; // Importa las funciones auxiliares
+
+// Controladores
+import { fetchServiciosHabilitados, fetchServiciosDeshabilitados } from '../controllers/servicio_orden';
 
 class Server {
     private app: Application;
     private port: string;
-    private server: http.Server; // Servidor HTTP para Socket.IO
-    private io: socketIo.Server; // Instancia de Socket.IO
+    private server: http.Server;
+    private io: SocketIoServer;
 
     constructor() {
         this.app = express();
         this.port = process.env.PORT || '3001';
 
-        // Configurar el servidor HTTP para usar con Socket.IO
+        // Configuración de HTTP y Socket.IO
         this.server = http.createServer(this.app);
-        this.io = new socketIo.Server(this.server, {
+        this.io = new SocketIoServer(this.server, {
             cors: {
-                origin: 'http://localhost:4200', // Asegúrate de permitir el frontend Angular
+                origin: 'http://localhost:4200', // Frontend Angular
                 methods: ['GET', 'POST'],
                 credentials: true,
             }
@@ -54,15 +58,13 @@ class Server {
         this.midlewares();
         this.routes();
         this.dbConnect();
-
-        // Configurar eventos de Socket.IO
         this.socketEvents();
     }
 
     listen() {
         this.server.listen(this.port, () => {
-            console.log('Aplicacion corriendo en el puerto ' + this.port);
-        })
+            console.log('Aplicación corriendo en el puerto ' + this.port);
+        });
     }
 
     routes() {
@@ -81,16 +83,14 @@ class Server {
         // Configuración de CORS
         this.app.use(cors({
             origin: 'http://localhost:4200', // Reemplaza con la URL de tu frontend
-            credentials: true, // Permitir el envío de cookies y encabezados de autorización
+            credentials: true,
         }));
 
-        // Parseo del body
+        // Parseo de body y cookies
         this.app.use(express.json());
-
-        // Analizar cookies
         this.app.use(cookieParser());
 
-        // Configurar sesión (debe ir antes de lusca)
+        // Configurar sesión
         this.app.use(session({
             secret: '123', // Cambia esto por una clave secreta segura
             resave: false,
@@ -101,40 +101,33 @@ class Server {
             }
         }));
 
-        // Opción 1: Deshabilitar CSRF temporalmente y mantener otras protecciones
+        // Protección con Lusca
         this.app.use(lusca({
             xframe: 'SAMEORIGIN',
             xssProtection: true
         }));
-
-        // Opción 2: O si prefieres mantener CSRF pero con configuración más permisiva
-        /*
-        this.app.use(lusca({
-            csrf: {
-                angular: true // Esto es específico para aplicaciones Angular
-            },
-            xframe: 'SAMEORIGIN',
-            xssProtection: true
-        }));
-        */
     }
 
     async dbConnect() {
         try {
-            await Trabajador.sync();
-            await TrabajadorRol.sync();
-            await Asignacion.sync();
-            await Cliente.sync();
-            await Marca.sync();
-            await Equipo.sync();
-            await EstadoOT.sync();
-            await Servicio.sync();
-            await OrdenTrabajo.sync();
-            await ServicioOrden.sync();
-            await HistorialOrden.sync();
-            await HistorialServicioOrden.sync();
+            // Sincronización de modelos
+            await Promise.all([
+                Trabajador.sync(),
+                TrabajadorRol.sync(),
+                Asignacion.sync(),
+                Cliente.sync(),
+                Marca.sync(),
+                Equipo.sync(),
+                EstadoOT.sync(),
+                Servicio.sync(),
+                OrdenTrabajo.sync(),
+                ServicioOrden.sync(),
+                HistorialOrden.sync(),
+                HistorialServicioOrden.sync()
+            ]);
+            console.log('Conexión a la base de datos exitosa');
         } catch (error) {
-            console.error('Unable to connect to the database:', error);
+            console.error('Error al conectar a la base de datos:', error);
         }
     }
 
@@ -142,15 +135,15 @@ class Server {
         this.io.on('connection', (socket) => {
             console.log('Un cliente se ha conectado', socket.id);
 
-            // Enviar un mensaje de bienvenida al cliente
+            // Evento de bienvenida
             socket.emit('mensaje', '¡Hola desde el servidor!');
 
-            // Recibir mensaje desde el cliente
+            // Escuchar mensaje desde el cliente
             socket.on('mensajeCliente', (data) => {
                 console.log('Mensaje recibido del cliente:', data);
             });
 
-            // Evento para obtener servicios habilitados
+            // Obtener servicios habilitados
             socket.on('getServiciosHabilitados', async (id_ot: string) => {
                 try {
                     const serviciosHabilitados = await fetchServiciosHabilitados(id_ot);
@@ -165,7 +158,7 @@ class Server {
                 }
             });
 
-            // Evento para obtener servicios deshabilitados
+            // Obtener servicios deshabilitados
             socket.on('getServiciosDeshabilitados', async (id_ot: string) => {
                 try {
                     const serviciosDeshabilitados = await fetchServiciosDeshabilitados(id_ot);
@@ -180,7 +173,7 @@ class Server {
                 }
             });
 
-            // Evento cuando un cliente se desconecta
+            // Desconexión del cliente
             socket.on('disconnect', () => {
                 console.log('Un cliente se ha desconectado', socket.id);
             });

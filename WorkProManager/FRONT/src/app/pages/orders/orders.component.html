@@ -1,32 +1,34 @@
 <div class="wpm-custom-gradient p-6 rounded-lg shadow-md">
-  <div>
-    <h1 class="text-2xl font-bold text-center mb-4">Órdenes de trabajo</h1>
-  </div>
-
   <div class="flex flex-col items-center mb-4">
-    <div class="contenedor w-full max-w-4xl">
+    <div class="contenedor-bk">
+      <div>
+        <h1 class="text-2xl font-bold text-center mb-4">Órdenes de trabajo</h1>
+      </div>
       <div class="buscador_container mb-4">
         <i class="fa-solid fa-magnifying-glass buscador_icon"></i>
-        <input class="buscador w-full" id="buscador" type="text" placeholder="Buscar OT">
+        <input class="buscador w-full" id="buscador" type="text" placeholder="Buscar OT" [(ngModel)]="busquedaOT"
+          (input)="aplicarFiltros()">
       </div>
-      <button (click)="toggleFilters()" class="boton-wpm text-white p-2 rounded mb-4 flex items-center w-full justify-center">
+      <button (click)="toggleFilters()"
+        class="boton-wpm text-white p-2 rounded mb-4 flex items-center w-full justify-center">
         <mat-icon>filter_list</mat-icon>
         <span class="ml-2">{{ showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros' }}</span>
       </button>
 
       <div *ngIf="showFilters" class="filters-container p-4 border rounded mb-4">
         <h2 class="filters-title text-lg font-semibold mb-4">Filtros</h2>
-        
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <!-- Estado -->
           <div class="filter-group">
             <h3 class="filter-header text-sm font-medium mb-2">Estado de la Orden</h3>
-            <select [(ngModel)]="filtros.estado" (change)="aplicarFiltros()" class="filter-select w-full p-2 border rounded">
+            <select title="aplicar filtros" [(ngModel)]="filtros.estado" (change)="aplicarFiltros()"
+              class="filter-select w-full p-2 border rounded">
               <option value="">Todas las ordenes de trabajo</option>
               <option value="pendiente">Pendiente de cotización</option>
-              <option value="aprobacion">Aprobación de la cotización</option>
+              <option value="aprobacion" title="Aprobación">Aprobación de la cotización</option>
               <option value="proceso">En proceso</option>
-              <option value="completada">Completada</option>
+              <option value="completada" title="completada">Completada</option>
               <option value="finalizada">Finalizada</option>
               <option value="rechazada">Rechazada</option>
             </select>
@@ -38,13 +40,15 @@
             <div class="flex space-x-2">
               <mat-form-field appearance="fill" class="w-1/2">
                 <mat-label>Desde</mat-label>
-                <input matInput [matDatepicker]="pickerDesde" [(ngModel)]="filtros.fechaDesde">
+                <input matInput [matDatepicker]="pickerDesde" [(ngModel)]="filtros.fechaDesde"
+                  placeholder="Ingrese una fecha">
                 <mat-datepicker-toggle matSuffix [for]="pickerDesde"></mat-datepicker-toggle>
                 <mat-datepicker #pickerDesde></mat-datepicker>
               </mat-form-field>
               <mat-form-field appearance="fill" class="w-1/2">
                 <mat-label>Hasta</mat-label>
-                <input matInput [matDatepicker]="pickerHasta" [(ngModel)]="filtros.fechaHasta">
+                <input matInput [matDatepicker]="pickerHasta" [(ngModel)]="filtros.fechaHasta"
+                  placeholder="Ingrese una fecha">
                 <mat-datepicker-toggle matSuffix [for]="pickerHasta"></mat-datepicker-toggle>
                 <mat-datepicker #pickerHasta></mat-datepicker>
               </mat-form-field>
@@ -56,7 +60,7 @@
             <h3 class="filter-header text-sm font-medium mb-2">Cliente</h3>
             <mat-form-field class="w-full">
               <mat-label>Buscar cliente</mat-label>
-              <input matInput [(ngModel)]="filtros.cliente" [matAutocomplete]="autoCliente">
+              <input matInput [(ngModel)]="filtros.cliente" [matAutocomplete]="autoCliente" placeholder="Ej: John Doe">
               <mat-autocomplete #autoCliente="matAutocomplete">
                 <mat-option *ngFor="let cliente of clientesFiltrados" [value]="cliente.rut_cli">
                   {{cliente.nom_cli}} {{cliente.ape_cli}} - {{cliente.rut_cli}}
@@ -70,7 +74,7 @@
             <h3 class="filter-header text-sm font-medium mb-2">Técnico Asignado</h3>
             <mat-form-field class="w-full">
               <mat-label>Buscar técnico</mat-label>
-              <input matInput [(ngModel)]="filtros.tecnico" [matAutocomplete]="autoTecnico">
+              <input matInput [(ngModel)]="filtros.tecnico" [matAutocomplete]="autoTecnico" placeholder="Ej: John Doe">
               <mat-autocomplete #autoTecnico="matAutocomplete">
                 <mat-option *ngFor="let tecnico of tecnicosFiltrados" [value]="tecnico.rut_trab">
                   {{tecnico.nom_trab}} {{tecnico.ape_trab}} - {{tecnico.rut_trab}}
@@ -107,25 +111,26 @@
             <div class="grid grid-cols-2 gap-2">
               <div class="font-bold">N° de orden:</div>
               <div>{{ orden.id_ot }}</div>
-              
+
               <div class="font-bold">Estado:</div>
               <div>{{ orden.EstadoOT.nom_estado }}</div>
-              
+
               <div class="font-bold">Cliente:</div>
               <div>{{ orden.Cliente?.nom_cli ?? 'No disponible' }} {{ orden.Cliente?.ape_cli ?? 'No disponible' }}</div>
-              
+
               <div class="font-bold">Equipo:</div>
               <div>{{ orden.Equipo.tip_equ }} - {{ orden.Equipo.mod_equ }}</div>
-              
+
               <div class="font-bold">Técnico:</div>
               <div>{{ orden.Asignacions?.[0]?.tecnico?.nom_trab ?? 'No disponible' }}</div>
             </div>
-            
+
             <div class="mt-4 flex justify-end space-x-2">
               <button class="bg-blue-500 text-white p-2 rounded" title="Descargar PDF">
                 <i class="fa-solid fa-download"></i>
               </button>
-              <button class="bg-yellow-500 text-white p-2 rounded" title="Editar Orden" [routerLink]="['/ordenes', orden.id_ot]">
+              <button class="bg-yellow-500 text-white p-2 rounded" title="Editar Orden"
+                [routerLink]="['/ordenes', orden.id_ot]">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
               <button class="bg-red-500 text-white p-2 rounded" title="Rechazar Orden">
@@ -169,18 +174,23 @@
               <td class="border p-1">{{ formatDate(orden.fec_ter) }}</td>
               <td class="border p-1">{{ orden.num_ser }}</td>
               <td class="border p-1">{{ orden.EstadoOT.nom_estado }}</td>
-              <td class="border p-1">{{ orden.Cliente?.nom_cli ?? 'No disponible' }} {{ orden.Cliente?.ape_cli ?? 'No disponible' }}</td>
+              <td class="border p-1">{{ orden.Cliente?.nom_cli ?? 'No disponible' }} {{ orden.Cliente?.ape_cli ?? 'No
+                disponible' }}</td>
               <td class="border p-1">{{ orden.Cliente?.dir_cli ?? 'No disponible' }}</td>
               <td class="border p-1">{{ orden.Cliente?.tel_cli ?? 'No disponible' }}</td>
               <td class="border p-1">{{ orden.Cliente?.email_cli ?? 'No disponible' }}</td>
-              <td class="border p-1">{{ orden.Cliente?.rut_cli ?? 'No disponible' }} - {{ orden.Cliente?.d_ver_cli ?? 'No disponible' }}</td>
+              <td class="border p-1">{{ orden.Cliente?.rut_cli ?? 'No disponible' }} - {{ orden.Cliente?.d_ver_cli ??
+                'No disponible' }}</td>
               <td class="border p-1">{{ orden.Equipo.tip_equ }}</td>
               <td class="border p-1">{{ orden.Equipo.mod_equ }}</td>
-              <td class="border p-1">{{ orden.Asignacions?.[0]?.fecha_asig ? formatAsignacionDate(orden.Asignacions?.[0]?.fecha_asig ?? '') : 'No disponible' }}</td>
+              <td class="border p-1">{{ orden.Asignacions?.[0]?.fecha_asig ?
+                formatAsignacionDate(orden.Asignacions?.[0]?.fecha_asig ?? '') : 'No disponible' }}</td>
               <td class="border p-1">{{ orden.Asignacions?.[0]?.notas_asig ?? 'No disponible' }}</td>
-              <td class="border p-1">{{ orden.Asignacions?.[0]?.tecnico?.rut_trab ?? 'No disponible' }} - {{ orden.Asignacions?.[0]?.tecnico?.d_veri_trab ?? 'No disponible' }}</td>
+              <td class="border p-1">{{ orden.Asignacions?.[0]?.tecnico?.rut_trab ?? 'No disponible' }} - {{
+                orden.Asignacions?.[0]?.tecnico?.d_veri_trab ?? 'No disponible' }}</td>
               <td class="border p-1">
-                {{ orden.Asignacions?.[0]?.tecnico?.nom_trab ?? 'No disponible' }} {{ orden.Asignacions?.[0]?.tecnico?.ape_trab ?? 'No disponible' }}
+                {{ orden.Asignacions?.[0]?.tecnico?.nom_trab ?? 'No disponible' }} {{
+                orden.Asignacions?.[0]?.tecnico?.ape_trab ?? 'No disponible' }}
               </td>
               <td class="border p-1">
                 <app-cronometro [fechaPlazo]="orden.fec_ter"></app-cronometro>
@@ -188,16 +198,20 @@
               <td class="border p-1">{{ orden.desc_ot }}</td>
               <td class="border p-1">{{ orden.det_adic }}</td>
               <td class="border p-1">
-                <button class="bg-blue-500 text-white p-1 rounded" title="Descargar PDF"><i class="fa-solid fa-download"></i></button>
-                <button class="bg-yellow-500 text-white p-1 rounded" title="Editar Orden" [routerLink]="['/ordenes', orden.id_ot]"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button class="bg-red-500 text-white p-1 rounded" title="Rechazar Orden"><i class="fa-solid fa-xmark"></i></button>
+                <button class="bg-blue-500 text-white p-1 rounded" title="Descargar PDF"><i
+                    class="fa-solid fa-download"></i></button>
+                <button class="bg-yellow-500 text-white p-1 rounded" title="Editar Orden"
+                  [routerLink]="['/ordenes', orden.id_ot]"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="bg-red-500 text-white p-1 rounded" title="Rechazar Orden"><i
+                    class="fa-solid fa-xmark"></i></button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
       <div class="flex justify-center mt-4">
-        <pagination-controls [id]="'1'" [maxSize]="5" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="Previa" nextLabel="Siguiente"></pagination-controls>
+        <pagination-controls [id]="'1'" [maxSize]="5" [directionLinks]="true" [autoHide]="true" [responsive]="true"
+          previousLabel="Previa" nextLabel="Siguiente"></pagination-controls>
       </div>
     </div>
   </div>
