@@ -84,7 +84,11 @@ export class LoginComponent {
   onSubmit() {
     // Llamada al servicio de autenticación
     this.authService.login({ rut_trab: this.rut_trab, clave: this.clave }).subscribe(
-      (res) => {
+      (res: any) => {
+        // Guardamos los datos en localStorage
+        localStorage.setItem('rut_trab', this.rut_trab);
+        localStorage.setItem('token', res.token); // Asumiendo que el backend devuelve un token
+
         // Mostrar notificación de éxito
         this.showSuccessModal = true;
         setTimeout(() => {

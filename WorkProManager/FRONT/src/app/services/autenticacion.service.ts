@@ -1,45 +1,85 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, tap, Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = environment.apiUrl; // Asegúrate de tener el apiUrl configurado
+  private apiUrl = environment.apiUrl;
 
-
-  constructor(private http: HttpClient) {
-
-
-
-  }
+  constructor(private http: HttpClient) { }
 
   login(credentials: { rut_trab: string, clave: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/api/trabajador/login`, credentials, {
-      withCredentials: true  // Asegura que las cookies se envíen con la solicitud
-    });
+      withCredentials: true
+    }).pipe(
+      tap(response => {
+        if (response && response.token) {
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('rut_trab', credentials.rut_trab);
+        }
+      })
+    );
   }
 
+  verifyToken(): Observable<any> {
+    const token = localStorage.getItem('token');
+    const rut = localStorage.getItem('rut_trab');
+    
+    console.log('=== Verificación de Token ===');
+    console.log('Token en localStorage:', token);
+    console.log('Rut en localStorage:', rut);
+    console.log('URL de verificación:', `${this.apiUrl}/api/trabajador/verify-token`);
 
-
-    // Método para verificar la validez del token
-    verifyToken(): Observable<any> {
-      return this.http.get<any>(`${this.apiUrl}/api/trabajador/verify-token`, { withCredentials: true }).pipe(
-        map(response => {
-          // Extraemos solo lo que necesitamos de la respuesta
-          const userRole = response.user.id_rol; // El rol del usuario
-          const userRut = response.user.rut_trab; // El RUT del usuario
-          return { userRole, userRut }; // Retornamos los datos filtrados
-        })
-      );
+    // Si no hay token, retornamos un error inmediatamente
+    if (!token) {
+      console.error('No hay token disponible');
+      return new Observable(subscriber => {
+        subscriber.error('No token available');
+      });
     }
 
-    logout(): Observable<any> {
-      return this.http.post(`${this.apiUrl}/api/trabajador/logout`, {}, {
-          withCredentials: true, // Asegura que las cookies se manejen correctamente
-      });
+    return this.http.get<any>(`${this.apiUrl}/api/trabajador/verify-token`, { 
+      withCredentials: true,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    }).pipe(
+      tap({
+        next: (response) => console.log('Respuesta exitosa de verify-token:', response),
+        error: (error) => console.error('Error en verify-token:', error)
+      }),
+      map(response => {
+        if (!response || !response.user) {
+          throw new Error('Respuesta inválida del servidor');
+        }
+        return {
+          userRole: response.user.id_rol,
+          userRut: response.user.rut_trab
+        };
+      })
+    );
   }
-  
+
+  logout(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/api/trabajador/logout`, {}, {
+      withCredentials: true
+    }).pipe(
+      tap(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('rut_trab');
+      })
+    );
+  }
+
+  isAuthenticated(): boolean {
+    const token = localStorage.getItem('token');
+    const isAuth = !!token;
+    console.log('=== Verificación de Autenticación ===');
+    console.log('Token existe:', isAuth);
+    return isAuth;
+  }
 }

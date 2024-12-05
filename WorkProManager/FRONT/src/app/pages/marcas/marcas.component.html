@@ -3,13 +3,17 @@
         <h1 class="text-2xl font-bold text-center mb-4">Marcas</h1>
         <div class="flex justify-between items-center mb-4">
             <form [formGroup]="marcaForm" (ngSubmit)="onSubmit()">
-                <input formControlName="nom_marca" type="text" id="marcaInput"
-                    class="p-2 rounded border border-gray-300 flex-grow" placeholder="Ingresa una marca" required>
+                <input 
+                    formControlName="nom_marca" 
+                    type="text" 
+                    id="nom_marca"
+                    class="p-2 rounded border border-gray-300 flex-grow" 
+                    placeholder="Ingresa una marca" 
+                    required>
                 <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
                     + Nueva
                 </button>
             </form>
-
         </div>
 
         <table class="w-full border-collapse">
@@ -23,10 +27,9 @@
             <tbody>
                 <tr *ngFor="let marca of marcas | paginate : { itemsPerPage: itemsPerPage, currentPage: page }">
                     <td>{{ marca.nom_marca }}</td>
-                    <td>{{ marca.vista_count_marca?.total_equipo ?? 0 }}</td>
-
+                    <td>0</td>
                     <td>
-                        <button (click)="marca.id_marca !== undefined ? deleteMarca(marca.id_marca) : null">🗑️</button>
+                        <button (click)="deleteMarca(marca.id_marca!)">🗑️</button>
                     </td>
                 </tr>
             </tbody>
