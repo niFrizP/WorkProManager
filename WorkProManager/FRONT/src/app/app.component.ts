@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
     console.log('App Component Initialized');
 
     // Detecta cuando cambia la ruta
-    const Pages = ['/', '/login',];
+    const Pages = ['/', '/login', '/reset-password'];
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.isPage = Pages.includes(event.url);

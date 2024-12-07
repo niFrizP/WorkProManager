@@ -41,3 +41,75 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de confirmación para nueva marca -->
+<div *ngIf="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-96">
+        <div class="text-center">
+            <i class="fa-solid fa-question-circle text-blue-500 text-5xl mb-4"></i>
+            <h3 class="text-lg font-bold mb-2">Confirmar Creación</h3>
+            <p class="text-gray-600 mb-4">¿Está seguro que desea crear esta marca?</p>
+            <div class="flex justify-center gap-4">
+                <button (click)="confirmCreate()" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Crear
+                </button>
+                <button (click)="cancelCreate()" 
+                        class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de éxito para creación -->
+<div *ngIf="showSuccessCreateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-80">
+        <div class="text-center">
+            <i class="fa-solid fa-check-circle text-green-500 text-5xl mb-4"></i>
+            <h3 class="text-lg font-bold mb-2">¡Marca Creada!</h3>
+            <p class="text-gray-600 mb-4">La marca se ha creado exitosamente.</p>
+            <button (click)="closeSuccessCreateModal()" 
+                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Aceptar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div *ngIf="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-96">
+        <div class="text-center">
+            <i class="fa-solid fa-exclamation-triangle text-yellow-500 text-5xl mb-4"></i>
+            <h3 class="text-lg font-bold mb-2">Confirmar Eliminación</h3>
+            <p class="text-gray-600 mb-4">¿Está seguro que desea eliminar esta marca?</p>
+            <div class="flex justify-center gap-4">
+                <button (click)="confirmDelete()" 
+                        class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                    Eliminar
+                </button>
+                <button (click)="cancelDelete()" 
+                        class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de éxito para eliminación -->
+<div *ngIf="showSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-80">
+        <div class="text-center">
+            <i class="fa-solid fa-check-circle text-green-500 text-5xl mb-4"></i>
+            <h3 class="text-lg font-bold mb-2">¡Marca Eliminada!</h3>
+            <p class="text-gray-600 mb-4">La marca se ha eliminado exitosamente.</p>
+            <button (click)="closeSuccessModal()" 
+                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Aceptar
+            </button>
+        </div>
+    </div>
+</div>

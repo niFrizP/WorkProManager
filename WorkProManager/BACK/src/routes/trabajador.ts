@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getTrabajadores ,getTecnicos,verifyToken, logoutUser, getTrabajador,loginUser,postTrabajador, updateTrabajador, deleteTrabajador } from '../controllers/trabajador'; // Asegúrate de importar los controladores correctos
+import { getTrabajadores ,getTecnicos,verifyToken, logoutUser, getTrabajador,loginUser,postTrabajador, updateTrabajador, deleteTrabajador, updatePassword } from '../controllers/trabajador'; // Asegúrate de importar los controladores correctos
 
 const router = Router();
 
@@ -30,5 +30,8 @@ router.put('/:id', updateTrabajador);
 
 // Ruta para eliminar un trabajador por su ID
 router.delete('/:id', deleteTrabajador);
+
+// Ruta para actualizar la contraseña de un trabajador por su ID
+router.put('/password/:rut', updatePassword);
 
 export default router;

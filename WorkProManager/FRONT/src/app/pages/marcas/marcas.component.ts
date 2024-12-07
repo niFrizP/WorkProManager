@@ -13,7 +13,12 @@ import { Marca } from '../../interfaces/marca';
   styleUrls: ['./marcas.component.css']
 })
 export class MarcasComponent implements OnInit {
-  marcaForm: FormGroup;
+  showModal: boolean = false;
+  showSuccessCreateModal: boolean = false;
+  showDeleteModal: boolean = false;
+  showSuccessModal: boolean = false;
+  marcaForm: any;
+  marcaToDelete: number | null = null;
   marcas: Marca[] = [];
   itemsPerPage: number = 10;
   page: number = 1;
@@ -46,35 +51,74 @@ export class MarcasComponent implements OnInit {
 
   onSubmit() {
     if (this.marcaForm.valid) {
-      const nuevaMarca: Marca = this.marcaForm.value;
-      console.log('Creando nueva marca:', nuevaMarca);
-      
-      this.marcaService.createMarca(nuevaMarca).subscribe({
-        next: (response) => {
-          console.log('Marca creada:', response);
-          this.cargarMarcas(); // Recargar la lista
-          this.marcaForm.reset(); // Limpiar el formulario
-        },
-        error: (error) => {
-          console.error('Error al crear marca:', error);
-        }
-      });
+      const marcaData = {...this.marcaForm.value};
+      this.showModal = true;
+      this.marcaForm = marcaData;
     }
   }
 
+  confirmCreate() {
+    this.marcaService.createMarca(this.marcaForm).subscribe({
+      next: (response) => {
+        this.cargarMarcas();
+        this.marcaForm.reset();
+        this.showModal = false;
+        this.showSuccessCreateModal = true;
+        this.marcaForm = this.fb.group({
+          nom_marca: ['']
+        });
+        setTimeout(() => {
+          this.closeSuccessCreateModal();
+        }, 3000);
+      },
+      error: (error) => {
+        console.error('Error al crear marca:', error);
+      }
+    });
+  }
+
+  cancelCreate() {
+    this.showModal = false;
+    this.marcaForm = this.fb.group({
+      nom_marca: ['']
+    });
+  }
+
+  closeSuccessCreateModal() {
+    this.showSuccessCreateModal = false;
+  }
+
   deleteMarca(id: number) {
-    if (confirm('¿Está seguro de eliminar esta marca?')) {
-      console.log('Eliminando marca:', id);
-      this.marcaService.deleteMarca(id).subscribe({
+    this.marcaToDelete = id;
+    this.showDeleteModal = true;
+  }
+
+  confirmDelete() {
+    if (this.marcaToDelete) {
+      this.marcaService.deleteMarca(this.marcaToDelete).subscribe({
         next: () => {
-          console.log('Marca eliminada correctamente');
-          this.cargarMarcas(); // Recargar la lista
+          this.cargarMarcas();
+          this.showDeleteModal = false;
+          this.marcaToDelete = null;
+          this.showSuccessModal = true;
+          setTimeout(() => {
+            this.closeSuccessModal();
+          }, 3000);
         },
         error: (error) => {
           console.error('Error al eliminar marca:', error);
         }
       });
     }
+  }
+
+  cancelDelete() {
+    this.showDeleteModal = false;
+    this.marcaToDelete = null;
+  }
+
+  closeSuccessModal() {
+    this.showSuccessModal = false;
   }
 
   onPageChange(event: number) {

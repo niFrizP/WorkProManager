@@ -13,6 +13,7 @@ import { UsuariosComponent } from './pages/usuarios/usuarios.component';
 import { CreateTrabajadorComponent } from './components/create-usuario/create-usuario.component';
 
 import { AuthGuard } from './auth.guard';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -25,6 +26,7 @@ export const routes: Routes = [
   { path: 'servicios', component: ServicioComponent, canActivate: [AuthGuard] },
   { path: 'usuarios', component: UsuariosComponent, canActivate: [AuthGuard] },
   { path: 'create-usuario', component: CreateTrabajadorComponent, canActivate: [AuthGuard] },
+  { path: 'reset-password', component: ResetPasswordComponent },
   { path: '**', redirectTo: '/login' }
 ];
 

@@ -17,6 +17,12 @@ export class ServicioComponent implements OnInit {
   servicios: Servicio[] = [];
   itemsPerPage: number = 10;
   page: number = 1;
+  showModal: boolean = false;
+  showDeleteModal: boolean = false;
+  showSuccessModal: boolean = false;
+  servicioToDelete: number | null = null;
+  showSuccessCreateModal: boolean = false;
+  servicioForm: any;
 
   constructor(
     private fb: FormBuilder,
@@ -46,35 +52,68 @@ export class ServicioComponent implements OnInit {
 
   onSubmit() {
     if (this.serviciosForm.valid) {
-      const nuevoServicio: Servicio = this.serviciosForm.value;
-      console.log('Creando nuevo servicio:', nuevoServicio);
-      
-      this.servicioService.createServicio(nuevoServicio).subscribe({
-        next: (response) => {
-          console.log('Servicio creado:', response);
-          this.cargarServicios(); // Recargar la lista
-          this.serviciosForm.reset(); // Limpiar el formulario
-        },
-        error: (error) => {
-          console.error('Error al crear servicio:', error);
-        }
-      });
+      this.servicioForm = {...this.serviciosForm.value};
+      this.showModal = true;
     }
   }
 
+  confirmCreate() {
+    this.servicioService.createServicio(this.servicioForm).subscribe({
+      next: (response) => {
+        this.cargarServicios();
+        this.serviciosForm.reset();
+        this.showModal = false;
+        this.showSuccessCreateModal = true;
+        setTimeout(() => {
+          this.closeSuccessCreateModal();
+        }, 3000);
+      },
+      error: (error) => {
+        console.error('Error al crear servicio:', error);
+      }
+    });
+  }
+
+  cancelCreate() {
+    this.showModal = false;
+    this.servicioForm = null;
+  }
+
+  closeSuccessCreateModal() {
+    this.showSuccessCreateModal = false;
+  }
+
   deleteServicio(id: number) {
-    if (confirm('¿Está seguro de eliminar este servicio?')) {
-      console.log('Eliminando servicio:', id);
-      this.servicioService.deleteServicio(id).subscribe({
+    this.servicioToDelete = id;
+    this.showDeleteModal = true;
+  }
+
+  confirmDelete() {
+    if (this.servicioToDelete) {
+      this.servicioService.deleteServicio(this.servicioToDelete).subscribe({
         next: () => {
-          console.log('Servicio eliminado correctamente');
-          this.cargarServicios(); // Recargar la lista
+          this.cargarServicios();
+          this.showDeleteModal = false;
+          this.servicioToDelete = null;
+          this.showSuccessModal = true;
+          setTimeout(() => {
+            this.closeSuccessModal();
+          }, 3000);
         },
         error: (error) => {
           console.error('Error al eliminar servicio:', error);
         }
       });
     }
+  }
+
+  closeSuccessModal() {
+    this.showSuccessModal = false;
+  }
+
+  cancelDelete() {
+    this.showDeleteModal = false;
+    this.servicioToDelete = null;
   }
 
   onPageChange(event: number) {
