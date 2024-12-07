@@ -44,9 +44,9 @@ const getMarcaById = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.getMarcaById = getMarcaById;
 // Create a new marca
 const createMarca = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name } = req.body;
+    const { nom_marca } = req.body; // Capturamos el campo correcto
     try {
-        const newMarca = yield marca_1.default.create({ name });
+        const newMarca = yield marca_1.default.create({ nom_marca }); // Insertamos en la base de datos
         res.status(201).json(newMarca);
     }
     catch (error) {

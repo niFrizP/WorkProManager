@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup, FormBuilder } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { MarcaService } from '../../services/marca.service';
 import { Marca } from '../../interfaces/marca';
@@ -28,7 +28,7 @@ export class MarcasComponent implements OnInit {
     private marcaService: MarcaService
   ) {
     this.marcaForm = this.fb.group({
-      nom_marca: ['']
+      nom_marca: ['', Validators.required]
     });
   }
 
@@ -51,31 +51,37 @@ export class MarcasComponent implements OnInit {
 
   onSubmit() {
     if (this.marcaForm.valid) {
-      const marcaData = {...this.marcaForm.value};
+      const marcaData = this.marcaForm.value;  // Obtener los valores del formulario correctamente
       this.showModal = true;
-      this.marcaForm = marcaData;
+    } else {
+      console.error('Formulario inválido');
     }
   }
 
+
   confirmCreate() {
-    this.marcaService.createMarca(this.marcaForm).subscribe({
-      next: (response) => {
-        this.cargarMarcas();
-        this.marcaForm.reset();
-        this.showModal = false;
-        this.showSuccessCreateModal = true;
-        this.marcaForm = this.fb.group({
-          nom_marca: ['']
-        });
-        setTimeout(() => {
-          this.closeSuccessCreateModal();
-        }, 3000);
-      },
-      error: (error) => {
-        console.error('Error al crear marca:', error);
-      }
-    });
+    if (this.marcaForm.valid) {
+      const marcaData = this.marcaForm.value; // Obtener los valores del formulario
+      console.log('Datos enviados:', marcaData); // Verificar los datos enviados
+      this.marcaService.createMarca(marcaData).subscribe({
+        next: (response) => {
+          this.cargarMarcas();
+          this.marcaForm.reset(); // Resetea el formulario correctamente
+          this.showModal = false;
+          this.showSuccessCreateModal = true;
+          setTimeout(() => {
+            this.closeSuccessCreateModal();
+          }, 3000);
+        },
+        error: (error) => {
+          console.error('Error al crear marca:', error);
+        }
+      });
+    } else {
+      console.error('Formulario inválido');
+    }
   }
+
 
   cancelCreate() {
     this.showModal = false;

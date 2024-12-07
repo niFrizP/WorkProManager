@@ -11,7 +11,7 @@ import { Marca } from '../interfaces/marca';
 export class MarcaService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -36,6 +36,7 @@ export class MarcaService {
   }
 
   createMarca(marca: Marca): Observable<Marca> {
+    console.log('Datos enviados:', marca); // Agregar este log para verificar los datos
     return this.http.post<Marca>(`${this.apiUrl}/api/marca`, marca, {
       headers: this.getHeaders()
     });

@@ -29,9 +29,9 @@ export const getMarcaById = async (req: Request, res: Response) => {
 
 // Create a new marca
 export const createMarca = async (req: Request, res: Response) => {
-    const { name } = req.body;
+    const { nom_marca } = req.body;  // Capturamos el campo correcto
     try {
-        const newMarca = await Marca.create({ name });
+        const newMarca = await Marca.create({ nom_marca });  // Insertamos en la base de datos
         res.status(201).json(newMarca);
     } catch (error) {
         res.status(500).json({ message: 'Error creating marca', error });
