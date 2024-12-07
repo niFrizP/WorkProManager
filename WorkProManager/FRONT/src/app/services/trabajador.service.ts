@@ -8,7 +8,7 @@ import { Trabajador } from '../interfaces/trabajador';
   providedIn: 'root'
 })
 export class TrabajadorService {
-  private apiUrl = environment.apiUrl; // Base URL de la API
+  private apiUrl = environment.apiUrl; // Asegúrate que esta sea la URL correcta
 
   constructor(private http: HttpClient) { }
 
@@ -36,5 +36,12 @@ export class TrabajadorService {
    */
   updateTrabajador(rut_trab: string, trabajadorData: Trabajador): Observable<Trabajador> {
     return this.http.put<Trabajador>(`${this.apiUrl}/api/trabajador/${rut_trab}`, trabajadorData);
+  }
+
+  resetPassword(rut: string, newPassword: string) {
+    const rutLimpio = rut.replace(/[.-]/g, '');
+    return this.http.put(`${this.apiUrl}/password/${rutLimpio}`, {
+      clave: newPassword,
+    });
   }
 }

@@ -15,9 +15,6 @@ export const getTrabajadores = async (req: Request, res: Response) => {
     }
 };
 
-
-
-
 // Obtener todos los trabajadores con rol 2, de técnico
 export const getTecnicos = async (req: Request, res: Response) => {
     try {
@@ -199,4 +196,30 @@ export const updateTrabajador = async (req: Request, res: Response) => {
         console.log(error);
         res.status(500).json({ msg: "Error al actualizar trabajador" });
     }
+}
+
+export const updatePassword = async (req: Request, res: Response) => {
+  try {
+    const { rut } = req.params;
+    const { clave } = req.body;
+    
+    console.log('RUT:', rut); // Para debug
+    console.log('Nueva clave:', clave); // Para debug
+
+    const hashedPassword = await bcrypt.hash(clave, 10);
+
+    const result = await Trabajador.update(
+      { clave: hashedPassword },
+      { where: { rut_trab: rut } }
+    );
+
+    if (result[0] > 0) {
+      res.json({ message: 'Contraseña actualizada exitosamente' });
+    } else {
+      res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+  } catch (error) {
+    console.error('Error al actualizar contraseña:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
 };

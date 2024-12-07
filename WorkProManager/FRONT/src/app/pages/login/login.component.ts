@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/autenticacion.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterModule],
   templateUrl: './login.component.html',
   styles: [
     `
@@ -84,7 +84,11 @@ export class LoginComponent {
   onSubmit() {
     // Llamada al servicio de autenticación
     this.authService.login({ rut_trab: this.rut_trab, clave: this.clave }).subscribe(
-      (res) => {
+      (res: any) => {
+        // Guardamos los datos en localStorage
+        localStorage.setItem('rut_trab', this.rut_trab);
+        localStorage.setItem('token', res.token); // Asumiendo que el backend devuelve un token
+
         // Mostrar notificación de éxito
         this.showSuccessModal = true;
         setTimeout(() => {
