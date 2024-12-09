@@ -72,21 +72,20 @@ export const deleteTrabajador = async (req: Request, res: Response) => {
 };
 
 export const loginUser = async (req: Request, res: Response) => {
+    const { rut_trab, clave } = req.body;
+
     try {
-        const { rut_trab, clave } = req.body;
-
         // Verificar si el usuario existe
-        const trabajador: any = await Trabajador.findByPk(rut_trab);
-
+        const trabajador: any = await Trabajador.findOne({ where: { rut_trab } });
         if (!trabajador) {
             res.status(400).json({
-                msg: `No existe un usuario con el RUT ${rut_trab} en la base de datos.`,
+                msg: `No existe un usuario con el RUT ${rut_trab} en el sistema.`,
             });
         } else {
             // Verificar contraseña
-            const passwordValid = await bcrypt.compare(clave, trabajador.clave);
-            if (!passwordValid) {
-                res.status(400).json({
+            const isPasswordValid = await bcrypt.compare(clave, trabajador.clave);
+            if (!isPasswordValid) {
+                res.status(401).json({
                     msg: `Contraseña incorrecta.`,
                 });
             } else {
@@ -149,9 +148,7 @@ export const logoutUser = (req: Request, res: Response) => {
 export const postTrabajador = async (req: Request, res: Response) => {
     const { rut_trab, d_veri_trab, nom_trab, ape_trab, clave, id_rol, activo } = req.body;
     try {
-        // Validamos si el trabajador ya existe en la base de datos
-
-        // Si no existe, encriptamos la clave
+        // Encriptar la clave
         const hashedPassword = await bcrypt.hash(clave, 10);
 
         // Crear el nuevo trabajador
@@ -160,24 +157,22 @@ export const postTrabajador = async (req: Request, res: Response) => {
             d_veri_trab,
             nom_trab,
             ape_trab,
-            clave: hashedPassword,
+            clave: hashedPassword, // Clave encriptada
             id_rol,
-            activo: activo || true // Asignar valor por defecto si no se proporciona
+            activo: activo || true
         });
 
         // Devolver respuesta exitosa
         res.json({
             msg: 'El trabajador fue agregado con éxito!',
-            trabajador: newTrabajador // Devuelve el nuevo trabajador, incluyendo el `rut_trab` generado
+            trabajador: newTrabajador
         });
     } catch (error) {
-        console.log(error);
-        // Devolver respuesta de error general
-        res.status(500).json({
-            msg: 'Upps, ocurrió un error. Comuníquese con soporte.'
-        });
+        console.error('Error al crear trabajador:', error);
+        res.status(500).json({ msg: 'Error al crear trabajador.' });
     }
 };
+
 
 
 // Actualizar un trabajador por ID
@@ -199,27 +194,27 @@ export const updateTrabajador = async (req: Request, res: Response) => {
 }
 
 export const updatePassword = async (req: Request, res: Response) => {
-  try {
-    const { rut } = req.params;
-    const { clave } = req.body;
-    
-    console.log('RUT:', rut); // Para debug
-    console.log('Nueva clave:', clave); // Para debug
+    try {
+        const { rut } = req.params;
+        const { clave } = req.body;
 
-    const hashedPassword = await bcrypt.hash(clave, 10);
+        console.log('RUT:', rut); // Para debug
+        console.log('Nueva clave:', clave); // Para debug
 
-    const result = await Trabajador.update(
-      { clave: hashedPassword },
-      { where: { rut_trab: rut } }
-    );
+        const hashedPassword = await bcrypt.hash(clave, 10);
 
-    if (result[0] > 0) {
-      res.json({ message: 'Contraseña actualizada exitosamente' });
-    } else {
-      res.status(404).json({ message: 'Usuario no encontrado' });
+        const result = await Trabajador.update(
+            { clave: hashedPassword },
+            { where: { rut_trab: rut } }
+        );
+
+        if (result[0] > 0) {
+            res.json({ message: 'Contraseña actualizada exitosamente' });
+        } else {
+            res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+    } catch (error) {
+        console.error('Error al actualizar contraseña:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
     }
-  } catch (error) {
-    console.error('Error al actualizar contraseña:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
-  }
 };

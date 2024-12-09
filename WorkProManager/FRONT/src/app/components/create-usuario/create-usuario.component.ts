@@ -11,7 +11,6 @@ import { Trabajador } from '../../interfaces/trabajador';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { TrabajadorService } from '../../services/trabajador.service';
-import { getTrabajadores } from '../../../../../BACK/src/controllers/trabajador';
 
 @Component({
   selector: 'app-create-usuario',
@@ -34,6 +33,7 @@ export class CreateTrabajadorComponent implements OnInit {
   trabajador: Trabajador[] = [];
   form: FormGroup = new FormGroup({});
   Trabajador: any[] = [];
+  roles: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -52,42 +52,37 @@ export class CreateTrabajadorComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadUsers();  
+    this.loadUsers();
+    this.loadRoles();
   }
 
-  onSubmit(): void {
+  // Lógica para enviar el formulario
+  async onSubmit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     if (this.userForm.valid) {
-      this.createOrUpdateTrabajador().then(
-        (trabajador) => {
-          this.snackBar.open('trabajador registrado o actualizado con éxito', 'Cerrar', {
-            duration: 3000
-          });
-          console.log('trabajador creado o actualizado:', trabajador);
-          this.router.navigate(['/usuarios']);
-        }
-      ).catch(
-        (error) => {
-          this.snackBar.open('Error al registrar o actualizar el trabajador', 'Cerrar', {
-            duration: 3000
-          });
-          console.error('Error en la operación:', error);
-        }
-      );
+      try {
+        // Crear directamente el trabajador sin verificar su existencia
+        await this.postTrabajador();
+        this.snackBar.open('Trabajador creado con éxito', 'Cerrar', { duration: 3000 });
+        this.router.navigate(['/usuarios']);
+      } catch (error) {
+        this.snackBar.open('Error al crear trabajador', 'Cerrar', { duration: 3000 });
+        console.error('Error en el proceso de creación:', error);
+      }
     } else {
-      this.snackBar.open('Por favor, complete el formulario correctamente', 'Cerrar', {
-        duration: 3000
-      });
+      this.snackBar.open('Por favor, complete el formulario correctamente', 'Cerrar', { duration: 3000 });
     }
   }
 
+
+  // Cargar usuarios desde el servicio
   loadUsers(): void {
     this.trabajadorService.getTecnicos().subscribe(
-      (data) => {
+      (data: any) => {
         this.Trabajador = data;
       },
       (error) => {
@@ -96,43 +91,69 @@ export class CreateTrabajadorComponent implements OnInit {
     );
   }
 
-  private async createOrUpdateTrabajador(): Promise<Trabajador> {
+  // Cargar roles desde el servicio
+  loadRoles(): void {
+    const idRol = 1; // Replace with the appropriate id_rol value
+    this.trabajadorService.getTrabajadorRol(idRol).subscribe(
+      (data: Trabajador) => {
+        this.roles = [data];  // Asignar los roles al array
+      },
+      (error: any) => {
+        console.error('Error fetching roles', error);
+      }
+    );
+  }
+
+  // Método para crear un trabajador
+  private async postTrabajador(): Promise<Trabajador> {
     const trabajadorData: Trabajador = {
       rut_trab: this.userForm.get('rut_trab')?.value,
       d_veri_trab: this.userForm.get('d_veri_trab')?.value,
       nom_trab: this.userForm.get('nom_trab')?.value,
       ape_trab: this.userForm.get('ape_trab')?.value,
-      clave: this.userForm.get('clave')?.value,
+      clave: this.userForm.get('clave')?.value, // El backend se encarga de encriptar
       id_rol: this.userForm.get('id_rol')?.value,
-      activo: true // or set the appropriate value
+      activo: true
     };
 
     try {
-      const existingtrabajador = await this.trabajadorService.createTrabajador(trabajadorData).toPromise().catch((error) => {
-        if (error.status === 404) {
-          return null;
-        }
-        throw error;
-      });
-
-      if (existingtrabajador) {
-        const updatedtrabajador = await this.trabajadorService.updateTrabajador(trabajadorData.rut_trab!.toString(), trabajadorData).toPromise();
-        if (!updatedtrabajador) throw new Error('Failed to update user');
-        return updatedtrabajador;
-      } else {
-        return new Promise((resolve, reject) => {
-          this.trabajadorService.createTrabajador(trabajadorData).subscribe({
-            next: (newtrabajador: Trabajador) => {
-              resolve(newtrabajador);
-            },
-            error: (error: any) => {
-              reject(error);
-            }
-          });
-        });
-      }
+      const newTrabajador = await this.trabajadorService.postTrabajador(trabajadorData).toPromise();
+      if (!newTrabajador) throw new Error('Error al crear trabajador');
+      return newTrabajador;
     } catch (error) {
-      console.error('Error al crear o actualizar el trabajador:', error);
+      console.error('Error al crear trabajador:', error);
+      throw error;
+    }
+  }
+
+  // Método para actualizar un trabajador
+  private async updateTrabajador(rut_trab: string): Promise<Trabajador> {
+    const trabajadorData: Trabajador = {
+      rut_trab: this.userForm.get('rut_trab')?.value,
+      d_veri_trab: this.userForm.get('d_veri_trab')?.value,
+      nom_trab: this.userForm.get('nom_trab')?.value,
+      ape_trab: this.userForm.get('ape_trab')?.value,
+      clave: this.userForm.get('clave')?.value, // El backend se encarga de encriptar
+      id_rol: this.userForm.get('id_rol')?.value,
+      activo: true
+    };
+
+    try {
+      const updatedTrabajador = await this.trabajadorService.updateTrabajador(rut_trab, trabajadorData).toPromise();
+      if (!updatedTrabajador) throw new Error('Error al actualizar trabajador');
+      return updatedTrabajador;
+    } catch (error) {
+      console.error('Error al actualizar trabajador:', error);
+      throw error;
+    }
+  }
+
+  // Método para eliminar un trabajador
+  private async deleteTrabajador(rut_trab: string): Promise<void> {
+    try {
+      await this.trabajadorService.deleteTrabajador(rut_trab).toPromise();
+    } catch (error) {
+      console.error('Error al eliminar trabajador:', error);
       throw error;
     }
   }

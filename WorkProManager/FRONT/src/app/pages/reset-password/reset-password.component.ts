@@ -1,5 +1,6 @@
+// reset-password.component.ts
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms'
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { TrabajadorService } from '../../services/trabajador.service';
@@ -9,45 +10,55 @@ import { TrabajadorService } from '../../services/trabajador.service';
   standalone: true,
   imports: [FormsModule, CommonModule, RouterModule],
   templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.css'
+  styleUrls: ['./reset-password.component.css']
 })
 export class ResetPasswordComponent {
   resetData = {
     rut_trab: '',
-    password: '',
-    confirmPassword: ''
+    newPassword: '',
+    confirmNewPassword: '',
+    d_veri_trab: ''
   };
-  
+
   rutInvalido = false;
   passwordsDoNotMatch = false;
 
   constructor(
     private trabajadorService: TrabajadorService,
     private router: Router
-  ) {}
+  ) { }
 
   onSubmit() {
-    // Validar que las contraseñas coincidan
-    this.passwordsDoNotMatch = this.resetData.password !== this.resetData.confirmPassword;
-    
+    // Validación de contraseñas
+    this.passwordsDoNotMatch = this.resetData.newPassword !== this.resetData.confirmNewPassword;
+    this.rutInvalido = !/^\d{7,8}-[\dkK]$/.test(this.resetData.rut_trab);
+
     if (this.passwordsDoNotMatch || this.rutInvalido) {
+      alert('Por favor, revisa que las contraseñas coincidan y que el RUT sea válido');
       return;
     }
 
-    // Limpia el RUT
+    // Limpiar el RUT, eliminando puntos y guiones
     const rutLimpio = this.resetData.rut_trab.replace(/[.-]/g, '');
 
-    this.trabajadorService.resetPassword(rutLimpio, this.resetData.password)
-      .subscribe({
-        next: (response) => {
-          console.log('Respuesta:', response);
-          alert('Contraseña actualizada exitosamente');
-          this.router.navigate(['/login']);
-        },
-        error: (error) => {
-          console.error('Error completo:', error);
-          alert('Error al actualizar la contraseña');
-        }
-      });
+    if (rutLimpio.length < 8) {
+      alert('RUT inválido, por favor revisa el formato');
+      return;
+    }
+
+    const numeroRut = rutLimpio.slice(0, -1);
+    const digitoVerificador = rutLimpio.slice(-1);
+
+    // Llamar al servicio para actualizar la contraseña
+    this.trabajadorService.updatePassword(numeroRut, digitoVerificador, this.resetData.newPassword).subscribe({
+      next: (response) => {
+        alert('Contraseña actualizada correctamente');
+        this.router.navigate(['/login']);  // Redirigir al login tras éxito
+      },
+      error: (err) => {
+        console.error('Error al actualizar contraseña', err);
+        alert('Ocurrió un error al actualizar la contraseña');
+      }
+    });
   }
 }

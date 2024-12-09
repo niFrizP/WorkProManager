@@ -54,20 +54,43 @@ class Server {
             }
         });
 
+        this.config();
         this.listen();
-        this.midlewares();
         this.routes();
         this.dbConnect();
         this.socketEvents();
     }
 
-    listen() {
-        this.server.listen(this.port, () => {
-            console.log('Aplicación corriendo en el puerto ' + this.port);
-        });
+    // Configurar middlewares esenciales
+    private config() {
+        this.app.use(cors({
+            origin: 'http://localhost:4200', // Reemplazar con la URL de tu frontend
+            credentials: true,
+        }));
+
+        this.app.use(express.json());
+        this.app.use(cookieParser());
+
+        // Configurar sesiones
+        this.app.use(session({
+            secret: process.env.SECRET_KEY || 'default-secret', // Usa una variable de entorno más segura
+            resave: false,
+            saveUninitialized: true,
+            cookie: {
+                secure: process.env.NODE_ENV === 'production',
+                httpOnly: true,
+            }
+        }));
+
+        // Protección con Lusca para medidas de seguridad básicas
+        this.app.use(lusca({
+            xframe: 'SAMEORIGIN',
+            xssProtection: true
+        }));
     }
 
-    routes() {
+    // Configurar las rutas
+    private routes() {
         this.app.use('/api/trabajador', routesTrabajador);
         this.app.use('/api/cotizacion', routesCotizacion);
         this.app.use('/api/servicio', routesServicio);
@@ -77,40 +100,19 @@ class Server {
         this.app.use('/api/estado-ot', routesEstadoOT);
         this.app.use('/api/orden', routesOrdenes);
         this.app.use('/api/get-servicio-orden', routesGetServicioOrden);
+        this.app.use('/api/reset-password', routesTrabajador);
     }
 
-    midlewares() {
-        // Configuración de CORS
-        this.app.use(cors({
-            origin: 'http://localhost:4200', // Reemplaza con la URL de tu frontend
-            credentials: true,
-        }));
-
-        // Parseo de body y cookies
-        this.app.use(express.json());
-        this.app.use(cookieParser());
-
-        // Configurar sesión
-        this.app.use(session({
-            secret: '123', // Cambia esto por una clave secreta segura
-            resave: false,
-            saveUninitialized: true,
-            cookie: {
-                secure: process.env.NODE_ENV === 'production',
-                httpOnly: true
-            }
-        }));
-
-        // Protección con Lusca
-        this.app.use(lusca({
-            xframe: 'SAMEORIGIN',
-            xssProtection: true
-        }));
+    // Iniciar el servidor
+    private listen() {
+        this.server.listen(this.port, () => {
+            console.log('Aplicación corriendo en el puerto ' + this.port);
+        });
     }
 
-    async dbConnect() {
+    // Conectar a la base de datos y sincronizar los modelos
+    private async dbConnect() {
         try {
-            // Sincronización de modelos
             await Promise.all([
                 Trabajador.sync(),
                 TrabajadorRol.sync(),
@@ -131,6 +133,7 @@ class Server {
         }
     }
 
+    // Eventos de Socket.IO
     private socketEvents() {
         this.io.on('connection', (socket) => {
             console.log('Un cliente se ha conectado', socket.id);
@@ -143,7 +146,7 @@ class Server {
                 console.log('Mensaje recibido del cliente:', data);
             });
 
-            // Obtener servicios habilitados
+            // Obtener servicios habilitados para una orden específica
             socket.on('getServiciosHabilitados', async (id_ot: string) => {
                 try {
                     const serviciosHabilitados = await fetchServiciosHabilitados(id_ot);
@@ -158,7 +161,7 @@ class Server {
                 }
             });
 
-            // Obtener servicios deshabilitados
+            // Obtener servicios deshabilitados para una orden específica
             socket.on('getServiciosDeshabilitados', async (id_ot: string) => {
                 try {
                     const serviciosDeshabilitados = await fetchServiciosDeshabilitados(id_ot);

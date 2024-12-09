@@ -1,13 +1,12 @@
 export interface Trabajador {
-    rut_trab: number; // El RUT (único, clave primaria)
-    nom_trab: string; // Nombre del trabajador
-    ape_trab: string | null; // Apellido del trabajador (puede ser nulo)
-    id_rol: number; // Id del rol asociado al trabajador
-    activo: boolean; // Estado de actividad del trabajador
-    clave: string; // Clave encriptada
-    d_veri_trab: string | null; // Indicador de verificación del trabajador (puede ser nulo)
+    rut_trab: number;
+    nom_trab: string;
+    ape_trab: string | null;
+    id_rol: number;
+    activo: boolean;
+    clave: string;
+    d_veri_trab: string | null;
     TrabajadorRol?: {
-        nom_rol: string; // Nombre del rol
-    }
-  }
-  
+        nom_rol: string;
+    };
+}

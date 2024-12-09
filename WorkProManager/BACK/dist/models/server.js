@@ -57,17 +57,37 @@ class Server {
                 credentials: true,
             }
         });
+        this.config();
         this.listen();
-        this.midlewares();
         this.routes();
         this.dbConnect();
         this.socketEvents();
     }
-    listen() {
-        this.server.listen(this.port, () => {
-            console.log('Aplicación corriendo en el puerto ' + this.port);
-        });
+    // Configurar middlewares esenciales
+    config() {
+        this.app.use((0, cors_1.default)({
+            origin: 'http://localhost:4200', // Reemplazar con la URL de tu frontend
+            credentials: true,
+        }));
+        this.app.use(express_1.default.json());
+        this.app.use((0, cookie_parser_1.default)());
+        // Configurar sesiones
+        this.app.use((0, express_session_1.default)({
+            secret: process.env.SECRET_KEY || 'default-secret', // Usa una variable de entorno más segura
+            resave: false,
+            saveUninitialized: true,
+            cookie: {
+                secure: process.env.NODE_ENV === 'production',
+                httpOnly: true,
+            }
+        }));
+        // Protección con Lusca para medidas de seguridad básicas
+        this.app.use((0, lusca_1.default)({
+            xframe: 'SAMEORIGIN',
+            xssProtection: true
+        }));
     }
+    // Configurar las rutas
     routes() {
         this.app.use('/api/trabajador', trabajador_1.default);
         this.app.use('/api/cotizacion', insertarCotizacion_1.default);
@@ -78,36 +98,18 @@ class Server {
         this.app.use('/api/estado-ot', estado_ot_1.default);
         this.app.use('/api/orden', orden_trabajo_1.default);
         this.app.use('/api/get-servicio-orden', servicio_orden_1.default);
+        this.app.use('/api/reset-password', trabajador_1.default);
     }
-    midlewares() {
-        // Configuración de CORS
-        this.app.use((0, cors_1.default)({
-            origin: 'http://localhost:4200', // Reemplaza con la URL de tu frontend
-            credentials: true,
-        }));
-        // Parseo de body y cookies
-        this.app.use(express_1.default.json());
-        this.app.use((0, cookie_parser_1.default)());
-        // Configurar sesión
-        this.app.use((0, express_session_1.default)({
-            secret: '123', // Cambia esto por una clave secreta segura
-            resave: false,
-            saveUninitialized: true,
-            cookie: {
-                secure: process.env.NODE_ENV === 'production',
-                httpOnly: true
-            }
-        }));
-        // Protección con Lusca
-        this.app.use((0, lusca_1.default)({
-            xframe: 'SAMEORIGIN',
-            xssProtection: true
-        }));
+    // Iniciar el servidor
+    listen() {
+        this.server.listen(this.port, () => {
+            console.log('Aplicación corriendo en el puerto ' + this.port);
+        });
     }
+    // Conectar a la base de datos y sincronizar los modelos
     dbConnect() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Sincronización de modelos
                 yield Promise.all([
                     trabajador_2.default.sync(),
                     trabajador_rol_1.default.sync(),
@@ -129,6 +131,7 @@ class Server {
             }
         });
     }
+    // Eventos de Socket.IO
     socketEvents() {
         this.io.on('connection', (socket) => {
             console.log('Un cliente se ha conectado', socket.id);
@@ -138,7 +141,7 @@ class Server {
             socket.on('mensajeCliente', (data) => {
                 console.log('Mensaje recibido del cliente:', data);
             });
-            // Obtener servicios habilitados
+            // Obtener servicios habilitados para una orden específica
             socket.on('getServiciosHabilitados', (id_ot) => __awaiter(this, void 0, void 0, function* () {
                 try {
                     const serviciosHabilitados = yield (0, servicio_orden_3.fetchServiciosHabilitados)(id_ot);
@@ -154,7 +157,7 @@ class Server {
                     console.error(error);
                 }
             }));
-            // Obtener servicios deshabilitados
+            // Obtener servicios deshabilitados para una orden específica
             socket.on('getServiciosDeshabilitados', (id_ot) => __awaiter(this, void 0, void 0, function* () {
                 try {
                     const serviciosDeshabilitados = yield (0, servicio_orden_3.fetchServiciosDeshabilitados)(id_ot);

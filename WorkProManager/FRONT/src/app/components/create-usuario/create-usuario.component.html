@@ -7,8 +7,9 @@
             </p>
 
             <form class="space-y-6 sm:space-y-4 lg:space-y-8" [formGroup]="userForm" (ngSubmit)="onSubmit()">
-                <p class="text-2xl font-semibold text-gray-700">Formulario de creación de usuario</p>
+                <p class="text-2xl font-semibold text-gray-700 mb-4">Formulario de creación de usuario</p>
 
+                <!-- Información Personal -->
                 <fieldset class="border border-gray-200 p-4 rounded-lg">
                     <legend class="text-lg font-semibold">Información Personal</legend>
 
@@ -74,7 +75,7 @@
                     </div>
                 </fieldset>
 
-
+                <!-- Información de Cuenta -->
                 <fieldset class="border border-gray-200 p-4 rounded-lg">
                     <legend class="text-lg font-semibold">Información de Cuenta</legend>
 

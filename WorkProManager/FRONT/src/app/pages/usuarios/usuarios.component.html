@@ -27,8 +27,8 @@
             class="bg-yellow-500 text-white p-2 rounded">
             <i class="fa-solid fa-pen-to-square"></i>
           </button>
-          <button (click)="usuario.rut_trab !== undefined ? deleteUsuario(usuario.rut_trab) : null" title="Eliminar"
-            class="bg-red-500 text-white p-2 rounded">
+          <button (click)="usuario.rut_trab !== undefined ? deleteUsuario(usuario.rut_trab.toString()) : null"
+            title="Eliminar" class="bg-red-500 text-white p-2 rounded">
             <i class="fa-solid fa-trash"></i>
           </button>
         </div>
@@ -56,7 +56,7 @@
                 class="bg-yellow-500 text-white p-2 rounded">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button (click)="usuario.rut_trab !== undefined ? deleteUsuario(usuario.rut_trab) : null" title="Eliminar"
+              <button (click)="usuario.rut_trab !== undefined ? deleteUsuario(usuario.rut_trab.toString()) : null" title="Eliminar"
                 class="bg-red-500 text-white p-2 rounded">
                 <i class="fa-solid fa-trash"></i>
               </button>
